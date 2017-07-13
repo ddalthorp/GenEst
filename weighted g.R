@@ -7,6 +7,10 @@
 # two classes and g is the weighted average of detection probabilities among the
 # class, i.e., g = sum(g[i] * rho[i]), where rho is the fraction of total carcasses
 # in each of the classes.
+# In practise, M is unknown and is the parameter of interest, g and rho are estimated,
+# g from independent field trials, rho from the ratio of M_hat in each class to M_hat total
+
+# "Known" values in simulations
 M <- c(800, 200) # a particular number (NOT multinomial or 2-d Poisson)
 rho <- M/sum(M)
 g <- c(0.1, 0.8) # true g for two classes
@@ -14,6 +18,7 @@ g <- c(0.1, 0.8) # true g for two classes
 nclass <- length(g)
 # g is estimated with uncertainty from field trials
 N <- c(80, 50) # number of "field trial carcasses" for estimating g
+# NOTE: this pushes the limits of reality w/ N=[10, 20] more likely for most species
 alpha <- c(0.5, 0.2, 0.1, 0.05, 0.01)
 nsim <- 1000 # number of "years" to simulate
 
@@ -52,6 +57,8 @@ for (simi in 1:nsim){ # each simi is a simulated year
   x <- sum(Xsim[simi, ])
   mmax <- round(x/g0 + 8*sqrt(x*(1-g0)/g0^2))
   pm <- eoa::postM.ab(x, Bparm$est[1], Bparm$est[2], prior = "betabinRef", mmax=mmax)
+# mhuso hit error here:
+# Error in eoa::postM.ab(x, Bparm$est[1], Bparm$est[2], prior = "betabinRef",  :   object 'a' not found
   for (ai in 1:length(alpha)) Mci[simi, ,ai] <- eoa::MCI(pm, 1-alpha[ai])
   Mhat[simi,1] <- min(which(cumsum(pm) >= 0.5)) - 1
   Mhat[simi,2] <- sum((1:length(pm)-1)*pm)
