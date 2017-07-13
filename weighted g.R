@@ -61,18 +61,15 @@ for (simi in 1:nsim){ # each simi is a simulated year
     tst<-proc.time()
   }
 }
-# coverages for Mci's are right on target:
-ai <- 1; 1 - sum(Mci[,1, ai] > sum(M) | Mci[,2,ai] < sum(M))/nsim # 0.50 target
-ai <- 2; 1 - sum(Mci[,1, ai] > sum(M) | Mci[,2,ai] < sum(M))/nsim # 0.80 target
-ai <- 3; 1 - sum(Mci[,1, ai] > sum(M) | Mci[,2,ai] < sum(M))/nsim # 0.90 target
-ai <- 4; 1 - sum(Mci[,1, ai] > sum(M) | Mci[,2,ai] < sum(M))/nsim # 0.95 target
-ai <- 5; 1 - sum(Mci[,1, ai] > sum(M) | Mci[,2,ai] < sum(M))/nsim # 0.99 target
-
+# coverages for Mci's are right on target,
 # intervals have (roughly) equal probabilities of missing high or low
-ai <- 1;
-paste0("alpha = ", alpha[ai], ", ",
-  1 - sum(Mci[,1, ai] > sum(M)/nsim, " missed high, ",
-  1- sum(Mci[,2,ai] < sum(M))/nsim, " missed low"
+for (ai in 1:length(alpha)){
+  print(paste0(
+    "1 - alpha = ", 1 - alpha[ai], ", ",
+    "coverage = ", 1 - sum(Mci[,1, ai] > sum(M) | Mci[,2,ai] < sum(M))/nsim, ",  ",
+    sum(Mci[,1, ai] > sum(M)), " missed high, ",
+    sum(Mci[,2,ai] < sum(M)), " missed low")
+  )
 }
 
 ## figs showing CIs and summary stats for 1st 100 sim reps:
