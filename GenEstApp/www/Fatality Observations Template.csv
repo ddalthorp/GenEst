@@ -1,0 +1,4 @@
+CasualtyID,Turbine,DateFound,Season,SearchArea,SizeClass,Length,SppCode,DistanceFromTurbine,Bearing.Turb.to.Carc,Easting,Northing,VisClass,VegCover,Notes,PhysicalCondition,LiveFind,EstTimeDeathMin,EstTimeDeathMax,SpGroup,BoB
+20090519-NOFL-22-1,22,5/19/2009,Spring,RP,Large,46,RTHA,17,355,534862,64900023,RP,Gravel,,dismembered,0,2,3,Raptor,bird
+20090723-WETA-15-1,15,7/23/2009,Summer,90m,Small,16,WETA,42,230,535001,64897819,Easy,Grass,,intact,0,5,7,Passerine,bat
+20090929-LABO-13-1,13,9/29/2009,Fall,60m,Bat,12,LABO,37,295,536287,64898937,Difficult,Crop,,injured,1,NA,NA,Bat,bat

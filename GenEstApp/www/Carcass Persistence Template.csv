@@ -1,0 +1,5 @@
+ID,DateTimePlaced,Season,PlacedCond,Turbine,FirstTested,Size,Length.cm,SppCode,DistanceFromTurbine,Bearing.Turb.to.Carc,Easting,Northing,Visibility,VegCover,Chk1DateTime,Chk1Cond,Chk2DateTime,Chk2Cond,Chk28DateTime,Chk28Cond,LastPresent,FirstAbsent
+1,4/2/09 13:04,Spring,I,11,SV,Medium,30,ROPI,12,101,535148,64895222,Diff,Crop,4/3/09 14:16,I,4/4/09 11:52,I,4/30/09 15:28,S,28.10,Inf
+2,4/3/09 9:04,Spring,I,23,JY,Medium,9,EUST,22,14,535603,64897811,Mod,Gravel,4/4/09 16:16,S,4/5/09 11:56,X,,,1.30,2.12
+3,4/3/09 7:47,Spring,I,23,LT,Small,12,HOSP,44,8,535603,64897811,Mod,Grass,4/4/09 11:23,I,4/5/09 17:51,S,,,7.15,10.25
+4,4/7/09 17:12,Spring,I,15,JY,Bat,10,LACI,31,171,535423,64895091,RP,Gravel,4/8/09 14:04,X,,,,,0,0.87
