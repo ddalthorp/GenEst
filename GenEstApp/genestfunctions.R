@@ -42,7 +42,7 @@ packageLoad <- function(...){
 
   # packages needed from CRAN
 
-    crpks <- c("devtools", "shiny", "rhandsontable")
+    crpks <- c("devtools", "shiny", "rhandsontable", "httr")
     for(i in 1:length(crpks)){
       if(!(crpks[i] %in% lps)){
 	  install.packages(crpks[i])
@@ -53,6 +53,10 @@ packageLoad <- function(...){
     library(rhandsontable)
 
   # pakages needed from github
+
+    # workaround the firewall
+
+      set_config(config(ssl_verifypeer = 0L))
 
     if(!("shinysky" %in% lps)){
       install_github("AnalytixWare/ShinySky")
