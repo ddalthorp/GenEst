@@ -32,19 +32,13 @@ pkEst1 <- function(fp,fk,dat) {
   for (i in 1:length(groups)) {
     empp[which(groups==i)] <- with(Data,mean(s1[which(groups==i & s1>=0)],na.rm=TRUE))
   }
-  # Then calculate emppk, which is like empp, except based on search 2.
-  # According to the model, the probability that a carcass is found during
-  # search 2 is p*k.
-  emppk <- numeric(nrow(Xk))
-  groups <- findGroups(Xk)
-  for (i in 1:length(groups)) {
-    emppk[which(groups==i)] <- with(Data,mean(s2[which(groups==i & s2>=0)],na.rm=TRUE))
-  }
+
   # Then get least squares estimates for the betas. The first NCOL(Xp)
   # elements of theta are starting values for the betas in the p model. The
-  # remaining NCOL(Xk) elements are the betas for the k model.
+  # remaining NCOL(Xk) elements are the betas for the k model, assuming
+  # a constant k=0.7.  
   theta <- c(solve(t(Xp)%*%Xp)%*%t(Xp)%*%logit(empp),
-             solve(t(Xk)%*%Xk)%*%t(Xk)%*%logit(emppk/empp))
+             logit(rep(0.7,times=NCOL(Xk))))
   
   # Perform the optimization.
   # pre-processing
