@@ -1,7 +1,8 @@
 ################################
-# Function to estimate p and k using data in dat with models given in model
-# matrices Xp and Xk and search data in Data. Expecting Data to have column
-# names s1, s2, etc.
+# Function to estimate p and k using data in dat with models given by 
+# formulas fp and fk using data in dat. The columns of dat should be
+# the (at most) two categorical covariates as well as the search results
+# columns s1,...,s<whatever>. This version doesn't mind the -999s.
 
 pkEst1 <- function(fp,fk,dat) {
     
