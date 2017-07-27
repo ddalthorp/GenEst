@@ -38,7 +38,7 @@ make_egDat <- function(vars, dat) {
     return(data.frame(group="all",cellNames="all"))
   } else {
       if(any(is.na(match(vars,names(dat))))) {
-        stop("At least one var not found in dat.")
+        stop("At least one covariate in the user-specified model is not found in data.")
       }
       varNames <- sort(vars)
       varLabels <- list()
@@ -68,7 +68,7 @@ pkMod <- R6Class("pkMod",
     dat = NULL, pvars = NULL, kvars = NULL, pop = NULL, kop = NULL, k = NULL,
     fp = NULL, fk = NULL, scols = NULL, zeros = NULL, found = NULL, maxmiss = NULL,
     miniXp = NULL, miniXk = NULL, np = NULL, nk = NULL, facts = NULL,  groups = NULL,
-    theta = NULL, vartheta = NULL, egDat = NULL,
+    theta = NULL, vartheta = NULL, egDat = NULL, Xp = NULL, Xk = NULL,
     initialize = function(dat, pvars = 1, pop = NULL, k = NULL, kvars = NULL, kop = NULL){
       # dat is a dataframe with search columns s1, s2, ... and covariates. Searches result cols
       # are assumed to be in chronological order, with leftmost column earliest
@@ -84,76 +84,115 @@ pkMod <- R6Class("pkMod",
       # the model, e.g.:
       #  pop = '+' => p covariates are included as additive terms
       #  pop = '*' => p covariate interaction
+      # NOTE: if length(pvars) > 1, pop must be '*' or '+'; ditto for kvars and kop
       dat <<- dat
-      fp <<- as.formula(paste("~", paste(sort(pvars), collapse = pop)))
+      pvars <<- sort(pvars); pop <<- pop
+      k <<- k; if (!is.null(kvars)) kvars <<- sort(kvars); kop <<- kop
+      if (is.numeric(pvars)){
+        fp <<- ~ 1
+      } else {
+        fp <<- as.formula(paste("~", paste(sort(pvars), collapse = pop)))
+      }
       if (!missing(kvars)) fk <<- as.formula(paste("~", paste(sort(kvars), collapse = kop)))
       scols <<- grep("s\\d{1}",names(dat), ignore.case=TRUE) # Identify columns containing search outcome data
-      pvars <<- pvars; kvars <<- kvars
       Xp <<- model.matrix(fp, dat)
-      if (!missing(kvars)) Xk <<- model.matrix(fk, dat) else k <<- k
-      # Create the zeros vector, which counts the number of times the given carcass
-      # was missed in the searcher efficiency field trials.
-      zeros <<- matrixStats::rowCounts(as.matrix(dat[, scols]), value = 0, na.rm = T)
-
-      # Create the found vector. It has length equal to NROWS(dat). Each element
-      # gives the search occasion when the carcass is found and is 0 if the
-      # carcass is never found.
-      foundInd <- which(matrixStats::rowCounts(as.matrix(dat[, scols]), value = 1, na.rm = T) == 1)
-      found <<- numeric(length(zeros))
-      found[foundInd] <<- zeros[foundInd] + 1
+      np <<- dim(Xp)[2]
       allcov <- sort(unique(c(pvars[is.character(pvars)], kvars[is.character(kvars)])))
       egDat <<- make_egDat(allcov, dat)
       miniXp <<- model.matrix(fp, egDat)
-      miniXk <<- model.matrix(fk, egDat)
-      np <<- dim(Xp)[2]
-      nk <<- dim(Xk)[2]
-      maxmiss <<- max(zeros)
-      facts <<- cbind(miniXp, miniXk)
-      nfact <- dim(facts)[1]
-      tXpk <- t(cbind(Xp, Xk))
-      groups <<- numeric(dim(Xp)[1])
-      for (i in 1:nfact) groups[colSums(tXpk == facts[i,]) == np + nk] <<- i
+      if (!is.null(kvars) && !sum(suppressWarnings(is.na(kvars))) > 0) {
+        Xk <<- model.matrix(fk, dat)
+        # Create the zeros vector, which counts the number of times the given carcass
+        # was missed in the searcher efficiency field trials.
+        zeros <<- matrixStats::rowCounts(as.matrix(dat[, scols]), value = 0, na.rm = T)
+
+        # Create the found vector. It has length equal to NROWS(dat). Each element
+        # gives the search occasion when the carcass is found and is 0 if the
+        # carcass is never found.
+        foundInd <- which(matrixStats::rowCounts(as.matrix(dat[, scols]), value = 1, na.rm = T) == 1)
+        found <<- numeric(length(zeros))
+        found[foundInd] <<- zeros[foundInd] + 1
+        miniXk <<- model.matrix(fk, egDat)
+        nk <<- dim(Xk)[2]
+        maxmiss <<- max(zeros)
+        facts <<- cbind(miniXp, miniXk)
+        nfact <- dim(facts)[1]
+        tXpk <- t(cbind(Xp, Xk))
+        groups <<- numeric(dim(Xp)[1])
+        for (i in 1:nfact) groups[colSums(tXpk == facts[i,]) == np + nk] <<- i
+      } else {
+        nk <<- 0
+        groups <<- numeric(dim(Xp)[1])
+        tXp <- t(Xp)
+        for (i in 1:np) groups[colSums(tXp == miniXp[i,]) == np] <<- i
+      }
     },
     pkreg = function(theta = NULL, getVar = FALSE){
-      nfact <- dim(Xp)[2]
-      if (missing(theta)){
-        ngroups <- NCOL(Xp)
-        empp <- numeric(nrow(Xp))
-        if (sum(attr(terms(fk), "term.labels") %in% attr(terms(fp), "term.labels")) <
-          length(attr(terms(fk), "term.labels"))) {
-            tXp <- t(Xp)
-            groups <- numeric(dim(Xp)[1])
-            for (i in 1:dim(Xp)[2]) groups[colSums(tXp == miniXp[i,]) == np] <- i
+      if (is.null(kvars) || sum(suppressWarnings(is.na(kvars))) > 0){
+        # k is provided as a specified constant: k=0 => Huso; k=1 => Shoenfeld (if CPdist = exp)
+        # use only the s0 column to estimate p via logistic regression
+        result <<- glm(
+          as.formula(paste('s1 ~', paste(sort(pvars), collapse = pop))),
+          data = dat[dat$s1 %in% 0:1,],
+          family = 'binomial'
+        )
+        theta <<- result$coef
+        vartheta <<- summary(result)$cov.unscaled
+        return(list(
+          pmodel = paste(fp, collapse = ''),
+          kmodel = paste(fk, collapse = ''),
+          betaphat = result$coef,
+          betakhat = logit(k),
+          vartheta = summary(result)$cov.unscaled,
+          aic = result$aic,
+          convergence = result$converged
+          )
+        )
+      } else {
+        if (missing(theta)){
+          # Then get least squares estimates for the betas. The first NCOL(Xp)
+          # elements of theta are starting values for the betas in the p model. The
+          # remaining NCOL(Xk) elements are the betas for the k model assuming a
+          # constant k = 0.7
+          ngroups <- NCOL(Xp)
+          empp <- numeric(nrow(Xp))
+          if (sum(attr(terms(fk), "term.labels") %in% attr(terms(fp), "term.labels")) <
+            length(attr(terms(fk), "term.labels"))) {
+              tXp <- t(Xp)
+              pgroups <- numeric(dim(Xp)[1])
+              for (i in 1:dim(Xp)[2]) pgroups[colSums(tXp == miniXp[i,]) == np] <- i
+          }
+          for (i in 1:dim(miniXp)[1]) {
+            empp[which(groups==i)] <- mean(dat$s1[which(groups == i & dat$s1 >= 0)], na.rm=TRUE)
+          }
+          empp[which(empp==0)] <- 0.1 # Cells with all 0's set to 0.1
+          empp[which(empp==1)] <- 0.9 # Cells with all 1's set to 0.1
+          theta <- c(solve(t(Xp)%*%Xp)%*%t(Xp)%*%logit(empp), logit(rep(0.7,times=NCOL(Xk))))
         }
-        for (i in 1:dim(miniXp)[1]) {
-          empp[which(groups==i)] <- mean(dat$s1[which(groups == i & dat$s1 >= 0)], na.rm=TRUE)
+        result <- optim(par = theta, fn = function(theta){
+          Beta <- array(numeric(length(theta) * 2), dim = c(length(theta), 2))
+          Beta[1:np,1] <- theta[1:np]
+          Beta[(np+1):length(theta), 2]<-theta[(np+1):length(theta)]
+          pk <- alogit(facts %*% Beta)
+          powk<-array(rep(pk[, 2], maxmiss + 1), dim=c(dim(pk)[1], maxmiss+1))
+          powk[,1] <- 1
+          powk <- matrixStats::rowCumprods(powk)
+          pmiss <- matrixStats::rowCumprods(matrix(1 - (pk[,1]*powk[,1:maxmiss]), nrow = dim(pk)[1]))
+          pfind.si <- cbind(pk[,1], matrixStats::rowDiffs(1-pmiss))
+          -(sum(log(pmiss[cbind(groups[found == 0], zeros[found == 0])]))+sum(log(pfind.si[cbind(groups[found > 0], found[found > 0])])))
+        }, method = "BFGS", hessian = getVar)
+        betaphat <- result$par[1:NCOL(Xp)]
+        betakhat <- result$par[(NCOL(Xp)+1):length(theta)]
+        theta <<- c(betaphat, betakhat)
+        if(getVar) {
+          vartheta <<- solve(result$hessian)
+        } else {
+          vartheta <<- NA
         }
-        empp[which(empp==0)] <- 0.1 # Cells with all 0's set to 0.1
-        empp[which(empp==1)] <- 0.9 # Cells with all 1's set to 0.1
-        # Then get least squares estimates for the betas. The first NCOL(Xp)
-        # elements of theta are starting values for the betas in the p model. The
-        # remaining NCOL(Xk) elements are the betas for the k model assuming a
-        # constant k=0.7.
-        theta <- c(solve(t(Xp)%*%Xp)%*%t(Xp)%*%logit(empp), logit(rep(0.7,times=NCOL(Xk))))
       }
-      result <- optim(par = theta, fn = function(theta){
-        Beta <- array(numeric(length(theta) * 2), dim = c(length(theta), 2))
-        Beta[1:np,1] <- theta[1:np]
-        Beta[(np+1):length(theta), 2]<-theta[(np+1):length(theta)]
-        pk <- alogit(facts %*% Beta)
-        powk<-array(rep(pk[, 2], maxmiss + 1), dim=c(dim(pk)[1], maxmiss+1))
-        powk[,1] <- 1
-        powk <- matrixStats::rowCumprods(powk)
-        pmiss <- matrixStats::rowCumprods(1 - (pk[,1] * powk[, 1:maxmiss]))
-        pfind.si <- pk[, 1] * powk *
-          cbind(rep(1, nfact), matrixStats::rowCumprods(1 - (pk[,1] * powk[, 1:maxmiss])))
-        -(sum(log(pmiss[cbind(groups[found == 0], zeros[found == 0])]))+sum(log(pfind.si[cbind(groups[found > 0], found[found > 0])])))
-      }, method = "BFGS", hessian = getVar)
-      betaphat <- result$par[1:NCOL(Xp)]
-      betakhat <- result$par[(NCOL(Xp)+1):length(theta)]
-      theta <<- c(betaphat, betakhat)
-      if(getVar) vartheta <<- solve(result$hessian) else vartheta <<- NA
       return(list(
+        pmodel = paste(fp, collapse = ''),
+        kmodel = paste(fk, collapse = ''),
         betaphat = betaphat,
         betakhat = betakhat,
         vartheta = vartheta,
@@ -162,10 +201,14 @@ pkMod <- R6Class("pkMod",
       ))
     },
     pksim = function(nsim){
-      if (is.null(vartheta)) pkreg(getVar = T)
+      if (is.null(vartheta) || (sum(suppressWarnings(is.na(vartheta))) > 0)) pkreg(getVar = T)
       betaSim <- mvtnorm::rmvnorm(nsim , mean = theta, sigma = vartheta)
       pSim <- alogit(betaSim[,1:np]%*%t(miniXp))
-      kSim <- alogit(betaSim[,(np + 1):(np + nk)]%*%t(miniXk))
+      if (is.null(kvars) || sum(suppressWarnings(is.na(kvars))) > 0){
+        kSim <- array(k, dim = dim(pSim))
+      } else {
+        kSim <- alogit(betaSim[,(np + 1):(np + nk)]%*%t(miniXk))
+      }
       colnames(pSim) <- egDat$cellNames
       colnames(kSim) <- egDat$cellNames
       return(list(pSim = pSim, kSim = kSim))
@@ -174,12 +217,11 @@ pkMod <- R6Class("pkMod",
 )
 
 ############# usage
-### instantiate the class with data, e.g.:
-pkdata <- pkMod$new(dat = dat, pvars = 1, pop = '*', kvars = 'size')
-# NOTE: option for constant, specified k is not yet implemented. Coming soon...
+### instantiate a class variable with data, e.g.:
+pkdata <- pkMod$new(dat = dat, pvars = c('size', 'vis'), pop = '*', kvars = c('vis', 'size'), kop = '+')
 
 ### fit the model
-pkdata$pkreg()
+pkdata$pkreg(getVar = T)
 # NOTE: if doing model selection via AIC, use arg getVar = F (default) because extracting
 # the variance of the parameter estimates is time-consuming
 
