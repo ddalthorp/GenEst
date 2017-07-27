@@ -13,19 +13,17 @@
 # VALUE
 #   A vector of simulated detection probabilities
 
-gvec <- function(days, CPab, seef, k = NULL){
+gvec <- function(days, CPab, persdist, seef, k = NULL){
 # need: error-checking (including k must be scalar between 0 and 1 if seef is a vector)
   nsim <- dim(CPab)[1]
   samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
   nsearch <- length(days) - 1
-  if (is.vector(CPab)){
-    persistence_distn <- "Exponential"
+  if (persdist %in% c("Exponential", "exponential")){
     pdb <- CPab
     pda <- 1/pdb
     pdb0 <- exp(mean(log(pdb)))
     pda0 <- 1/pdb0
   } else {
-    persistence_distn <- "Weibull"
     pda <- CPab[, 1]
     pdb <- CPab[, 2]
     pdb0 <- exp(mean(log(pdb)))
@@ -60,7 +58,7 @@ gvec <- function(days, CPab, seef, k = NULL){
   pfind.si <- nvec * powk
   # persistences:
   intxsearch <- unique(cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2]), MAR = 1)
-  ppersu <- ppersist(persistence_distn,
+  ppersu <- ppersist(persdist,
     t_arrive0 = 0,
     t_arrive1 = intxsearch[,1],
     t_search = intxsearch[,1] + intxsearch[,2],
@@ -112,7 +110,7 @@ gvec <- function(days, CPab, seef, k = NULL){
       cbind(rep(1, nsim), matrixStats::rowCumprods(1 - (pk[,1] * powk[, 1:maxmiss])))
   }
   intxsearch<-unique(cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2]), MAR=1)
-  ppersu<-ppersist(persistence_distn,
+  ppersu<-ppersist(persdist,
     t_arrive0 = 0,
     t_arrive1 = intxsearch[,1],
     t_search = intxsearch[,1] + intxsearch[,2],
