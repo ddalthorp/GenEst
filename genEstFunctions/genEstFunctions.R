@@ -7,510 +7,13 @@
 
 ################################################################################
 #
-# Mhatgenerator
-#
-################################################################################
-
-  Mhatgenerator <- function(COdata, PWASdata, sizeclasscol, splitcol, 
-                      turbinecol, sscol, seedset = 1234, CPvars, SEvars, 
-                      CPdata, SEdata, garray, ...){
-
-    # turbines 
-
-      turbcol <- which(colnames(COdata) == turbinecol)
-      turbines <- as.character(unique(COdata[ , turbcol]))
-      turbines[length(turbines) == 0] <- 1
-      Nturbines <- length(turbines)
-
-      turbs <- as.character(COdata[ , turbcol])
-      turbs[rep(length(turbs) == 0, nrow(COdata))] <- "1"
-
-    # size classes
-
-      sccol <- which(colnames(COdata) == sizeclasscol)
-
-      sizeclasses <- as.character(unique(COdata[ , sccol]))
-      sizeclasses[length(sizeclasses) == 0] <- 1
-      Nsizeclasses <- length(sizeclasses)
-
-      sizes <- as.character(COdata[ , sccol])
-      sizes[rep(length(sizes) == 0, nrow(COdata))] <- "1"
-
-    # split categories
-
-      spcol <- which(colnames(COdata) == splitcol)
-
-      splitcats <- as.character(unique(COdata[ , spcol]))
-      splitcats[length(splitcats) == 0] <- 1
-      Nsplitcats <- length(splitcats)
-
-      splits <- as.character(COdata[ , spcol])
-      splits[rep(length(splits) == 0, nrow(COdata))] <- "1"
-
-    # search schedules 
-
-      sschedcol <- which(colnames(COdata) == sscol)
-      ssops <- as.character(unique(COdata[ , sschedcol]))
-      ssops[length(ssops) == 0] <- 1
-      Nss <- length(ssops)
-
-      sscheds <- as.character(COdata[ , sschedcol])
-      sscheds[rep(length(sscheds) == 0, nrow(COdata))] <- "1"
-
-    # expand the factors across the models 
-
-      expanded <- crossmodelcells(CPvars = CPpvars, SEvars = SEpvars, 
-                                   CPdata = CPdataIn, SEdata = SEdataIn)
-
-      Ncellcombs <- nrow(expanded)
-
-    # set up the X, Xtilde, Mtilde, and Mhat arrays
-
-      Xarray <- array(NA, dim = c(Ncellcombs, Nss, Nturbines, 
-                                     Nsplitcats, Nsizeclasses))
-      Xtildearray <- array(NA, dim = c(Niterations, Ncellcombs, Nss, Nturbines, 
-                                        Nsplitcats, Nsizeclasses))
-      Mtildearray <- array(NA, dim = c(Niterations, Ncellcombs, Nss, Nturbines, 
-                                        Nsplitcats, Nsizeclasses))
-      Mhatarray <- array(NA, dim = c(Niterations, Nss, Nturbines, Nsplitcats, 
-                                      Nsizeclasses))
-
-
-    # fill it in
-
-      EXPinCO <- which(colnames(COdata) %in% colnames(expanded) )
-      COinEXP <- which(colnames(expanded) %in% colnames(COdata))
-
-      COpaste <- apply(COdata[, EXPinCO], 1, paste, collapse = "")
-      EXPpaste <- apply(expanded[, COinEXP], 1, paste, collapse = "")
-
-      set.seed(seedset)
-
-
-      for(q in 1:Nsizeclasses){
-        for(l in 1:Nsplitcats){
-          for(k in 1:Nturbines){    
-            for(j in 1:Nss){
-              for(i in 1:Ncellcombs){
-
-                spot <- which(COpaste == EXPpaste[i] &
-                               sscheds == ssops[j] &
-                               turbs == turbines[k] &
-                               splits == splitcats[l] &
-                               sizes == sizeclasses[q])
-
-                X_specific <- COdata[spot, "Carcasses"]
-          
-                g_specifics <- garray[1:Niterations, 1, which(ssops== ssops[j]), 
-							which(EXPpaste == EXPpaste[i]),
-                                          which(sizeclasses == sizeclasses[q])]
-
-              
-
-
-                Xtilde_specifics <- rbinom(Niterations, X_specific, g_specifics)
-                Mtilde_specifics <- Xtilde_specifics/g_specifics
-
-                Xarray[i, j, k, l, q] <- X_specific
-                Xtildearray[ , i, j, k, l, q] <- Xtilde_specifics
-                Mtildearray[ , i, j, k, l, q] <- Mtilde_specifics
-
-
-              }
-
-              sumMtilde <- apply(Mtildearray[ , 1:Ncellcombs, j, k, l, q], 
-                                  1, sum)
-
-              PWASsccol <- which(colnames(PWASdata) == sizeclasscol)
-              PWAStcol <- which(colnames(PWASdata) == turbinecol)
-              PWASsscol <- which(colnames(PWASdata) == sscol)
-
-              PWASspot <- which(PWASdata[ , PWASsccol] == sizeclasses[q] &
-                                PWASdata[ , PWAStcol] == turbines[k] &
-                                PWASdata[ , PWASsscol] == ssops[j] )
-
-              PWAS_specific <- PWASdata[ PWASspot, "PWAS"]
-
-              Mhatarray[ , j, k, l, q] <- sumMtilde / PWAS_specific
-            }
-          }
-        }
-      }
-
-    # return 
-
-      return(Mhatarray)
-
-  }
-
-
-
-################################################################################
-#
-# crossmodelcells
-#
-#     function for combining the predictors from the two models
-#
-################################################################################
-
-	
-  crossmodelcells <- function(CPvars, SEvars, CPdata, SEdata, ...){
-
-      lCPv <- length(CPvars)
-      clCPv <- as.character(length(CPvars))
-
-      pv1 <- NULL
-      pv2 <- NULL
-      pv3 <- NULL
-      pv4 <- NULL
-
-      pv1 <- CPvars[1][length(CPvars) > 0]
-      pv2 <- CPvars[2][length(CPvars) > 1]
-      pv3 <- SEvars[1][length(SEvars) > 0]
-      pv4 <- SEvars[2][length(SEvars) > 1]
-
-      lev1 <- as.character(unique(CPdata[, pv1]))
-      lev2 <- as.character(unique(CPdata[, pv2]))
-      lev3 <- as.character(unique(SEdata[, pv3]))
-      lev4 <- as.character(unique(SEdata[, pv4]))
-
-      lev1[length(lev1) == 0] <- 1
-      lev2[length(lev2) == 0] <- 1
-      lev3[length(lev3) == 0] <- 1
-      lev4[length(lev4) == 0] <- 1
-
-      nlev1 <- length(lev1)
-      nlev2 <- length(lev2)
-      nlev3 <- length(lev3)
-      nlev4 <- length(lev4)
-
-      maxlev <- max(c(nlev1, nlev2, nlev3, nlev4))
-
-      combvars <- rep(NA, 4)
-      combvarsCP1 <- NA
-      combvarsCP2 <- NA
-      combvarsSE1 <- NA
-      combvarsSE2 <- NA
-
-      combvarsCP1[length(CPvars) > 0] <- CPvars[1]
-      combvarsCP2[length(CPvars) > 1] <- CPvars[2]
-      combvarsSE1[length(SEvars) > 0] <- SEvars[1]
-      combvarsSE2[length(SEvars) > 1] <- SEvars[2]
-
-      combvarsCP <- c(combvarsCP1, combvarsCP2)
-      combvarsSE <- c(combvarsSE1, combvarsSE2)
-
-      repeats <- which(combvarsSE %in% combvarsCP)
-      combvarsSE[repeats] <- NA
-
-      combmat <- matrix(NA, ncol = 4, nrow = maxlev)
-      combmat[ , 1] <- c(lev1, rep(NA, maxlev - nlev1))
-      combmat[ , 2] <- c(lev2, rep(NA, maxlev - nlev2))
-      combmat[ , 3] <- c(lev3, rep(NA, maxlev - nlev3))
-      combmat[ , 4] <- c(lev4, rep(NA, maxlev - nlev4))
-
-      combmat[ , 2 + repeats] <- c("1", rep(NA, maxlev - 1))
-
-      expanded <- expand.grid(na.omit(combmat[,1]), na.omit(combmat[,2]),
-                              na.omit(combmat[,3]), na.omit(combmat[,4]))
-
-      colnames(expanded) <- c(combvarsCP, combvarsSE)
-
-      return(expanded)
-
-  }
-
-################################################################################
-#
-# gcreateacrosssizes
-#
-################################################################################
-
-  gcreateacrosssizes <- function(CPdata, SEdata, SSdata, CPvars, SEvars, 
-                                 thetaCP, thetaSE, CPmods, CPmodstouse, ...){
- 
-
-    # combine the factors across the models
-
-      expanded <- crossmodelcells(CPvars, SEvars, CPdata, SEdata)
-
-      Ncombcell <- nrow(expanded)
-
-    # now align those cells with each of the CP and SE cells
-
-      mapmat <- matrix(NA, nrow = Ncombcell, ncol = 3)
-      mapmat[ , 1] <- 1:Ncombcell
-
-      SEfct <- factorcombinations(SEpvars, data = SEdata)
-      CPfct <- factorcombinations(CPpvars, data = CPdata)
-
-      EXPinSE <- which(colnames(SEfct) %in% colnames(expanded) )
-      SEinEXP <- which(colnames(expanded) %in% colnames(SEfct))
-
-      EXPinCP <- which(colnames(CPfct) %in% colnames(expanded) )
-      CPinEXP <- which(colnames(expanded) %in% colnames(CPfct))
-
-      for(i in 1:Ncombcell){
-
-        EXPse <- apply(expanded[i, SEinEXP] ,1, paste,  collapse = " ")
-        SEops <-  apply(SEfct[ , EXPinSE], 1, paste, collapse = " ")
-        mapmat[i , 2] <- which(SEops == EXPse)
-
-        EXPcp <- apply(expanded[i, CPinEXP] , 1, paste, collapse = " ")
-        CPops <-  apply(CPfct[ , EXPinCP], 1, paste, collapse = " ")
-        mapmat[i , 3] <- which(CPops == EXPcp)			
-
-
-      }
-
-      colnames(mapmat) <- c("CombCell", "SEcell", "CPcell")
-
-    # search schedules
-
-      Nss <- nrow(SSdata)				
-
-    # Nsizeclasses
-
-      Nsizeclasses <- length(CPmods)
-
-    # set up output array
-
-      garray <- array(NA, dim = c(Niterations, 1, Nss, Ncombcell, Nsizeclasses))
-
-
-    # estimate g
-
-      for(i in 1:Nsizeclasses){
-
-        for(j in 1:Ncombcell){
-
-          for(k in 1:Nss){
-
-            specificSS <- as.numeric(na.omit(as.numeric(SSdata[k, ])))
-
-            specificCPcell <- mapmat[j, "CPcell"]
-            specificCPtheta <- thetaCP[ , , specificCPcell, i]
-            specificCPdist <- CPmods[[i]][[CPmodstouse[i]]]$dist
-
-            specificSEcell <- mapmat[j, "SEcell"]
-            specificSEtheta <- thetaSE[ , , specificSEcell, i]
-
-            gvals <- gvec(days = specificSS, CPab = specificCPtheta, 
-                           persdist = specificCPdist, seef = specificSEtheta)
-				
-            garray[ , , k, j, i ] <- gvals
-
-          }
-        }
-      }
-
-
-    # return
-      
-      return(garray)
-
-  }
-
-################################################################################
-#
-# CPmodsacrosssizes 
-#
-################################################################################
-
-  CPmodsacrosssizes <- function(CPdata, sizeclasscol,
-                                 pvars, ... ){ 
-
-    # set up the response (surv object)
-
-      dp <- as.Date(as.character(CPdata$DatePlaced), format = "%m/%d/%Y")
-      ldp <- as.Date(as.character(CPdata$LastDatePresent), format = "%m/%d/%Y")
-      fda <- as.Date(as.character(CPdata$FirstDateAbsent), format = "%m/%d/%Y")
-
-      t1 <- as.numeric(difftime(ldp, dp, units = "days"))
-      t1[t1 == 0] <- 0.001
-      t2 <- as.numeric(difftime(fda, dp, units = "days"))
-
-      event <- rep(3, length(t1))
-      event[which(is.na(t2))] <- 0
-
-      CPobvs_survobj <- Surv(time = t1, time2 = t2, event = event, 
-                              type = "interval")
-
-    # set up the predictors
-
-      preds<-rep(NA, 5)
-      preds[length(pvars)==0][1]<-c("1")
-      preds[length(pvars)==1][1:2]<-c("1", pvars[1])
-      preds[length(pvars)==2]<-c("1", pvars[1], pvars[2], paste(pvars[1], 
-                                    pvars[2], sep = " + "),
-                                    paste(pvars[1], pvars[2], sep = " * "))
-
-      preds <- as.character(na.omit(preds))
-      eqs <- paste("~", preds, sep = " ")
-
-    # size classes
-
-      sccol <- which(colnames(CPdata) == sizeclasscol)
-
-      sizeclasses <- as.character(unique(CPdata[ , sccol]))
-      sizeclasses[length(sizeclasses) == 0] <- 1
-      Nsizeclasses <- length(sizeclasses)
-
-      sizes <- as.character(CPdata[ , sccol])
-      sizes[rep(length(sizes) == 0, nrow(CPdata))] <- "1"
-
-    # set up the factor combinations
- 
-      CPfct <- factorcombinations(pvars, data = CPdata)
-
-    # select the distributions to use
-
-      distselected <- c("exponential", "weibull", "loglogistic", "lognormal")
-
-    # setting up the models to run
-
-      eqstouse <- rep(eqs, each = length(distselected))
-      distouse <- rep(distselected, length(eqs))
-      Nmods <- length(eqstouse)
-
-    # for each size class, run the set of models
-
-      CPmods <- vector("list", Nsizeclasses)
-
-      for(i in 1:Nsizeclasses){
-
-        output <- vector("list", Nmods)
-
-        CPobvs_survobj_i <- CPobvs_survobj[sizes == sizeclasses[i]]
-        CPdata_i <- CPdata[sizes == sizeclasses[i], ]
-
-        for(j in 1:Nmods){
-          mform <- formula(paste("CPobvs_survobj_i" , eqstouse[j], sep = " "))
-          output[[j]] <- survreg(mform, CPdata_i, dist = distouse[j])
-        }
-
-        CPmods[[i]] <- output
-
-      }
-
-
-    # return 
-
-      return(CPmods)
-
-  }
-
-################################################################################
-#
-# ThetaCPcreateacrosssizes
-#
-################################################################################
-
-  ThetaCPcreateacrosssizes <- function(CPdata, pvars, sizeclasscol, 
-                                       CPmods, CPmodstouse, Niterations, ... ){ 
-
-    # set up the factor combination table and count the cells
-
-      CPfct <- factorcombinations(pvars = pvars, data = CPdata)
-      Ncells <- nrow(CPfct)
-
-    # size classes
-
-      sccol <- which(colnames(CPdata) == sizeclasscol)
-      sizeclasses <- as.character(unique(CPdata[ , sccol]))
-      sizeclasses[length(sizeclasses) == 0] <- 1
-      Nsizeclasses <- length(sizeclasses)
-
-    # create a theta for each combination of factors (cell) within 
-    #   each size class
-
-      thetaCP <- array(NA, dim = c(Niterations, 2, Ncells, Nsizeclasses))
-
-    # for each size class
-
-      for(i in 1:Nsizeclasses){
-
-        # select the model
-
-          smod <- CPmods[[i]][[CPmodstouse[i]]]
-
-        # note the distribution
-
-          distforuse <- smod$dist
-				
-        # pull the mean values and vcv matrix from the selected model 
-
-          means <- c(smod$coef, log(smod$scale))
-          vcv <- smod$var
-
-        # in the case of exponential distributions, the vcv from the model is 
-        #  missing the scale column and row (because they're all 0s), 
-        #  so we add them   
-			
-          vcv <- cbind(vcv, rep(0, length = length(means) - ncol(vcv)))
-          vcv <- rbind(vcv, rep(0, length = length(means) - nrow(vcv)))
-
-        # draw the Niterations of model terms
-
-          modelTermDraws <- rmvnorm(Niterations, means, vcv)
-
-        # create a model matrix to translate model terms to cells 
-
-          mm <- model.matrix(as.formula(paste("~",as.character(formula(smod)[3],
-                                        collapse = NULL))), data = CPfct)
-
-        # create the output array (Niterations, 2, Ncells)
-
-          thetaCPi <- array(NA, c(Niterations, 2, Ncells))
-
-        # fill in for each cell
-
-          for(j in 1:Ncells){
-
-            a <- switch(distforuse, 
-		      exponential = 
-                    rep(1, Niterations), 
-		      weibull = 
-                    1 / (exp(modelTermDraws[, ncol(modelTermDraws)])),
-		      loglogistic = 
-                    1 / (exp(modelTermDraws[, ncol(modelTermDraws)])),
-		      lognormal = 
-                    exp(modelTermDraws[, ncol(modelTermDraws)])^2
-		     )
-		b <- switch(distforuse, 
-		      exponential = 
-                    exp(as.matrix(modelTermDraws[ , 1:ncol(mm)]) %*% mm[j,]),
-		      weibull = 
-                    exp(as.matrix(modelTermDraws[ , 1:ncol(mm)]) %*% mm[j,]),
-		      loglogistic = 
-                    exp(as.matrix(modelTermDraws[ , 1:ncol(mm)]) %*% mm[j,]),
-		      lognormal = 
-                    (as.matrix(modelTermDraws[ , 1:ncol(mm)]) %*% mm[j,])
-		     )
-
-            thetaCPi[ , , j] <- matrix(c(a, b), byrow = F, ncol = 2)
-
-          }			
-
-        thetaCP[ , , , i] <- thetaCPi
-
-      }
-
-    # return
-
-      return(thetaCP)
-
-  }
-
-################################################################################
-#
 # SEmodsacrosssizes
 #
 ################################################################################
 
   SEmodsacrosssizes <- function(SEsizeclasscol, SEdata, sizeclasscol,
                                  fixK, fixKval, initKval,
-                                 pvars, obscols, ... ){ 
+                                 SEvars, obscols, ... ){ 
 
     # obs cols
     #   zeros: # of times the carcass was missed
@@ -526,11 +29,11 @@
     # pred cols
 
       preds<-rep(NA, 5)
-      preds[length(pvars)==0][1]<-c("1")
-      preds[length(pvars)==1][1:2]<-c("1", pvars[1])
-      preds[length(pvars)==2]<-c("1", pvars[1], pvars[2], paste(pvars[1], 
-                                        pvars[2], sep = " + ")
-                                    , paste(pvars[1], pvars[2], sep = " * "))
+      preds[length(SEvars)==0][1]<-c("1")
+      preds[length(SEvars)==1][1:2]<-c("1", SEvars[1])
+      preds[length(SEvars)==2]<-c("1", SEvars[1], SEvars[2], paste(SEvars[1], 
+                                        SEvars[2], sep = " + ")
+                                    , paste(SEvars[1], SEvars[2], sep = " * "))
       preds <- as.character(na.omit(preds))
       eqs <- paste("~", preds, sep = " ")
 
@@ -556,7 +59,7 @@
 
     # set up the factor combinations
  
-      SEfct <- factorcombinations(pvars, data = SEdata)
+      SEfct <- factorcombinations(pvars = SEvars, data = SEdata)
 
     # run the estimator for each of the possible models for each size class
 
@@ -633,9 +136,9 @@
 
           # prep the output
 
-            output <- vector("list", 7) 
+            output <- vector("list", 8) 
             names(output) <- c("pmodel", "kmodel", "betaphat", "betakhat", 
-                               "vartheta", "aic", "convergence")
+                               "vartheta", "AIC", "AICc", "convergence")
             output$pmodel <- pformula
             output$kmodel <- kformulap
             output$betaphat <- result$par[1:ncol(Xp)]
@@ -643,7 +146,12 @@
                                  NO = result$par[(ncol(Xp)+1):length(theta)],
                                  YES = NULL)
             output$vartheta <- solve(result$hessian)
-            output$aic <- 2 * result$value + 2 * length(result$par)
+
+              npar <- length(result$par)
+              nobs <- length(obsi)
+            output$AIC <- 2 * result$value + 2 * npar
+            output$AICc <- output$AIC + 
+                             (2 * npar * (npar + 1)) / (nobs - npar - 1)
             output$convergence <- result$convergence
             output$miniXp <- miniXp
             output$miniXk <- miniXk
@@ -659,11 +167,792 @@
 
       }
 
+    # add size class names
+
+      names(SEmods) <- sizeclasses
+
     # return
 
       return(SEmods)
 
   }
+
+
+################################################################################
+#
+# ThetaSEcreateacrosssizes
+#
+################################################################################
+
+  ThetaSEcreateacrosssizes <- function(SEdata, SEvars, sizeclasscol, 
+                                       SEmods, 
+                                       Niterations, fixK, fixKval, ... ){ 
+
+    # set up the factor combination table and count the cells
+
+      SEfct <- factorcombinations(pvars = SEvars, data = SEdata)
+      Ncells <- nrow(SEfct)
+
+    # numer of models 
+
+      Nmodels <- length(SEmods[[1]])
+
+    # size classes
+
+      sccol <- which(colnames(SEdata) == sizeclasscol)
+      sizeclasses <- as.character(unique(SEdata[ , sccol]))
+      sizeclasses[length(sizeclasses) == 0] <- 1
+      Nsizeclasses <- length(sizeclasses)
+
+    # create a theta for each cell within each size class
+
+      thetaSE <- array(NA, dim = c(Niterations, 2, Ncells, 
+                        Nmodels, Nsizeclasses))
+
+    # for each size class
+
+      for(i in 1:Nsizeclasses){
+
+        for(j in 1:Nmodels){
+
+          # select the model
+
+            smod <- SEmods[[i]][[j]]
+
+          # draw the parameters and combine to form p and k
+
+            betaSim <- rmvnorm(Niterations, mean = c(smod$betaphat, 
+                              smod$betakhat), sigma = smod$vartheta, 
+                                method = "svd")
+            pSim <- alogit(betaSim[,1:smod$np]%*%t(smod$miniXp))
+            kSim <- switch(fixK,
+                           NO = alogit(betaSim[,(smod$np + 1):(smod$np + 
+                                      smod$nk)] %*%t (smod$miniXk)),
+                           YES = matrix(fixKval, ncol = Ncells, 
+                                      nrow = Niterations))
+
+          # fill into the array   
+
+            for(k in 1:Ncells){				
+
+              thetaSE[ , , k, j, i] <- cbind(pSim[,k], kSim[,k])
+
+            }
+
+        } 
+      }
+      
+
+    # return
+
+      return(thetaSE)
+
+  }
+
+
+################################################################################
+#
+# AICtabcreateSEmods
+#
+################################################################################
+
+  AICtabcreateSEmods <- function(SEmods, sortby = "AIC", ...){
+
+    # determine number of size classes
+
+      nsc <- length(SEmods)
+
+    # determine number of models w/in size classes
+
+      nmods <- length(SEmods[[1]])
+
+    # set up list of tables for output
+
+      output <- vector("list", nsc)
+
+    # fill in
+
+      for(i in 1:nsc){
+
+        tsctab <- data.frame(matrix(NA, nrow = nmods, ncol = 4))
+        colnames(tsctab) <- c("p model", "k model", "AIC", "AICc")
+
+        for(j in 1:nmods){
+
+          tsctab[j, ] <- c(
+                           paste(as.character(unlist(SEmods[[i]][[j]]$pmodel)),
+                             collapse = " "),
+                           paste(as.character(unlist(SEmods[[i]][[j]]$kmodel)),
+                             collapse = " "), 
+                           round(unlist(SEmods[[i]][[j]]$AIC), 3),
+                           round(unlist(SEmods[[i]][[j]]$AICc), 3))
+
+        }
+
+        AICorders <- order(as.numeric(tsctab[ , "AIC"]))
+        AICcorders <- order(as.numeric(tsctab[ , "AICc"]))
+
+        orders <- switch(sortby, 
+                          NULL = 1:nmods,
+                          "AIC" = AICorders,
+                          "AICc" = AICsorders) 
+        output[[i]] <-tsctab[orders, ]
+
+      }
+
+    # add size col names
+
+      names(output) <- names(SEmods)
+
+    # return
+
+      return(output)
+
+  }
+
+
+
+################################################################################
+#
+# SE GRAPHICS FUNCTIONS
+#
+################################################################################
+
+
+
+
+################################################################################
+#
+# CPmodsacrosssizes 
+#
+################################################################################
+
+  CPmodsacrosssizes <- function(CPdata, sizeclasscol,
+                                 CPvars, unitchoice = "days", ... ){ 
+
+    # set up the response (surv object)
+
+      dp <- as.POSIXlt(paste(as.character(CPdata$PlacedDate), 
+                             as.character(CPdata$PlacedTime), sep = " "), 
+                       format = "%m/%d/%Y %H:%M:%S")
+
+      ldp <- as.POSIXlt(paste(as.character(CPdata$LastPresentDate), 
+                             as.character(CPdata$LastPresentTime), sep = " "), 
+                       format = "%m/%d/%Y %H:%M:%S")
+
+      tempfda <- paste(as.character(CPdata$FirstAbsentDate), 
+                             as.character(CPdata$FirstAbsentTime), sep = " ")
+      tempfda[which(tempfda == "NA NA")] <- NA
+
+      fda <- as.POSIXlt(tempfda, 
+                       format = "%m/%d/%Y %H:%M:%S")
+
+
+      t1 <- as.numeric(difftime(ldp, dp, units = unitchoice))
+      t2 <- as.numeric(difftime(fda, dp, units = unitchoice))
+
+      event <- rep(3, length(t1))
+      event[which(is.na(t2))] <- 0
+      event[which(t1 == t2)] <- 1
+      event[which(t1 == 0)] <- 2
+
+      t1[which(t1 == 0)] <- t2[which(t1 == 0)]
+
+
+      CPobvs_survobj <- Surv(time = t1, time2 = t2, event = event, 
+                              type = "interval")
+
+    # set up the predictors
+
+      preds<-rep(NA, 5)
+      preds[length(CPvars)==0][1]<-c("1")
+      preds[length(CPvars)==1][1:2]<-c("1", CPvars[1])
+      preds[length(CPvars)==2]<-c("1", CPvars[1], CPvars[2], paste(CPvars[1], 
+                                    CPvars[2], sep = " + "),
+                                    paste(CPvars[1], CPvars[2], sep = " * "))
+
+      preds <- as.character(na.omit(preds))
+      eqs <- paste("~", preds, sep = " ")
+
+    # size classes
+
+      sccol <- which(colnames(CPdata) == sizeclasscol)
+
+      sizeclasses <- as.character(unique(CPdata[ , sccol]))
+      sizeclasses[length(sizeclasses) == 0] <- 1
+      Nsizeclasses <- length(sizeclasses)
+
+      sizes <- as.character(CPdata[ , sccol])
+      sizes[rep(length(sizes) == 0, nrow(CPdata))] <- "1"
+
+    # set up the factor combinations
+ 
+      CPfct <- factorcombinations(pvars = CPvars, data = CPdata)
+
+    # select the distributions to use
+
+      distselected <- c("exponential", "weibull", "loglogistic", "lognormal")
+
+    # setting up the models to run
+
+      eqstouse <- rep(eqs, each = length(distselected))
+      distouse <- rep(distselected, length(eqs))
+      Nmods <- length(eqstouse)
+
+    # for each size class, run the set of models
+
+      CPmods <- vector("list", Nsizeclasses)
+
+      for(i in 1:Nsizeclasses){
+
+        output <- vector("list", Nmods)
+
+        CPobvs_survobj_i <- CPobvs_survobj[sizes == sizeclasses[i]]
+        CPdata_i <- CPdata[sizes == sizeclasses[i], ]
+
+        for(j in 1:Nmods){
+          mform <- formula(paste("CPobvs_survobj_i" , eqstouse[j], sep = " "))
+          output[[j]] <- survreg(mform, CPdata_i, dist = distouse[j])
+        }
+
+        names(output) <- eqstouse
+        CPmods[[i]] <- output
+
+      }
+
+    # add size class names
+
+      names(CPmods) <- sizeclasses
+
+    # return 
+
+      return(CPmods)
+
+  }
+
+
+################################################################################
+#
+# ThetaCPcreateacrosssizes
+#
+################################################################################
+
+  ThetaCPcreateacrosssizes <- function(CPdata, CPvars, sizeclasscol, 
+                                       CPmods, Niterations, ... ){ 
+
+    # set up the factor combination table and count the cells
+
+      CPfct <- factorcombinations(pvars = CPvars, data = CPdata)
+      Ncells <- nrow(CPfct)
+
+    # numer of models 
+
+      Nmodels <- length(CPmods[[1]])
+
+    # size classes
+
+      sccol <- which(colnames(CPdata) == sizeclasscol)
+      sizeclasses <- as.character(unique(CPdata[ , sccol]))
+      sizeclasses[length(sizeclasses) == 0] <- 1
+      Nsizeclasses <- length(sizeclasses)
+
+    # create a theta for each combination of factors (cell) within 
+    #   models within each size class
+
+      thetaCP <- array(NA, dim = c(Niterations, 2, Ncells, Nmodels, 
+                   Nsizeclasses))
+
+    # for each size class
+
+      for(i in 1:Nsizeclasses){
+
+        for(j in 1:Nmodels){
+
+          # select the model
+
+            smod <- CPmods[[i]][[j]]
+
+          # note the distribution
+
+            distforuse <- smod$dist
+				
+          # pull the mean values and vcv matrix from the selected model 
+
+            means <- c(smod$coef, log(smod$scale))
+            vcv <- smod$var
+
+          # in the case of exponential distributions, the vcv from the model is 
+          #  missing the scale column and row (because they're all 0s), 
+          #  so we add them   
+			
+            vcv <- cbind(vcv, rep(0, length = length(means) - ncol(vcv)))
+            vcv <- rbind(vcv, rep(0, length = length(means) - nrow(vcv)))
+
+          # draw the Niterations of model terms
+
+            modelTermDraws <- rmvnorm(Niterations, means, vcv, method = "svd")
+
+          # create a model matrix to translate model terms to cells 
+
+            mm <- model.matrix(as.formula(paste("~",
+                                           as.character(formula(smod)[3],
+                                           collapse = NULL))), data = CPfct)
+
+          # fill in for each cell
+
+            for(k in 1:Ncells){
+
+              a <- switch(distforuse, 
+                     exponential = 
+                      rep(1, Niterations), 
+                     weibull = 
+                      1 / (exp(modelTermDraws[, ncol(modelTermDraws)])),
+                     loglogistic = 
+                      1 / (exp(modelTermDraws[, ncol(modelTermDraws)])),
+                     lognormal = 
+                      exp(modelTermDraws[, ncol(modelTermDraws)])^2
+		       )
+  		  b <- switch(distforuse, 
+                     exponential = 
+                      exp(as.matrix(modelTermDraws[ , 1:ncol(mm)]) %*% mm[k, ]),
+                     weibull = 
+                      exp(as.matrix(modelTermDraws[ , 1:ncol(mm)]) %*% mm[k, ]),
+                     loglogistic = 
+                      exp(as.matrix(modelTermDraws[ , 1:ncol(mm)]) %*% mm[k, ]),
+                     lognormal = 
+                      (as.matrix(modelTermDraws[ , 1:ncol(mm)]) %*% mm[k, ])
+                    )
+
+              thetaCP[ , , k, j, i] <- matrix(c(a, b), byrow = F, ncol = 2)
+
+            }			
+
+          }
+
+      }
+
+    # return
+
+      return(thetaCP)
+
+  }
+
+################################################################################
+#
+# AICtabcreateCPmods
+#
+################################################################################
+
+
+  AICtabcreateCPmods <- function(CPmods, sortby = "AIC", ...){
+
+    # determine number of size classes
+
+      nsc <- length(CPmods)
+
+    # determine number of models w/in size classes
+
+      nmods <- length(CPmods[[1]])
+
+    # set up list of tables for output
+
+      output <- vector("list", nsc)
+
+    # fill in
+
+      for(i in 1:nsc){
+
+        tsctab <- data.frame(matrix(NA, nrow = nmods, ncol = 4))
+        colnames(tsctab) <- c("model", "disribution", "AIC", "AICc")
+
+        for(j in 1:nmods){
+
+          modAIC <- AIC(CPmods[[i]][[j]]) 
+          modnpar <- (CPmods[[i]][[j]])$df
+          modnobs <- length((CPmods[[i]][[j]])$linear.predictors)
+          modAICc <- modAIC + (2 * modnpar * (modnpar + 1) ) / 
+                                (modnobs - modnpar - 1 )
+
+          tsctab[j, ] <- c(
+                           as.character(names(CPmods[[i]])[j]),
+                           as.character(CPmods[[i]][[j]]$dist),
+
+                           round(modAIC, 3),
+                           round(modAICc, 3))
+
+        }
+
+        AICorders <- order(as.numeric(tsctab[ , "AIC"]))
+        AICcorders <- order(as.numeric(tsctab[ , "AICc"]))
+
+        orders <- switch(sortby, 
+                          NULL = 1:nmods,
+                          "AIC" = AICorders,
+                          "AICc" = AICsorders) 
+        output[[i]] <-tsctab[orders, ]
+
+      }
+
+    # add size col names
+
+      names(output) <- names(CPmods)
+
+    # return
+
+      return(output)
+
+  }
+
+
+################################################################################
+#
+# CP GRAPHICS FUNCTIONS
+#
+################################################################################
+
+
+################################################################################
+#
+# gcreateacrosssizes
+#
+################################################################################
+
+  gcreateacrosssizes <- function(CPdata, SEdata, SSdata, CPvars, SEvars, 
+                                 thetaCP, thetaSE, CPmods, SEmodstouse,
+                                 CPmodstouse, ...){
+ 
+
+    # combine the factors across the models
+
+      expanded <- crossmodelcells(CPvars, SEvars, CPdata, SEdata)
+
+      Ncombcell <- nrow(expanded)
+
+    # now align those cells with each of the CP and SE cells
+
+      mapmat <- matrix(NA, nrow = Ncombcell, ncol = 3)
+      mapmat[ , 1] <- 1:Ncombcell
+
+      SEfct <- factorcombinations(SEvars, data = SEdata)
+      CPfct <- factorcombinations(CPvars, data = CPdata)
+
+      EXPinSE <- which(colnames(SEfct) %in% colnames(expanded) )
+      SEinEXP <- which(colnames(expanded) %in% colnames(SEfct))
+
+      EXPinCP <- which(colnames(CPfct) %in% colnames(expanded) )
+      CPinEXP <- which(colnames(expanded) %in% colnames(CPfct))
+
+      for(i in 1:Ncombcell){
+
+        EXPse <- apply(expanded[i, SEinEXP] ,1, paste,  collapse = " ")
+        SEops <-  apply(SEfct[ , EXPinSE], 1, paste, collapse = " ")
+        mapmat[i , 2] <- which(SEops == EXPse)
+
+        EXPcp <- apply(expanded[i, CPinEXP] , 1, paste, collapse = " ")
+        CPops <-  apply(CPfct[ , EXPinCP], 1, paste, collapse = " ")
+        mapmat[i , 3] <- which(CPops == EXPcp)			
+
+
+      }
+
+      colnames(mapmat) <- c("CombCell", "SEcell", "CPcell")
+
+    # search schedules
+
+      Nss <- nrow(SSdata)				
+
+    # Nsizeclasses
+
+      Nsizeclasses <- length(CPmods)
+
+    # set up output array
+
+      garray <- array(NA, dim = c(Niterations, 1, Nss, 
+                                   Ncombcell, Nsizeclasses))
+
+
+    # estimate g
+
+      for(i in 1:Nsizeclasses){
+
+        for(j in 1:Ncombcell){
+
+          for(k in 1:Nss){
+
+            specificSS <- as.numeric(na.omit(as.numeric(SSdata[k, ])))
+
+            specificCPcell <- mapmat[j, "CPcell"]
+            specificCPtheta <- thetaCP[ , , specificCPcell, CPmodstouse[i], i]
+            specificCPdist <- CPmods[[i]][[CPmodstouse[i]]]$dist
+
+            specificSEcell <- mapmat[j, "SEcell"]
+            specificSEtheta <- thetaSE[ , , specificSEcell, SEmodstouse[i], i]
+
+            gvals <- gvec(days = specificSS, CPab = specificCPtheta, 
+                           persdist = specificCPdist, seef = specificSEtheta)
+				
+            garray[ , , k, j, i ] <- gvals
+
+          }
+        }
+      }
+
+
+    # return
+      
+      return(garray)
+
+  }
+
+
+################################################################################
+#
+# g TABLE FUNCTION
+#
+################################################################################
+
+
+
+
+################################################################################
+#
+# g GRAPHICS FUNCTIONS
+#
+################################################################################
+
+
+
+
+################################################################################
+#
+# Mhatgenerator
+#
+################################################################################
+
+  Mhatgenerator <- function(COdata, PWASdata, sizeclasscol, splitcol, 
+                      unitcol, sscol, seedset = 1234, CPvars, SEvars, 
+                      CPdata, SEdata, garray, ...){
+
+    # units 
+
+      ucol <- which(colnames(COdata) == unitcol)
+      unitoptions <- as.character(unique(COdata[ , ucol]))
+      unitoptions[length(unitoptions) == 0] <- 1
+      Nunits <- length(unitoptions)
+
+      units <- as.character(COdata[ , ucol])
+      units[rep(length(units) == 0, nrow(COdata))] <- "1"
+
+    # size classes
+
+      sccol <- which(colnames(COdata) == sizeclasscol)
+
+      sizeclasses <- as.character(unique(COdata[ , sccol]))
+      sizeclasses[length(sizeclasses) == 0] <- 1
+      Nsizeclasses <- length(sizeclasses)
+
+      sizes <- as.character(COdata[ , sccol])
+      sizes[rep(length(sizes) == 0, nrow(COdata))] <- "1"
+
+    # split categories
+
+      spcol <- which(colnames(COdata) == splitcol)
+
+      splitcats <- as.character(unique(COdata[ , spcol]))
+      splitcats[length(splitcats) == 0] <- 1
+      Nsplitcats <- length(splitcats)
+
+      splits <- as.character(COdata[ , spcol])
+      splits[rep(length(splits) == 0, nrow(COdata))] <- "1"
+
+    # search schedules 
+
+      sschedcol <- which(colnames(COdata) == sscol)
+      ssops <- as.character(unique(COdata[ , sschedcol]))
+      ssops[length(ssops) == 0] <- 1
+      Nss <- length(ssops)
+
+      sscheds <- as.character(COdata[ , sschedcol])
+      sscheds[rep(length(sscheds) == 0, nrow(COdata))] <- "1"
+
+    # expand the factors across the models 
+
+      expanded <- crossmodelcells(CPvars = CPvars, SEvars = SEvars, 
+                                   CPdata = CPdataIn, SEdata = SEdataIn)
+
+      Ncellcombs <- nrow(expanded)
+
+    # set up the X, Xtilde, Mtilde, and Mhat arrays
+
+      Xarray <- array(NA, dim = c(Ncellcombs, Nss, Nunits, 
+                                     Nsplitcats, Nsizeclasses))
+      Xtildearray <- array(NA, dim = c(Niterations, Ncellcombs, Nss, Nunits, 
+                                        Nsplitcats, Nsizeclasses))
+      Mtildearray <- array(NA, dim = c(Niterations, Ncellcombs, Nss, Nunits, 
+                                        Nsplitcats, Nsizeclasses))
+      Mhatarray <- array(NA, dim = c(Niterations, Nss, Nunits, Nsplitcats, 
+                                      Nsizeclasses), 
+                             dimnames = list(1:Niterations, ssops, unitoptions, 
+                                      splitcats, sizeclasses) )
+
+
+    # fill it in
+
+      EXPinCO <- which(colnames(COdata) %in% colnames(expanded) )
+      COinEXP <- which(colnames(expanded) %in% colnames(COdata))
+
+      COpaste <- apply(COdata[, EXPinCO], 1, paste, collapse = "")
+      EXPpaste <- apply(expanded[, COinEXP], 1, paste, collapse = "")
+
+      set.seed(seedset)
+
+
+      for(r in 1:Nsizeclasses){
+        for(l in 1:Nsplitcats){
+          for(k in 1:Nunits){    
+            for(j in 1:Nss){
+              for(i in 1:Ncellcombs){
+
+                spot <- which(COpaste == EXPpaste[i] &
+                               sscheds == ssops[j] &
+                               units == unitoptions[k] &
+                               splits == splitcats[l] &
+                               sizes == sizeclasses[r])
+
+                X_specific <- length(COdata[spot, "Carcass"])
+                X_specific[which(is.na(X_specific)) == T] <- 0
+
+                g_specifics <- garray[1:Niterations, 1, which(ssops== ssops[j]), 
+							which(EXPpaste == EXPpaste[i]),
+                                          which(sizeclasses == sizeclasses[r])]
+            
+
+
+                Xtilde_specifics <- rbinom(Niterations, 
+                                            round(X_specific/g_specifics), 
+                                            g_specifics)
+                Mtilde_specifics <- Xtilde_specifics/g_specifics
+
+                Xarray[i, j, k, l, r] <- X_specific
+                Xtildearray[ , i, j, k, l, r] <- Xtilde_specifics
+                Mtildearray[ , i, j, k, l, r] <- Mtilde_specifics
+
+
+              }
+
+              sumMtilde <- apply(Mtildearray[ , 1:Ncellcombs, j, k, l, r], 
+                                  1, sum)
+
+              PWASsccol <- which(colnames(PWASdata) == sizeclasscol)
+              PWASucol <- which(colnames(PWASdata) == unitcol)
+              PWASsscol <- which(colnames(PWASdata) == sscol)
+
+              PWASspot <- which(PWASdata[ , PWASsccol] == sizeclasses[r] &
+                                PWASdata[ , PWASucol] == unitoptions[k] &
+                                PWASdata[ , PWASsscol] == ssops[j] )
+
+              PWAS_specific <- PWASdata[ PWASspot, "PWAS"]
+
+              Mhatspecific <- sumMtilde / PWAS_specific
+              Mhatspecific[Mhatspecific == "NaN"] <- NA
+              Mhatarray[ , j, k, l, r] <- Mhatspecific
+            }
+          }
+        }
+      }
+
+
+    # return 
+
+      return(Mhatarray)
+
+  }
+
+
+
+################################################################################
+#
+# Mhatcondense 
+#
+################################################################################
+
+
+  Mhatcondense <- function(Mhatarray, ...){
+
+    # condensing to a matrix (Mhatl) of dimension Niterations x split categories
+
+      Niterations <- dim(Mhatarray)[1]
+      Nsplitcats <- dim(Mhatarray)[4]
+      Mhatl <- matrix(NA, nrow = Niterations, ncol = Nsplitcats)
+      colnames(Mhatl) <- dimnames(Mhatarray)[[4]]
+
+      for(l in 1:Nsplitcats){
+
+          Mhatl[ , l] <- apply(Mhatarray[  , , , l, ], 1, sum, na.rm = T)
+
+      }
+  
+    # return
+
+      return(Mhatl)
+
+  }
+
+
+
+################################################################################
+#
+# Mhattable 
+#
+################################################################################
+
+  Mhattable <- function(Mhatl, ffs, CIw, ...){
+
+    # prep out table
+
+      Mhattab <- data.frame(matrix(NA, nrow = ncol(Mhatl), ncol = 2))
+
+      rownames(Mhattab) <- colnames(Mhatl)
+      colnames(Mhattab) <- paste(c("Searched Area", "Whole Facility"), 
+                                   paste("Mean (", paste(CIw*100, "% CI)", 
+                                           sep = ""), 
+                                 " Mortality", sep = ""), sep = " ")
+
+    # expand for whole facility
+
+      Mhatl_wf <- Mhatl / ffs  
+
+    # calc means
+
+      Mhatlmeans <- round(apply(Mhatl, 2, mean), 1)
+      Mhatl_wfmeans <- round(apply(Mhatl_wf, 2, mean), 1)
+
+    # calc quantiles
+
+      quants <- c(0 + (1 - CIw) / 2, 1 - (1 - CIw) / 2 )
+      Mhatlqs <- round(apply(Mhatl, 2, quantile, prob = quants), 1)
+      Mhatl_wfqs <- round(apply(Mhatl_wf, 2, quantile, prob = quants), 1)
+
+    # combine
+
+      Mhattab[ , 1] <- paste(Mhatlmeans, "(", Mhatlqs[1, ], ", ", 
+                              Mhatlqs[2, ], ")", sep = "")
+      Mhattab[ , 2] <- paste(Mhatl_wfmeans, "(", Mhatl_wfqs[1, ], ", ",
+                              Mhatl_wfqs[2, ], ")", sep = "")
+
+    # return
+
+      return(Mhattab)
+
+  }
+
+################################################################################
+#
+# Mhat GRAPHICS FUNCTIONS 
+#
+################################################################################
+
+
 
 ################################################################################
 #
@@ -715,84 +1004,77 @@
 
 ################################################################################
 #
-# ThetaSEcreateacrosssizes
+# crossmodelcells
 #
 ################################################################################
 
-  ThetaSEcreateacrosssizes <- function(SEdata, pvars, sizeclasscol, 
-                                       SEmods, SEmodstouse, 
-                                       Niterations, fixK, fixKval, ... ){ 
 
-    # set up the factor combination table and count the cells
+  crossmodelcells <- function(CPvars, SEvars, CPdata, SEdata, ...){
 
-      SEfct <- factorcombinations(pvars = pvars, data = SEdata)
-      Ncells <- nrow(SEfct)
+      lCPv <- length(CPvars)
+      clCPv <- as.character(length(CPvars))
 
-    # size classes
+      pv1 <- NULL
+      pv2 <- NULL
+      pv3 <- NULL
+      pv4 <- NULL
 
-      sccol <- which(colnames(SEdata) == sizeclasscol)
-      sizeclasses <- as.character(unique(SEdata[ , sccol]))
-      sizeclasses[length(sizeclasses) == 0] <- 1
-      Nsizeclasses <- length(sizeclasses)
+      pv1 <- CPvars[1][length(CPvars) > 0]
+      pv2 <- CPvars[2][length(CPvars) > 1]
+      pv3 <- SEvars[1][length(SEvars) > 0]
+      pv4 <- SEvars[2][length(SEvars) > 1]
 
-    # create a theta for each cell within each size class
+      lev1 <- as.character(unique(CPdata[, pv1]))
+      lev2 <- as.character(unique(CPdata[, pv2]))
+      lev3 <- as.character(unique(SEdata[, pv3]))
+      lev4 <- as.character(unique(SEdata[, pv4]))
 
-      thetaSE <- array(NA, dim = c(Niterations, 2, Ncells, Nsizeclasses))
+      lev1[length(lev1) == 0] <- 1
+      lev2[length(lev2) == 0] <- 1
+      lev3[length(lev3) == 0] <- 1
+      lev4[length(lev4) == 0] <- 1
 
-    # for each size class
+      nlev1 <- length(lev1)
+      nlev2 <- length(lev2)
+      nlev3 <- length(lev3)
+      nlev4 <- length(lev4)
 
-      for(i in 1:Nsizeclasses){
+      maxlev <- max(c(nlev1, nlev2, nlev3, nlev4))
 
-        # select the model
+      combvars <- rep(NA, 4)
+      combvarsCP1 <- NA
+      combvarsCP2 <- NA
+      combvarsSE1 <- NA
+      combvarsSE2 <- NA
 
-          smod <- SEmods[[i]][[SEmodstouse[i]]]
+      combvarsCP1[length(CPvars) > 0] <- CPvars[1]
+      combvarsCP2[length(CPvars) > 1] <- CPvars[2]
+      combvarsSE1[length(SEvars) > 0] <- SEvars[1]
+      combvarsSE2[length(SEvars) > 1] <- SEvars[2]
 
-        # draw the parameters and combine to form p and k
+      combvarsCP <- c(combvarsCP1, combvarsCP2)
+      combvarsSE <- c(combvarsSE1, combvarsSE2)
 
-          betaSim <- rmvnorm(Niterations, mean = c(smod$betaphat, 
-                              smod$betakhat), sigma = smod$vartheta)
-          pSim <- alogit(betaSim[,1:smod$np]%*%t(smod$miniXp))
-          kSim <- switch(fixK,
-                         NO = alogit(betaSim[,(smod$np + 1):(smod$np + 
-                                      smod$nk)] %*%t (smod$miniXk)),
-                         YES = matrix(fixKval, ncol = Ncells, 
-                                      nrow = Niterations))
+      repeats <- which(combvarsSE %in% combvarsCP)
+      combvarsSE[repeats] <- NA
 
-        # fill into the array   
+      combmat <- matrix(NA, ncol = 4, nrow = maxlev)
+      combmat[ , 1] <- c(lev1, rep(NA, maxlev - nlev1))
+      combmat[ , 2] <- c(lev2, rep(NA, maxlev - nlev2))
+      combmat[ , 3] <- c(lev3, rep(NA, maxlev - nlev3))
+      combmat[ , 4] <- c(lev4, rep(NA, maxlev - nlev4))
 
-          for(j in 1:Ncells){				
+      combmat[ , 2 + repeats] <- c("1", rep(NA, maxlev - 1))
 
-            thetaSE[ , , j, i] <- c(pSim[,j], kSim[,j])
+      expanded <- expand.grid(na.omit(combmat[,1]), na.omit(combmat[,2]),
+                              na.omit(combmat[,3]), na.omit(combmat[,4]))
 
-          }
-      }
+      colnames(expanded) <- c(combvarsCP, combvarsSE)
 
-    # return
-
-    return(thetaSE)
+      return(expanded)
 
   }
 
-
-################################################################################
-#
-# logit
-#
-################################################################################
-
-  logit <- function(x){
-    log(x/(1-x))
-  }
-
-################################################################################
-#
-# alogit
-#
-################################################################################
-
-  alogit <- function(x){
-    1/(1+exp(-x))
-  }
 
 ################################################################################
 #
@@ -826,27 +1108,10 @@
     )
   }
 
+
 ################################################################################
+#
 # gvec 
-#          for calculating detection probability in a single class 
-#          given search schedule and simulated columns of carcass persistence 
-#          times and pk parameters
-#
-# ARGUMENTS
-#   days = vector of search times, beginning at 0
-#   CPab = simulated vector of persistence parameters (Weibull if 2-d or 
-#             exponential if 1-d)
-#     parameterization: for exponential? means; for Weibull? R's shape and 
-#                         scale (like eoa)
-#   seef = searcher efficiency parameters
-#     if k not derived from a pk model of field trial data, then seef is a 
-#       vector of simulated searcher efficiencies and k is a constant defined 
-#       by the user
-#     if k is derived from field trial data, then seef is an nsim x 2 array of 
-#       simulated p and k
-#
-# VALUE
-#   A vector of simulated detection probabilities
 #
 ################################################################################
 
@@ -855,19 +1120,22 @@
     nsim <- dim(CPab)[1]
     samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
     nsearch <- length(days) - 1
-
     if(persdist %in% c("Exponential", "exponential")){
       pdb <- CPab
       pda <- 1/pdb
       pdb0 <- exp(mean(log(pdb)))
       pda0 <- 1/pdb0
-    } else{
+    } else {
       pda <- CPab[, 1]
       pdb <- CPab[, 2]
-      pdb0 <- exp(mean(log(pdb)))
-      pda0 <- 1/mean(1/pda)
+      if (persdist %in% c("Weibull", "weibull", "Log-logistic", "loglogistic")){
+        pdb0 <- exp(mean(log(pdb)))
+        pda0 <- 1/mean(1/pda)
+      } else if (persdist %in% c("Lognormal", "lognormal")){
+        pdb0 <- mean(pdb)
+        pda0 <- mean(sqrt(pda))^2
+      }
     }
-
     pk <- array(dim = c(nsim, 2))
     if (is.vector(seef)){
       pk[, 1] <- seef
@@ -877,9 +1145,9 @@
     }
 
     # setting estimation control parameters
-    #  search limit: number of searches after arrival to include in estimate 
-    #      of seef [when the number of searches is high, including them all in 
-    #      the estimation is calculation intensive but does not contribute 
+    #  search limit: number of searches after arrival to include in estimate
+    #      of seef [when the number of searches is high, including them all in
+    #      the estimation is calculation intensive but does not contribute
     #      signficantly to the result]
 
       f0 <- mean(pk[, 1])
@@ -894,15 +1162,15 @@
       powk <- cumprod(c(1, rep(k0, maxmiss))) # vector of k^i's
       notfind <- cumprod(1 - f0*powk[-length(powk)])
       nvec <- c(1, notfind) * f0
-  
-    # conditional probability of finding a carcass on the ith search (row) 
+
+    # conditional probability of finding a carcass on the ith search (row)
     # after arrival for given (simulated) searcher efficiency (column):
 
       pfind.si <- nvec * powk
 
     # persistences:
 
-      intxsearch <- unique(cbind(schedule[,2] - schedule[,1], 
+      intxsearch <- unique(cbind(schedule[,2] - schedule[,1],
                            schedule[,3] - schedule[,2]), MAR = 1)
       ppersu <- ppersist(persdist,
                          t_arrive0 = 0,
@@ -916,10 +1184,10 @@
 
       for (i in 1:length(prob_obs)){
 
-        prob_obs[i] <- pfind.si[nmiss[i]+1] * 
-                     ppersu[which(abs(intxsearch[,1] - 
+        prob_obs[i] <- pfind.si[nmiss[i]+1] *
+                     ppersu[which(abs(intxsearch[,1] -
                                     (schedule[i,2] - schedule[i,1])) < 0.001 &
-                                  abs(intxsearch[,2] - (schedule[i,3] - 
+                                  abs(intxsearch[,2] - (schedule[i,3] -
                                        schedule[i,2])) < 0.001
                          ),] * arrvec[i]
 
@@ -932,8 +1200,8 @@
       }
 
 
-    # if more than 10 searches, consider truncating search schedule because 
-    #   very few carcasses will be found after being missed 9 or more times, 
+    # if more than 10 searches, consider truncating search schedule because
+    #   very few carcasses will be found after being missed 9 or more times,
     #   but many searches is costly in terms of calculation efficiency
 
       if (nsearch > 10){
@@ -946,17 +1214,17 @@
         gadj <- sum(ggnm)/sum(ggnm[1:iskip])
 
       } else{
-    
+
         iskip <- maxmiss
         gadj <- 1
       }
 
     # estimation of g
     # subset the search schedule
-    # ignoring probabilities of detection carcasses after they have been 
+    # ignoring probabilities of detection carcasses after they have been
     #   missed several times):
 
-      schedule <- cbind(days[ind1], days[ind2], 
+      schedule <- cbind(days[ind1], days[ind2],
                         days[ind3])[ind2 >= ind3 - iskip + 1,]
 
       # columns for arrival interval and search number:
@@ -980,11 +1248,11 @@
           powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(nsim, maxmiss+1))
           powk[,1] <- 1
           powk <- rowCumprods(powk)
-          pfind.si <- pk[,1] * powk * cbind(rep(1, nsim), 
+          pfind.si <- pk[,1] * powk * cbind(rep(1, nsim),
                         rowCumprods(1 - (pk[,1] * powk[, 1:maxmiss])))
         }
 
-      intxsearch <- unique(cbind(schedule[,2] - schedule[,1], 
+      intxsearch <- unique(cbind(schedule[,2] - schedule[,1],
                      schedule[,3] - schedule[,2]), MAR = 1)
       ppersu <- ppersist(persdist,
                           t_arrive0 = 0,
@@ -994,7 +1262,7 @@
 
       # assume uniform arrivals
 
-        arrvec <- (schedule[,2]-schedule[,1])/max(days) 
+        arrvec <- (schedule[,2]-schedule[,1])/max(days)
 
       # add the probabilities
 
@@ -1007,9 +1275,9 @@
             prob_obs <- prob_obs +
                           pfind.si[,nmiss[i]+1] *
                           ppersu[which(
-                            abs(intxsearch[,1] - (schedule[i,2] - 
+                            abs(intxsearch[,1] - (schedule[i,2] -
                                  schedule[i,1])) < 0.001 &
-                            abs(intxsearch[,2] - (schedule[i,3] - 
+                            abs(intxsearch[,2] - (schedule[i,3] -
                                  schedule[i,2])) < 0.001),
                           ] * arrvec[i]
           }
@@ -1020,9 +1288,9 @@
             prob_obs <- prob_obs +
                             pfind.si[nmiss[i]+1] *
                             ppersu[which(
-                              abs(intxsearch[,1] - (schedule[i,2] - 
+                              abs(intxsearch[,1] - (schedule[i,2] -
                                  schedule[i,1])) < 0.001 &
-                              abs(intxsearch[,2] - (schedule[i,3] - 
+                              abs(intxsearch[,2] - (schedule[i,3] -
                                  schedule[i,2])) < 0.001),
                             ] * arrvec[i]
           }
@@ -1030,24 +1298,14 @@
         }
 
     # g for monitored period
-
-      prob_obs
+      gadj <- ifelse(max(prob_obs) <= 1/gadj, gadj, 1)
+      prob_obs * gadj
   }
 
 
 ################################################################################        
 #
 # ppersist
-#
-# This function calculates the probability that a carcass that arrives in the 
-# interval between t_arrive0 and t_arrive1 persists until t_search. It is a 
-# generalization of the "r" statistic in Huso et al.'s DS729 fatality estimator 
-# and is needed if k ! = 0. It vectorized with respect to both the arrival & 
-# search intervals and pda & pdb parameters, and it uses "exact" integrals 
-# rather than numerical approximations and is very fast (except for the 
-# loglogistic, which is artificially vectored via the super-slow "Vectorize" 
-# function.) This is the same as EoA's ppersist except that it has options 
-# for different spellings of the distributions.
 #
 ################################################################################        
 
@@ -1101,3 +1359,27 @@
            t_search, pda, pdb))
     }
   }
+
+
+################################################################################
+#
+# logit
+#
+################################################################################
+
+  logit <- function(x){
+    log(x/(1-x))
+  }
+
+################################################################################
+#
+# alogit
+#
+################################################################################
+
+  alogit <- function(x){
+    1/(1+exp(-x))
+  }
+
+
+

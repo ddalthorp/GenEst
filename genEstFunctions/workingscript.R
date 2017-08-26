@@ -1,17 +1,12 @@
 ################################################################################
 #
-#	this script is currently focused on pulling all of the components of the 
-#       analysis together. as of now, this includes analyses for SE and CP and 
-#       creation of g
-#	it is flexible to 0, 1, or 2 factors for each , including overlap and not
-#	k can be fixed at any value 
-#		if fixed at 0 tho, can only give one col of observations!
+#	example of a GenEst analysis
 #
 ################################################################################
 
-
-
+  #
   # general inputs
+  #
 
     # source code
 
@@ -29,21 +24,18 @@
       PWASdataIn <- read.csv("ExampleProportionWeightedAreaSearched.csv")
       COdataIn <- read.csv("ExampleCarcassObservations.csv")       
 
-
     # input number of iterations
 
       Niterations <- 1000
 
 
-  # for timing
-
-    t1 <- Sys.time()
-
+  #
   # Searcher Efficiency
+  #
 
     # select predictors, observation columns, and size class column
 
-      SEpvars <- c("Season", "HabitatType")
+      SEvars <- c("Season", "HabitatType")
       SEobscols <- 8:11
       SEsizeclasscol <- "Size"
   
@@ -55,67 +47,116 @@
     # run the estimator for each of the possible models for each size class
 
       SEmods <- SEmodsacrosssizes(SEdata = SEdataIn, obscols = SEobscols,
-                                   pvars = SEpvars,
+                                   SEvars = SEvars,
                                    sizeclasscol = SEsizeclasscol,
-                                   fixK = fixKchoice , fixKval = fixKvalchoice, 
-                                   initKval = 0.7
-                                  )
+                                   fixK = fixKchoice, fixKval = fixKvalchoice, 
+                                   initKval = 0.7)
 
-    # select models
+    # create a theta for each cell within each each model in each size class
+    #   dimension: [Niterations, 2, Ncells(SE), Nmodels(SE), Nsizeclasses]
 
-      SEmodstouse <- c(1, 1, 1, 1)
-		
-    # create a theta for each cell within each size class
-
-      thetaSE <- ThetaSEcreateacrosssizes(SEdata = SEdataIn, pvars = SEpvars,
+      thetaSE <- ThetaSEcreateacrosssizes(SEdata = SEdataIn, SEvars = SEvars,
                                   sizeclasscol = SEsizeclasscol,
-                                  SEmods, SEmodstouse, Niterations,
+                                  SEmods, Niterations,
                                   fixK = fixKchoice, fixKval = fixKvalchoice)
 
+    # table outputs
 
+      SEmodsAICtab <- AICtabcreateSEmods(SEmods, sortby = "AIC")
+		
+
+    # plot the results
+
+      # 
+
+
+  #
   # Carcass Persistence
+  #
 
     # select predictors and size class column
 
-      CPpvars <- c("Visibility", "GroundCover")
+      CPvars <- c("Visibility", "GroundCover")
       CPsizeclasscol <- "Size"
 	
     # run the estimator for each of the possible models for each size class
 
       CPmods <- CPmodsacrosssizes(CPdata = CPdataIn, 
-                                   pvars = CPpvars,
-                                   sizeclasscol = CPsizeclasscol)
+                                   CPvars = CPvars,
+                                   sizeclasscol = CPsizeclasscol, 
+                                   unitchoice = "days")
 
-    # select models
+    # table outputs
 
-      CPmodstouse <- c(1, 1, 1, 1)
+      CPmodsAICtab <- AICtabcreateCPmods(CPmods, sortby = "AIC")
 
-    # create a theta for each cell within each size class
 
-      thetaCP <- ThetaCPcreateacrosssizes(CPdata = CPdataIn, pvars = CPpvars,
+    # create a theta for each cell within each each model in each size class
+    #   dimension: [Niterations, 2, Ncells(CP), Nmodels(CP), Nsizeclasses]
+
+      thetaCP <- ThetaCPcreateacrosssizes(CPdata = CPdataIn, CPvars = CPvars,
                                           sizeclasscol = CPsizeclasscol,
-                                          CPmods, CPmodstouse, Niterations)
+                                          CPmods, Niterations)
+
+    # plot the results
+
+      # 
 
 
-  # combine with search schedules to get g
+  #
+  # select models to use
+  #
 
-    garray <- gcreateacrosssizes(CPdata = CPdataIn, SEdata = SEdataIn, 
+    CPmodstouse <- c(1,1,1,1)
+    SEmodstouse <- c(1,1,1,1)
+
+
+  #
+  # estimate g
+  #
+
+    # garray
+    #  dimension: [Niterations, 1, Nsearchschedules, 
+    #                Nmodels(SExCP), Nsizeclasses]
+
+      garray <- gcreateacrosssizes(CPdata = CPdataIn, SEdata = SEdataIn, 
                                 SSdata = SSdataIn, 
-                                CPvars = CPpvars, SEvars = SEpvars, 
-                                thetaCP, thetaSE, CPmods, CPmodstouse)
+                                CPvars = CPvars, SEvars = SEvars, 
+                                thetaCP, thetaSE, CPmods,
+                                SEmodstouse, CPmodstouse)
 
+
+    # plot g
+
+      # 
+
+
+  #
   # estimate Mhat
-  #   dimension: [Niterations, Nss, Nturbines, Nsplitcats, Nsizeclasses]
+  #
 
-     Mhatarray <- Mhatgenerator(COdata = COdataIn, PWASdata = PWASdataIn, 
+    # Mhatarray
+    #  dimension: [Niterations, Nss, Nunits, Nsplitcats, Nsizeclasses]
+
+       Mhatarray <- Mhatgenerator(COdata = COdataIn, PWASdata = PWASdataIn, 
                             sizeclasscol = "Size", splitcol = "Split", 
-                            turbinecol = "Turbine", sscol = "SearchSchedule",
-                            seedset = 1234, CPvars = CPpvars, 
-                            SEvars = SEpvars, CPdata = CPdataIn, 
+                            unitcol = "Unit", sscol = "SearchSchedule",
+                            seedset = 1234, CPvars = CPvars, 
+                            SEvars = SEvars, CPdata = CPdataIn, 
                             SEdata = SEdataIn, garray = garray) 
 
-  # for timing
+    # condense Mhat to split categories
+    #   dimension: [Niterations, Nsplitcats]
+    
+      Mhatsc <- Mhatcondense(Mhatarray)
 
-    t2 <- Sys.time()
+    # produce Mhat table
+    #   allows for expansion to whole facility 
+    #    (ffs = fraction facility sampled)
 
-  t2 - t1
+      Mhattable(Mhatsc, ffs = .85, CIw = 0.9)
+
+    # plot Mhat
+
+      # 
+
