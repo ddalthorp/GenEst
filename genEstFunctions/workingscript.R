@@ -112,15 +112,17 @@
 
     # plot the results
 
-      # 
+       CPgraphscreate(CPmods, CPdata = CPdataIn, CPvars, thetaCP, 
+           Niterations, unitchoice = "days", sizeclasscol = CPsizeclasscol)
+
 
 
   #
   # select models to use
   #
 
-    CPmodstouse <- c(5,5,5,5)
-    SEmodstouse <- c(25,25,25,25)
+    CPmodstouse <- c(1, 1, 1, 1)
+    SEmodstouse <- c(1, 1, 1, 1)
 
 
   #

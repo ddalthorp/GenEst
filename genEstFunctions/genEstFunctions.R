@@ -624,9 +624,167 @@
 
 ################################################################################
 #
-# CP GRAPHICS FUNCTIONS
+# CPgraphscreate 
 #
 ################################################################################
+
+ CPgraphscreate <- function(CPmods, CPdata, CPvars, thetaCP, Niterations, 
+                              unitchoice, sizeclasscol, ...){
+
+    # set up the response (surv object)
+
+      dp <- as.POSIXlt(paste(as.character(CPdata$PlacedDate), 
+                             as.character(CPdata$PlacedTime), sep = " "), 
+                       format = "%m/%d/%Y %H:%M:%S")
+
+      ldp <- as.POSIXlt(paste(as.character(CPdata$LastPresentDate), 
+                             as.character(CPdata$LastPresentTime), sep = " "), 
+                       format = "%m/%d/%Y %H:%M:%S")
+
+      tempfda <- paste(as.character(CPdata$FirstAbsentDate), 
+                             as.character(CPdata$FirstAbsentTime), sep = " ")
+      tempfda[which(tempfda == "NA NA")] <- NA
+
+      fda <- as.POSIXlt(tempfda, 
+                       format = "%m/%d/%Y %H:%M:%S")
+
+
+      t1 <- as.numeric(difftime(ldp, dp, units = unitchoice))
+      t2 <- as.numeric(difftime(fda, dp, units = unitchoice))
+
+      event <- rep(3, length(t1))
+      event[which(is.na(t2))] <- 0
+      event[which(t1 == t2)] <- 1
+      event[which(t1 == 0)] <- 2
+
+      t1[which(t1 == 0)] <- t2[which(t1 == 0)]
+
+      CPobvs_survobj <- Surv(time = t1, time2 = t2, event = event, 
+                              type = "interval")
+
+    # size classes
+
+      sccol <- which(colnames(CPdata) == sizeclasscol)
+
+      sizeclasses <- as.character(unique(CPdata[ , sccol]))
+      sizeclasses[length(sizeclasses) == 0] <- 1
+      Nsizeclasses <- length(sizeclasses)
+
+      sizes <- as.character(CPdata[ , sccol])
+      sizes[rep(length(sizes) == 0, nrow(CPdata))] <- "1"
+
+    # models
+
+      Nmodels <- length(CPmods[[1]])
+      modnames <- rep(NA, Nmodels) 
+      for(i in 1:Nmodels){
+        modnames[i] <- paste(names(CPmods[[1]][i]), ", dist: ",
+                         (CPmods[[1]][[i]])$dist, sep = "")
+      }
+
+    # set up the cells via the factor combination table
+
+      fct <- factorcombinations(pvars = CPvars, data = CPdata) 
+      Ncells <- nrow(fct)
+
+      pv1 <- NULL
+      pv2 <- NULL
+      pv1 <- CPvars[1][length(CPvars) > 0]
+      pv2 <- CPvars[2][length(CPvars) > 1]
+      lev1 <- as.character(unique(CPdata[, pv1]))
+      lev2 <- as.character(unique(CPdata[, pv2]))
+      nlev1 <- length(lev1)
+      nlev2 <- length(lev2)
+      nlev1[length(lev1) == 0] <- 1
+      nlev2[length(lev2) == 0] <- 1
+
+    # combine factors
+
+      combnames <- rep(NA, nrow(CPdata))
+
+      for(i in 1:nrow(CPdata)){
+        tempname <- paste(as.character(t(CPdata[i, 
+                           which(colnames(CPdata) %in% c(pv1, pv2))])), 
+                           collapse = "")
+        tempname[tempname == ""] <- "all"
+        combnames[i] <-  tempname
+      }
+
+    # for each size class, for each model, create a matrix of panels 
+    #  (one for each cell)
+
+      maxx <- max(na.omit(t2))
+      maxx <- ceiling(maxx * 1.1)
+      predxs <- seq(0, maxx, length.out = 1000)
+
+      for(r in 1:Nsizeclasses){
+        for(j in 1:Nmodels){
+
+
+            m1 <- gsub(" ", "_", modnames[j])
+            m1 <- gsub("~", "", m1)
+            m1 <- gsub(",", "", m1)
+            m1 <- gsub(":", "", m1)
+            m1 <- gsub("\\*", "_cross_", m1)
+            m1 <- gsub("\\+", "_add_", m1)
+
+            filename <- paste("Output/CP/size_class_", sizeclasses[r], 
+                               "_model", m1, "_CPfig.tiff", sep = "")
+
+            #windows(12,12)
+            tiff(filename, width = 12, height = 12, unit = "in", res = 100)
+
+            par(mfcol = c(nlev1, nlev2))
+            par(mar = c(5, 6, 2, 1))
+
+          for(i in 1:Ncells){
+
+            thetaCPrji <- thetaCP[, , i, j, r]
+            meanpar <- apply(thetaCPrji, 2, mean)
+            lqpar <- apply(thetaCPrji, 2, quantile, probs = 0.025)
+            uqpar <- apply(thetaCPrji, 2, quantile, probs = 0.975)
+            distrj <- CPmods[[r]][[j]]$dist
+
+            pts <- predxs[2:length(predxs)]
+            pta0 <- rep(0, length(pts)) 
+            pta1 <- rep(0.000001, length(pts))
+            predys <- ppersist(persistence_distn = distrj, t_arrive0 = pta0, 
+                                t_arrive1 = pta1, t_search = pts, 
+                                pda = meanpar[1], pdb = meanpar[2]) 
+            predyl <- ppersist(persistence_distn = distrj, t_arrive0 = pta0, 
+                                t_arrive1 = pta1, t_search = pts, 
+                                pda = lqpar[1], pdb = lqpar[2]) 
+            predyu <- ppersist(persistence_distn = distrj, t_arrive0 = pta0, 
+                                t_arrive1 = pta1, t_search = pts, 
+                                pda = uqpar[1], pdb = uqpar[2]) 
+
+
+            CPobvs_survobj_ri <- CPobvs_survobj[sizes == sizeclasses[r] & 
+                                     combnames == fct[i, "CellNames"]]
+            CPdata_ri <- CPdata[sizes == sizeclasses[r] & 
+                                 combnames == fct[i, "CellNames"], ]
+            mform <- formula("CPobvs_survobj_ri ~ 1")
+            plot(survfit(mform, data = CPdata_ri ), ylim = c(0, 1), 
+                   xlim = c(0, maxx), main = fct[i, "CellNames"], 
+                   xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", 
+                   col = rgb(0.2, 0.2, 0.2, 0.5), lwd = c(3,2, 2))
+
+            axis(1, las = 1, cex.axis = 1.)
+            axis(2, las = 1, cex.axis = 1., at = seq(0, 1, .2))
+            mtext(side = 1, unitchoice, line = 3., cex = 0.75)
+            mtext(side = 2, "Carcass Persistence", line = 4, cex = 0.75)
+            points(pts, predys, type = 'l', lwd = 3)
+            points(pts, predyl, type = 'l', lwd = 2, lty = 3)
+            points(pts, predyu, type = 'l', lwd = 2, lty = 3)
+
+          }
+
+          dev.off()
+        }
+      }
+
+    # return
+  }
 
 
 ################################################################################
@@ -786,7 +944,8 @@
 
     # column names
 
-      colnames(outputtable) <- c("Size", "Search Schedule", "Cell Combination", "Mean g", 
+      colnames(outputtable) <- c("Size", "Search Schedule", "Cell Combination", 
+                                  "Mean g", 
                                   paste(CIw*100, "% CI lower g", sep = ""),
                                   paste(CIw*100, "% CI upper g", sep = ""))
 
