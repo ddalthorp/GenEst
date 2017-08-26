@@ -296,8 +296,15 @@
                           NULL = 1:nmods,
                           "AIC" = AICorders,
                           "AICc" = AICsorders) 
-        output[[i]] <-tsctab[orders, ]
+        outtab <- tsctab[orders, ]
+        output[[i]] <- outtab
 
+        # write out
+
+          filename <- paste("Output/SE/SE_AIC_table_size_class_", 
+                              names(SEmods)[i], ".csv", sep = "")
+                               
+          write.csv(outtab, filename, row.names = F) 
       }
 
     # add size col names
@@ -589,7 +596,15 @@
                           NULL = 1:nmods,
                           "AIC" = AICorders,
                           "AICc" = AICsorders) 
-        output[[i]] <-tsctab[orders, ]
+        outtab <- tsctab[orders, ]
+        output[[i]] <- outtab
+
+        # write out
+
+          filename <- paste("Output/CP/CP_AIC_table_size_class_", 
+                              names(CPmods)[i], ".csv", sep = "")
+                               
+          write.csv(outtab, filename, row.names = F) 
 
       }
 
@@ -602,6 +617,9 @@
       return(output)
 
   }
+
+
+
 
 
 ################################################################################
@@ -627,7 +645,8 @@
       expanded <- crossmodelcells(CPvars, SEvars, CPdata, SEdata)
 
       Ncombcell <- nrow(expanded)
-
+      combname <- rep(NA, Ncombcell)
+      
     # now align those cells with each of the CP and SE cells
 
       mapmat <- matrix(NA, nrow = Ncombcell, ncol = 3)
@@ -651,7 +670,8 @@
         EXPcp <- apply(expanded[i, CPinEXP] , 1, paste, collapse = " ")
         CPops <-  apply(CPfct[ , EXPinCP], 1, paste, collapse = " ")
         mapmat[i , 3] <- which(CPops == EXPcp)			
-
+   
+        combname[i] <- paste(as.character(t(expanded[i, ])), collapse = "_")
 
       }
 
@@ -660,15 +680,19 @@
     # search schedules
 
       Nss <- nrow(SSdata)				
+      ssops <- 1:Nss
 
     # Nsizeclasses
 
       Nsizeclasses <- length(CPmods)
+      sizeclasses <- names(CPmods)
 
     # set up output array
 
       garray <- array(NA, dim = c(Niterations, 1, Nss, 
-                                   Ncombcell, Nsizeclasses))
+                                   Ncombcell, Nsizeclasses),
+                          dimnames = list(1:Niterations, 1, ssops,
+                                      combname, sizeclasses))
 
 
     # estimate g
@@ -707,20 +731,147 @@
 
 ################################################################################
 #
-# g TABLE FUNCTION
+# gtablecreate 
+#
+################################################################################
+
+  gtablecreate <- function(garray, CIw, ... ){
+
+      Niterations <- dim(garray)[1]
+      Nss <- dim(garray)[3]
+      Ncellcombos <- dim(garray)[4]
+      Nclasses <- dim(garray)[5]
+
+      ssops <- dimnames(garray)[3][[1]]
+      ccops <- dimnames(garray)[4][[1]]
+      scops <- dimnames(garray)[5][[1]]
+
+      quants <- c(0 + (1 - CIw) / 2, 1 - (1 - CIw) / 2 )
+
+      outputtable <- data.frame(matrix(NA, ncol = 6, 
+                          nrow = Nss * Ncellcombos * Nclasses))
+
+      rowindex <- 1
+
+      for(r in 1:Nclasses){
+        for(j in 1:Nss){
+          for(i in 1:Ncellcombos){
+
+            # select the data 
+
+              gs <- garray[1:Niterations, 1, j, i, r]   
+
+            # calc mean
+
+              meang <- round(mean(gs), 4)
+
+            # calc quantiles
+
+              gqs <- round(quantile(gs, prob = quants), 4)
+
+            # combine
+
+              outputtable[rowindex, 1] <- scops[r]
+              outputtable[rowindex, 2] <- ssops[j]
+              outputtable[rowindex, 3] <- ccops[i]
+              outputtable[rowindex, 4] <- meang
+              outputtable[rowindex, 5] <- gqs[1]
+              outputtable[rowindex, 6] <- gqs[2]
+        
+            rowindex <- rowindex + 1
+
+          }
+        }
+      }
+
+    # column names
+
+      colnames(outputtable) <- c("Size", "Search Schedule", "Cell Combination", "Mean g", 
+                                  paste(CIw*100, "% CI lower g", sep = ""),
+                                  paste(CIw*100, "% CI upper g", sep = ""))
+
+    # save out
+
+      write.csv(outputtable, "Output/g/gsummarytable.csv", row.names = F)
+
+    # return
+
+      return(outputtable)
+  }
+
+
+################################################################################
+#
+# ggraphscreate 
 #
 ################################################################################
 
 
 
+  ggraphscreate <- function(garray, ... ){
 
-################################################################################
-#
-# g GRAPHICS FUNCTIONS
-#
-################################################################################
+      Niterations <- dim(garray)[1]
+      Nss <- dim(garray)[3]
+      Ncellcombos <- dim(garray)[4]
+      Nclasses <- dim(garray)[5]
+
+      ssops <- dimnames(garray)[3][[1]]
+      ccops <- dimnames(garray)[4][[1]]
+      scops <- dimnames(garray)[5][[1]]
+
+      for(r in 1:Nclasses){
+        for(j in 1:Nss){
+          for(i in 1:Ncellcombos){
+
+            gs <- garray[1:Niterations, 1, j, i, r]   
+
+            xvals <- seq(0, 1, 0.01)
+            nxvs <- length(xvals) - 1
+            xv1 <- seq(0, 0.99, 0.01)
+            xv2 <- seq(0.01, 1.00, 0.01)  
+            hts <- rep(NA, nxvs )
+
+            for(d in 1:nxvs ){
+              hts[d] <- length(gs[gs >= xv1[d] & gs < xv2[d]])
+            }
+
+            hts <- hts / sum(hts)
+
+            maxy <- max(hts) 
+            maxy <- ceiling((maxy * 1.1) * 100) / 100
+
+            filename <- paste("Output/g/size_", scops[r], "_searchschedule_", 
+                             ssops[j], "_classlevels_", ccops[i],  
+                            "_gfig.tiff", sep = "")
+
+            tiff(file = filename, width = 12, height = 12, 
+                    units = "in", res = 100)
+
+            par(mar = c(5,6,1,1))
+            plot(1, 1, type = 'n', xlab = '', ylab = '', 
+                  xaxt = 'n', yaxt = 'n', bty = 'n', 
+                  ylim = c(0, maxy), xlim = c(0, 1))
+
+            for(d in 1:nxvs){
+              rect(xv1[d], 0, xv2[d], hts[d])
+            }
+            plotxvals1 <- seq(0, 1, .1)
+            plotxvals2 <- seq(0, 1, .05)
+            plotxvals3 <- seq(0, 1, .01)
+            axis(2, las = 1, cex.axis = 1.25)
+            mtext(side = 2, "Probability", line = 4, cex = 2)
+            axis(1, las = 1, cex.axis = 1.25, at = plotxvals1)
+            axis(1, labels = F, tck = -0.005, at = plotxvals2)
+            axis(1, labels = F, tck = -0.002, at = plotxvals3)
+            mtext(side = 1, "g", line = 3.5, cex = 2)
+            dev.off()
 
 
+
+          }
+        }
+      }
+  }
 
 
 ################################################################################
@@ -935,10 +1086,14 @@
 
     # combine
 
-      Mhattab[ , 1] <- paste(Mhatlmeans, "(", Mhatlqs[1, ], ", ", 
+      Mhattab[ , 1] <- paste(Mhatlmeans, " (", Mhatlqs[1, ], ", ", 
                               Mhatlqs[2, ], ")", sep = "")
-      Mhattab[ , 2] <- paste(Mhatl_wfmeans, "(", Mhatl_wfqs[1, ], ", ",
+      Mhattab[ , 2] <- paste(Mhatl_wfmeans, " (", Mhatl_wfqs[1, ], ", ",
                               Mhatl_wfqs[2, ], ")", sep = "")
+
+    # write out
+
+      write.csv(Mhattab, "Output/Mhat/Mhattable.csv", row.names = F)
 
     # return
 
@@ -948,10 +1103,118 @@
 
 ################################################################################
 #
-# Mhat GRAPHICS FUNCTIONS 
+# Mhatgraph
 #
 ################################################################################
 
+
+  Mhatgraph <- function(Mhatl, ffs, ... ){
+
+    # split categories
+
+      Nsc <- ncol(Mhatl)
+
+    # iterations
+
+      Niterations <- nrow(Mhatl)
+
+    # for each split, create a plot
+
+      for(l in 1:Nsc){
+
+        Mhats <- Mhatl[, l]
+        minM <- min(Mhats)
+        minM <- floor(minM - 0.001 * minM)
+        maxM <- max(Mhats)
+        maxM <- ceiling(maxM + 0.001 * maxM)
+
+        xvals <- seq(minM, maxM, Niterations / 10)
+        xvals <- c(xvals, xvals[length(xvals)] +  Niterations / 10)
+
+        nxvs <- length(xvals) - 1
+        xv1 <-  xvals[1:(length(xvals)-1)]
+        xv2 <-  xvals[2:(length(xvals))]
+        hts <-  rep(NA, nxvs)
+
+        for(i in 1:nxvs){
+          hts[i] <- length(Mhats[Mhats >= xv1[i] & Mhats < xv2[i]])
+        }
+
+        hts <- hts / sum(hts)
+
+        maxy <- max(hts) 
+        maxy <- ceiling((maxy * 1.1) * 100) / 100
+
+        filename <- paste("Output/Mhat/", colnames(Mhatl)[l], 
+                            "_SearchedArea_Mhatfig.tiff", sep = "")
+
+        tiff(file = filename, width = 12, height = 12, 
+                    units = "in", res = 100)
+        par(mar = c(5,6,1,1))
+        plot(1, 1, type = 'n', xlab = '', ylab = '', 
+              xaxt = 'n', yaxt = 'n', bty = 'n', 
+              ylim = c(0, maxy), xlim = c(xvals[1], xvals[length(xvals)]))
+
+        for(i in 1:nxvs){
+          rect(xv1[i], 0, xv2[i], hts[i])
+        }
+        axis(2, las = 1, cex.axis = 1.25)
+        mtext(side = 2, "Probability", line = 4, cex = 2)
+        axis(1, las = 1, cex.axis = 1.25, at = xvals)
+        mtext(side = 1, "Mhat", line = 3.5, cex = 2)
+        dev.off()
+      }
+
+    # for each split, create a facility wide estimate plot
+
+      for(l in 1:Nsc){
+
+        Mhats <- Mhatl[, l]/ffs 
+        minM <- min(Mhats)
+        minM <- floor(minM - 0.001 * minM)
+        maxM <- max(Mhats)
+        maxM <- ceiling(maxM + 0.001 * maxM)
+
+        xvals <- seq(minM, maxM, Niterations / 10)
+        xvals <- c(xvals, xvals[length(xvals)] +  Niterations / 10)
+
+        nxvs <- length(xvals) - 1
+        xv1 <-  xvals[1:(length(xvals)-1)]
+        xv2 <-  xvals[2:(length(xvals))]
+        hts <-  rep(NA, nxvs)
+
+        for(i in 1:nxvs){
+          hts[i] <- length(Mhats[Mhats >= xv1[i] & Mhats < xv2[i]])
+        }
+
+        hts <- hts/sum(hts)
+
+        maxy <- max(hts) 
+        maxy <- ceiling((maxy * 1.1) * 100) / 100
+
+        filename <- paste("Output/Mhat/", colnames(Mhatl)[l], 
+                            "_FacilityWide_Mhatfig.tiff", sep = "")
+
+        tiff(file = filename, width = 12, height = 12, 
+                    units = "in", res = 100)
+        par(mar = c(5,6,1,1))
+        plot(1, 1, type = 'n', xlab = '', ylab = '', 
+              xaxt = 'n', yaxt = 'n', bty = 'n', 
+              ylim = c(0, maxy), xlim = c(xvals[1], xvals[length(xvals)]))
+
+
+        for(i in 1:nxvs){
+          rect(xv1[i], 0, xv2[i], hts[i])
+        }
+        axis(2, las = 1, cex.axis = 1.25)
+        mtext(side = 2, "Probability", line = 4, cex = 2)
+        axis(1, las = 1, cex.axis = 1.25, at = xvals)
+        mtext(side = 1, "Mhat", line = 3.5, cex = 2)
+        dev.off()
+      }
+
+
+  }
 
 
 ################################################################################

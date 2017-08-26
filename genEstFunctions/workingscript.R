@@ -29,6 +29,12 @@
       Niterations <- 1000
 
 
+  # 
+  # Create output directory
+  #
+
+    dir.create("Output")
+
   #
   # Searcher Efficiency
   #
@@ -60,10 +66,13 @@
                                   SEmods, Niterations,
                                   fixK = fixKchoice, fixKval = fixKvalchoice)
 
+    # create output subdirectory
+
+      dir.create("Output/SE")
+
     # table outputs
 
       SEmodsAICtab <- AICtabcreateSEmods(SEmods, sortby = "AIC")
-		
 
     # plot the results
 
@@ -86,17 +95,20 @@
                                    sizeclasscol = CPsizeclasscol, 
                                    unitchoice = "days")
 
-    # table outputs
-
-      CPmodsAICtab <- AICtabcreateCPmods(CPmods, sortby = "AIC")
-
-
     # create a theta for each cell within each each model in each size class
     #   dimension: [Niterations, 2, Ncells(CP), Nmodels(CP), Nsizeclasses]
 
       thetaCP <- ThetaCPcreateacrosssizes(CPdata = CPdataIn, CPvars = CPvars,
                                           sizeclasscol = CPsizeclasscol,
                                           CPmods, Niterations)
+
+    # create output subdirectory
+
+      dir.create("Output/CP")
+
+    # table outputs
+
+      CPmodsAICtab <- AICtabcreateCPmods(CPmods, sortby = "AIC")
 
     # plot the results
 
@@ -107,8 +119,8 @@
   # select models to use
   #
 
-    CPmodstouse <- c(1,1,1,1)
-    SEmodstouse <- c(1,1,1,1)
+    CPmodstouse <- c(5,5,5,5)
+    SEmodstouse <- c(25,25,25,25)
 
 
   #
@@ -125,10 +137,17 @@
                                 thetaCP, thetaSE, CPmods,
                                 SEmodstouse, CPmodstouse)
 
+    # create output subdirectory
+
+      dir.create("Output/g")
+
+    # summarize g distributions
+
+      gtable <- gtablecreate(garray, CIw = 0.9)
 
     # plot g
 
-      # 
+      ggraphscreate(garray) 
 
 
   #
@@ -141,7 +160,7 @@
        Mhatarray <- Mhatgenerator(COdata = COdataIn, PWASdata = PWASdataIn, 
                             sizeclasscol = "Size", splitcol = "Split", 
                             unitcol = "Unit", sscol = "SearchSchedule",
-                            seedset = 1234, CPvars = CPvars, 
+                            seedset = 124, CPvars = CPvars, 
                             SEvars = SEvars, CPdata = CPdataIn, 
                             SEdata = SEdataIn, garray = garray) 
 
@@ -150,13 +169,17 @@
     
       Mhatsc <- Mhatcondense(Mhatarray)
 
+    # create output subdirectory
+
+      dir.create("Output/Mhat")
+
     # produce Mhat table
     #   allows for expansion to whole facility 
     #    (ffs = fraction facility sampled)
 
-      Mhattable(Mhatsc, ffs = .85, CIw = 0.9)
+      Mhattab <- Mhattable(Mhatl = Mhatsc, ffs = .85, CIw = 0.9)
 
     # plot Mhat
 
-      # 
+      Mhatgraph(Mhatl = Mhatsc, ffs = .85)
 
