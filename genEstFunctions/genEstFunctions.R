@@ -319,11 +319,315 @@
 
 
 
+
 ################################################################################
 #
-# SE GRAPHICS FUNCTIONS
+# SEgraphscreate
 #
 ################################################################################
+
+
+  SEgraphscreate <- function(SEmods, SEdata, SEvars, thetaSE, SEobscols, 
+                              Niterations, sizeclasscol, ... ){
+
+
+    # size classes
+
+      sccol <- which(colnames(SEdata) == sizeclasscol)
+
+      sizeclasses <- as.character(unique(SEdata[ , sccol]))
+      sizeclasses[length(sizeclasses) == 0] <- 1
+      Nsizeclasses <- length(sizeclasses)
+
+      sizes <- as.character(SEdata[ , sccol])
+      sizes[rep(length(sizes) == 0, nrow(SEdata))] <- "1"
+
+    # models
+
+      Nmodels <- length(SEmods[[1]])
+      modnames <- rep(NA, Nmodels) 
+      for(i in 1:Nmodels){
+        modnames[i] <- paste("p ", 
+                             paste(as.character(SEmods[[1]][[i]]$pmodel), 
+                               collapse = " "), 
+                             "and k ", 
+                               paste(as.character(SEmods[[1]][[i]]$kmodel), 
+                               collapse = " "), 
+                             sep = " ")
+      }
+
+    # set up the cells via the factor combination table
+
+      fct <- factorcombinations(pvars = SEvars, data = SEdata) 
+      Ncells <- nrow(fct)
+
+    # set up the cells via the factor combination table
+
+      fct <- factorcombinations(pvars = SEvars, data = SEdata) 
+      Ncells <- nrow(fct)
+
+      pv1 <- NULL
+      pv2 <- NULL
+      pv1 <- SEvars[1][length(SEvars) > 0]
+      pv2 <- SEvars[2][length(SEvars) > 1]
+      lev1 <- as.character(unique(SEdata[, pv1]))
+      lev2 <- as.character(unique(SEdata[, pv2]))
+      nlev1 <- length(lev1)
+      nlev2 <- length(lev2)
+      nlev1[length(lev1) == 0] <- 1
+      nlev2[length(lev2) == 0] <- 1
+
+    # combine factors
+
+      combnames <- rep(NA, nrow(SEdata))
+
+      for(i in 1:nrow(SEdata)){
+        colchoice <- which(colnames(SEdata) %in% c(pv1, pv2))
+        colchoice2 <- colchoice[c(which(colnames(SEdata)[colchoice] == pv1),
+                       which(colnames(SEdata)[colchoice] == pv2))]
+        tempname <- paste(as.character(t(SEdata[i, 
+                           colchoice2])), 
+                           collapse = "")
+        tempname[tempname == ""] <- "all"
+        combnames[i] <-  tempname
+      }
+
+    # max searches
+
+      maxs <- length(SEobscols)
+
+
+    # for each size class, for each model create a figure matrix of panels
+    
+      for(r in 1:Nsizeclasses){
+
+          for(j in 1:Nmodels){
+
+            # create the full figure
+
+              m1 <- gsub("  ~", "", modnames[j])
+              m1 <- gsub(" ", "_", m1)
+              m1 <- gsub(",", "", m1)
+              m1 <- gsub(":", "", m1)
+              m1 <- gsub("\\*", "_cross_", m1)
+              m1 <- gsub("\\+", "_add_", m1)
+
+
+              filename <- paste("Output/SE/size_class_", sizeclasses[r], 
+                               "_model", m1, "_SEfig.tiff", sep = "")
+
+              tiff(file = filename, width = 12, height = 16, 
+                    units = "in", res = 100)
+
+
+              par(fig = c(0, 1, 0.75, 1))
+              plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', 
+                    xlab = "", ylab = "")
+
+              figxspace <- 1 / nlev2
+              figyspace <- 0.75 / nlev1
+
+              x1 <- rep(figxspace * ((1:nlev2) - 1), each = nlev1)
+              x2 <- rep(figxspace * ((1:nlev2)), each = nlev1)
+
+              y1 <- rep(figyspace * ((nlev1:1) - 1), nlev2)
+              y2 <- rep(figyspace * ((nlev1:1)), nlev2)
+
+              ps <- matrix(NA, nrow = Niterations, ncol = Ncells)
+              ks <- matrix(NA, nrow = Niterations, ncol = Ncells)
+              CMps <- matrix(NA, nrow = Niterations, ncol = Ncells)
+              CMks <- matrix(NA, nrow = Niterations, ncol = Ncells)
+
+              par(mar = c(5,6,2,1))
+
+              for(i in 1:Ncells){
+
+                par(fig = c(x1[i], x2[i], y1[i], y2[i]), new = T)
+
+                SEdata_ri <- SEdata[sizes == sizeclasses[r] & 
+                                 combnames == fct[i, "CellNames"], ]
+
+                thetaSErji <- thetaSE[, , i, j, r]
+                meanpar <- apply(thetaSErji, 2, mean)
+                lqpar <- apply(thetaSErji, 2, quantile, probs = 0.025)
+                uqpar <- apply(thetaSErji, 2, quantile, probs = 0.975)
+
+                ps[, i] <- thetaSErji[, 1] 
+                ks[, i] <- thetaSErji[, 2] 
+
+                predxs <- seq(1, maxs, 1)
+                predys <- meanpar[1] * meanpar[2] ^ (predxs - 1)
+                predyl <- lqpar[1] * lqpar[2] ^ (predxs - 1)
+                predyu <- uqpar[1] * uqpar[2] ^ (predxs - 1)
+
+                CMthetaSErji <- thetaSE[, , i, Nmodels, r]
+                CMmeanpar <- apply(CMthetaSErji, 2, mean)
+                CMlqpar <- apply(CMthetaSErji, 2, quantile, probs = 0.025)
+                CMuqpar <- apply(CMthetaSErji, 2, quantile, probs = 0.975)
+
+                CMps[, i] <- CMthetaSErji[, 1] 
+                CMks[, i] <- CMthetaSErji[, 2] 
+
+                CMpredys <- CMmeanpar[1] * CMmeanpar[2] ^ (predxs - 1)
+                CMpredyl <- CMlqpar[1] * CMlqpar[2] ^ (predxs - 1)
+                CMpredyu <- CMuqpar[1] * CMuqpar[2] ^ (predxs - 1)
+
+                xpts <- 1:length(SEobscols)
+                ypts <- apply(SEdata_ri[, SEobscols], 2, mean, na.rm = T)
+
+                plot(xpts, ypts, ylim = c(0, 1), 
+                       xlim = c(0.5, maxs + 0.5), main = fct[i, "CellNames"], 
+                       xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", 
+                       col = rgb(0.2, 0.2, 0.2, 0.5), lwd = 2, pch = 1, 
+                       cex = 1.5)
+
+                axis(1, las = 1, cex.axis = 1.)
+                axis(2, las = 1, cex.axis = 1., at = seq(0, 1, .2))
+                mtext(side = 1, "Search", line = 3, cex = 1.25)
+                mtext(side = 2, "Searcher Efficiency", line = 4, cex = 1.25)
+
+                points(predxs, CMpredys, type = 'l', lwd = 3, 
+                        col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(predxs, CMpredyl, type = 'l', lwd = 2, lty = 3, 
+                        col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(predxs, CMpredyu, type = 'l', lwd = 2, lty = 3, 
+                        col = rgb(0.1, 0.1, 0.8, 0.6))
+
+                points(predxs, predys, type = 'l', lwd = 3)
+                points(predxs, predyl, type = 'l', lwd = 2, lty = 3)
+                points(predxs, predyu, type = 'l', lwd = 2, lty = 3)
+ 
+              }
+
+              par(mar = c(3,4,2,1))
+              par(fig = c(0, .5, 0.75, 1), new = T)
+
+              plot(1, 1, type = "n", xlim = c(0.5, Ncells + 0.5), 
+                    ylim = c(0, 1), 
+                    bty = "L", xlab = "", ylab = "", xaxt = "n", yaxt = "n") 
+
+              for(i in 1:Ncells){
+
+                PS <- ps[, i]
+                PX <- runif(length(PS), i - 0.1, i + 0.1) - 0.2  
+                medianp <- median(PS)
+                meanp <- mean(PS)
+                iqp <- quantile(PS, c(0.25, 0.75))
+                minp <- min(PS)
+                maxp <- max(PS)
+
+                points(PX, PS, pch = 1, cex = 0.5, lwd = 1, 
+                        col = rgb(0.3, 0.3, 0.3, 0.05))
+                rect(i - 0.1 - 0.2, iqp[1], i + 0.1 - 0.2, iqp[2], lwd = 3, 
+                        col = rgb(1, 1, 1, 0.4))
+                points(c(i - 0.1, i + 0.1) - 0.2, rep(medianp, 2), type = "l", 
+                        lwd = 2)
+                points(c(i - 0.05, i + 0.05) - 0.2, rep(minp, 2), type = "l", 
+                        lwd = 1)
+                points(c(i - 0.05, i + 0.05) - 0.2, rep(maxp, 2), type = "l", 
+                        lwd = 1)
+                points(c(i, i) - 0.2, c(iqp[1], minp), type = "l", lwd = 1) 
+                points(c(i, i) - 0.2, c(iqp[2], maxp), type = "l", lwd = 1) 
+
+                CMPS <- CMps[, i]
+                CMPX <- runif(length(CMPS), i - 0.1, i + 0.1) + 0.2  
+                CMmedianp <- median(CMPS)
+                CMmeanp <- mean(CMPS)
+                CMiqp <- quantile(CMPS, c(0.25, 0.75))
+                CMminp <- min(CMPS)
+                CMmaxp <- max(CMPS)
+
+                points(CMPX, CMPS, pch = 1, cex = 0.5, lwd = 1, 
+                        col = rgb(0.1, 0.1, 0.8, 0.01))
+                rect(i - 0.1 + 0.2, CMiqp[1], i + 0.1 + 0.2, CMiqp[2], 
+                        lwd = 3, col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmedianp, 2), 
+                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(c(i - 0.05, i + 0.05) + 0.2, rep(CMminp, 2), 
+                        type = "l", lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmaxp, 2), 
+                        type = "l", lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(c(i, i) + 0.2, c(CMiqp[1], CMminp), type = "l", 
+                        lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6)) 
+                points(c(i, i) + 0.2, c(CMiqp[2], CMmaxp), type = "l", 
+                        lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6)) 
+
+              }
+
+              axis(1, at = 1:Ncells, labels = F, cex.axis = 0.5, line = 0)
+              mtext(side = 1, line = 0.75, at = 1:Ncells, fct[, "CellNames"], 
+                        cex = 1)
+
+              axis(2, las =1, at = seq(0, 1, .2), cex.axis = 1)
+              mtext(side = 2, line = 2.75, "p", cex = 1)
+
+
+              par(fig = c(0.5, 1, 0.75, 1), new = T)
+
+              plot(1, 1, type = "n", xlim = c(0.5, Ncells + 0.5), 
+                        ylim = c(0, 1), 
+                    bty = "L", xlab = "", ylab = "", xaxt = "n", yaxt = "n") 
+
+              for(i in 1:Ncells){
+
+                KS <- ks[, i]
+                KX <- runif(length(KS), i - 0.1, i + 0.1) - 0.2 
+                mediank <- median(KS)
+                meank <- mean(KS)
+                iqk <- quantile(KS, c(0.25, 0.75))
+                mink <- min(KS)
+                maxk <- max(KS)
+
+                points(KX, KS, pch = 1, cex = 0.5, lwd = 1, 
+                        col = rgb(0.3, 0.3, 0.3, 0.05))
+                rect(i - 0.1 - 0.2, iqk[1], i + 0.1 - 0.2, iqk[2], 
+                        lwd = 3, col = rgb(1, 1, 1, 0.4))
+                points(c(i - 0.1, i + 0.1) - 0.2, rep(mediank, 2), 
+                        type = "l", lwd = 2)
+                points(c(i - 0.05, i + 0.05) - 0.2, rep(mink, 2), 
+                        type = "l", lwd = 1)
+                points(c(i - 0.05, i + 0.05) - 0.2, rep(maxk, 2), 
+                        type = "l", lwd = 1)
+                points(c(i, i) - 0.2 , c(iqk[1], mink), type = "l", lwd = 1) 
+                points(c(i, i) - 0.2, c(iqk[2], maxk), type = "l", lwd = 1) 
+
+
+                CMKS <- CMks[, i]
+                CMKX <- runif(length(CMKS), i - 0.1, i + 0.1) + 0.2  
+                CMmediank <- median(CMKS)
+                CMmeank <- mean(CMKS)
+                CMiqk <- quantile(CMKS, c(0.25, 0.75))
+                CMmink <- min(CMKS)
+                CMmaxk <- max(CMKS)
+
+                points(CMKX, CMKS, pch = 1, cex = 0.5, lwd = 1, 
+                        col = rgb(0.1, 0.1, 0.8, 0.01))
+                rect(i - 0.1 + 0.2, CMiqk[1], i + 0.1 + 0.2, CMiqk[2], 
+                        lwd = 3, col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmediank, 2), 
+                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmink, 2), 
+                        type = "l", lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmaxk, 2), 
+                        type = "l", lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6))
+                points(c(i, i) + 0.2, c(CMiqk[1], CMmink), type = "l", 
+                        lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6)) 
+                points(c(i, i) + 0.2, c(CMiqk[2], CMmaxk), type = "l", 
+                        lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6)) 
+
+
+              }
+
+              axis(1, at = 1:Ncells, labels = F, cex.axis = 0.5, line = 0)
+              mtext(side = 1, line = 0.75, at = 1:Ncells, fct[, "CellNames"],
+                      cex = 1)
+              axis(2, las =1, at = seq(0, 1, 0.2), cex.axis = 1)
+              mtext(side = 2, line = 2.75, "k", cex = 1)
+
+            dev.off()
+          }
+        }
+  }
 
 
 
@@ -703,8 +1007,11 @@
       combnames <- rep(NA, nrow(CPdata))
 
       for(i in 1:nrow(CPdata)){
+        colchoice <- which(colnames(CPdata) %in% c(pv1, pv2))
+        colchoice2 <- colchoice[c(which(colnames(CPdata)[colchoice] == pv1),
+                       which(colnames(CPdata)[colchoice] == pv2))]
         tempname <- paste(as.character(t(CPdata[i, 
-                           which(colnames(CPdata) %in% c(pv1, pv2))])), 
+                           colchoice2])), 
                            collapse = "")
         tempname[tempname == ""] <- "all"
         combnames[i] <-  tempname

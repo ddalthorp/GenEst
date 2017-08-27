@@ -76,7 +76,8 @@
 
     # plot the results
 
-      # 
+       SEgraphscreate(SEmods, SEdata = SEdataIn, SEvars, thetaSE, SEobscols, 
+                              Niterations, sizeclasscol = SEsizeclasscol)
 
 
   #
