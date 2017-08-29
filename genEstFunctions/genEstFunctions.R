@@ -299,12 +299,6 @@
         outtab <- tsctab[orders, ]
         output[[i]] <- outtab
 
-        # write out
-
-          filename <- paste("Output/SE/SE_AIC_table_size_class_", 
-                              names(SEmods)[i], ".csv", sep = "")
-                               
-          write.csv(outtab, filename, row.names = F) 
       }
 
     # add size col names
@@ -322,14 +316,13 @@
 
 ################################################################################
 #
-# SEgraphscreate
+# SEgraphcreate
 #
 ################################################################################
 
-
-  SEgraphscreate <- function(SEmods, SEdata, SEvars, thetaSE, SEobscols, 
-                              Niterations, sizeclasscol, ... ){
-
+  SEgraphcreate <- function(SEdata, SEvars, thetaSE, obscols, 
+                              Niterations, sizeclasscol, r, j, CellWiseModel,
+                              ... ){
 
     # size classes
 
@@ -342,87 +335,53 @@
       sizes <- as.character(SEdata[ , sccol])
       sizes[rep(length(sizes) == 0, nrow(SEdata))] <- "1"
 
-    # models
+    # factor set up
 
-      Nmodels <- length(SEmods[[1]])
-      modnames <- rep(NA, Nmodels) 
-      for(i in 1:Nmodels){
-        modnames[i] <- paste("p ", 
-                             paste(as.character(SEmods[[1]][[i]]$pmodel), 
-                               collapse = " "), 
-                             "and k ", 
-                               paste(as.character(SEmods[[1]][[i]]$kmodel), 
-                               collapse = " "), 
-                             sep = " ")
-      }
+      # set up the cells via the factor combination table
 
-    # set up the cells via the factor combination table
+        fct <- factorcombinations(pvars = SEvars, data = SEdata) 
+        Ncells <- nrow(fct)
 
-      fct <- factorcombinations(pvars = SEvars, data = SEdata) 
-      Ncells <- nrow(fct)
+        pv1 <- NULL	
+        pv2 <- NULL
+        pv1 <- SEvars[1][length(SEvars) > 0]
+        pv2 <- SEvars[2][length(SEvars) > 1]
+        lev1 <- as.character(unique(SEdata[, pv1]))
+        lev2 <- as.character(unique(SEdata[, pv2]))
+        nlev1 <- length(lev1)
+        nlev2 <- length(lev2)
+        nlev1[length(lev1) == 0] <- 1
+        nlev2[length(lev2) == 0] <- 1
 
-    # set up the cells via the factor combination table
+      # combine factors
 
-      fct <- factorcombinations(pvars = SEvars, data = SEdata) 
-      Ncells <- nrow(fct)
+        combnames <- rep(NA, nrow(SEdata))
 
-      pv1 <- NULL
-      pv2 <- NULL
-      pv1 <- SEvars[1][length(SEvars) > 0]
-      pv2 <- SEvars[2][length(SEvars) > 1]
-      lev1 <- as.character(unique(SEdata[, pv1]))
-      lev2 <- as.character(unique(SEdata[, pv2]))
-      nlev1 <- length(lev1)
-      nlev2 <- length(lev2)
-      nlev1[length(lev1) == 0] <- 1
-      nlev2[length(lev2) == 0] <- 1
+        for(i in 1:nrow(SEdata)){
+          colchoice <- which(colnames(SEdata) %in% c(pv1, pv2))
+          colchoice2 <- colchoice[c(which(colnames(SEdata)[colchoice] == pv1),
+                         which(colnames(SEdata)[colchoice] == pv2))]
+          tempname <- paste(as.character(t(SEdata[i, 
+                             colchoice2])), 
+                             collapse = "")
+          tempname[tempname == ""] <- "all"
+          combnames[i] <-  tempname
+        }
+  
+      # max searches
 
-    # combine factors
+        maxs <- length(SEobscols)
 
-      combnames <- rep(NA, nrow(SEdata))
+      # create the figure
 
-      for(i in 1:nrow(SEdata)){
-        colchoice <- which(colnames(SEdata) %in% c(pv1, pv2))
-        colchoice2 <- colchoice[c(which(colnames(SEdata)[colchoice] == pv1),
-                       which(colnames(SEdata)[colchoice] == pv2))]
-        tempname <- paste(as.character(t(SEdata[i, 
-                           colchoice2])), 
-                           collapse = "")
-        tempname[tempname == ""] <- "all"
-        combnames[i] <-  tempname
-      }
-
-    # max searches
-
-      maxs <- length(SEobscols)
-
-
-    # for each size class, for each model create a figure matrix of panels
-    
-      for(r in 1:Nsizeclasses){
-
-          for(j in 1:Nmodels){
-
-            # create the full figure
-
-              m1 <- gsub("  ~", "", modnames[j])
-              m1 <- gsub(" ", "_", m1)
-              m1 <- gsub(",", "", m1)
-              m1 <- gsub(":", "", m1)
-              m1 <- gsub("\\*", "_cross_", m1)
-              m1 <- gsub("\\+", "_add_", m1)
-
-
-              filename <- paste("Output/SE/size_class_", sizeclasses[r], 
-                               "_model", m1, "_SEfig.tiff", sep = "")
-
-              tiff(file = filename, width = 12, height = 16, 
-                    units = "in", res = 100)
-
+        # dummy initial figure
 
               par(fig = c(0, 1, 0.75, 1))
+              par(mar = c(1, 1, 1, 1))
               plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', 
                     xlab = "", ylab = "")
+
+        # divvy up the bottom 3/4 of the image for the cell matrix
 
               figxspace <- 1 / nlev2
               figyspace <- 0.75 / nlev1
@@ -440,14 +399,20 @@
 
               par(mar = c(5,6,2,1))
 
-              for(i in 1:Ncells){
+        # plot each cell's figure
+
+          for(i in 1:Ncells){
+
+            # restrict the data and the thetas
+
+                SEdata_ri <- SEdata[which(sizes == sizeclasses[r] & 
+                                           combnames == fct[i, "CellNames"]), ]
+                NAconv <- is.na(SEdata_ri[, obscols])
+                carcassavail <- nrow(NAconv) - apply(NAconv, 2, sum)
+                thetaSErji <- thetaSE[, , i, j, r]
 
                 par(fig = c(x1[i], x2[i], y1[i], y2[i]), new = T)
 
-                SEdata_ri <- SEdata[sizes == sizeclasses[r] & 
-                                 combnames == fct[i, "CellNames"], ]
-
-                thetaSErji <- thetaSE[, , i, j, r]
                 meanpar <- apply(thetaSErji, 2, mean)
                 lqpar <- apply(thetaSErji, 2, quantile, probs = 0.025)
                 uqpar <- apply(thetaSErji, 2, quantile, probs = 0.975)
@@ -460,7 +425,7 @@
                 predyl <- lqpar[1] * lqpar[2] ^ (predxs - 1)
                 predyu <- uqpar[1] * uqpar[2] ^ (predxs - 1)
 
-                CMthetaSErji <- thetaSE[, , i, Nmodels, r]
+                CMthetaSErji <- thetaSE[, , i, CellWiseModel, r]
                 CMmeanpar <- apply(CMthetaSErji, 2, mean)
                 CMlqpar <- apply(CMthetaSErji, 2, quantile, probs = 0.025)
                 CMuqpar <- apply(CMthetaSErji, 2, quantile, probs = 0.975)
@@ -479,27 +444,35 @@
                        xlim = c(0.5, maxs + 0.5), main = fct[i, "CellNames"], 
                        xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", 
                        col = rgb(0.2, 0.2, 0.2, 0.5), lwd = 2, pch = 1, 
-                       cex = 1.5)
+                       cex = 1.5, cex.main = 0.75)
 
                 axis(1, las = 1, cex.axis = 1.)
                 axis(2, las = 1, cex.axis = 1., at = seq(0, 1, .2))
                 mtext(side = 1, "Search", line = 3, cex = 1.25)
                 mtext(side = 2, "Searcher Efficiency", line = 4, cex = 1.25)
 
+                text(xpts + 0.1, ypts + 0.075, carcassavail, xpd = T, 
+                       cex = 0.75, col = rgb(0.5, 0.5, 0.5, 0.9))
+
+
                 points(predxs, CMpredys, type = 'l', lwd = 3, 
                         col = rgb(0.1, 0.1, 0.8, 0.6))
-                points(predxs, CMpredyl, type = 'l', lwd = 2, lty = 3, 
+                points(predxs, CMpredyl, type = 'l', lwd = 2, lty = 2, 
                         col = rgb(0.1, 0.1, 0.8, 0.6))
-                points(predxs, CMpredyu, type = 'l', lwd = 2, lty = 3, 
+                points(predxs, CMpredyu, type = 'l', lwd = 2, lty = 2, 
                         col = rgb(0.1, 0.1, 0.8, 0.6))
 
                 points(predxs, predys, type = 'l', lwd = 3)
-                points(predxs, predyl, type = 'l', lwd = 2, lty = 3)
-                points(predxs, predyu, type = 'l', lwd = 2, lty = 3)
+                points(predxs, predyl, type = 'l', lwd = 2, lty = 2)
+                points(predxs, predyu, type = 'l', lwd = 2, lty = 2)
  
               }
 
-              par(mar = c(3,4,2,1))
+        # plot the ps and ks at the top
+
+          # ps
+
+              par(mar = c(3,4,1,1))
               par(fig = c(0, .5, 0.75, 1), new = T)
 
               plot(1, 1, type = "n", xlim = c(0.5, Ncells + 0.5), 
@@ -561,8 +534,10 @@
               axis(2, las =1, at = seq(0, 1, .2), cex.axis = 1)
               mtext(side = 2, line = 2.75, "p", cex = 1)
 
+          # ks
 
               par(fig = c(0.5, 1, 0.75, 1), new = T)
+              par(mar = c(3, 4, 1, 1))
 
               plot(1, 1, type = "n", xlim = c(0.5, Ncells + 0.5), 
                         ylim = c(0, 1), 
@@ -624,12 +599,7 @@
               axis(2, las =1, at = seq(0, 1, 0.2), cex.axis = 1)
               mtext(side = 2, line = 2.75, "k", cex = 1)
 
-            dev.off()
-          }
-        }
   }
-
-
 
 
 ################################################################################
@@ -639,28 +609,12 @@
 ################################################################################
 
   CPmodsacrosssizes <- function(CPdata, sizeclasscol,
-                                 CPvars, unitchoice = "days", ... ){ 
+                                 CPvars, CPltp, CPfta... ){ 
 
     # set up the response (surv object)
 
-      dp <- as.POSIXlt(paste(as.character(CPdata$PlacedDate), 
-                             as.character(CPdata$PlacedTime), sep = " "), 
-                       format = "%m/%d/%Y %H:%M:%S")
-
-      ldp <- as.POSIXlt(paste(as.character(CPdata$LastPresentDate), 
-                             as.character(CPdata$LastPresentTime), sep = " "), 
-                       format = "%m/%d/%Y %H:%M:%S")
-
-      tempfda <- paste(as.character(CPdata$FirstAbsentDate), 
-                             as.character(CPdata$FirstAbsentTime), sep = " ")
-      tempfda[which(tempfda == "NA NA")] <- NA
-
-      fda <- as.POSIXlt(tempfda, 
-                       format = "%m/%d/%Y %H:%M:%S")
-
-
-      t1 <- as.numeric(difftime(ldp, dp, units = unitchoice))
-      t2 <- as.numeric(difftime(fda, dp, units = unitchoice))
+      t1 <- CPdata[ , which(colnames(CPdata) == CPltp)]
+      t2 <- CPdata[ , which(colnames(CPdata) == CPfta)]
 
       event <- rep(3, length(t1))
       event[which(is.na(t2))] <- 0
@@ -903,13 +857,7 @@
         outtab <- tsctab[orders, ]
         output[[i]] <- outtab
 
-        # write out
-
-          filename <- paste("Output/CP/CP_AIC_table_size_class_", 
-                              names(CPmods)[i], ".csv", sep = "")
-                               
-          write.csv(outtab, filename, row.names = F) 
-
+   
       }
 
     # add size col names
@@ -928,33 +876,21 @@
 
 ################################################################################
 #
-# CPgraphscreate 
+# CPgraphcreate 
 #
 ################################################################################
 
- CPgraphscreate <- function(CPmods, CPdata, CPvars, thetaCP, Niterations, 
-                              unitchoice, sizeclasscol, ...){
+
+ CPgraphcreate <- function(CPmods, CPdata, CPvars, thetaCP, Niterations, 
+                              timeunit, sizeclasscol, CPltp, CPfta, r, 
+                              modelcomplexity, distchoice, ...){
+
 
     # set up the response (surv object)
 
-      dp <- as.POSIXlt(paste(as.character(CPdata$PlacedDate), 
-                             as.character(CPdata$PlacedTime), sep = " "), 
-                       format = "%m/%d/%Y %H:%M:%S")
+      t1 <- CPdata[ , which(colnames(CPdata) == CPltp)]
+      t2 <- CPdata[ , which(colnames(CPdata) == CPfta)]
 
-      ldp <- as.POSIXlt(paste(as.character(CPdata$LastPresentDate), 
-                             as.character(CPdata$LastPresentTime), sep = " "), 
-                       format = "%m/%d/%Y %H:%M:%S")
-
-      tempfda <- paste(as.character(CPdata$FirstAbsentDate), 
-                             as.character(CPdata$FirstAbsentTime), sep = " ")
-      tempfda[which(tempfda == "NA NA")] <- NA
-
-      fda <- as.POSIXlt(tempfda, 
-                       format = "%m/%d/%Y %H:%M:%S")
-
-
-      t1 <- as.numeric(difftime(ldp, dp, units = unitchoice))
-      t2 <- as.numeric(difftime(fda, dp, units = unitchoice))
 
       event <- rep(3, length(t1))
       event[which(is.na(t2))] <- 0
@@ -980,11 +916,6 @@
     # models
 
       Nmodels <- length(CPmods[[1]])
-      modnames <- rep(NA, Nmodels) 
-      for(i in 1:Nmodels){
-        modnames[i] <- paste(names(CPmods[[1]][i]), ", dist: ",
-                         (CPmods[[1]][[i]])$dist, sep = "")
-      }
 
     # set up the cells via the factor combination table
 
@@ -1017,81 +948,94 @@
         combnames[i] <-  tempname
       }
 
-    # for each size class, for each model, create a matrix of panels 
+
+    # for a given size class and model complexity create a matrix of panels 
     #  (one for each cell)
 
       maxx <- max(na.omit(t2))
       maxx <- ceiling(maxx * 1.1)
       predxs <- seq(0, maxx, length.out = 1000)
 
-      for(r in 1:Nsizeclasses){
-        for(j in 1:Nmodels){
+    # the four distribution models associated with model complexity
 
+      MODS <- 4 * (modelcomplexity - 1) + 1:4
 
-            m1 <- gsub(" ", "_", modnames[j])
-            m1 <- gsub("~", "", m1)
-            m1 <- gsub(",", "", m1)
-            m1 <- gsub(":", "", m1)
-            m1 <- gsub("\\*", "_cross_", m1)
-            m1 <- gsub("\\+", "_add_", m1)
-
-            filename <- paste("Output/CP/size_class_", sizeclasses[r], 
-                               "_model", m1, "_CPfig.tiff", sep = "")
-
-            #windows(12,12)
-            tiff(filename, width = 12, height = 12, unit = "in", res = 100)
-
-            par(mfcol = c(nlev1, nlev2))
+        par(mfcol = c(nlev1, nlev2))
             par(mar = c(5, 6, 2, 1))
 
           for(i in 1:Ncells){
-
-            thetaCPrji <- thetaCP[, , i, j, r]
-            meanpar <- apply(thetaCPrji, 2, mean)
-            lqpar <- apply(thetaCPrji, 2, quantile, probs = 0.025)
-            uqpar <- apply(thetaCPrji, 2, quantile, probs = 0.975)
-            distrj <- CPmods[[r]][[j]]$dist
-
-            pts <- predxs[2:length(predxs)]
-            pta0 <- rep(0, length(pts)) 
-            pta1 <- rep(0.000001, length(pts))
-            predys <- ppersist(persistence_distn = distrj, t_arrive0 = pta0, 
-                                t_arrive1 = pta1, t_search = pts, 
-                                pda = meanpar[1], pdb = meanpar[2]) 
-            predyl <- ppersist(persistence_distn = distrj, t_arrive0 = pta0, 
-                                t_arrive1 = pta1, t_search = pts, 
-                                pda = lqpar[1], pdb = lqpar[2]) 
-            predyu <- ppersist(persistence_distn = distrj, t_arrive0 = pta0, 
-                                t_arrive1 = pta1, t_search = pts, 
-                                pda = uqpar[1], pdb = uqpar[2]) 
-
 
             CPobvs_survobj_ri <- CPobvs_survobj[sizes == sizeclasses[r] & 
                                      combnames == fct[i, "CellNames"]]
             CPdata_ri <- CPdata[sizes == sizeclasses[r] & 
                                  combnames == fct[i, "CellNames"], ]
             mform <- formula("CPobvs_survobj_ri ~ 1")
+
             plot(survfit(mform, data = CPdata_ri ), ylim = c(0, 1), 
                    xlim = c(0, maxx), main = fct[i, "CellNames"], 
                    xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", 
                    col = rgb(0.2, 0.2, 0.2, 0.5), lwd = c(3,2, 2))
 
+
             axis(1, las = 1, cex.axis = 1.)
             axis(2, las = 1, cex.axis = 1., at = seq(0, 1, .2))
-            mtext(side = 1, unitchoice, line = 3., cex = 0.75)
+            mtext(side = 1, timeunit, line = 3., cex = 0.75)
             mtext(side = 2, "Carcass Persistence", line = 4, cex = 0.75)
-            points(pts, predys, type = 'l', lwd = 3)
-            points(pts, predyl, type = 'l', lwd = 2, lty = 3)
-            points(pts, predyu, type = 'l', lwd = 2, lty = 3)
+
+
+            thick <- rep(2, 4)
+            thick[distchoice] <- 8
+            cols <- matrix(c(0.95, 0.70, 0.20, 0.7,
+                             0.05, 0.95, 0.95, 0.7,
+                             0.00, 0.05, 0.85, 0.7,
+                             0.80, 0.20, 0.75, 0.7), byrow = T, nrow = 4)
+            cols[distchoice, 4] <- 0.8           
+
+            for(j in 1:4){
+
+              thetaCPrji <- thetaCP[, , i, MODS[j], r]
+              meanpar <- apply(thetaCPrji, 2, mean)
+              lqpar <- apply(thetaCPrji, 2, quantile, probs = 0.025)
+              uqpar <- apply(thetaCPrji, 2, quantile, probs = 0.975)
+              distrj <- CPmods[[r]][[MODS[j]]]$dist
+
+              pts <- predxs[2:length(predxs)]
+              pta0 <- rep(0, length(pts)) 
+              pta1 <- rep(0.000001, length(pts))
+              predys <- ppersist(persistence_distn = distrj, t_arrive0 = pta0, 
+                                t_arrive1 = pta1, t_search = pts, 
+                                pda = meanpar[1], pdb = meanpar[2]) 
+
+              points(pts, predys, type = 'l', 
+                            col = rgb(cols[j,1], cols[j,2], cols[j,3], cols[j,4]), 
+                            lwd = thick[j])
+ 
+            }
+
+              j <- distchoice
+              j2 <- j
+              j2[length(j2) == 0] <- 1
+              thetaCPrji <- thetaCP[, , i, MODS[j], r]
+              meanpar <- apply(thetaCPrji, 2, mean)
+              lqpar <- apply(thetaCPrji, 2, quantile, probs = 0.025)
+              uqpar <- apply(thetaCPrji, 2, quantile, probs = 0.975)
+              distrj <- CPmods[[r]][[MODS[j2]]]$dist
+
+              pts <- predxs[2:length(predxs)]
+              pta0 <- rep(0, length(pts)) 
+              pta1 <- rep(0.000001, length(pts))
+              predys <- ppersist(persistence_distn = distrj, t_arrive0 = pta0, 
+                                t_arrive1 = pta1, t_search = pts, 
+                                pda = meanpar[1], pdb = meanpar[2]) 
+              cols[distchoice, 4] <- 0.4
+              points(pts, predys, type = 'l', 
+                            col = rgb(cols[j,1], cols[j,2], cols[j,3], cols[j,4]), 
+                            lwd = thick[j])
+ 
 
           }
 
-          dev.off()
-        }
-      }
-
-    # return
-  }
+}
 
 
 ################################################################################
@@ -1144,7 +1088,7 @@
 
     # search schedules
 
-      Nss <- nrow(SSdata)				
+      Nss <- length(SSdata)				
       ssops <- 1:Nss
 
     # Nsizeclasses
@@ -1168,7 +1112,7 @@
 
           for(k in 1:Nss){
 
-            specificSS <- as.numeric(na.omit(as.numeric(SSdata[k, ])))
+            specificSS <- as.numeric(strsplit(SSdata[k], "_")[[1]])
 
             specificCPcell <- mapmat[j, "CPcell"]
             specificCPtheta <- thetaCP[ , , specificCPcell, CPmodstouse[i], i]
@@ -1256,9 +1200,6 @@
                                   paste(CIw*100, "% CI lower g", sep = ""),
                                   paste(CIw*100, "% CI upper g", sep = ""))
 
-    # save out
-
-      write.csv(outputtable, "Output/g/gsummarytable.csv", row.names = F)
 
     # return
 
@@ -1557,10 +1498,6 @@
       Mhattab[ , 2] <- paste(Mhatl_wfmeans, " (", Mhatl_wfqs[1, ], ", ",
                               Mhatl_wfqs[2, ], ")", sep = "")
 
-    # write out
-
-      write.csv(Mhattab, "Output/Mhat/Mhattable.csv", row.names = F)
-
     # return
 
       return(Mhattab)
@@ -1574,68 +1511,15 @@
 ################################################################################
 
 
-  Mhatgraph <- function(Mhatl, ffs, ... ){
-
-    # split categories
-
-      Nsc <- ncol(Mhatl)
+  Mhatgraph <- function(Mhatlspecific, splitcatname, ffs, ... ){
 
     # iterations
 
-      Niterations <- nrow(Mhatl)
+      Niterations <- length(Mhatlspecific)
 
-    # for each split, create a plot
+    # create a facility wide estimate plot
 
-      for(l in 1:Nsc){
-
-        Mhats <- Mhatl[, l]
-        minM <- min(Mhats)
-        minM <- floor(minM - 0.001 * minM)
-        maxM <- max(Mhats)
-        maxM <- ceiling(maxM + 0.001 * maxM)
-
-        xvals <- seq(minM, maxM, Niterations / 10)
-        xvals <- c(xvals, xvals[length(xvals)] +  Niterations / 10)
-
-        nxvs <- length(xvals) - 1
-        xv1 <-  xvals[1:(length(xvals)-1)]
-        xv2 <-  xvals[2:(length(xvals))]
-        hts <-  rep(NA, nxvs)
-
-        for(i in 1:nxvs){
-          hts[i] <- length(Mhats[Mhats >= xv1[i] & Mhats < xv2[i]])
-        }
-
-        hts <- hts / sum(hts)
-
-        maxy <- max(hts) 
-        maxy <- ceiling((maxy * 1.1) * 100) / 100
-
-        filename <- paste("Output/Mhat/", colnames(Mhatl)[l], 
-                            "_SearchedArea_Mhatfig.tiff", sep = "")
-
-        tiff(file = filename, width = 12, height = 12, 
-                    units = "in", res = 100)
-        par(mar = c(5,6,1,1))
-        plot(1, 1, type = 'n', xlab = '', ylab = '', 
-              xaxt = 'n', yaxt = 'n', bty = 'n', 
-              ylim = c(0, maxy), xlim = c(xvals[1], xvals[length(xvals)]))
-
-        for(i in 1:nxvs){
-          rect(xv1[i], 0, xv2[i], hts[i])
-        }
-        axis(2, las = 1, cex.axis = 1.25)
-        mtext(side = 2, "Probability", line = 4, cex = 2)
-        axis(1, las = 1, cex.axis = 1.25, at = xvals)
-        mtext(side = 1, "Mhat", line = 3.5, cex = 2)
-        dev.off()
-      }
-
-    # for each split, create a facility wide estimate plot
-
-      for(l in 1:Nsc){
-
-        Mhats <- Mhatl[, l]/ffs 
+        Mhats <- Mhatlspecific/ffs 
         minM <- min(Mhats)
         minM <- floor(minM - 0.001 * minM)
         maxM <- max(Mhats)
@@ -1656,18 +1540,12 @@
         hts <- hts/sum(hts)
 
         maxy <- max(hts) 
-        maxy <- ceiling((maxy * 1.1) * 100) / 100
+        maxy <- ceiling((maxy * 1.05) * 100) / 100
 
-        filename <- paste("Output/Mhat/", colnames(Mhatl)[l], 
-                            "_FacilityWide_Mhatfig.tiff", sep = "")
-
-        tiff(file = filename, width = 12, height = 12, 
-                    units = "in", res = 100)
-        par(mar = c(5,6,1,1))
+        par(mar = c(5,6,2,1))
         plot(1, 1, type = 'n', xlab = '', ylab = '', 
               xaxt = 'n', yaxt = 'n', bty = 'n', 
               ylim = c(0, maxy), xlim = c(xvals[1], xvals[length(xvals)]))
-
 
         for(i in 1:nxvs){
           rect(xv1[i], 0, xv2[i], hts[i])
@@ -1676,8 +1554,7 @@
         mtext(side = 2, "Probability", line = 4, cex = 2)
         axis(1, las = 1, cex.axis = 1.25, at = xvals)
         mtext(side = 1, "Mhat", line = 3.5, cex = 2)
-        dev.off()
-      }
+        mtext(side = 3, splitcatname, line = 0 , cex = 1.5)
 
 
   }
@@ -2110,5 +1987,96 @@
     1/(1+exp(-x))
   }
 
+################################################################################
+#
+# SSveccreate
+#
+################################################################################
+
+  SSveccreate <- function(SSdata, ...){
+
+    unitops <- unique(SSdata$Unit)
+    Nunits <- length(unitops)
+    maxvisits <- 0
+    for(i in 1:Nunits){
+      maxvisits <- max(c(maxvisits, length(SSdata$Unit[SSdata$Unit == unitops[i]])))
+    }
+
+    Nunitss <- matrix(NA, nrow = Nunits, ncol = maxvisits)
+
+    for(i in 1:Nunits){
+      visitdates <- as.Date(as.character(SSdata$DateSearched[SSdata$Unit == unitops[i]]), format = "%m/%d/%Y")
+      visitdays <- visitdates - visitdates[1]
+      Nunitss[i, 1:length(visitdays)] <- visitdays
+    }
+
+    pastecombo <- apply(Nunitss, 1, paste, collapse = "_")
+    uniquepastecombo <- unique(pastecombo)
+ 
+    Nuss <- length(uniquepastecombo)
+
+    for(i in 1:Nuss){
+      uniquepastecombo[i] <- gsub("_NA", "", uniquepastecombo[i])
+    }
+
+    return(uniquepastecombo)
+  }
 
 
+
+################################################################################
+#
+# PWAStablecreate
+#
+################################################################################
+
+
+
+  PWAStablecreate <- function(SSdata, ...){
+
+    unitops <- unique(SSdata$Unit)
+    Nunits <- length(unitops)
+    maxvisits <- 0
+    for(i in 1:Nunits){
+      maxvisits <- max(c(maxvisits, length(SSdata$Unit[SSdata$Unit == unitops[i]])))
+    }
+
+    Nunitss <- matrix(NA, nrow = Nunits, ncol = maxvisits)
+
+    for(i in 1:Nunits){
+      visitdates <- as.Date(as.character(SSdata$DateSearched[SSdata$Unit == unitops[i]]), format = "%m/%d/%Y")
+      visitdays <- visitdates - visitdates[1]
+      Nunitss[i, 1:length(visitdays)] <- visitdays
+    }
+
+    pastecombo <- apply(Nunitss, 1, paste, collapse = "_")
+    uniquepastecombo <- unique(pastecombo)
+    Nuss <- length(uniquepastecombo) 
+
+    alignss <- rep(NA, Nunits)
+    for(i in 1:Nunits){
+      alignss[i] <- which(uniquepastecombo == pastecombo[i])
+    }
+
+    PWASbysizecols <- grep("PWAS", colnames(SSdata))
+    Pbscnames <- colnames(SSdata)[PWASbysizecols]
+    sizes <- gsub("PWAS_", "", Pbscnames)
+    Nsizes <- length(sizes)
+
+    OTsize <- rep(sizes, Nuss * Nunits)
+    OTss <- rep(rep(1:Nuss, each = Nsizes), Nunits)
+    OTunit <- rep(1:Nunits, each = Nuss * Nsizes)
+    OTpwas <- rep(0, length(OTsize))
+
+    for(i in 1:Nunits){
+
+      PWASspecific <- (SSdata[which(SSdata$Unit == unitops[i])[1], PWASbysizecols])
+      SSspecific <- alignss[i]
+      OTpwas[which(OTunit == unitops[i] & OTss == SSspecific)] <- as.numeric(PWASspecific)
+    }
+
+    outtable <- data.frame(PWAS = OTpwas, Size = OTsize, SearchSchedule = OTss, Unit = OTunit)
+
+    return(outtable)
+
+  }

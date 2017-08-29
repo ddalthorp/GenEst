@@ -20,21 +20,14 @@
 
       SEdataIn <- read.csv("ExampleSearcherEfficiency.csv")
       CPdataIn <- read.csv("ExampleCarcassPersistence.csv")
-      SSdataIn <- read.csv("ExampleSearchSchedule.csv", header = F)
-      PWASdataIn <- read.csv("ExampleProportionWeightedAreaSearched.csv")
+      SSdataIn <- read.csv("ExampleSearchSchedule.csv")
       COdataIn <- read.csv("ExampleCarcassObservations.csv")       
 
     # input number of iterations
 
       Niterations <- 1000
 
-
-  # 
-  # Create output directory
-  #
-
-    dir.create("Output")
-
+ 
   #
   # Searcher Efficiency
   #
@@ -66,35 +59,35 @@
                                   SEmods, Niterations,
                                   fixK = fixKchoice, fixKval = fixKvalchoice)
 
-    # create output subdirectory
-
-      dir.create("Output/SE")
-
     # table outputs
 
       SEmodsAICtab <- AICtabcreateSEmods(SEmods, sortby = "AIC")
 
     # plot the results
+    # indexed by size class (r) and model (j)
 
-       SEgraphscreate(SEmods, SEdata = SEdataIn, SEvars, thetaSE, SEobscols, 
-                              Niterations, sizeclasscol = SEsizeclasscol)
-
+      SEgraphcreate(SEdata = SEdataIn, SEvars, thetaSE, obscols = SEobscols,  
+                              Niterations, sizeclasscol = SEsizeclasscol, 
+                              r = 4, j = 1, CellWiseModel = 25)
 
   #
   # Carcass Persistence
   #
 
-    # select predictors and size class column
+    # select predictors size class column and observation columns
 
       CPvars <- c("Visibility", "GroundCover")
       CPsizeclasscol <- "Size"
+      CPltp <- "LastPresentDecimalDays"
+      CPfta <- "FirstAbsentDecimalDays"
 	
     # run the estimator for each of the possible models for each size class
 
       CPmods <- CPmodsacrosssizes(CPdata = CPdataIn, 
                                    CPvars = CPvars,
-                                   sizeclasscol = CPsizeclasscol, 
-                                   unitchoice = "days")
+                                   sizeclasscol = CPsizeclasscol,
+                                   CPltp = CPltp,
+                                   CPfta = CPfta)
 
     # create a theta for each cell within each each model in each size class
     #   dimension: [Niterations, 2, Ncells(CP), Nmodels(CP), Nsizeclasses]
@@ -103,19 +96,16 @@
                                           sizeclasscol = CPsizeclasscol,
                                           CPmods, Niterations)
 
-    # create output subdirectory
-
-      dir.create("Output/CP")
-
     # table outputs
 
       CPmodsAICtab <- AICtabcreateCPmods(CPmods, sortby = "AIC")
 
     # plot the results
 
-       CPgraphscreate(CPmods, CPdata = CPdataIn, CPvars, thetaCP, 
-           Niterations, unitchoice = "days", sizeclasscol = CPsizeclasscol)
-
+       CPgraphcreate(CPmods, CPdata = CPdataIn, CPvars, thetaCP, 
+           Niterations, timeunit = "days", sizeclasscol = CPsizeclasscol,
+           CPltp = CPltp, CPfta = CPfta, r = 1, 
+		   modelcomplexity = 1, distchoice = 1)
 
 
   #
@@ -130,37 +120,37 @@
   # estimate g
   #
 
+    # prep search schedules
+
+      SSs <- SSveccreate(SSdata = SSdataIn)
+
     # garray
     #  dimension: [Niterations, 1, Nsearchschedules, 
     #                Nmodels(SExCP), Nsizeclasses]
 
       garray <- gcreateacrosssizes(CPdata = CPdataIn, SEdata = SEdataIn, 
-                                SSdata = SSdataIn, 
+                                SSdata = SSs, 
                                 CPvars = CPvars, SEvars = SEvars, 
                                 thetaCP, thetaSE, CPmods,
                                 SEmodstouse, CPmodstouse)
-
-    # create output subdirectory
-
-      dir.create("Output/g")
 
     # summarize g distributions
 
       gtable <- gtablecreate(garray, CIw = 0.9)
 
-    # plot g
-
-      ggraphscreate(garray) 
-
 
   #
   # estimate Mhat
   #
+ 
+    # create PWAS table
+
+      PWASdatatab <- PWAStablecreate(SSdata = SSdataIn)
 
     # Mhatarray
     #  dimension: [Niterations, Nss, Nunits, Nsplitcats, Nsizeclasses]
 
-       Mhatarray <- Mhatgenerator(COdata = COdataIn, PWASdata = PWASdataIn, 
+       Mhatarray <- Mhatgenerator(COdata = COdataIn, PWASdata = PWASdatatab, 
                             sizeclasscol = "Size", splitcol = "Split", 
                             unitcol = "Unit", sscol = "SearchSchedule",
                             seedset = 124, CPvars = CPvars, 
@@ -172,17 +162,18 @@
     
       Mhatsc <- Mhatcondense(Mhatarray)
 
-    # create output subdirectory
-
-      dir.create("Output/Mhat")
-
     # produce Mhat table
     #   allows for expansion to whole facility 
     #    (ffs = fraction facility sampled)
 
       Mhattab <- Mhattable(Mhatl = Mhatsc, ffs = .85, CIw = 0.9)
 
-    # plot Mhat
+    # plot Mhat for each split
 
-      Mhatgraph(Mhatl = Mhatsc, ffs = .85)
+      l <- 1
+      Mhatgraph(Mhatlspecific = Mhatsc[,l], 
+	              splitcatname = colnames(Mhatsc)[l], ffs = .85)
+      l <- 2
+      Mhatgraph(Mhatlspecific = Mhatsc[,l], 
+	  	              splitcatname = colnames(Mhatsc)[l], ffs = .85)
 
