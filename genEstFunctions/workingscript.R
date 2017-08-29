@@ -170,6 +170,7 @@
 
     # plot Mhat for each split
 
+	  par(mfrow = c(1, 2))
       l <- 1
       Mhatgraph(Mhatlspecific = Mhatsc[,l], 
 	              splitcatname = colnames(Mhatsc)[l], ffs = .85)
