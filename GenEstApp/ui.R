@@ -1,51 +1,20 @@
-###############################################################################
-###############################################################################
-##
-##  This script contains the UI code for the the GenEst app
-##
-##  Coded by Joseph (Josie, they) L. Simonis, DAPPER Stats
-##
-##  version 0.0.0.1 2017
-##
-##  Held under GNU GPL v >= 3	
-##
-###############################################################################
-###############################################################################
-
-##############################
+##############################################################################
 #
-#  Table of Contents
+#  This script contains the UI code for the the GenEst app
 #
-#  1. load packages
-#  2. ui code
+#  version 0.0.0.2 September 2017
 #
-
-#1. load code and packages
-
-  source("genestfunctions.R")
-  packageLoad()
-
-
-#2. ui code
-
-# navbar page sets up the general format with the navigation bar and tabs, each
-# of which is defined by a tabPanel function
+#  Held under GNU GPL v >= 3	
 #
-#  Home: general page with image
-#  Data: page for data entry  
-#  Analyses: pages for analyses
-#      SE: subpage for searcher efficiency analysis
-#      SE: subpage for carcass persistence analysis
-#      SE: subpage for carcass estimation  
-#  Reporting: page for automating report output
-#  About: general info
+##############################################################################
 
 shinyUI(
   navbarPage("GenEst",
             
     tabPanel("Home",
       br(),
-      HTML('<center><img src="GenEstLogoExample2.jpg" height = "500"></center>'),
+      HTML('<center><img src="GenEstLogoExample2.jpg" height = 
+                              "500"></center>'),
       br()
     ),
 
@@ -76,7 +45,7 @@ shinyUI(
                 ".csv")
               ),
               br(),
-              fileInput("FOFile", "Fatality Observation Data File",
+              fileInput("COFile", "Carcass Observation Data File",
                 accept = c(
                 "text/csv",
                 "text/comma-separated-values,text/plain",
@@ -94,66 +63,173 @@ shinyUI(
               HTML('<b><big><center>View data:</center></big></b>'),
               br(),
               tabsetPanel(
-                tabPanel("Search Efficiency",  tableOutput("SEin")),
+                tabPanel("Search Efficiency",  tableOutput("SEdata")),
                 tabPanel("Carcass Persistence",  tableOutput("CPin")),
                 tabPanel("Search Schedule",  tableOutput("SSin")),
-                tabPanel("Fatality Observations",  tableOutput("FOin")),
+                tabPanel("Carcass Observations",  dataTableOutput("COin")),
                 tabPanel("Meta Data",  tableOutput("MDin"))
               )
             )
           )
-
-
-
     ),
 
     tabPanel("Analyses",
       tabsetPanel(
+        tabPanel("Main Inputs",
+          sidebarPanel(width = 3,
+            numericInput("Niterations", "Number of iterations:", value = 1000, 
+                         min = 1, max = 10000, step = 1)
+          ),
+          mainPanel(
+            br()
+          )
+        ),
         tabPanel("Search Efficiency",
           sidebarPanel(width = 3, 
-            selectizeInput("SEfactorselect", "Choose classification factors:", 
+            selectizeInput("SEvars", "Choose predictor variables (max: 2):", 
               c("No data input yet"), multiple = T),
-            selectizeInput("SEobsselect", "Choose observations:",
-              c("No data input yet"), multiple = T)
+            selectizeInput("SEsizeclasscol", 
+              "Choose size class column (max: 1):", 
+              c("No data input yet"), multiple = T),
+            selectizeInput("SEobscols", 
+              "Choose observation columns (in order):",
+              c("No data input yet"), multiple = T),
+            selectizeInput("fixKchoice", "Use fixed k?",
+              c("NO", "YES"), multiple = F),
+            numericInput("fixKvalchoice", "Value for fixed k:", value = NULL, 
+                         min = 0, max = 1, step = 0.001),
+            shiny::actionButton("SEmodrun", "Run SE Model")
           ),
           mainPanel(
             tabsetPanel(
-              tabPanel("Data", tableOutput("selected_SE")),
-              tabPanel("Analysis Results",  br()),
-              tabPanel("Figures",  br())
+              tabPanel("Data", br(), br(), tableOutput("selected_SE")),
+              tabPanel("Model Table", br(), 
+                       selectizeInput("SEaicsizeclass", 
+                         "Choose size class for AIC table:", 
+                         "Model not yet run", multiple = F ),
+                        br(), 
+                        shiny::actionButton("SEaictablerun", 
+                          "Generate AIC table"), 
+                        br(), br(), 
+                        dataTableOutput("SEaictable") 
+                       ),
+              tabPanel("Figures", br(),
+                       selectizeInput("SEfigsizeclass", 
+                         "Choose size class for SE figure:", 
+                         "Model not yet run", multiple = F ),
+                       selectizeInput("SEfigmodel", 
+                         "Choose model for SE figure:", 
+                         "Model not yet run", multiple = F ),
+                       br(), 
+                       shiny::actionButton("SEfigrun", "Generate SE Figure"), 
+                       br(), br(), 
+                       plotOutput("SEfig", width = "800px", height = "800px")
+                       ),
+              tabPanel("Model Selection", 
+                       br(), 
+                       shiny::actionButton("SEmodOpsPop","Populate Options"),
+                       br(), br(),
+                       htmlOutput("SEmodselectinputs")) 
             )
           )
         ),
         tabPanel("Carcass Persistence",
           sidebarPanel(width = 3,
-            br()
+            selectizeInput("CPvars", 
+                         "Choose predictor variables (max: 2):", 
+              c("No data input yet"), multiple = T),
+            selectizeInput("CPsizeclasscol", 
+              "Choose size class column (max: 1):",
+              c("No data input yet"), multiple = T),
+            selectizeInput("CPltp", 
+              "Choose last time present observation column (max: 1):",
+              c("No data input yet"), multiple = T),
+            selectizeInput("CPfta", 
+              "Choose first time absent observation column (max: 1):",
+              c("No data input yet"), multiple = T),
+            shiny::actionButton("CPmodrun", "Run CP Model")
           ),
           mainPanel(
             tabsetPanel(
-              tabPanel("Data", br()),
-              tabPanel("Analysis Results",  br()),
-              tabPanel("Figures",  br())
+              tabPanel("Data", tableOutput("selected_CP")),
+              tabPanel("Model Table",  br(),
+                       selectizeInput("CPaicsizeclass", 
+                         "Choose size class for AIC table:", 
+                         "Model not yet run", multiple = F ),
+                        br(), 
+                        shiny::actionButton("CPaictablerun", 
+                         "Generate AIC table"),
+                        br(), br(), dataTableOutput("CPaictable") 
+                       ),
+              tabPanel("Figures",  br(),
+                       selectizeInput("CPfigsizeclass",
+                          "Choose size class for CP figure:",
+                          "Model not yet run", multiple = F ),
+                       selectizeInput("CPfigmodelcomplexity",
+                          "Choose model complexity for CP figure:", 
+                          "Model not yet run", multiple = F ),
+                       selectizeInput("CPfigdistemph",
+                          "Choose distribution to emphasize:", 
+                          "Model not yet run", multiple = F ),
+                       br(), shiny::actionButton("CPfigrun",
+                          "Generate CP Figure"), br(), br(), 
+                       plotOutput("CPfig", width = "800px", 
+                                   height = "1000px")
+                       ),
+              tabPanel("Model Selection", br(), 
+                        shiny::actionButton("CPmodOpsPop","Populate Options"),
+                         br(), br(),  
+                         htmlOutput("CPmodselectinputs"))
             )
           )
         ),
-        tabPanel("Fatality Estimation",
+        tabPanel("Detection Probability",
           sidebarPanel(width = 3,
+                       numericInput("gCIw", "Confidence interval width:", 
+                         value = 0.9, 
+                         min = 0, max = 1, step = 0.001),
+                       shiny::actionButton("grun", 
+                         "Estimate Detection Probability"), br()
+          ),
+          mainPanel(
+            br(), dataTableOutput("gtable"),
             br()
+          )
+        ),
+        tabPanel("Fatality Estimation",
+          sidebarPanel(width = 3, 
+            selectizeInput("COsplitcol", "Choose split column (max: 1):", 
+              c("No data input yet"), multiple = T),
+            selectizeInput("COsizeclasscol", 
+              "Choose size class column (max: 1):", 
+              c("No data input yet"), multiple = T),
+            selectizeInput("COsscol", 
+              "Choose search schedule column (max: 1):",
+              c("No data input yet"), multiple = T),
+            selectizeInput("COunitcol", "Choose unit column (max: 1):",
+              c("No data input yet"), multiple = T),
+            numericInput("MCIw", "Confidence interval width:", value = 0.9, 
+                         min = 0, max = 1, step = 0.001),
+            numericInput("ffs", "Fraction of facility surveyed", value = 1.0, 
+                         min = 0, max = 1, step = 0.001),
+            numericInput("SEED", "Set random number seed", value = 123, 
+                         min = 0, max = 9999, step = 1),
+            shiny::actionButton("Mrun", "Estimate total carcasses")
           ),
           mainPanel(
             tabsetPanel(
-              tabPanel("Data", br()),
-              tabPanel("Analysis Results",  br()),
-              tabPanel("Figures",  br())
+              tabPanel("Results Table",  br(), tableOutput("Mhattab")),
+              tabPanel("Figures",  br(), 
+                plotOutput("Mhatfig", width = "800px", height = "800px"))
             )
           )
         )
       )
     ),
 
-    tabPanel("Reporting",
-      br()
-    ),
+    #tabPanel("Reporting",
+    #  br()
+    #),
 
 
     tabPanel("About",
@@ -175,16 +251,20 @@ shinyUI(
               <a href = "http://www.USGS.gov">(USGS)</a>'),
           br(), 
           br(),
-          HTML('GenEst is a tool for estimating fatalities at renewable
-            power facilities.'),
+          HTML('GenEst is a tool for estimating bird and bat fatalities 
+            at renewable power facilities.'),
           br(),
           br(),
-          HTML('It is currently in development
+          HTML('GenEst is currently in development
             and should be considered provisional.'),
           br(),
           br(),
-          HTML('The development of GenEst is being funded by Bat
-            Conservation International.'),
+          HTML('This is version 0.0.0.2, September 2017.'),
+          br(),
+          br(),
+          HTML('The development of GenEst is being supported by Bat
+            Conservation International, The US Bureau of Land Management,
+            The US Geological Survey, WEST, and Oregon State University.'),
           br(),
           br(),
           HTML('GenEst is provided under GNU GPL version 3 (and any 

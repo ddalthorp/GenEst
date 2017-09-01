@@ -1,5 +1,0 @@
-ID,DateTimePlaced,Season,PlacedCond,Turbine,Study,Person tested (first),Size,Length.cm,SppCode,DistanceFromTurbine,Bearing.Turb.to.Carc,Easting,Northing,Visibility,VegCover,S1,S2,S3,S4,S5,S6,S7,S8,S9,S10,S11,S12,S13,S14,S15,S16,S17,S18,S19,S20
-1,4/2/2009 13:04,Spring,I,11,Test study,SV,Medium,30,ROPI,12,101,535148,64895222,Diff,Crop,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-2,4/3/2009 9:04,Spring,I,23,Test study,JY,Medium,9,EUST,22,14,535603,64897811,Mod,Gravel,0,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-3,4/3/2009 7:47,Spring,I,23,Test study,LT,Small,12,HOSP,44,8,535603,64897811,Mod,Grass,0,0,-999,-999,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
-4,4/5/2009 17:12,Spring,I,15,Test study,JY,Bat,10,LACI,31,171,535423,64895091,RP,Gravel,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
