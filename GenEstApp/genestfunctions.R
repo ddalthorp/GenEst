@@ -1428,12 +1428,18 @@ packageLoad <- function(...){
       EXPinCO <- which(colnames(COdata) %in% colnames(expanded) )
       COinEXP <- which(colnames(expanded) %in% colnames(COdata))
 
+
+
       if(length(EXPinCO) == 1){
         COpaste <- as.character(COdata[, EXPinCO])
         EXPpaste <- as.character(expanded[, COinEXP])
       }else{
-        COpaste <- apply(COdata[, EXPinCO], 1, paste, collapse = "")
-        EXPpaste <- apply(expanded[, COinEXP], 1, paste, collapse = "")
+        COexpCO <- COdata[, EXPinCO]
+        COexpCO <- COexpCO[, order(colnames(COexpCO))]
+        EXPcoEXP <- expanded[, COinEXP]
+        EXPcoEXP <- EXPcoEXP[, order(colnames(EXPcoEXP))]
+        COpaste <- apply(COexpCO, 1, paste, collapse = "")
+        EXPpaste <- apply(EXPcoEXP, 1, paste, collapse = "")
       }
 
       set.seed(seedset)
@@ -1552,7 +1558,7 @@ packageLoad <- function(...){
 
       rownames(Mhattab) <- colnames(Mhatl)
       colnames(Mhattab) <- paste(c("Searched Area", "Whole Facility"), 
-                                   paste("Mean (", paste(CIw*100, "% CI)", 
+                                   paste("Mean and ", paste(CIw*100, "Percent CI", 
                                            sep = ""), 
                                  " Mortality", sep = ""), sep = " ")
 
@@ -1578,6 +1584,7 @@ packageLoad <- function(...){
       Mhattab[ , 2] <- paste(Mhatl_wfmeans, " (", Mhatl_wfqs[1, ], ", ",
                               Mhatl_wfqs[2, ], ")", sep = "")
 
+      Mhattab <- data.frame("SplitCategory" = rownames(Mhattab), Mhattab)
     # return
 
       return(Mhattab)

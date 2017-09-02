@@ -63,9 +63,9 @@ shinyUI(
               HTML('<b><big><center>View data:</center></big></b>'),
               br(),
               tabsetPanel(
-                tabPanel("Search Efficiency",  tableOutput("SEdata")),
-                tabPanel("Carcass Persistence",  tableOutput("CPin")),
-                tabPanel("Search Schedule",  tableOutput("SSin")),
+                tabPanel("Search Efficiency",  dataTableOutput("SEdata")),
+                tabPanel("Carcass Persistence",  dataTableOutput("CPin")),
+                tabPanel("Search Schedule",  dataTableOutput("SSin")),
                 tabPanel("Carcass Observations",  dataTableOutput("COin")),
                 tabPanel("Meta Data",  tableOutput("MDin"))
               )
@@ -185,7 +185,7 @@ shinyUI(
         ),
         tabPanel("Detection Probability",
           sidebarPanel(width = 3,
-                       numericInput("gCIw", "Confidence interval width:", 
+                       numericInput("gCIw", "Confidence level:", 
                          value = 0.9, 
                          min = 0, max = 1, step = 0.001),
                        shiny::actionButton("grun", 
@@ -208,7 +208,7 @@ shinyUI(
               c("No data input yet"), multiple = T),
             selectizeInput("COunitcol", "Choose unit column (max: 1):",
               c("No data input yet"), multiple = T),
-            numericInput("MCIw", "Confidence interval width:", value = 0.9, 
+            numericInput("MCIw", "Confidence level:", value = 0.9, 
                          min = 0, max = 1, step = 0.001),
             numericInput("ffs", "Fraction of facility surveyed", value = 1.0, 
                          min = 0, max = 1, step = 0.001),

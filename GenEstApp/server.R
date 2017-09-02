@@ -45,7 +45,7 @@ shinyServer(function(input, output, session) {
         rv$EF <- T
         rv$SEdataIn <- read.csv(input$SEFile$datapath, header = T)
         rv$cn_SE <- colnames(rv$SEdataIn)
-        output$SEdata <- renderTable(rv$SEdataIn)
+        output$SEdata <- renderDataTable(rv$SEdataIn)
 
         if(rv$EF == F){
           rv$cn_SE <- character(0) 
@@ -146,6 +146,7 @@ shinyServer(function(input, output, session) {
 
               w <- ""
 
+
               for(i in 1:rv$NsizeclassesSE){
                 w <- paste(w, selectizeInput(paste("SEmodstouse", 
                               i, sep = ""),
@@ -173,7 +174,7 @@ shinyServer(function(input, output, session) {
         rv$CP <- T
         rv$CPdataIn <- read.csv(input$CPFile$datapath, header = T)
         rv$cn_CP <- colnames(rv$CPdataIn)
-        output$CPin <- renderTable(rv$CPdataIn)
+        output$CPin <- renderDataTable(rv$CPdataIn)
 
         if(rv$CP == F){
           rv$cn_CP <- character(0) 
@@ -311,7 +312,7 @@ shinyServer(function(input, output, session) {
         rv$SS <- T
         rv$SSdataIn <- read.csv(input$SSFile$datapath, header = T)
 
-        output$SSin <- renderTable(rv$SSdataIn)
+        output$SSin <- renderDataTable(rv$SSdataIn)
 
         rv$SSs <- SSveccreate(SSdata = rv$SSdataIn)
 
