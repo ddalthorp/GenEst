@@ -2,7 +2,7 @@
 #
 #    example of a GenEst analysis at the command line
 #
-#    version 0.0.0.2 September 2017
+#    version 0.0.0.3 October 2017
 #
 #    Held under GNU GPL v >= 3	
 #
@@ -14,7 +14,7 @@
 
     # source code
 
-      source("genEstFunctions.R")
+      source("genestfunctions.R")
       packageLoad()
 
     # read in data
@@ -46,10 +46,10 @@
 
     # run the estimator for each of the possible models for each size class
 
-      SEmods <- SEmodsacrosssizes(SEdata = SEdataIn, obscols = SEobscols,
-                                   SEvars = SEvars,
+      SEmods <- SEmodsetsacrosssizes(data = SEdataIn, vars = SEvars, 
+                                   obscols = SEobscols, 
                                    sizeclasscol = SEsizeclasscol,
-                                   fixK = fixKchoice, fixKval = fixKvalchoice, 
+                                   fixK = fixKchoice, fixKval = fixKvalchoice,
                                    initKval = 0.7)
 
     # create a theta for each cell within each each model in each size class
@@ -84,11 +84,9 @@
 	
     # run the estimator for each of the possible models for each size class
 
-      CPmods <- CPmodsacrosssizes(CPdata = CPdataIn, 
-                                   CPvars = CPvars,
-                                   sizeclasscol = CPsizeclasscol,
-                                   CPltp = CPltp,
-                                   CPfta = CPfta)
+      CPmods <- CPmodsetsacrosssizes(data = CPdataIn, vars = CPvars, 
+                                     sizeclasscol = CPsizeclasscol, 
+                                     ltpc = CPltp, ftac = CPfta)
 
     # create a theta for each cell within each each model in each size class
     #   dimension: [Niterations, 2, Ncells(CP), Nmodels(CP), Nsizeclasses]

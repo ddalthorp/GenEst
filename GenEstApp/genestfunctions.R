@@ -2,7 +2,7 @@
 #
 #  This script contains the functions of the GenEst package
 #
-#  version 0.0.0.2 September 2017
+#  version 0.0.0.3 October 2017
 #
 #  Held under GNU GPL v >= 3	
 #
@@ -28,14 +28,14 @@ packageLoad <- function(...){
 
   # packages needed from CRAN
 
-    crpks <- c("devtools", "shiny", "rhandsontable", "httr", "survival",
+    crpks <- c("shiny", "rhandsontable", "httr", "survival", # "devtools",
                 "mvtnorm", "matrixStats", "gsl")
     for(i in 1:length(crpks)){
       if(!(crpks[i] %in% lps)){
 	  install.packages(crpks[i])
       }
     }
-    library(devtools)
+    #library(devtools)
     library(shiny)
     library(rhandsontable)
     library(httr)
@@ -44,50 +44,159 @@ packageLoad <- function(...){
     library(matrixStats)
     library(gsl)
 
-  # pakages needed from github
+  # pakages needed from github (not currently needed)
 
     # workaround the firewall
 
-      set_config(config(ssl_verifypeer = 0L))
+    #  set_config(config(ssl_verifypeer = 0L))
 
-    if(!("shinysky" %in% lps)){
-      install_github("AnalytixWare/ShinySky")
-    }
-    library(shinysky)
+    #if(!("shinysky" %in% lps)){
+    #  install_github("AnalytixWare/ShinySky")
+    #}
+    #library(shinysky)
 
   # return
 
 }
 
+
 ##############################################################################
 #
-# SEmodsacrosssizes
+# SEmod
 #
 ##############################################################################
 
-  SEmodsacrosssizes <- function(SEsizeclasscol, SEdata, sizeclasscol,
-                                 fixK, fixKval, initKval,
-                                 SEvars, obscols, ... ){ 
+  SEmod <- function(peq, keq, fct, data, obs, obscols, 
+                                 initKval, fixK, fixKval, ... ){ 
 
-    # obs cols
+    # set up the formulas
+
+       pformula <- formula(peq)
+       kformulap <- formula(keq)
+       kformula <- switch(fixK, 
+                             NO = formula(keq),
+                             YES = formula("~1"))
+
+    # set up the model 
+
+      Xp <- model.matrix(pformula, data)
+      np <- dim(Xp)[2]
+
+      Xk <- model.matrix(kformula, data)
+      nk <- dim(Xk)[2]
+
+    # create the model matrices
+
+      miniXp <- model.matrix(pformula, fct)
+      miniXk <- model.matrix(kformula, fct)
+      facts <- cbind(miniXp, miniXk)
+      nfact <- dim(facts)[1]
+      tXpk <- t(cbind(Xp, Xk))
+
+    # set up the groups
+
+      groups <- numeric(dim(Xp)[1])
+					
+      for (k in 1:nfact){
+        groups[colSums(tXpk == facts[k,]) == np + nk] <- k
+      }
+
+    # set up the starting values for theta
+    #  Cells with all 0's set to 0.1
+    #  Cells with all 1's set to 0.9
+
+      empp <- numeric(nrow(Xp))
+
+      s1data <- data[, obscols[1]]
+
+      for(k in 1:dim(miniXp)[1]){
+        empp[which(groups==k)] <- mean(s1data[which(groups == k & 
+                                       s1data >= 0)], na.rm = TRUE)
+      }
+      empp[which(empp == 0)] <- 0.1
+      empp[which(empp == 1)] <- 0.9 
+      theta <- c(solve(t(Xp) %*% Xp) %*% t(Xp) %*% logit(empp), 
+                 logit(rep(initKval, nk)))
+
+      theta <- switch(fixK, 
+                      YES = theta[-length(theta)],
+                      NO = theta)
+
+    # run the pk model
+
+      result <- optim(par = theta, fn = pkfunction, method = "BFGS", 
+                        hessian = T, groups = groups, np = np,
+                        facts = facts, fixK = fixK, fixKval = fixKval,
+                        zeros = obs[,"zeros"], 
+                        found = obs[,"found"],  
+                        maxmiss = max(obs[,"zeros"]))
+
+    # prep the output
+
+      output <- vector("list", 8) 
+      names(output) <- c("pmodel", "kmodel", "betaphat", "betakhat", 
+                         "vartheta", "AIC", "AICc", "convergence")
+      output$pmodel <- pformula
+      output$kmodel <- kformulap
+      output$betaphat <- result$par[1:ncol(Xp)]
+      output$betakhat <- switch(fixK,
+                                NO = result$par[(ncol(Xp)+1):length(theta)],
+                                YES = NULL)
+      output$vartheta <- solve(result$hessian)
+
+      npar <- length(result$par)
+      nobs <- length(obs)
+      output$AIC <- 2 * result$value + 2 * npar
+      output$AICc <- output$AIC + 
+                       (2 * npar * (npar + 1)) / (nobs - npar - 1)
+      output$convergence <- result$convergence
+      output$miniXp <- miniXp
+      output$miniXk <- miniXk
+      output$np <- np
+      output$nk <- nk
+      output$fixedK <- fixKval
+ 
+    # return
+
+      return(output)
+
+  }
+  
+
+
+##############################################################################
+#
+# SEmodset
+#
+##############################################################################
+
+
+  SEmodset <- function(vars, data, initKval, fixK, fixKval, obscols, ... ){
+
+    # set up the response data (observations)
+
     #   zeros: # of times the carcass was missed
     #   found: # of search on which the carcass was found
 
-      zeros <- rowCounts(as.matrix(SEdata[, obscols]), value = 0, na.rm = T)
-      foundInd <- which(rowCounts(as.matrix(SEdata[, obscols]), value = 1, 
+      zeros <- rowCounts(as.matrix(data[, obscols]), value = 0, na.rm = T)
+      foundInd <- which(rowCounts(as.matrix(data[, obscols]), value = 1, 
                          na.rm = T) == 1)
       found <- numeric(length(zeros))
       found[foundInd] <- zeros[foundInd] + 1
       obs <- cbind(zeros, found)
 
-    # pred cols
+    # set up the factor combinations
+ 
+      fct <- factorcombinations(pvars = vars, data = data)
 
-      preds<-rep(NA, 5)
-      preds[length(SEvars)==0][1]<-c("1")
-      preds[length(SEvars)==1][1:2]<-c("1", SEvars[1])
-      preds[length(SEvars)==2]<-c("1", SEvars[1], SEvars[2], paste(SEvars[1], 
-                                        SEvars[2], sep = " + ")
-                                   , paste(SEvars[1], SEvars[2], sep = " * "))
+    # set up the models
+
+      preds <- rep(NA, 5)
+      preds[length(vars) == 0][1] <- c("1")
+      preds[length(vars) == 1][1:2] <- c("1", vars[1])
+      preds[length(vars) == 2] <- c("1", vars[1], vars[2], paste(vars[1], 
+                                        vars[2], sep = " + ")
+                                   , paste(vars[1], vars[2], sep = " * "))
       preds <- as.character(na.omit(preds))
       eqs <- paste("~", preds, sep = " ")
 
@@ -100,136 +209,72 @@ packageLoad <- function(...){
                              length(eqs)))
       Nmods <- length(peqs)
 
-    # size classes
+    # set up the output
 
-      sccol <- which(colnames(SEdata) == sizeclasscol)
+      output <- vector("list", Nmods)
 
-      sizeclasses <- as.character(unique(SEdata[ , sccol]))
-      sizeclasses[length(sizeclasses) == 0] <- 1
-      Nsizeclasses <- length(sizeclasses)
+    # run SEmod for each of the models
 
-      sizes <- as.character(SEdata[ , sccol])
-      sizes[rep(length(sizes) == 0, nrow(SEdata))] <- "1"
+      for(i in 1:Nmods){
 
-    # set up the factor combinations
- 
-      SEfct <- factorcombinations(pvars = SEvars, data = SEdata)
-
-    # run the estimator for each of the possible models for each size class
-
-      SEmods <- vector("list", Nsizeclasses)
-
-    # for each size class
-
-      for(i in 1:Nsizeclasses){
-
-        SEmodsi <- vector("list", Nmods)				
-        obsi <- obs[sizes == sizeclasses[i], ]
-        SEdatai <- SEdata[sizes == sizeclasses[i] , ]
-
-        for(j in 1:Nmods){
-
-          pformula <- formula(peqs[j])
-          kformulap <- formula(keqs[j])
-          kformula <- switch(fixK, 
-                             NO = formula(keqs[j]),
-                             YES = formula("~1"))
-
-          # set up the model 
-
-            Xp <- model.matrix(pformula, SEdatai)
-            np <- dim(Xp)[2]
-
-            Xk <- model.matrix(kformula, SEdatai)
-            nk <- dim(Xk)[2]
-
-          # create the model matrices
-
-            miniXp <- model.matrix(pformula, SEfct)
-            miniXk <- model.matrix(kformula, SEfct)
-            facts <- cbind(miniXp, miniXk)
-            nfact <- dim(facts)[1]
-            tXpk <- t(cbind(Xp, Xk))
-
-          # set up the groups of observations
-
-            groups <- numeric(dim(Xp)[1])
-					
-            for (k in 1:nfact){
-              groups[colSums(tXpk == facts[k,]) == np + nk] <- k
-            }
-
-          # set up the starting values for theta
-          #  Cells with all 0's set to 0.1
-          #  Cells with all 1's set to 0.9
-
-            empp <- numeric(nrow(Xp))
-
-            s1data <- SEdatai[, obscols[1]]
-
-            for(k in 1:dim(miniXp)[1]){
-              empp[which(groups==k)] <- mean(s1data[which(groups == k & 
-                                             s1data >= 0)], na.rm = TRUE)
-            }
-            empp[which(empp == 0)] <- 0.1
-            empp[which(empp == 1)] <- 0.9 
-            theta <- c(solve(t(Xp) %*% Xp) %*% t(Xp) %*% logit(empp), 
-                       logit(rep(initKval, nk)))
-
-            theta <- switch(fixK, 
-                            YES = theta[-length(theta)],
-                            NO = theta)
-
-          # run the pk model
-
-            result <- optim(par = theta, fn = pkfunction, method = "BFGS", 
-                            hessian = T, groups = groups, np = np,
-                            facts = facts, fixK = fixK, fixKval = fixKval,
-                            zeros = obsi[,"zeros"], found = obsi[,"found"],  
-                            maxmiss = max(obsi[,"zeros"]))
-
-          # prep the output
-
-            output <- vector("list", 8) 
-            names(output) <- c("pmodel", "kmodel", "betaphat", "betakhat", 
-                               "vartheta", "AIC", "AICc", "convergence")
-            output$pmodel <- pformula
-            output$kmodel <- kformulap
-            output$betaphat <- result$par[1:ncol(Xp)]
-            output$betakhat <- switch(fixK,
-                                 NO = result$par[(ncol(Xp)+1):length(theta)],
-                                 YES = NULL)
-            output$vartheta <- solve(result$hessian)
-
-              npar <- length(result$par)
-              nobs <- length(obsi)
-            output$AIC <- 2 * result$value + 2 * npar
-            output$AICc <- output$AIC + 
-                             (2 * npar * (npar + 1)) / (nobs - npar - 1)
-            output$convergence <- result$convergence
-            output$miniXp <- miniXp
-            output$miniXk <- miniXk
-            output$np <- np
-            output$nk <- nk
-            output$fixedK <- fixKval
- 
-
-          SEmodsi[[j]] <- output
-          names(SEmodsi)[j] <- paste("p: ", peqs[j], ", k: ", 
-                                      keqs[j], sep = "")
-        }
-
-        SEmods[[i]] <- SEmodsi
+        output[[i]] <- SEmod(peq = peqs[i], keq = keqs[i],  
+                             fct = fct, data = data, obscols = obscols, 
+                             obs = obs, initKval = initKval,  
+                             fixK = fixK, fixKval = fixKval)
 
       }
 
-    # add size class names
-
-      names(SEmods) <- sizeclasses
+          names(output) <- paste("p: ", peqs, ", k: ", 
+                                      keqs, sep = "")
 
     # return
 
-      return(SEmods)
+      return(output)
+
+  } 
+
+
+##############################################################################
+#
+# SEmodsetsacrosssizes 
+#
+##############################################################################
+
+
+  SEmodsetsacrosssizes <- function(data, vars, obscols, sizeclasscol,
+                                   initKval, fixK, fixKval, ...){
+
+    # set up the size classes
+
+      sccol <- which(colnames(data) == sizeclasscol)
+
+      sizeclasses <- as.character(unique(data[ , sccol]))
+      sizeclasses[length(sizeclasses) == 0] <- 1
+      Nsizeclasses <- length(sizeclasses)
+
+      sizes <- as.character(data[ , sccol])
+      sizes[rep(length(sizes) == 0, nrow(data))] <- "1"
+
+    # prep the output
+
+      output <- vector("list", Nsizeclasses)
+      names(output) <- sizeclasses
+
+    # iterate across size classes
+
+      for(i in 1:Nsizeclasses){
+
+        sizeclass <- sizeclasses[i]
+        datai <- data[sizes == sizeclass , ]
+
+        output[[i]] <- SEmodset(vars = vars, data = datai, 
+                                obscols = obscols, initKval = initKval, 
+                                fixK = fixK, fixKval = fixKval)
+      }
+
+    # return
+
+      return(output)
 
   }
 
@@ -631,8 +676,8 @@ packageLoad <- function(...){
                 CMmink <- min(CMKS)
                 CMmaxk <- max(CMKS)
 
-                points(CMKX, CMKS, pch = 1, cex = 0.5, lwd = 1, 
-                        col = rgb(0.1, 0.1, 0.8, 0.01))
+                #points(CMKX, CMKS, pch = 1, cex = 0.5, lwd = 1, 
+                #        col = rgb(0.1, 0.1, 0.8, 0.01))
                 rect(i - 0.1 + 0.2, CMiqk[1], i + 0.1 + 0.2, CMiqk[2], 
                         lwd = 3, col = rgb(0.1, 0.1, 0.8, 0.6))
                 points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmediank, 2), 
@@ -658,19 +703,39 @@ packageLoad <- function(...){
   }
 
 
+
+
 ##############################################################################
 #
-# CPmodsacrosssizes 
+# CPmod
 #
 ##############################################################################
 
-  CPmodsacrosssizes <- function(CPdata, sizeclasscol,
-                                 CPvars, CPltp, CPfta, ... ){ 
+  CPmod <- function(data, obs_survobj, eqtouse, disttouse, ... ){
+
+
+        mform <- formula(paste("obs_survobj" , eqtouse, sep = " "))
+        output <- survreg(mform, data, dist = disttouse)
+
+    # return
+
+      return(output)
+
+  }
+
+
+##############################################################################
+#
+# CPmodset
+#
+##############################################################################
+
+  CPmodset <- function(data, vars, ltpc, ftac, ... ){
 
     # set up the response (surv object)
 
-      t1 <- CPdata[ , which(colnames(CPdata) == CPltp)]
-      t2 <- CPdata[ , which(colnames(CPdata) == CPfta)]
+      t1 <- data[ , which(colnames(data) == ltpc)]
+      t2 <- data[ , which(colnames(data) == ftac)]
 
       event <- rep(3, length(t1))
       event[which(is.na(t2))] <- 0
@@ -680,74 +745,87 @@ packageLoad <- function(...){
       t1[which(t1 == 0)] <- t2[which(t1 == 0)]
 
 
-      CPobvs_survobj <- Surv(time = t1, time2 = t2, event = event, 
+      obs_survobj <- Surv(time = t1, time2 = t2, event = event, 
                               type = "interval")
+
+    # select the distributions to use
+
+      distsselected <- c("exponential", "weibull", "loglogistic", "lognormal")
 
     # set up the predictors
 
-      preds<-rep(NA, 5)
-      preds[length(CPvars)==0][1]<-c("1")
-      preds[length(CPvars)==1][1:2]<-c("1", CPvars[1])
-      preds[length(CPvars)==2]<-c("1", CPvars[1], CPvars[2], paste(CPvars[1], 
-                                    CPvars[2], sep = " + "),
-                                    paste(CPvars[1], CPvars[2], sep = " * "))
+      preds <- rep(NA, 5)
+      preds[length(vars) == 0][1] <- c("1")
+      preds[length(vars) == 1][1:2] <- c("1", vars[1])
+      preds[length(vars) == 2] <- c("1", vars[1], vars[2], paste(vars[1], 
+                                    vars[2], sep = " + "),
+                                    paste(vars[1], vars[2], sep = " * "))
 
       preds <- as.character(na.omit(preds))
       eqs <- paste("~", preds, sep = " ")
 
-    # size classes
+      eqstouse <- rep(eqs, each = length(distsselected))
+      diststouse <- rep(distsselected, length(eqs))
+      Nmods <- length(eqstouse)
 
-      sccol <- which(colnames(CPdata) == sizeclasscol)
+    # set up the output
 
-      sizeclasses <- as.character(unique(CPdata[ , sccol]))
+      output <- vector("list", Nmods)
+      names(output) <- eqstouse
+
+    # iterate across models
+
+      for(i in 1:Nmods){
+
+        output[[i]] <- CPmod(data = data, obs_survobj = obs_survobj, 
+                           eqtouse = eqstouse[i], disttouse = diststouse[i])
+      }
+
+    # return
+
+      return(output)
+  }
+
+
+##############################################################################
+#
+# CPmodsetsacrosssizes 
+#
+##############################################################################
+
+  CPmodsetsacrosssizes <- function(data, vars, sizeclasscol, 
+                                   ltpc, ftac, ... ){
+
+    # set up the size classes 
+
+      sccol <- which(colnames(data) == sizeclasscol)
+
+      sizeclasses <- as.character(unique(data[ , sccol]))
       sizeclasses[length(sizeclasses) == 0] <- 1
       Nsizeclasses <- length(sizeclasses)
 
-      sizes <- as.character(CPdata[ , sccol])
-      sizes[rep(length(sizes) == 0, nrow(CPdata))] <- "1"
+      sizes <- as.character(data[ , sccol])
+      sizes[rep(length(sizes) == 0, nrow(data))] <- "1"
 
-    # set up the factor combinations
- 
-      CPfct <- factorcombinations(pvars = CPvars, data = CPdata)
+    # set up the output
 
-    # select the distributions to use
+      output <- vector("list", Nsizeclasses)
+      names(output) <- sizeclasses
 
-      distselected <- c("exponential", "weibull", "loglogistic", "lognormal")
-
-    # setting up the models to run
-
-      eqstouse <- rep(eqs, each = length(distselected))
-      distouse <- rep(distselected, length(eqs))
-      Nmods <- length(eqstouse)
-
-    # for each size class, run the set of models
-
-      CPmods <- vector("list", Nsizeclasses)
+    # iterate across the size classes
 
       for(i in 1:Nsizeclasses){
 
-        output <- vector("list", Nmods)
-
-        CPobvs_survobj_i <- CPobvs_survobj[sizes == sizeclasses[i]]
-        CPdata_i <- CPdata[sizes == sizeclasses[i], ]
-
-        for(j in 1:Nmods){
-          mform <- formula(paste("CPobvs_survobj_i" , eqstouse[j], sep = " "))
-          output[[j]] <- survreg(mform, CPdata_i, dist = distouse[j])
-        }
-
-        names(output) <- eqstouse
-        CPmods[[i]] <- output
+        sizeclass <- sizeclasses[i]
+        datai <- data[sizes == sizeclass , ]
+        output[[i]] <- CPmodset(data = datai, vars = vars, 
+                                ltpc = ltpc, ftac = ftac)
 
       }
 
-    # add size class names
+    # return
 
-      names(CPmods) <- sizeclasses
-
-    # return 
-
-      return(CPmods)
+      return(output)
 
   }
 
@@ -1357,7 +1435,7 @@ packageLoad <- function(...){
 ##############################################################################
 
   Mhatgenerator <- function(COdata, DWPdata, sizeclasscol, splitcol, 
-                      unitcol, sscol, seedset = 1234, CPvars, SEvars,  
+                      unitcol, sscol, CPvars, SEvars,  
                       Niterations, CPdata, SEdata, garray, ...){
 
     # units 
@@ -1442,7 +1520,6 @@ packageLoad <- function(...){
         EXPpaste <- apply(EXPcoEXP, 1, paste, collapse = "")
       }
 
-      set.seed(seedset)
 
 
       for(r in 1:Nsizeclasses){
@@ -1558,7 +1635,8 @@ packageLoad <- function(...){
 
       rownames(Mhattab) <- colnames(Mhatl)
       colnames(Mhattab) <- paste(c("Searched Area", "Whole Facility"), 
-                                   paste("Mean and ", paste(CIw*100, "Percent CI", 
+                                   paste("Mean and ", paste(CIw*100, 
+                                         "Percent CI", 
                                            sep = ""), 
                                  " Mortality", sep = ""), sep = " ")
 

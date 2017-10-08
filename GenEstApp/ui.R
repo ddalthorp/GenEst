@@ -2,7 +2,7 @@
 #
 #  This script contains the UI code for the the GenEst app
 #
-#  version 0.0.0.2 September 2017
+#  version 0.0.0.3 October 2017
 #
 #  Held under GNU GPL v >= 3	
 #
@@ -13,7 +13,7 @@ shinyUI(
             
     tabPanel("Home",
       br(),
-      HTML('<center><img src="GenEstLogoExample2.jpg" height = 
+      HTML('<center><img src="GenEstLogoExample1.jpg" height = 
                               "500"></center>'),
       br()
     ),
@@ -76,6 +76,7 @@ shinyUI(
     tabPanel("Analyses",
       tabsetPanel(
         tabPanel("Main Inputs",
+          br(), br(), 
           sidebarPanel(width = 3,
             numericInput("Niterations", "Number of iterations:", value = 1000, 
                          min = 1, max = 10000, step = 1)
@@ -85,6 +86,7 @@ shinyUI(
           )
         ),
         tabPanel("Search Efficiency",
+          br(), br(), 
           sidebarPanel(width = 3, 
             selectizeInput("SEvars", "Choose predictor variables (max: 2):", 
               c("No data input yet"), multiple = T),
@@ -134,6 +136,7 @@ shinyUI(
           )
         ),
         tabPanel("Carcass Persistence",
+          br(), br(), 
           sidebarPanel(width = 3,
             selectizeInput("CPvars", 
                          "Choose predictor variables (max: 2):", 
@@ -184,6 +187,7 @@ shinyUI(
           )
         ),
         tabPanel("Detection Probability",
+          br(), br(), 
           sidebarPanel(width = 3,
                        numericInput("gCIw", "Confidence level:", 
                          value = 0.9, 
@@ -197,6 +201,7 @@ shinyUI(
           )
         ),
         tabPanel("Fatality Estimation",
+          br(), br(), 
           sidebarPanel(width = 3, 
             selectizeInput("COsplitcol", "Choose split column (max: 1):", 
               c("No data input yet"), multiple = T),
@@ -212,8 +217,6 @@ shinyUI(
                          min = 0, max = 1, step = 0.001),
             numericInput("ffs", "Fraction of facility surveyed", value = 1.0, 
                          min = 0, max = 1, step = 0.001),
-            numericInput("SEED", "Set random number seed", value = 123, 
-                         min = 0, max = 9999, step = 1),
             shiny::actionButton("Mrun", "Estimate total carcasses")
           ),
           mainPanel(
@@ -235,13 +238,13 @@ shinyUI(
     tabPanel("About",
       fluidRow(
         column(6, offset = 3,
-          HTML('<img src = "GenEstLogoExample2.jpg" height = "300">'),
+          HTML('<img src = "GenEstLogoExample1.jpg" height = "400">'),
           br(), 
           br(),
           HTML('<b>Authors:</b>  
             Daniel Dalthorp
               <a href = "http://www.USGS.gov">(USGS)</a>,
-            Joseph L. Simonis
+            Juniper Simonis
               <a href = "http://www.dapperstats.com">(DAPPER Stats)</a>,
             Lisa Madsen
               <a href = "http://www.OSU.edu">(OSU)</a>,
@@ -259,7 +262,7 @@ shinyUI(
             and should be considered provisional.'),
           br(),
           br(),
-          HTML('This is version 0.0.0.2, September 2017.'),
+          HTML('This is version 0.0.0.3, October 2017.'),
           br(),
           br(),
           HTML('The development of GenEst is being supported by Bat

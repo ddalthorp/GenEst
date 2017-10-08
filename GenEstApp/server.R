@@ -2,29 +2,43 @@
 #
 #  This script contains the server code for the GenEst package
 #
-#  version 0.0.0.2 September 2017
+#  version 0.0.0.3 October 2017
 #
 #  Held under GNU GPL v >= 3	
 #
 #############################################################################
 
+source("genestfunctions.R")
+packageLoad()
+
 shinyServer(function(input, output, session) {
 
+  # welcome disclaimer
+
+    showModal(modalDialog(title = "GenEst, v0.0.0.3, October 2017", 
+         "This software is preliminary or provisional and is subject to 
+          revision. It is being provided to meet the need for timely best 
+          science. The software has not received final approval by the U.S. 
+          Geological Survey (USGS). No warranty, expressed or implied, is 
+          made by the USGS or the U.S. Government as to the functionality 
+          of the software and related material nor shall the fact of release 
+          constitute any such warranty. The software is provided on the 
+          condition that neither the USGS nor the U.S. Government shall be 
+          held liable for any damages resulting from the authorized or 
+          unauthorized use of the software.", easyClose = T, 
+          footer = modalButton("Ok")))
+
   # reactive values
-  #
-  #  EF_SE   =  EntryFile_SearcherEfficiency (logical re: its loading)
-  #  SEdataIn =  the Searcher Efficiency data
-  #  cn_SE = column names of the SE data input file
- 
+
     rv <- reactiveValues(
-            EF = F, SEdataIn = "NONE", cn_SE = NULL, SEmods = NULL, 
+            SE = F, SEdataIn = "NONE", cn_SE = NULL, SEmods = NULL, 
             thetaSE = NULL, SEmodsAICtab = NULL, SEsizeclasses = NULL,  
             SEmodnames = NULL, SEnmods = NULL, SEtext = NULL, 
             SEobscols = NULL, SEvars = NULL, SEsizeclasscol = NULL,  
             SEmodstouse = NULL, NsizeclassesSE = NULL,  
-            CP = F, CPdataIn = "NONE",NsizeclassesCP = NULL,
+            CP = F, CPdataIn = "NONE", NsizeclassesCP = NULL,
             CPvars = NULL, CPsizeclasscol = NULL, CPltp = NULL, CPfta = NULL,
-            CPmods = NULL, thetaCP = NULL ,CPsizeclasses = NULL,  
+            CPmods = NULL, thetaCP = NULL, CPsizeclasses = NULL,  
             CPmodcomps = NULL, CPdistnames = NULL,
             CPmodnames1 = NULL, CPmodnames = NULL, CPmodstouse = NULL, 
             nCPmodnames1 = NULL,
@@ -42,12 +56,12 @@ shinyServer(function(input, output, session) {
 
       observeEvent(input$SEFile, {
 
-        rv$EF <- T
+        rv$SE <- T
         rv$SEdataIn <- read.csv(input$SEFile$datapath, header = T)
         rv$cn_SE <- colnames(rv$SEdataIn)
         output$SEdata <- renderDataTable(rv$SEdataIn)
 
-        if(rv$EF == F){
+        if(rv$SE == F){
           rv$cn_SE <- character(0) 
         }
 
@@ -66,10 +80,9 @@ shinyServer(function(input, output, session) {
           rv$SEobscols <- input$SEobscols
           rv$SEsizeclasscol <- input$SEsizeclasscol
 
-
-           rv$SEmods <- SEmodsacrosssizes(SEdata = rv$SEdataIn, 
+           rv$SEmods <- SEmodsetsacrosssizes(data = rv$SEdataIn, 
                                    obscols = rv$SEobscols,
-                                   SEvars = rv$SEvars,
+                                   vars = rv$SEvars,
                                    sizeclasscol = rv$SEsizeclasscol,
                                    fixK = input$fixKchoice, 
                                    fixKval = input$fixKvalchoice, 
@@ -200,10 +213,10 @@ shinyServer(function(input, output, session) {
 
 
 
-           rv$CPmods <- CPmodsacrosssizes(CPdata = rv$CPdataIn, 
-                                   CPvars = rv$CPvars,
+           rv$CPmods <- CPmodsetsacrosssizes(data = rv$CPdataIn, 
+                                   vars = rv$CPvars,
                                    sizeclasscol = rv$CPsizeclasscol, 
-                                   CPltp = rv$CPltp, CPfta = rv$CPfta)
+                                   ltpc = rv$CPltp, ftac = rv$CPfta)
 
            rv$thetaCP <- ThetaCPcreateacrosssizes(CPdata = rv$CPdataIn, 
                                           CPvars = rv$CPvars,
@@ -380,7 +393,7 @@ shinyServer(function(input, output, session) {
                             unitcol = input$COunitcol, 
                             sscol = input$COsscol, 
                             Niterations = input$Niterations,
-                            seedset = input$SEED, CPvars = rv$CPvars, 
+                            CPvars = rv$CPvars, 
                             SEvars = rv$SEvars, CPdata = rv$CPdataIn, 
                             SEdata = rv$SEdataIn, garray = rv$garray) 
 
