@@ -509,7 +509,14 @@ packageLoad <- function(...){
                 SEdata_ri <- SEdata[which(sizes == sizeclasses[r] & 
                                          combnames == fct[i, "CellNames"]), ]
                 NAconv <- is.na(SEdata_ri[, obscols])
-                carcassavail <- nrow(NAconv) - apply(NAconv, 2, sum)
+
+                arraydim <- length(dim(NAconv))
+
+                if(arraydim == 0){
+                  carcassavail <- length(NAconv) - sum(NAconv)
+                } else{
+                  carcassavail <- nrow(NAconv) - apply(NAconv, 2, sum)
+                }
                 thetaSErji <- thetaSE[, , i, j, r]
 
                 par(fig = c(x1[i], x2[i], y1[i], y2[i]), new = T)
@@ -539,7 +546,13 @@ packageLoad <- function(...){
                 #CMpredyu <- CMuqpar[1] * CMuqpar[2] ^ (predxs - 1)
 
                 xpts <- 1:length(obscols)
-                ypts <- apply(SEdata_ri[, obscols], 2, mean, na.rm = T)
+
+                if(arraydim == 0){
+                  ypts <- mean(SEdata_ri[, obscols], na.rm = T)
+                } else{
+                  ypts <- apply(SEdata_ri[, obscols], 2, mean, na.rm = T)
+                }
+                
 
                 plot(xpts, ypts, ylim = c(0, 1), 
                      xlim = c(0.5, maxs + 0.5), main = fct[i, "CellNames"], 
