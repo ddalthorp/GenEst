@@ -2,20 +2,24 @@
 #
 #  This script contains the server code for the GenEst package
 #
-#  version 0.0.0.3 October 2017
+#  version 0.0.0.4 October 2017
 #
 #  Held under GNU GPL v >= 3	
 #
 #############################################################################
 
-source("genestfunctions.R")
-packageLoad()
+# preliminaries
 
-shinyServer(function(input, output, session) {
+  source("genestfunctions.R")
+  packageLoad()
 
-  # welcome disclaimer
+# main server function
 
-    showModal(modalDialog(title = "GenEst, v0.0.0.3, October 2017", 
+  function(input, output, session) {
+
+    # welcome disclaimer
+
+      showModal(modalDialog(title = "GenEst, v0.0.0.3, October 2017", 
          "This software is preliminary or provisional and is subject to 
           revision. It is being provided to meet the need for timely best 
           science. The software has not received final approval by the U.S. 
@@ -25,80 +29,138 @@ shinyServer(function(input, output, session) {
           constitute any such warranty. The software is provided on the 
           condition that neither the USGS nor the U.S. Government shall be 
           held liable for any damages resulting from the authorized or 
-          unauthorized use of the software.", easyClose = T, 
+          unauthorized use of the software.", easyClose = F, 
           footer = modalButton("Ok")))
 
-  # reactive values
+    # initialize the object to hold reactive values
 
-    rv <- reactiveValues(
-            SE = F, SEdataIn = "NONE", cn_SE = NULL, SEmods = NULL, 
-            thetaSE = NULL, SEmodsAICtab = NULL, SEsizeclasses = NULL,  
-            SEmodnames = NULL, SEnmods = NULL, SEtext = NULL, 
-            SEobscols = NULL, SEvars = NULL, SEsizeclasscol = NULL,  
-            SEmodstouse = NULL, NsizeclassesSE = NULL,  
-            CP = F, CPdataIn = "NONE", NsizeclassesCP = NULL,
-            CPvars = NULL, CPsizeclasscol = NULL, CPltp = NULL, CPfta = NULL,
-            CPmods = NULL, thetaCP = NULL, CPsizeclasses = NULL,  
-            CPmodcomps = NULL, CPdistnames = NULL,
-            CPmodnames1 = NULL, CPmodnames = NULL, CPmodstouse = NULL, 
-            nCPmodnames1 = NULL,
-            SS = F, SSdataIn = "NONE", SSs = NULL, 
-            gtable = NULL, garray = NULL,  
-            CO = F, COdataIn = "NONE", cn_CO = NULL, 
-            DWPdatatab = NULL, 
-            Mhatarray = NULL, Mhatsc = NULL, splitcats = NULL, 
-            Nsplitcats = NULL, 
-            MD = F, data_MD = "NONE")
+      rv <- reactiveValues(
+ 
+              SEdataIn = "NONE", SEcolnames = character(0), 
+              SEsizeclasses = NULL, SEnsizeclasses = NULL,  
+              SEmods = NULL, SEmodnames = NULL, SEnmods = NULL, 
+              SEmodstouse = NULL, SEtheta = NULL, 
 
-  # Upload data buttons
+              CPdataIn = "NONE", CPcolnames = character(0), 
+              CPsizeclasses = NULL, CPnsizeclasses = NULL,
+              CPmods = NULL, CPmodnames = NULL, CPmodnames1 = NULL, 
+              CPnmodnames1 = NULL, CPmodcomps = NULL, CPdistnames = NULL,
+              CPmodstouse = NULL, CPtheta = NULL,   
+            
+              SSdataIn = "NONE", SSs = NULL, 
+              gtable = NULL, garray = NULL,  
+
+              COdataIn = "NONE", COcolnames = character(0), 
+              DWPdatatab = NULL, 
+
+              Mhatarray = NULL, Mhatsc = NULL, splitcats = NULL, 
+              Nsplitcats = NULL, 
+
+              MDdataIn = "NONE")
+
+    # Data Input
+
+      # when the SE file is uploaded, pull data in and update column options
+
+        observeEvent(input$SEFile, {
+
+          rv$SEdataIn <- read.csv(input$SEFile$datapath, header = T)
+          rv$SEcolnames <- colnames(rv$SEdataIn)
+          output$SEdata <- renderDataTable(rv$SEdataIn)
+
+          updateSelectizeInput(session, "SEvars", choices = rv$SEcolnames)
+          updateSelectizeInput(session, "SEobscols", choices = rv$SEcolnames)
+          updateSelectizeInput(session, "SEsizeclasscol", 
+                                choices = rv$SEcolnames)
+        })
+
+      # when the CP file is uploaded, pull data in and update column options
+
+        observeEvent(input$CPFile, {
+
+          rv$CPdataIn <- read.csv(input$CPFile$datapath, header = T)
+          rv$CPcolnames <- colnames(rv$CPdataIn)
+          output$CPin <- renderDataTable(rv$CPdataIn)
+
+          updateSelectizeInput(session, "CPvars", choices = rv$CPcolnames)
+          updateSelectizeInput(session, "CPsizeclasscol", 
+                                 choices = rv$CPcolnames)
+          updateSelectizeInput(session, "CPltp", choices = rv$CPcolnames)
+          updateSelectizeInput(session, "CPfta", choices = rv$CPcolnames)
+
+        })
+
+      # when the SS file is uploaded, pull data in and update column options
+
+        observeEvent(input$SSFile, {
+
+          rv$SSdataIn <- read.csv(input$SSFile$datapath, header = T)
+          output$SSin <- renderDataTable(rv$SSdataIn)
+          rv$SSs <- SSveccreate(SSdata = rv$SSdataIn)
+          rv$DWPdatatab <- DWPtablecreate(SSdata = rv$SSdataIn)
+        })
+
+      # when the CO file is uploaded, pull data in and update column options
+
+        observeEvent(input$COFile, {
+
+          rv$COdataIn <- read.csv(input$COFile$datapath, header = T)
+          rv$COcolnames <- colnames(rv$COdataIn)
+          output$COin <- renderDataTable(rv$COdataIn)
+
+          updateSelectizeInput(session, "COsplitcol", choices = rv$COcolnames)
+          updateSelectizeInput(session, "COsizeclasscol", 
+                                 choices = rv$COcolnames)
+          updateSelectizeInput(session, "COsscol", choices = rv$COcolnames)
+          updateSelectizeInput(session, "COunitcol", choices = rv$COcolnames)
+
+        })
+
+      # when the MD file is uploaded, pull data in 
+
+        observeEvent(input$MDFile, {
+
+          rv$MDdataIn <- read.csv(input$MDFile$datapath, header = T)
+          output$MDin <- renderTable(rv$MDdataIn)
+        })
   
+
     # Search Efficiency
 
-      observeEvent(input$SEFile, {
-
-        rv$SE <- T
-        rv$SEdataIn <- read.csv(input$SEFile$datapath, header = T)
-        rv$cn_SE <- colnames(rv$SEdataIn)
-        output$SEdata <- renderDataTable(rv$SEdataIn)
-
-        if(rv$SE == F){
-          rv$cn_SE <- character(0) 
-        }
-
-        updateSelectizeInput(session, "SEvars", choices = rv$cn_SE)
-        updateSelectizeInput(session, "SEobscols", choices = rv$cn_SE)
-        updateSelectizeInput(session, "SEsizeclasscol", choices = rv$cn_SE)
-
+      # when the observation columns are selected, output the table
+ 
         observeEvent(input$SEobscols, {
-          output$selected_SE <- renderTable(rv$SEdataIn[,which(rv$cn_SE %in%
-                                    c(input$SEvars, input$SEobscols, 
+
+          output$selected_SE <- renderTable(rv$SEdataIn[,which(rv$SEcolnames
+                                     %in% c(input$SEvars, input$SEobscols, 
                                          input$SEsizeclasscol))])
         })
 
-        observeEvent(input$SEmodrun, {
-          rv$SEvars <- input$SEvars
-          rv$SEobscols <- input$SEobscols
-          rv$SEsizeclasscol <- input$SEsizeclasscol
+      # when the SE model run button is pushed, run the SE models, calculate
+      #   theta, produce the AIC tables, and set up options for the model
+      #   selections and outputs
 
-           rv$SEmods <- SEmodsetsacrosssizes(data = rv$SEdataIn, 
-                                   obscols = rv$SEobscols,
-                                   vars = rv$SEvars,
-                                   sizeclasscol = rv$SEsizeclasscol,
+        observeEvent(input$SEmodrun, {
+
+          rv$SEmods <- SEmodsetsacrosssizes(data = rv$SEdataIn, 
+                                   obscols = input$SEobscols,
+                                   vars = input$SEvars,
+                                   sizeclasscol = input$SEsizeclasscol,
                                    fixK = input$fixKchoice, 
                                    fixKval = input$fixKvalchoice, 
                                    initKval = 0.7)
-           rv$thetaSE <- ThetaSEcreateacrosssizes(SEdata = rv$SEdataIn, 
-                                   SEvars = rv$SEvars,
-                                  sizeclasscol = rv$SEsizeclasscol,
+          rv$SEtheta <- ThetaSEcreateacrosssizes(SEdata = rv$SEdataIn, 
+                                  SEvars = input$SEvars,
+                                  sizeclasscol = input$SEsizeclasscol,
                                   rv$SEmods, input$Niterations,
                                   fixK = input$fixKchoice, 
                                   fixKval = input$fixKvalchoice)
 
           rv$SEaictable <- AICtabcreateSEmods(rv$SEmods, sortby = "AIC")
 
-          rv$SEsizeclasses <- unique(rv$SEdataIn[,input$SEsizeclasscol])
-          rv$NsizeclassesSE <- length(rv$SEsizeclasses)
-          rv$SEmodstouse <- rep(NA, rv$NsizeclassesSE)
+          rv$SEsizeclasses <- unique(rv$SEdataIn[, input$SEsizeclasscol])
+          rv$SEnsizeclasses <- length(rv$SEsizeclasses)
+          rv$SEmodstouse <- rep(NA, rv$SEnsizeclasses)
           rv$SEnmods <- length(rv$SEmods[[1]])
           rv$SEmodnames <- names(rv$SEmods[[1]])
 
@@ -120,14 +182,20 @@ shinyServer(function(input, output, session) {
           })
         })
 
+      # when the generate AIC table button for the SE models is pushed, 
+      #   output the table for the respective size class 
 
         observeEvent(input$SEaictablerun, {
+
           scofi <- which(rv$SEsizeclasses == input$SEaicsizeclass)
           scofi[length(scofi) == 0] <- 1
           output$SEaictable <- renderDataTable({
               rv$SEaictable[[scofi]]
           })
         })
+
+      # when the generate SE figure button is pushed, output the figure for
+      #   the specific size class and model selected
 
         observeEvent(input$SEfigrun, {
           scofi <- which(rv$SEsizeclasses == input$SEfigsizeclass)
@@ -138,14 +206,17 @@ shinyServer(function(input, output, session) {
           CWM[length(CWM) == 0] <- 1
           output$SEfig <- renderPlot({
                             SEgraphcreate(SEdata = rv$SEdataIn, 
-                                rv$SEvars, rv$thetaSE, 
-                                obscols = rv$SEobscols,  
+                                input$SEvars, rv$SEtheta, 
+                                obscols = input$SEobscols,  
                                 input$Niterations, 
-                                sizeclasscol = rv$SEsizeclasscol, 
+                                sizeclasscol = input$SEsizeclasscol, 
                                 r = scofi, j = mofi, CellWiseModel = CWM)
           })
         })
 
+
+      # when the Population Options button is pushed, so long as the model
+      #   has been run, output drop down selections for each size class
 
         observe({
 
@@ -159,8 +230,7 @@ shinyServer(function(input, output, session) {
 
               w <- ""
 
-
-              for(i in 1:rv$NsizeclassesSE){
+              for(i in 1:rv$SEnsizeclasses){
                 w <- paste(w, selectizeInput(paste("SEmodstouse", 
                               i, sep = ""),
                               rv$SEsizeclasses[i], choices = rv$SEmodnames))
@@ -168,65 +238,40 @@ shinyServer(function(input, output, session) {
 
               HTML(w)
             })
-
-
           })
         })
 
-
-
-      })
-
-
-
-
     # Carcass Persistence
 
-      observeEvent(input$CPFile, {
-
-        rv$CP <- T
-        rv$CPdataIn <- read.csv(input$CPFile$datapath, header = T)
-        rv$cn_CP <- colnames(rv$CPdataIn)
-        output$CPin <- renderDataTable(rv$CPdataIn)
-
-        if(rv$CP == F){
-          rv$cn_CP <- character(0) 
-        }
-
-        updateSelectizeInput(session, "CPvars", choices = rv$cn_CP)
-        updateSelectizeInput(session, "CPsizeclasscol", choices = rv$cn_CP)
-        updateSelectizeInput(session, "CPltp", choices = rv$cn_CP)
-        updateSelectizeInput(session, "CPfta", choices = rv$cn_CP)
-
+      # when the observation columns are selected, output the table
 
         observeEvent(input$CPltp, {
-          output$selected_CP <- renderTable(rv$CPdataIn[,which(rv$cn_CP %in%
-                                    c(input$CPltp, input$CPfta, 
-                                      input$CPvars, input$CPsizeclasscol))])
+          observeEvent(input$CPfta, {
+
+            output$selected_CP <- renderTable(rv$CPdataIn[,which(rv$CPcolnames
+                                       %in% c(input$CPltp, input$CPfta, 
+                                        input$CPvars, input$CPsizeclasscol))])
+          })
         })
 
+      # when the CP model run button is pushed, run the CP models, calculate
+      #   theta, produce the AIC tables, and set up options for the model
+      #   selections and outputs
+
         observeEvent(input$CPmodrun, {
-          rv$CPvars <- input$CPvars
-          rv$CPsizeclasscol <- input$CPsizeclasscol
-          rv$CPltp <- input$CPltp
-          rv$CPfta <- input$CPfta
 
+          rv$CPmods <- CPmodsetsacrosssizes(data = rv$CPdataIn, 
+                                   vars = input$CPvars,
+                                   sizeclasscol = input$CPsizeclasscol, 
+                                   ltpc = input$CPltp, ftac = input$CPfta)
 
-
-           rv$CPmods <- CPmodsetsacrosssizes(data = rv$CPdataIn, 
-                                   vars = rv$CPvars,
-                                   sizeclasscol = rv$CPsizeclasscol, 
-                                   ltpc = rv$CPltp, ftac = rv$CPfta)
-
-           rv$thetaCP <- ThetaCPcreateacrosssizes(CPdata = rv$CPdataIn, 
-                                          CPvars = rv$CPvars,
-                                          sizeclasscol = rv$CPsizeclasscol,
+          rv$CPtheta <- ThetaCPcreateacrosssizes(CPdata = rv$CPdataIn, 
+                                          CPvars = input$CPvars,
+                                          sizeclasscol = input$CPsizeclasscol,
                                           rv$CPmods, input$Niterations)
 
           rv$CPaictable <- AICtabcreateCPmods(rv$CPmods, sortby = "AIC")
-
-          rv$CPsizeclasses <- unique(rv$CPdataIn[,input$CPsizeclasscol])
-
+          rv$CPsizeclasses <- unique(rv$CPdataIn[, input$CPsizeclasscol])
 
           if(length(input$CPsizeclasscol) == 0){
             rv$CPsizeclasses <- "all" 
@@ -235,12 +280,12 @@ shinyServer(function(input, output, session) {
                                 "loglogistic", "lognormal")
 
           rv$CPmodnames1 <- names(rv$CPmods[[1]])
-          rv$nCPmodnames1 <- length(rv$CPmodnames1)
-          rv$CPmodcomps <- rv$CPmodnames1[seq(1, rv$nCPmodnames1, 4)]
+          rv$CPnmodnames1 <- length(rv$CPmodnames1)
+          rv$CPmodcomps <- rv$CPmodnames1[seq(1, rv$CPnmodnames1, 4)]
 
-              rv$NsizeclassesCP <- length(rv$CPsizeclasses)
-              rv$CPmodstouse <- rep(NA, rv$NsizeclassesCP)
-              rv$CPmodnames <- paste(rv$CPmodnames1, 
+          rv$CPnsizeclasses <- length(rv$CPsizeclasses)
+          rv$CPmodstouse <- rep(NA, rv$CPnsizeclasses)
+          rv$CPmodnames <- paste(rv$CPmodnames1, 
                                      rv$CPdistnames, sep = " ")
 
           updateSelectizeInput(session, "CPaicsizeclass", 
@@ -258,11 +303,13 @@ shinyServer(function(input, output, session) {
           output$CPfig <- renderPlot({
               NULL
           })
-
         })
 
+      # when the generate AIC table button for the CP models is pushed, 
+      #   output the table for the respective size class 
 
         observeEvent(input$CPaictablerun, {
+
           scofi <- which(rv$CPsizeclasses == input$CPaicsizeclass)
           scofi[length(scofi) == 0] <- 1
           output$CPaictable <- renderDataTable({
@@ -270,7 +317,11 @@ shinyServer(function(input, output, session) {
           })
         })
 
+      # when the generate CP figure button is pushed, output the figure for
+      #   the specific size class and model selected
+
         observeEvent(input$CPfigrun, {
+
           scofi <- which(rv$CPsizeclasses == input$CPfigsizeclass)
           scofi[length(scofi) == 0] <- 1
           mofi <- input$CPfigmodelcomplexity
@@ -278,15 +329,18 @@ shinyServer(function(input, output, session) {
           DC <- input$CPfigdistemph
           DC[length(DC) == 0] <- NULL
           output$CPfig <- renderPlot({
-                             CPgraphcreate(CPmods = rv$CPmods, 
-                                CPdata = rv$CPdataIn, rv$CPvars, rv$thetaCP,
-                                input$Niterations, timeunit = "days", 
-                                sizeclasscol = rv$CPsizeclasscol, 
-                                CPltp = rv$CPltp, CPfta = rv$CPfta, 
-                                r = scofi, modelcomplexity = mofi, 
-                                distchoice = DC)
+                            CPgraphcreate(CPmods = rv$CPmods, 
+                               CPdata = rv$CPdataIn, input$CPvars, rv$CPtheta, 
+                               input$Niterations, timeunit = "days", 
+                               sizeclasscol = input$CPsizeclasscol, 
+                               CPltp = input$CPltp, CPfta = input$CPfta, 
+                               r = scofi, modelcomplexity = mofi, 
+                               distchoice = DC)
           })
         })
+
+      # when the Population Options button is pushed, so long as the model
+      #   has been run, output drop down selections for each size class
 
         observe({
 
@@ -300,7 +354,7 @@ shinyServer(function(input, output, session) {
 
               w <- ""
 
-              for(i in 1:rv$NsizeclassesCP){
+              for(i in 1:rv$CPnsizeclasses){
                 w <- paste(w, selectizeInput(paste("CPmodstouse", 
                                i, sep = ""),
                                rv$CPsizeclasses[i], 
@@ -309,123 +363,78 @@ shinyServer(function(input, output, session) {
 
               HTML(w)
             })
-
-
           })
         })
 
 
-      })
-
-
-    # Search Schedule
-
-      observeEvent(input$SSFile, {
-
-        rv$SS <- T
-        rv$SSdataIn <- read.csv(input$SSFile$datapath, header = T)
-
-        output$SSin <- renderDataTable(rv$SSdataIn)
-
-        rv$SSs <- SSveccreate(SSdata = rv$SSdataIn)
-
-        rv$DWPdatatab <- DWPtablecreate(SSdata = rv$SSdataIn)
-
-      })
-
-
     # Detection Probability
 
-      observeEvent(input$grun, {
+      # when the Estimate Detection Probability button is pushed, estimate
+      #  detection probability for each size class
 
-        for(i in 1:rv$NsizeclassesSE){
-          rv$SEmodstouse[i] <- which(rv$SEmodnames ==
-                                 input[[sprintf("SEmodstouse%d", i)]])
-        }   
-        for(i in 1:rv$NsizeclassesCP){
-          rv$CPmodstouse[i] <- which(rv$CPmodnames == 
-                                input[[sprintf("CPmodstouse%d", i)]])
-        }      
+        observeEvent(input$grun, {
 
-        rv$garray <- gcreateacrosssizes(CPdata = rv$CPdataIn, 
+          for(i in 1:rv$SEnsizeclasses){
+            rv$SEmodstouse[i] <- which(rv$SEmodnames ==
+                                   input[[sprintf("SEmodstouse%d", i)]])
+          }   
+          for(i in 1:rv$CPnsizeclasses){
+            rv$CPmodstouse[i] <- which(rv$CPmodnames == 
+                                  input[[sprintf("CPmodstouse%d", i)]])
+          }      
+
+          rv$garray <- gcreateacrosssizes(CPdata = rv$CPdataIn, 
                                 SEdata = rv$SEdataIn, 
                                 SSdata = rv$SSs, 
                                 Niterations = input$Niterations, 
-                                CPvars = rv$CPvars, SEvars = rv$SEvars, 
-                                rv$thetaCP, rv$thetaSE, rv$CPmods,
+                                CPvars = input$CPvars, SEvars = input$SEvars, 
+                                rv$CPtheta, rv$SEtheta, rv$CPmods,
                                 rv$SEmodstouse, rv$CPmodstouse)
 
-        rv$gtable <- gtablecreate(rv$garray, CIw = input$gCIw)
+          rv$gtable <- gtablecreate(rv$garray, CL = input$gCL)
 
-        output$gtable <- renderDataTable({
-              rv$gtable
+          output$gtable <- renderDataTable({
+                rv$gtable
+          })
         })
 
-      })
 
+    # Fatality Estimation
 
-    # Fatality Observations
+      # when the Estimate Total Carcasses button is pushed, estimate
+      #  total carcasses for each split category, output figure and table
 
-      observeEvent(input$COFile, {
+        observeEvent(input$Mrun, {
 
-        rv$CO <- T
-        rv$COdataIn <- read.csv(input$COFile$datapath, header = T)
-        rv$cn_CO <- colnames(rv$COdataIn)
-        output$COin <- renderDataTable(rv$COdataIn)
+          rv$Mhatarray <- Mhatgenerator(COdata = rv$COdataIn, 
+                              DWPdata = rv$DWPdatatab, 
+                              sizeclasscol = input$COsizeclasscol, 
+                              splitcol = input$COsplitcol, 
+                              unitcol = input$COunitcol, 
+                              sscol = input$COsscol, 
+                              Niterations = input$Niterations,
+                              CPvars = input$CPvars, 
+                              SEvars = input$SEvars, CPdata = rv$CPdataIn, 
+                              SEdata = rv$SEdataIn, garray = rv$garray) 
 
-        if(rv$CO == F){
-          rv$cn_CO <- character(0) 
-        }
+          rv$Mhatsc <- Mhatcondense(rv$Mhatarray)
 
-        updateSelectizeInput(session, "COsplitcol", choices = rv$cn_CO)
-        updateSelectizeInput(session, "COsizeclasscol", choices = rv$cn_CO)
-        updateSelectizeInput(session, "COsscol", choices = rv$cn_CO)
-        updateSelectizeInput(session, "COunitcol", choices = rv$cn_CO)
-
-      })
-
-      observeEvent(input$Mrun, {
-
-        rv$Mhatarray <- Mhatgenerator(COdata = rv$COdataIn, 
-                            DWPdata = rv$DWPdatatab, 
-                            sizeclasscol = input$COsizeclasscol, 
-                            splitcol = input$COsplitcol, 
-                            unitcol = input$COunitcol, 
-                            sscol = input$COsscol, 
-                            Niterations = input$Niterations,
-                            CPvars = rv$CPvars, 
-                            SEvars = rv$SEvars, CPdata = rv$CPdataIn, 
-                            SEdata = rv$SEdataIn, garray = rv$garray) 
-
-        rv$Mhatsc <- Mhatcondense(rv$Mhatarray)
-
-        output$Mhattab <-  renderTable({
-                       Mhattable(Mhatl = rv$Mhatsc, ffs = input$ffs, 
+          output$Mhattab <-  renderTable({
+                                Mhattable(Mhatl = rv$Mhatsc, ffs = input$ffs, 
                                 CIw = input$MCIw)
-        })
+          })
 
-        rv$Nsplitcats <- length(unique(rv$COdataIn[,input$COsplitcol]))
+          rv$Nsplitcats <- length(unique(rv$COdataIn[,input$COsplitcol]))
 
-
-        output$Mhatfig <- renderPlot({
+          output$Mhatfig <- renderPlot({
  
-                  par(mfrow = c(1, rv$Nsplitcats))
+              par(mfrow = c(1, rv$Nsplitcats))
               for(i in 1:rv$Nsplitcats){
                   Mhatgraph(Mhatlspecific = rv$Mhatsc[,i], 
 	              splitcatname = colnames(rv$Mhatsc)[i], ffs = input$ffs)
               }
-        })  
+          })  
+        })
 
-      })
-
-    # Meta Data
-
-      observeEvent(input$MDFile, {
-
-        rv$MD <- T
-        rv$data_MD <- read.csv(input$MDFile$datapath, header = T)
-
-        output$MDin <- renderTable(rv$data_MD)
-      })
-})
+}
 

@@ -2,7 +2,7 @@
 #
 #    example of a GenEst analysis at the command line
 #
-#    version 0.0.0.3 October 2017
+#    version 0.0.0.4 October 2017
 #
 #    Held under GNU GPL v >= 3	
 #
@@ -135,7 +135,7 @@
 
     # summarize g distributions
 
-      gtable <- gtablecreate(garray, CIw = 0.9)
+      gtable <- gtablecreate(garray, CL = 0.9)
 
 
   #
@@ -153,7 +153,7 @@
                             sizeclasscol = "Size", splitcol = "Split", 
                             unitcol = "Unit", sscol = "SearchSchedule",
                             Niterations,  
-                            seedset = 124, CPvars = CPvars, 
+                            CPvars = CPvars, 
                             SEvars = SEvars, CPdata = CPdataIn, 
                             SEdata = SEdataIn, garray = garray) 
 
@@ -166,15 +166,15 @@
     #   allows for expansion to whole facility 
     #    (ffs = fraction facility sampled)
 
-      Mhattab <- Mhattable(Mhatl = Mhatsc, ffs = .85, CIw = 0.9)
+      Mhattab <- Mhattable(Mhatl = Mhatsc, ffs = 0.85, CL = 0.9)
 
     # plot Mhat for each split
 
       par(mfrow = c(1, 2))
       l <- 1
       Mhatgraph(Mhatlspecific = Mhatsc[,l], 
-	              splitcatname = colnames(Mhatsc)[l], ffs = .85)
+	              splitcatname = colnames(Mhatsc)[l], ffs = 0.85)
       l <- 2
       Mhatgraph(Mhatlspecific = Mhatsc[,l], 
-	  	              splitcatname = colnames(Mhatsc)[l], ffs = .85)
+	  	              splitcatname = colnames(Mhatsc)[l], ffs = 0.85)
 

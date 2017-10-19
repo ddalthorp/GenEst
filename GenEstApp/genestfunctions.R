@@ -2,7 +2,7 @@
 #
 #  This script contains the functions of the GenEst package
 #
-#  version 0.0.0.3 October 2017
+#  version 0.0.0.4 October 2017
 #
 #  Held under GNU GPL v >= 3	
 #
@@ -522,28 +522,20 @@ packageLoad <- function(...){
                 par(fig = c(x1[i], x2[i], y1[i], y2[i]), new = T)
 
                 meanpar <- apply(thetaSErji, 2, mean)
-                #lqpar <- apply(thetaSErji, 2, quantile, probs = 0.025)
-                #uqpar <- apply(thetaSErji, 2, quantile, probs = 0.975)
 
                 ps[, i] <- thetaSErji[, 1] 
                 ks[, i] <- thetaSErji[, 2] 
 
                 predxs <- seq(1, maxs, 1)
                 predys <- meanpar[1] * meanpar[2] ^ (predxs - 1)
-                #predyl <- lqpar[1] * lqpar[2] ^ (predxs - 1)
-                #predyu <- uqpar[1] * uqpar[2] ^ (predxs - 1)
 
                 CMthetaSErji <- thetaSE[, , i, CellWiseModel, r]
                 CMmeanpar <- apply(CMthetaSErji, 2, mean)
-                #CMlqpar <- apply(CMthetaSErji, 2, quantile, probs = 0.025)
-                #CMuqpar <- apply(CMthetaSErji, 2, quantile, probs = 0.975)
 
                 CMps[, i] <- CMthetaSErji[, 1] 
                 CMks[, i] <- CMthetaSErji[, 2] 
 
                 CMpredys <- CMmeanpar[1] * CMmeanpar[2] ^ (predxs - 1)
-                #CMpredyl <- CMlqpar[1] * CMlqpar[2] ^ (predxs - 1)
-                #CMpredyu <- CMuqpar[1] * CMuqpar[2] ^ (predxs - 1)
 
                 xpts <- 1:length(obscols)
 
@@ -571,14 +563,8 @@ packageLoad <- function(...){
 
                 points(predxs, CMpredys, type = 'l', lwd = 3, 
                         col = rgb(0.1, 0.1, 0.8, 0.6))
-                #points(predxs, CMpredyl, type = 'l', lwd = 2, lty = 2, 
-                #        col = rgb(0.1, 0.1, 0.8, 0.6))
-                #points(predxs, CMpredyu, type = 'l', lwd = 2, lty = 2, 
-                #        col = rgb(0.1, 0.1, 0.8, 0.6))
-
                 points(predxs, predys, type = 'l', lwd = 3)
-                #points(predxs, predyl, type = 'l', lwd = 2, lty = 2)
-                #points(predxs, predyu, type = 'l', lwd = 2, lty = 2)
+
  
               }
 
@@ -603,8 +589,6 @@ packageLoad <- function(...){
                 minp <- min(PS)
                 maxp <- max(PS)
 
-               # points(PX, PS, pch = 1, cex = 0.5, lwd = 1, 
-               #         col = rgb(0.3, 0.3, 0.3, 0.05))
                 rect(i - 0.1 - 0.2, iqp[1], i + 0.1 - 0.2, iqp[2], lwd = 3, 
                         col = rgb(1, 1, 1, 0.4))
                 points(c(i - 0.1, i + 0.1) - 0.2, rep(medianp, 2), type = "l",
@@ -624,8 +608,6 @@ packageLoad <- function(...){
                 CMminp <- min(CMPS)
                 CMmaxp <- max(CMPS)
 
-                #points(CMPX, CMPS, pch = 1, cex = 0.5, lwd = 1, 
-                #        col = rgb(0.1, 0.1, 0.8, 0.01))
                 rect(i - 0.1 + 0.2, CMiqp[1], i + 0.1 + 0.2, CMiqp[2], 
                         lwd = 3, col = rgb(0.1, 0.1, 0.8, 0.6))
                 points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmedianp, 2), 
@@ -667,8 +649,6 @@ packageLoad <- function(...){
                 mink <- min(KS)
                 maxk <- max(KS)
 
-               # points(KX, KS, pch = 1, cex = 0.5, lwd = 1, 
-               #         col = rgb(0.3, 0.3, 0.3, 0.05))
                 rect(i - 0.1 - 0.2, iqk[1], i + 0.1 - 0.2, iqk[2], 
                         lwd = 3, col = rgb(1, 1, 1, 0.4))
                 points(c(i - 0.1, i + 0.1) - 0.2, rep(mediank, 2), 
@@ -689,8 +669,6 @@ packageLoad <- function(...){
                 CMmink <- min(CMKS)
                 CMmaxk <- max(CMKS)
 
-                #points(CMKX, CMKS, pch = 1, cex = 0.5, lwd = 1, 
-                #        col = rgb(0.1, 0.1, 0.8, 0.01))
                 rect(i - 0.1 + 0.2, CMiqk[1], i + 0.1 + 0.2, CMiqk[2], 
                         lwd = 3, col = rgb(0.1, 0.1, 0.8, 0.6))
                 points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmediank, 2), 
@@ -1262,7 +1240,6 @@ packageLoad <- function(...){
                           dimnames = list(1:Niterations, 1, ssops,
                                       combname, sizeclasses))
 
-
     # estimate g
 
       for(i in 1:Nsizeclasses){
@@ -1303,7 +1280,7 @@ packageLoad <- function(...){
 #
 ##############################################################################
 
-  gtablecreate <- function(garray, CIw, ... ){
+  gtablecreate <- function(garray, CL, ... ){
 
       Niterations <- dim(garray)[1]
       Nss <- dim(garray)[3]
@@ -1314,7 +1291,7 @@ packageLoad <- function(...){
       ccops <- dimnames(garray)[4][[1]]
       scops <- dimnames(garray)[5][[1]]
 
-      quants <- c(0 + (1 - CIw) / 2, 1 - (1 - CIw) / 2 )
+      quants <- c(0 + (1 - CL) / 2, 1 - (1 - CL) / 2 )
 
       outputtable <- data.frame(matrix(NA, ncol = 6, 
                           nrow = Nss * Ncellcombos * Nclasses))
@@ -1357,8 +1334,8 @@ packageLoad <- function(...){
       colnames(outputtable) <- c("Size", "Search Schedule", 
                                   "Cell Combination", 
                                   "Mean g", 
-                                  paste(CIw*100, "% CI lower g", sep = ""),
-                                  paste(CIw*100, "% CI upper g", sep = ""))
+                                  paste(CL*100, "% CI lower g", sep = ""),
+                                  paste(CL*100, "% CI upper g", sep = ""))
 
 
     # return
@@ -1640,7 +1617,7 @@ packageLoad <- function(...){
 #
 ##############################################################################
 
-  Mhattable <- function(Mhatl, ffs, CIw, ...){
+  Mhattable <- function(Mhatl, ffs, CL, ...){
 
     # prep out table
 
@@ -1648,7 +1625,7 @@ packageLoad <- function(...){
 
       rownames(Mhattab) <- colnames(Mhatl)
       colnames(Mhattab) <- paste(c("Searched Area", "Whole Facility"), 
-                                   paste("Mean and ", paste(CIw*100, 
+                                   paste("Mean and ", paste(CL*100, 
                                          "Percent CI", 
                                            sep = ""), 
                                  " Mortality", sep = ""), sep = " ")
@@ -1664,7 +1641,7 @@ packageLoad <- function(...){
 
     # calc quantiles
 
-      quants <- c(0 + (1 - CIw) / 2, 1 - (1 - CIw) / 2 )
+      quants <- c(0 + (1 - CL) / 2, 1 - (1 - CL) / 2 )
       Mhatlqs <- round(apply(Mhatl, 2, quantile, prob = quants), 1)
       Mhatl_wfqs <- round(apply(Mhatl_wf, 2, quantile, prob = quants), 1)
 
