@@ -1,10 +1,10 @@
 ################################################################################
 #
-#    This script deploys a local version of the GenEst application
+#  This script deploys a local version of the GenEst application
 #
-#  version 0.0.0.4 October 2017
+#  version 0.0.0.5 November 2017
 #
-#    Held under GNU GPL v >= 3	
+#  Held under GNU GPL v >= 3	
 #
 ################################################################################
 
