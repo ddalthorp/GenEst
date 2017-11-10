@@ -1,10 +1,10 @@
 ################################################################################
 #
-#    example of a GenEst analysis at the command line
+#  example of a GenEst analysis at the command line
 #
-#    version 0.0.0.4 October 2017
+#  version 0.0.0.5 November 2017
 #
-#    Held under GNU GPL v >= 3	
+#  Held under GNU GPL v >= 3	
 #
 ################################################################################
 
@@ -62,7 +62,7 @@
 
     # table outputs
 
-      SEmodsAICtab <- AICtabcreateSEmods(SEmods, sortby = "AIC")
+      SEmodsAICtab <- AICtabcreateSEmods(SEmods)
 
     # plot the results
     # indexed by size class (r) and model (j)
@@ -97,7 +97,7 @@
 
     # table outputs
 
-      CPmodsAICtab <- AICtabcreateCPmods(CPmods, sortby = "AIC")
+      CPmodsAICtab <- AICtabcreateCPmods(CPmods)
 
     # plot the results
 
@@ -119,16 +119,12 @@
   # estimate g
   #
 
-    # prep search schedules
-
-      SSs <- SSveccreate(SSdata = SSdataIn)
-
     # garray
-    #  dimension: [Niterations, 1, Nsearchschedules, 
+    #  dimension: [Niterations, Nsearchschedules, 
     #                Nmodels(SExCP), Nsizeclasses]
 
       garray <- gcreateacrosssizes(CPdata = CPdataIn, SEdata = SEdataIn, 
-                                SSdata = SSs, Niterations, 
+                                SSdata = SSdataIn, Niterations, 
                                 CPvars = CPvars, SEvars = SEvars, 
                                 thetaCP, thetaSE, CPmods,
                                 SEmodstouse, CPmodstouse)
@@ -141,17 +137,13 @@
   #
   # estimate Mhat
   #
- 
-    # create DWP table
-
-      DWPdatatab <- DWPtablecreate(SSdata = SSdataIn)
 
     # Mhatarray
-    #  dimension: [Niterations, Nss, Nunits, Nsplitcats, Nsizeclasses]
+    #  dimension: [Niterations, Nunits, Nsplitcats, Nsizeclasses]
 
-       Mhatarray <- Mhatgenerator(COdata = COdataIn, DWPdata = DWPdatatab, 
+       Mhatarray <- Mhatgenerator(COdata = COdataIn, SSdata = SSdataIn, 
                             sizeclasscol = "Size", splitcol = "Split", 
-                            unitcol = "Unit", sscol = "SearchSchedule",
+                            unitcol = "Unit", dfcol = "DateFound",
                             Niterations,  
                             CPvars = CPvars, 
                             SEvars = SEvars, CPdata = CPdataIn, 

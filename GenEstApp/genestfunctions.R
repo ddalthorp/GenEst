@@ -2,7 +2,7 @@
 #
 #  This script contains the functions of the GenEst package
 #
-#  version 0.0.0.4 October 2017
+#  version 0.0.0.5 November 2017
 #
 #  Held under GNU GPL v >= 3	
 #
@@ -10,14 +10,9 @@
 
 
 ##############################################################################
+#
 # packageLoad	
-#  function for checking package needs and downloading, then loading
 #
-# inputs
-#  none
-#
-# outputs
-#  none
 ##############################################################################
 	
 packageLoad <- function(...){
@@ -133,9 +128,11 @@ packageLoad <- function(...){
 
     # prep the output
 
-      output <- vector("list", 8) 
+      output <- vector("list", 15) 
       names(output) <- c("pmodel", "kmodel", "betaphat", "betakhat", 
-                         "vartheta", "AIC", "AICc", "convergence")
+                         "vartheta", "AIC", "AICc", "convergence",
+                         "miniXp", "miniXk", "np", "nk", "fixedK",
+                         "pmodelname", "kmodelname")
       output$pmodel <- pformula
       output$kmodel <- kformulap
       output$betaphat <- result$par[1:ncol(Xp)]
@@ -155,6 +152,9 @@ packageLoad <- function(...){
       output$np <- np
       output$nk <- nk
       output$fixedK <- fixKval
+
+      output$pmodelname <- ModelNamer(peq)
+      output$kmodelname <- ModelNamer(keq)
  
     # return
 
@@ -357,7 +357,7 @@ packageLoad <- function(...){
 #
 ##############################################################################
 
-  AICtabcreateSEmods <- function(SEmods, sortby = "AIC", ...){
+  AICtabcreateSEmods <- function(SEmods, ...){
 
     # determine number of size classes
 
@@ -376,28 +376,25 @@ packageLoad <- function(...){
       for(i in 1:nsc){
 
         tsctab <- data.frame(matrix(NA, nrow = nmods, ncol = 4))
-        colnames(tsctab) <- c("p model", "k model", "AIC", "AICc")
+        colnames(tsctab) <- c("p model", "k model", "AICc", "Delta AICc")
 
         for(j in 1:nmods){
 
-          tsctab[j, ] <- c(
-                         paste(as.character(unlist(SEmods[[i]][[j]]$pmodel)),
+          tsctab[j, 1:3] <- c(
+                     paste(as.character(unlist(SEmods[[i]][[j]]$pmodelname)),
                            collapse = " "),
-                         paste(as.character(unlist(SEmods[[i]][[j]]$kmodel)),
+                     paste(as.character(unlist(SEmods[[i]][[j]]$kmodelname)),
                            collapse = " "), 
-                         round(unlist(SEmods[[i]][[j]]$AIC), 3),
-                         round(unlist(SEmods[[i]][[j]]$AICc), 3))
+                     round(unlist(SEmods[[i]][[j]]$AICc), 3))
 
         }
 
-        AICorders <- order(as.numeric(tsctab[ , "AIC"]))
         AICcorders <- order(as.numeric(tsctab[ , "AICc"]))
 
-        orders <- switch(sortby, 
-                          NULL = 1:nmods,
-                          "AIC" = AICorders,
-                          "AICc" = AICsorders) 
-        outtab <- tsctab[orders, ]
+        minAICc <- min(as.numeric(tsctab[ , "AICc"]))
+        tsctab[ , 4] <- as.numeric(tsctab[ , 3]) - minAICc
+
+        outtab <- tsctab[AICcorders, ]
         output[[i]] <- outtab
 
       }
@@ -411,8 +408,6 @@ packageLoad <- function(...){
       return(output)
 
   }
-
-
 
 
 ##############################################################################
@@ -477,28 +472,30 @@ packageLoad <- function(...){
 
         # dummy initial figure
 
-              par(fig = c(0, 1, 0.75, 1))
+              par(fig = c(0, 1, 0, 0.75))
               par(mar = c(1, 1, 1, 1))
               plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', 
                     xlab = "", ylab = "")
+              mtext(side = 1, "Search", line = -0.5, cex = 1.75)
+              mtext(side = 2, "Searcher Efficiency", line = -0.5, cex = 1.75)
 
         # divvy up the bottom 3/4 of the image for the cell matrix
 
-              figxspace <- 1 / nlev2
-              figyspace <- 0.75 / nlev1
+              figxspace <- 0.975 / nlev2
+              figyspace <- 0.7 / nlev1
 
-              x1 <- rep(figxspace * ((1:nlev2) - 1), each = nlev1)
-              x2 <- rep(figxspace * ((1:nlev2)), each = nlev1)
+              x1 <- rep(figxspace * ((1:nlev2) - 1), each = nlev1) + 0.025
+              x2 <- rep(figxspace * ((1:nlev2)), each = nlev1) + 0.025
 
-              y1 <- rep(figyspace * ((nlev1:1) - 1), nlev2)
-              y2 <- rep(figyspace * ((nlev1:1)), nlev2)
+              y1 <- rep(figyspace * ((nlev1:1) - 1), nlev2) + 0.025
+              y2 <- rep(figyspace * ((nlev1:1)), nlev2) + 0.025
 
               ps <- matrix(NA, nrow = Niterations, ncol = Ncells)
               ks <- matrix(NA, nrow = Niterations, ncol = Ncells)
               CMps <- matrix(NA, nrow = Niterations, ncol = Ncells)
               CMks <- matrix(NA, nrow = Niterations, ncol = Ncells)
 
-              par(mar = c(5,6,2,1))
+              par(mar = c(3,3,2,1))
 
         # plot each cell's figure
 
@@ -514,8 +511,11 @@ packageLoad <- function(...){
 
                 if(arraydim == 0){
                   carcassavail <- length(NAconv) - sum(NAconv)
+                  carcassfound <- sum(SEdata_ri[, obscols], na.rm = T)
                 } else{
                   carcassavail <- nrow(NAconv) - apply(NAconv, 2, sum)
+                  carcassfound <- apply(SEdata_ri[, obscols], 2, sum, 
+                                        na.rm = T)
                 }
                 thetaSErji <- thetaSE[, , i, j, r]
 
@@ -549,22 +549,21 @@ packageLoad <- function(...){
                 plot(xpts, ypts, ylim = c(0, 1), 
                      xlim = c(0.5, maxs + 0.5), main = fct[i, "CellNames"], 
                      xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", 
-                     col = rgb(0.2, 0.2, 0.2, 0.5), lwd = 2, pch = 1, 
+                     col = rgb(0.02, 0.02, 0.02, 0.7), lwd = 2, pch = 1, 
                      cex = 1.5, cex.main = 0.75)
 
                 axis(1, las = 1, cex.axis = 1.)
                 axis(2, las = 1, cex.axis = 1., at = seq(0, 1, .2))
-                mtext(side = 1, "Search", line = 3, cex = 1.25)
-                mtext(side = 2, "Searcher Efficiency", line = 4, cex = 1.25)
 
-                text(xpts + 0.1, ypts + 0.075, carcassavail, xpd = T, 
-                       cex = 0.75, col = rgb(0.5, 0.5, 0.5, 0.9))
+
+                text(xpts + 0.1, ypts + 0.075, 
+                       paste(carcassfound, carcassavail, sep = "/"), 
+                       xpd = T, cex = 0.75, col = rgb(0.05, 0.05, 0.05, 0.5))
 
 
                 points(predxs, CMpredys, type = 'l', lwd = 3, 
-                        col = rgb(0.1, 0.1, 0.8, 0.6))
+                        col = rgb(0.1, 0.1, 0.1, 0.6))
                 points(predxs, predys, type = 'l', lwd = 3)
-
  
               }
 
@@ -572,8 +571,8 @@ packageLoad <- function(...){
 
           # ps
 
-              par(mar = c(3,4,1,1))
-              par(fig = c(0, .5, 0.75, 1), new = T)
+              par(mar = c(2,4,2,1))
+              par(fig = c(0, .5, 0.725, 0.975), new = T)
 
               plot(1, 1, type = "n", xlim = c(0.5, Ncells + 0.5), 
                     ylim = c(0, 1), 
@@ -589,16 +588,16 @@ packageLoad <- function(...){
                 minp <- min(PS)
                 maxp <- max(PS)
 
-                rect(i - 0.1 - 0.2, iqp[1], i + 0.1 - 0.2, iqp[2], lwd = 3, 
+                rect(i - 0.1 - 0.2, iqp[1], i + 0.1 - 0.2, iqp[2], lwd = 2, 
                         col = rgb(1, 1, 1, 0.4))
                 points(c(i - 0.1, i + 0.1) - 0.2, rep(medianp, 2), type = "l",
                         lwd = 2)
                 points(c(i - 0.05, i + 0.05) - 0.2, rep(minp, 2), type = "l", 
-                        lwd = 1)
+                        lwd = 2)
                 points(c(i - 0.05, i + 0.05) - 0.2, rep(maxp, 2), type = "l", 
-                        lwd = 1)
-                points(c(i, i) - 0.2, c(iqp[1], minp), type = "l", lwd = 1) 
-                points(c(i, i) - 0.2, c(iqp[2], maxp), type = "l", lwd = 1) 
+                        lwd = 2)
+                points(c(i, i) - 0.2, c(iqp[1], minp), type = "l", lwd = 2) 
+                points(c(i, i) - 0.2, c(iqp[2], maxp), type = "l", lwd = 2) 
 
                 CMPS <- CMps[, i]
                 CMPX <- runif(length(CMPS), i - 0.1, i + 0.1) + 0.2  
@@ -609,17 +608,17 @@ packageLoad <- function(...){
                 CMmaxp <- max(CMPS)
 
                 rect(i - 0.1 + 0.2, CMiqp[1], i + 0.1 + 0.2, CMiqp[2], 
-                        lwd = 3, col = rgb(0.1, 0.1, 0.8, 0.6))
+                        lwd = 2, col = 0, border = rgb(0.1, 0.1, 0.1, 0.6))
                 points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmedianp, 2), 
-                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.8, 0.6))
+                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6))
                 points(c(i - 0.05, i + 0.05) + 0.2, rep(CMminp, 2), 
-                        type = "l", lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6))
+                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6))
                 points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmaxp, 2), 
-                        type = "l", lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6))
+                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6))
                 points(c(i, i) + 0.2, c(CMiqp[1], CMminp), type = "l", 
-                        lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6)) 
+                        lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6)) 
                 points(c(i, i) + 0.2, c(CMiqp[2], CMmaxp), type = "l", 
-                        lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6)) 
+                        lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6)) 
 
               }
 
@@ -632,8 +631,8 @@ packageLoad <- function(...){
 
           # ks
 
-              par(fig = c(0.5, 1, 0.75, 1), new = T)
-              par(mar = c(3, 4, 1, 1))
+              par(fig = c(0.5, 1, 0.725, 0.975), new = T)
+              par(mar = c(2, 4, 2, 1))
 
               plot(1, 1, type = "n", xlim = c(0.5, Ncells + 0.5), 
                         ylim = c(0, 1), 
@@ -650,13 +649,13 @@ packageLoad <- function(...){
                 maxk <- max(KS)
 
                 rect(i - 0.1 - 0.2, iqk[1], i + 0.1 - 0.2, iqk[2], 
-                        lwd = 3, col = rgb(1, 1, 1, 0.4))
+                        lwd = 2, col = rgb(1, 1, 1, 0.4))
                 points(c(i - 0.1, i + 0.1) - 0.2, rep(mediank, 2), 
                         type = "l", lwd = 2)
                 points(c(i - 0.05, i + 0.05) - 0.2, rep(mink, 2), 
-                        type = "l", lwd = 1)
+                        type = "l", lwd = 2)
                 points(c(i - 0.05, i + 0.05) - 0.2, rep(maxk, 2), 
-                        type = "l", lwd = 1)
+                        type = "l", lwd = 2)
                 points(c(i, i) - 0.2 , c(iqk[1], mink), type = "l", lwd = 1) 
                 points(c(i, i) - 0.2, c(iqk[2], maxk), type = "l", lwd = 1) 
 
@@ -670,17 +669,17 @@ packageLoad <- function(...){
                 CMmaxk <- max(CMKS)
 
                 rect(i - 0.1 + 0.2, CMiqk[1], i + 0.1 + 0.2, CMiqk[2], 
-                        lwd = 3, col = rgb(0.1, 0.1, 0.8, 0.6))
+                        lwd = 2, col = 0, border = rgb(0.1, 0.1, 0.1, 0.6))
                 points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmediank, 2), 
-                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.8, 0.6))
+                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6))
                 points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmink, 2), 
-                        type = "l", lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6))
+                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6))
                 points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmaxk, 2), 
-                        type = "l", lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6))
+                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6))
                 points(c(i, i) + 0.2, c(CMiqk[1], CMmink), type = "l", 
-                        lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6)) 
+                        lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6)) 
                 points(c(i, i) + 0.2, c(CMiqk[2], CMmaxk), type = "l", 
-                        lwd = 1, col = rgb(0.1, 0.1, 0.8, 0.6)) 
+                        lwd = 2, col = rgb(0.1, 0.1, 0.1, 0.6)) 
 
 
               }
@@ -691,9 +690,20 @@ packageLoad <- function(...){
               axis(2, las =1, at = seq(0, 1, 0.2), cex.axis = 1)
               mtext(side = 2, line = 2.75, "k", cex = 1)
 
+        # legend at the top
+
+              par(fig = c(0, 1, 0.95, 1), new = T)
+              par(mar = c(0, 0, 0, 0))
+              plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', 
+                    xlab = "", ylab = "", ylim = c(0, 1), xlim = c(0, 1))
+
+              rect(0.15, 0.15, 0.2, 0.45, lwd = 2, col = rgb(0, 0, 0), 
+                   border = NA)
+              text(x = 0.21, y = 0.3, "= Selected Model", adj = 0)
+              rect(0.45, 0.15, 0.5, 0.45, lwd = 2, 
+                   col = rgb(0.1, 0.1, 0.1, 0.6), border = NA)
+              text(x = 0.51, y = 0.3, "= Cell Means Model", adj = 0)
   }
-
-
 
 
 ##############################################################################
@@ -728,11 +738,14 @@ packageLoad <- function(...){
       t1 <- data[ , which(colnames(data) == ltpc)]
       t2 <- data[ , which(colnames(data) == ftac)]
 
-      t1 <- pmax(t1, 0.0001)
-      t2 <- pmax(t2, 0.0001)
-      event <- ifelse(t1 == t2, 1, ifelse(t2 == Inf | is.na(t2), 0, 3))
-      t2[event==0]<-t1[event==0]
-      obs_survobj <- Surv(time = t1, time2 = t2, event = event, type = "interval")
+      event <- rep(3, length(t1))
+      event[which(is.na(t2))] <- 0
+      event[which(t1 == t2)] <- 1
+
+      t1[which(t1 == 0)] <- 0.0001
+
+      obs_survobj <- Surv(time = t1, time2 = t2, event = event, 
+                              type = "interval")
 
     # select the distributions to use
 
@@ -929,7 +942,7 @@ packageLoad <- function(...){
 ##############################################################################
 
 
-  AICtabcreateCPmods <- function(CPmods, sortby = "AIC", ...){
+  AICtabcreateCPmods <- function(CPmods,  ...){
 
     # determine number of size classes
 
@@ -948,7 +961,7 @@ packageLoad <- function(...){
       for(i in 1:nsc){
 
         tsctab <- data.frame(matrix(NA, nrow = nmods, ncol = 4))
-        colnames(tsctab) <- c("model", "ditsribution", "AIC", "AICc")
+        colnames(tsctab) <- c("model", "ditsribution", "AICc", "Delta AICc")
 
         for(j in 1:nmods){
 
@@ -958,23 +971,19 @@ packageLoad <- function(...){
           modAICc <- modAIC + (2 * modnpar * (modnpar + 1) ) / 
                                 (modnobs - modnpar - 1 )
 
-          tsctab[j, ] <- c(
-                           as.character(names(CPmods[[i]])[j]),
+          tsctab[j, 1:3] <- c(
+                           as.character(ModelNamer(names(CPmods[[i]])[j])),
                            as.character(CPmods[[i]][[j]]$dist),
-
-                           round(modAIC, 3),
                            round(modAICc, 3))
 
         }
 
-        AICorders <- order(as.numeric(tsctab[ , "AIC"]))
         AICcorders <- order(as.numeric(tsctab[ , "AICc"]))
 
-        orders <- switch(sortby, 
-                          NULL = 1:nmods,
-                          "AIC" = AICorders,
-                          "AICc" = AICsorders) 
-        outtab <- tsctab[orders, ]
+        minAICc <- min(as.numeric(tsctab[ , "AICc"]))
+        tsctab[ , 4] <- as.numeric(tsctab[ , 3]) - minAICc
+
+        outtab <- tsctab[AICcorders, ]
         output[[i]] <- outtab
 
    
@@ -998,94 +1007,116 @@ packageLoad <- function(...){
 ##############################################################################
 
 
- CPgraphcreate <- function(CPmods, CPdata, CPvars, thetaCP, Niterations, 
+  CPgraphcreate <- function(CPmods, CPdata, CPvars, thetaCP, Niterations, 
                               timeunit, sizeclasscol, CPltp, CPfta, r, 
                               modelcomplexity, distchoice, ...){
+    
+    # prep the models
+  
+      # set up the response (surv object)
+
+        t1 <- CPdata[ , which(colnames(CPdata) == CPltp)]
+        t2 <- CPdata[ , which(colnames(CPdata) == CPfta)]
+
+        event <- rep(3, length(t1))
+        event[which(is.na(t2))] <- 0
+        event[which(t1 == t2)] <- 1
+
+        t1[which(t1 == 0)] <- 0.0001
+
+        CPobvs_survobj <- Surv(time = t1, time2 = t2, event = event, 
+                                type = "interval")
+
+      # size classes
+
+        sccol <- which(colnames(CPdata) == sizeclasscol)
+        sizeclasses <- as.character(unique(CPdata[ , sccol]))
+        sizeclasses[length(sizeclasses) == 0] <- 1
+        Nsizeclasses <- length(sizeclasses)
+        sizes <- as.character(CPdata[ , sccol])
+        sizes[rep(length(sizes) == 0, nrow(CPdata))] <- "1"
+
+      # models
+
+        Nmodels <- length(CPmods[[1]])
+        CPmodnames1 <- names(CPmods[[1]])
+        nCPmodnames1 <- length(CPmodnames1)
+        CPmodcomps <- CPmodnames1[seq(1, nCPmodnames1, 4)]
+
+      # set up the cells via the factor combination table
+
+        fct <- factorcombinations(pvars = CPvars, data = CPdata) 
+        Ncells <- nrow(fct)
+
+        pv1 <- NULL
+        pv2 <- NULL
+        pv1 <- CPvars[1][length(CPvars) > 0]
+        pv2 <- CPvars[2][length(CPvars) > 1]
+        lev1 <- as.character(unique(CPdata[, pv1]))
+        lev2 <- as.character(unique(CPdata[, pv2]))
+        nlev1 <- length(lev1)
+        nlev2 <- length(lev2)
+        nlev1[length(lev1) == 0] <- 1
+        nlev2[length(lev2) == 0] <- 1
+
+      # combine factors
+
+        combnames <- rep(NA, nrow(CPdata))
+
+        for(i in 1:nrow(CPdata)){
+          colchoice <- which(colnames(CPdata) %in% c(pv1, pv2))
+          colchoice2 <- colchoice[c(which(colnames(CPdata)[colchoice] == pv1),
+                         which(colnames(CPdata)[colchoice] == pv2))]
+          tempname <- paste(as.character(t(CPdata[i, 
+                             colchoice2])), 
+                             collapse = "")
+          tempname[tempname == ""] <- "all"
+          combnames[i] <-  tempname
+        }
+
+      # the four distribution models associated with model complexity
+
+        distchoicenumber <- which(c("exponential", "weibull", 
+                              "loglogistic", "lognormal") == distchoice)
+        modelcomplexitynumber <- which(CPmodcomps == modelcomplexity)
+        MODS <- 4 * (modelcomplexitynumber - 1) + 1:4
 
 
-    # set up the response (surv object)
+    # plotting
 
-      t1 <- CPdata[ , which(colnames(CPdata) == CPltp)]
-      t2 <- CPdata[ , which(colnames(CPdata) == CPfta)]
+      # set up the predictors
 
+        maxx <- max(na.omit(t2))
+        maxx <- ceiling(maxx * 1.1)
+        predxs <- seq(0, maxx, length.out = 1000)
 
-      event <- rep(3, length(t1))
-      event[which(is.na(t2))] <- 0
-      event[which(t1 == t2)] <- 1
-      event[which(t1 == 0)] <- 2
+      # plot window
 
-      t1[which(t1 == 0)] <- t2[which(t1 == 0)]
+        # dummy plot and axis labels
+     
+          par(fig = c(0, 1, 0, 0.95))
+          par(mar = c(1, 1, 1, 1))
+          plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', 
+                    xlab = "", ylab = "")
+          mtext(side = 1, timeunit, line = -0.5, cex = 1.75)
+          mtext(side = 2, "Carcass Persistence", line = -0.5, cex = 1.75)
 
-      CPobvs_survobj <- Surv(time = t1, time2 = t2, event = event, 
-                              type = "interval")
+        # divvy up the bottom of the image for the cell matrix
 
-    # size classes
+          figxspace <- 0.975 / nlev2
+          figyspace <- 0.925 / nlev1
 
-      sccol <- which(colnames(CPdata) == sizeclasscol)
+          x1 <- rep(figxspace * ((1:nlev2) - 1), each = nlev1) + 0.025
+          x2 <- rep(figxspace * ((1:nlev2)), each = nlev1) + 0.025
 
-      sizeclasses <- as.character(unique(CPdata[ , sccol]))
-      sizeclasses[length(sizeclasses) == 0] <- 1
-      Nsizeclasses <- length(sizeclasses)
+          y1 <- rep(figyspace * ((nlev1:1) - 1), nlev2) + 0.025
+          y2 <- rep(figyspace * ((nlev1:1)), nlev2) + 0.025
 
-      sizes <- as.character(CPdata[ , sccol])
-      sizes[rep(length(sizes) == 0, nrow(CPdata))] <- "1"
+        # set margins
 
-    # models
+          par(mar = c(3, 3, 2, 1))
 
-      Nmodels <- length(CPmods[[1]])
-
-      CPmodnames1 <- names(CPmods[[1]])
-      nCPmodnames1 <- length(CPmodnames1)
-      CPmodcomps <- CPmodnames1[seq(1, nCPmodnames1, 4)]
-
-    # set up the cells via the factor combination table
-
-      fct <- factorcombinations(pvars = CPvars, data = CPdata) 
-      Ncells <- nrow(fct)
-
-      pv1 <- NULL
-      pv2 <- NULL
-      pv1 <- CPvars[1][length(CPvars) > 0]
-      pv2 <- CPvars[2][length(CPvars) > 1]
-      lev1 <- as.character(unique(CPdata[, pv1]))
-      lev2 <- as.character(unique(CPdata[, pv2]))
-      nlev1 <- length(lev1)
-      nlev2 <- length(lev2)
-      nlev1[length(lev1) == 0] <- 1
-      nlev2[length(lev2) == 0] <- 1
-
-    # combine factors
-
-      combnames <- rep(NA, nrow(CPdata))
-
-      for(i in 1:nrow(CPdata)){
-        colchoice <- which(colnames(CPdata) %in% c(pv1, pv2))
-        colchoice2 <- colchoice[c(which(colnames(CPdata)[colchoice] == pv1),
-                       which(colnames(CPdata)[colchoice] == pv2))]
-        tempname <- paste(as.character(t(CPdata[i, 
-                           colchoice2])), 
-                           collapse = "")
-        tempname[tempname == ""] <- "all"
-        combnames[i] <-  tempname
-      }
-
-
-    # for a given size class and model complexity create a matrix of panels 
-    #  (one for each cell)
-
-      maxx <- max(na.omit(t2))
-      maxx <- ceiling(maxx * 1.1)
-      predxs <- seq(0, maxx, length.out = 1000)
-
-    # the four distribution models associated with model complexity
-
-      distchoicenumber <- which(c("exponential", "weibull", 
-                            "loglogistic", "lognormal") == distchoice)
-      modelcomplexitynumber <- which(CPmodcomps == modelcomplexity)
-      MODS <- 4 * (modelcomplexitynumber - 1) + 1:4
-
-        par(mfcol = c(nlev1, nlev2))
-            par(mar = c(5, 6, 2, 1))
+        # fill in each cell
 
           for(i in 1:Ncells){
 
@@ -1095,6 +1126,8 @@ packageLoad <- function(...){
                                  combnames == fct[i, "CellNames"], ]
             mform <- formula("CPobvs_survobj_ri ~ 1")
 
+            par(fig = c(x1[i], x2[i], y1[i], y2[i]), new = T)
+
             plot(survfit(mform, data = CPdata_ri ), ylim = c(0, 1), 
                    xlim = c(0, maxx), main = fct[i, "CellNames"], 
                    xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", 
@@ -1103,8 +1136,7 @@ packageLoad <- function(...){
 
             axis(1, las = 1, cex.axis = 1.)
             axis(2, las = 1, cex.axis = 1., at = seq(0, 1, .2))
-            mtext(side = 1, timeunit, line = 3., cex = 0.75)
-            mtext(side = 2, "Carcass Persistence", line = 4, cex = 0.75)
+
 
 
             thick <- rep(1, 4)
@@ -1136,6 +1168,8 @@ packageLoad <- function(...){
  
             }
 
+            # emphasize the distribution choice
+
               j <- distchoicenumber
               j2 <- j
               j2[length(j2) == 0] <- 1
@@ -1155,12 +1189,95 @@ packageLoad <- function(...){
               points(pts, predys, type = 'l', 
                         col = rgb(cols[j,1], cols[j,2], cols[j,3], cols[j,4]),
                         lwd = thick[j])
- 
 
+            initcarc <- nrow(CPdata_ri)
+            text(x = maxx / 20, y = 1.1, paste("N = ", initcarc, sep = ""), 
+                 cex = 0.75, xpd = T)
+ 
           }
+
+        # legend at the top
+
+          par(fig = c(0, 1, 0.95, 1), new = T)
+          par(mar = c(0, 0, 0, 0))
+          plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', 
+                xlab = "", ylab = "", ylim = c(0, 1), xlim = c(0, 1))
+
+          rect(0.1, 0.15, 0.15, 0.35, lwd = 2, 
+                   col = rgb(0.80, 0.38, 0.56, 1), 
+                   border = NA)
+          text(x = 0.16, y = 0.3, "= Exponential", adj = 0)
+          rect(0.3, 0.15, 0.35, 0.35, lwd = 2, 
+                   col = rgb(1.00, 0.76, 0.15, 1), 
+                   border = NA)
+          text(x = 0.36, y = 0.3, "= Weibull", adj = 0)
+          rect(0.5, 0.15, 0.55, 0.35, lwd = 2,
+                   col = rgb(0.00, 1.00, 1.00, 1), 
+                   border = NA)
+          text(x = 0.56, y = 0.3, "= Log-Logistic", adj = 0)
+          rect(0.7, 0.15, 0.75, 0.35, lwd = 2, 
+                   col = rgb(0.00, 0.41, 0.55, 1), 
+                   border = NA)
+          text(x = 0.76, y = 0.3, "= Log-Normal", adj = 0)
 
 }
 
+
+##############################################################################
+#
+# SSveccreate
+#
+##############################################################################
+
+  SSveccreate <- function(SSdata, ...){
+
+    unitops <- unique(SSdata$Unit)
+    Nunits <- length(unitops)
+    maxvisits <- 0
+    for(i in 1:Nunits){
+      maxvisits <- max(c(maxvisits, 
+                         length(SSdata$Unit[SSdata$Unit == unitops[i]])))
+    }
+
+    Nunitss <- matrix(NA, nrow = Nunits, ncol = maxvisits)
+
+    for(i in 1:Nunits){
+      visitdates <- as.Date(as.character(SSdata$DateSearched[SSdata$Unit
+                               == unitops[i]]), format = "%m/%d/%Y")
+      visitdays <- visitdates - visitdates[1]
+      Nunitss[i, 1:length(visitdays)] <- visitdays
+    }
+
+    pastecombo <- apply(Nunitss, 1, paste, collapse = "_")
+    uniquepastecombo <- unique(pastecombo)
+ 
+    Nuss <- length(uniquepastecombo)
+
+    for(i in 1:Nuss){
+      uniquepastecombo[i] <- gsub("_NA", "", uniquepastecombo[i])
+    }
+
+    return(uniquepastecombo)
+  }
+
+
+##############################################################################
+#
+# SStablecreate
+#
+##############################################################################
+
+  SStablecreate <- function(SSdata, ...){
+
+    SSv <- SSveccreate(SSdata = SSdata)
+ 
+    SStab <- matrix(NA, nrow = length(SSv), ncol = 2)
+    SStab[ , 1] <- 1:length(SSv)
+    SStab[ , 2] <- gsub("_", ", ", SSv)   
+    SStab <- data.frame(SStab)
+    colnames(SStab) <- c("Search Schedule", "Search Days")
+    return(SStab)
+  }
 
 ##############################################################################
 #
@@ -1173,6 +1290,9 @@ packageLoad <- function(...){
                                  thetaCP, thetaSE, CPmods, SEmodstouse,
                                  CPmodstouse, ...){
  
+    # prep search schedules
+
+      SSs <- SSveccreate(SSdata = SSdata)
 
     # combine the factors across the models
 
@@ -1220,7 +1340,7 @@ packageLoad <- function(...){
 
     # search schedules
 
-      Nss <- length(SSdata)				
+      Nss <- length(SSs)				
       ssops <- 1:Nss
 
     # Nsizeclasses
@@ -1230,9 +1350,9 @@ packageLoad <- function(...){
 
     # set up output array
 
-      garray <- array(NA, dim = c(Niterations, 1, Nss, 
+      garray <- array(NA, dim = c(Niterations, Nss, 
                                    Ncombcell, Nsizeclasses),
-                          dimnames = list(1:Niterations, 1, ssops,
+                          dimnames = list(1:Niterations, ssops,
                                       combname, sizeclasses))
 
     # estimate g
@@ -1243,7 +1363,7 @@ packageLoad <- function(...){
 
           for(k in 1:Nss){
 
-            specificSS <- as.numeric(strsplit(SSdata[k], "_")[[1]])
+            specificSS <- as.numeric(strsplit(SSs[k], "_")[[1]])
 
             specificCPcell <- mapmat[j, "CPcell"]
             specificCPtheta <- thetaCP[ , , specificCPcell, CPmodstouse[i], i]
@@ -1255,7 +1375,7 @@ packageLoad <- function(...){
             gvals <- gvec(days = specificSS, CPab = specificCPtheta, 
                            persdist = specificCPdist, seef = specificSEtheta)
 				
-            garray[ , , k, j, i ] <- gvals
+            garray[ , k, j, i ] <- gvals
 
           }
         }
@@ -1278,13 +1398,13 @@ packageLoad <- function(...){
   gtablecreate <- function(garray, CL, ... ){
 
       Niterations <- dim(garray)[1]
-      Nss <- dim(garray)[3]
-      Ncellcombos <- dim(garray)[4]
-      Nclasses <- dim(garray)[5]
+      Nss <- dim(garray)[2]
+      Ncellcombos <- dim(garray)[3]
+      Nclasses <- dim(garray)[4]
 
-      ssops <- dimnames(garray)[3][[1]]
-      ccops <- dimnames(garray)[4][[1]]
-      scops <- dimnames(garray)[5][[1]]
+      ssops <- dimnames(garray)[2][[1]]
+      ccops <- dimnames(garray)[3][[1]]
+      scops <- dimnames(garray)[4][[1]]
 
       quants <- c(0 + (1 - CL) / 2, 1 - (1 - CL) / 2 )
 
@@ -1299,7 +1419,7 @@ packageLoad <- function(...){
 
             # select the data 
 
-              gs <- garray[1:Niterations, 1, j, i, r]   
+              gs <- garray[1:Niterations, j, i, r]   
 
             # calc mean
 
@@ -1341,77 +1461,65 @@ packageLoad <- function(...){
 
 ##############################################################################
 #
-# ggraphscreate 
+# DWPtablecreate
 #
 ##############################################################################
 
 
 
-  ggraphscreate <- function(garray, ... ){
+  DWPtablecreate <- function(SSdata, ...){
 
-      Niterations <- dim(garray)[1]
-      Nss <- dim(garray)[3]
-      Ncellcombos <- dim(garray)[4]
-      Nclasses <- dim(garray)[5]
+    unitops <- unique(SSdata$Unit)
+    Nunits <- length(unitops)
+    maxvisits <- 0
+    for(i in 1:Nunits){
+      maxvisits <- max(c(maxvisits, 
+                          length(SSdata$Unit[SSdata$Unit == unitops[i]])))
+    }
 
-      ssops <- dimnames(garray)[3][[1]]
-      ccops <- dimnames(garray)[4][[1]]
-      scops <- dimnames(garray)[5][[1]]
+    Nunitss <- matrix(NA, nrow = Nunits, ncol = maxvisits)
 
-      for(r in 1:Nclasses){
-        for(j in 1:Nss){
-          for(i in 1:Ncellcombos){
+    for(i in 1:Nunits){
+      visitdates <- as.Date(as.character(SSdata$DateSearched[SSdata$Unit 
+                                == unitops[i]]), format = "%m/%d/%Y")
+      visitdays <- visitdates - visitdates[1]
+      Nunitss[i, 1:length(visitdays)] <- visitdays
+    }
 
-            gs <- garray[1:Niterations, 1, j, i, r]   
+    pastecombo <- apply(Nunitss, 1, paste, collapse = "_")
+    uniquepastecombo <- unique(pastecombo)
+    Nuss <- length(uniquepastecombo) 
 
-            xvals <- seq(0, 1, 0.01)
-            nxvs <- length(xvals) - 1
-            xv1 <- seq(0, 0.99, 0.01)
-            xv2 <- seq(0.01, 1.00, 0.01)  
-            hts <- rep(NA, nxvs )
+    alignss <- rep(NA, Nunits)
+    for(i in 1:Nunits){
+      alignss[i] <- which(uniquepastecombo == pastecombo[i])
+    }
 
-            for(d in 1:nxvs ){
-              hts[d] <- length(gs[gs >= xv1[d] & gs < xv2[d]])
-            }
+    DWPbysizecols <- grep("DWP", colnames(SSdata))
+    Pbscnames <- colnames(SSdata)[DWPbysizecols]
+    sizes <- gsub("DWP_", "", Pbscnames)
+    Nsizes <- length(sizes)
 
-            hts <- hts / sum(hts)
+    OTsize <- rep(sizes, Nuss * Nunits)
+    OTss <- rep(rep(1:Nuss, each = Nsizes), Nunits)
+    OTunit <- rep(1:Nunits, each = Nuss * Nsizes)
+    OTdwp <- rep(0, length(OTsize))
 
-            maxy <- max(hts) 
-            maxy <- ceiling((maxy * 1.1) * 100) / 100
+    for(i in 1:Nunits){
 
-            filename <- paste("Output/g/size_", scops[r], "_searchschedule_",
-                             ssops[j], "_classlevels_", ccops[i],  
-                            "_gfig.tiff", sep = "")
+      DWPspecific <- (SSdata[which(SSdata$Unit == unitops[i])[1], 
+                                    DWPbysizecols])
+      SSspecific <- alignss[i]
+      OTdwp[which(OTunit == unitops[i] 
+                    & OTss == SSspecific)] <- as.numeric(DWPspecific)
+    }
 
-            tiff(file = filename, width = 12, height = 12, 
-                    units = "in", res = 100)
+    outtable <- data.frame(DWP = OTdwp, Size = OTsize, 
+                            SearchSchedule = OTss, Unit = OTunit)
 
-            par(mar = c(5,6,1,1))
-            plot(1, 1, type = 'n', xlab = '', ylab = '', 
-                  xaxt = 'n', yaxt = 'n', bty = 'n', 
-                  ylim = c(0, maxy), xlim = c(0, 1))
+    return(outtable)
 
-            for(d in 1:nxvs){
-              rect(xv1[d], 0, xv2[d], hts[d])
-            }
-            plotxvals1 <- seq(0, 1, .1)
-            plotxvals2 <- seq(0, 1, .05)
-            plotxvals3 <- seq(0, 1, .01)
-            axis(2, las = 1, cex.axis = 1.25)
-            mtext(side = 2, "Probability", line = 4, cex = 2)
-            axis(1, las = 1, cex.axis = 1.25, at = plotxvals1)
-            axis(1, labels = F, tck = -0.005, at = plotxvals2)
-            axis(1, labels = F, tck = -0.002, at = plotxvals3)
-            mtext(side = 1, "g", line = 3.5, cex = 2)
-            dev.off()
-
-
-
-          }
-        }
-      }
   }
-
 
 ##############################################################################
 #
@@ -1419,9 +1527,13 @@ packageLoad <- function(...){
 #
 ##############################################################################
 
-  Mhatgenerator <- function(COdata, DWPdata, sizeclasscol, splitcol, 
-                      unitcol, sscol, CPvars, SEvars,  
+  Mhatgenerator <- function(COdata, SSdata, sizeclasscol,  
+                      splitcol, unitcol, dfcol, CPvars, SEvars,  
                       Niterations, CPdata, SEdata, garray, ...){
+
+    # create DWP table
+
+      DWPdata <- DWPtablecreate(SSdata = SSdata)
 
     # units 
 
@@ -1438,11 +1550,11 @@ packageLoad <- function(...){
       sccol <- which(colnames(COdata) == sizeclasscol)
 
       sizeclasses <- as.character(unique(COdata[ , sccol]))
-      sizeclasses[length(sizeclasses) == 0] <- 1
+      sizeclasses[length(sizeclasses) == 0] <- "all"
       Nsizeclasses <- length(sizeclasses)
 
       sizes <- as.character(COdata[ , sccol])
-      sizes[rep(length(sizes) == 0, nrow(COdata))] <- "1"
+      sizes[rep(length(sizes) == 0, nrow(COdata))] <- "all"
 
     # split categories
 
@@ -1455,15 +1567,33 @@ packageLoad <- function(...){
       splits <- as.character(COdata[ , spcol])
       splits[rep(length(splits) == 0, nrow(COdata))] <- "1"
 
-    # search schedules 
+    # search schedule for each unit
 
-      sschedcol <- which(colnames(COdata) == sscol)
-      ssops <- as.character(unique(COdata[ , sschedcol]))
-      ssops[length(ssops) == 0] <- 1
-      Nss <- length(ssops)
+      unitops <- unique(SSdata$Unit)
+      Nunits <- length(unitops)
+      maxvisits <- 0
+      for(i in 1:Nunits){
+        maxvisits <- max(c(maxvisits, 
+                            length(SSdata$Unit[SSdata$Unit == unitops[i]])))
+      }
 
-      sscheds <- as.character(COdata[ , sschedcol])
-      sscheds[rep(length(sscheds) == 0, nrow(COdata))] <- "1"
+      Nunitss <- matrix(NA, nrow = Nunits, ncol = maxvisits)
+
+      for(i in 1:Nunits){
+        visitdates <- as.Date(as.character(SSdata$DateSearched[SSdata$Unit 
+                                  == unitops[i]]), format = "%m/%d/%Y")
+        visitdays <- visitdates - visitdates[1]
+        Nunitss[i, 1:length(visitdays)] <- visitdays
+      }
+
+      pastecombo <- apply(Nunitss, 1, paste, collapse = "_")
+      uniquepastecombo <- unique(pastecombo)
+      Nuss <- length(uniquepastecombo) 
+
+      alignss <- rep(NA, Nunits)
+      for(i in 1:Nunits){
+        alignss[i] <- which(uniquepastecombo == pastecombo[i])
+      }
 
     # expand the factors across the models 
 
@@ -1474,24 +1604,21 @@ packageLoad <- function(...){
 
     # set up the X, Xtilde, Mtilde, and Mhat arrays
 
-      Xarray <- array(NA, dim = c(Ncellcombs, Nss, Nunits, 
+      Xarray <- array(NA, dim = c(Ncellcombs, Nunits, 
                                      Nsplitcats, Nsizeclasses))
-      Xtildearray <- array(NA, dim = c(Niterations, Ncellcombs, Nss, Nunits, 
+      Xtildearray <- array(NA, dim = c(Niterations, Ncellcombs, Nunits, 
                                         Nsplitcats, Nsizeclasses))
-      Mtildearray <- array(NA, dim = c(Niterations, Ncellcombs, Nss, Nunits, 
+      Mtildearray <- array(NA, dim = c(Niterations, Ncellcombs, Nunits, 
                                         Nsplitcats, Nsizeclasses))
-      Mhatarray <- array(NA, dim = c(Niterations, Nss, Nunits, Nsplitcats, 
+      Mhatarray <- array(NA, dim = c(Niterations, Nunits, Nsplitcats, 
                                       Nsizeclasses), 
-                           dimnames = list(1:Niterations, ssops, unitoptions, 
+                           dimnames = list(1:Niterations, unitoptions, 
                                       splitcats, sizeclasses) )
 
-
-    # fill it in
+    # align the expanded factors with the CO data
 
       EXPinCO <- which(colnames(COdata) %in% colnames(expanded) )
       COinEXP <- which(colnames(expanded) %in% colnames(COdata))
-
-
 
       if(length(EXPinCO) == 1){
         COpaste <- as.character(COdata[, EXPinCO])
@@ -1505,16 +1632,14 @@ packageLoad <- function(...){
         EXPpaste <- apply(EXPcoEXP, 1, paste, collapse = "")
       }
 
+    # fill in the arrays
 
-
-      for(r in 1:Nsizeclasses){
-        for(l in 1:Nsplitcats){
-          for(k in 1:Nunits){    
-            for(j in 1:Nss){
+        for(r in 1:Nsizeclasses){
+          for(l in 1:Nsplitcats){
+            for(k in 1:Nunits){    
               for(i in 1:Ncellcombs){
 
                 spot <- which(COpaste == EXPpaste[i] &
-                               sscheds == ssops[j] &
                                units == unitoptions[k] &
                                splits == splitcats[l] &
                                sizes == sizeclasses[r])
@@ -1522,8 +1647,8 @@ packageLoad <- function(...){
                 X_specific <- length(spot)
                 X_specific[which(is.na(X_specific)) == T] <- 0
 
-                g_specifics <- garray[1:Niterations, 1, 
-                                        which(ssops== ssops[j]),
+                g_specifics <- garray[1:Niterations,  
+                                        alignss[k], 
                                         which(EXPpaste == EXPpaste[i]),
                                         which(sizeclasses == sizeclasses[r])]
             
@@ -1534,38 +1659,37 @@ packageLoad <- function(...){
                                             g_specifics)
                 Mtilde_specifics <- Xtilde_specifics/g_specifics
 
-                Xarray[i, j, k, l, r] <- X_specific
-                Xtildearray[ , i, j, k, l, r] <- Xtilde_specifics
-                Mtildearray[ , i, j, k, l, r] <- Mtilde_specifics
+                Xarray[i, k, l, r] <- X_specific
+                Xtildearray[ , i, k, l, r] <- Xtilde_specifics
+                Mtildearray[ , i, k, l, r] <- Mtilde_specifics
 
 
               }
 
               if(Ncellcombs > 1){
-                sumMtilde <- apply(Mtildearray[ , 1:Ncellcombs, j, k, l, r], 
+                sumMtilde <- apply(Mtildearray[ , 1:Ncellcombs, k, l, r], 
                                   1, sum)
               } else {
-                sumMtilde <- Mtildearray[ , 1:Ncellcombs, j, k, l, r] 
+                sumMtilde <- Mtildearray[ , 1:Ncellcombs, k, l, r] 
               }                    
 
 
-              DWPsccol <- which(colnames(DWPdata) == sizeclasscol)
-              DWPucol <- which(colnames(DWPdata) == unitcol)
-              DWPsscol <- which(colnames(DWPdata) == sscol)
+              DWPsccol <- which(colnames(DWPdata) == "Size")
+              DWPucol <- which(colnames(DWPdata) == "Unit")
+              DWPsscol <- which(colnames(DWPdata) == "SearchSchedule")
 
               DWPspot <- which(DWPdata[ , DWPsccol] == sizeclasses[r] &
                                 DWPdata[ , DWPucol] == unitoptions[k] &
-                                DWPdata[ , DWPsscol] == ssops[j] )
+                                DWPdata[ , DWPsscol] == alignss[k])
 
               DWP_specific <- DWPdata[ DWPspot, "DWP"]
 
               Mhatspecific <- sumMtilde / DWP_specific
               Mhatspecific[Mhatspecific == "NaN"] <- NA
-              Mhatarray[ , j, k, l, r] <- Mhatspecific
+              Mhatarray[ , k, l, r] <- Mhatspecific
             }
           }
         }
-      }
 
 
     # return 
@@ -1575,26 +1699,24 @@ packageLoad <- function(...){
   }
 
 
-
 ##############################################################################
 #
 # Mhatcondense 
 #
 ##############################################################################
 
-
   Mhatcondense <- function(Mhatarray, ...){
 
     # condensing to matrix (Mhatl) of dimension Niterations x split categories
 
       Niterations <- dim(Mhatarray)[1]
-      Nsplitcats <- dim(Mhatarray)[4]
+      Nsplitcats <- dim(Mhatarray)[3]
       Mhatl <- matrix(NA, nrow = Niterations, ncol = Nsplitcats)
-      colnames(Mhatl) <- dimnames(Mhatarray)[[4]]
+      colnames(Mhatl) <- dimnames(Mhatarray)[[3]]
 
       for(l in 1:Nsplitcats){
 
-          Mhatl[ , l] <- apply(Mhatarray[  , , , l, ], 1, sum, na.rm = T)
+          Mhatl[ , l] <- apply(Mhatarray[  , , l, ], 1, sum, na.rm = T)
 
       }
   
@@ -1603,8 +1725,6 @@ packageLoad <- function(...){
       return(Mhatl)
 
   }
-
-
 
 ##############################################################################
 #
@@ -2116,7 +2236,6 @@ packageLoad <- function(...){
     }
   }
 
-
 ##############################################################################
 #
 # logit
@@ -2139,101 +2258,135 @@ packageLoad <- function(...){
 
 ##############################################################################
 #
-# SSveccreate
+# ModelNamer
 #
 ##############################################################################
 
-  SSveccreate <- function(SSdata, ...){
 
-    unitops <- unique(SSdata$Unit)
-    Nunits <- length(unitops)
-    maxvisits <- 0
-    for(i in 1:Nunits){
-      maxvisits <- max(c(maxvisits, 
-                         length(SSdata$Unit[SSdata$Unit == unitops[i]])))
-    }
+  ModelNamer <- function(Equation, ...){
 
-    Nunitss <- matrix(NA, nrow = Nunits, ncol = maxvisits)
-
-    for(i in 1:Nunits){
-      visitdates <- as.Date(as.character(SSdata$DateSearched[SSdata$Unit
-                               == unitops[i]]), format = "%m/%d/%Y")
-      visitdays <- visitdates - visitdates[1]
-      Nunitss[i, 1:length(visitdays)] <- visitdays
-    }
-
-    pastecombo <- apply(Nunitss, 1, paste, collapse = "_")
-    uniquepastecombo <- unique(pastecombo)
- 
-    Nuss <- length(uniquepastecombo)
-
-    for(i in 1:Nuss){
-      uniquepastecombo[i] <- gsub("_NA", "", uniquepastecombo[i])
-    }
-
-    return(uniquepastecombo)
+    xx <- Equation
+    xx <- gsub("~ 1", "Intercept Only", xx)
+    xx <- gsub("~fixed_at_", "Fixed at ", xx)
+    xx <- gsub("~ ", "", xx)
+    xx <- gsub("\\*", "crossed with", xx)
+    xx <- gsub("\\+", "and", xx)
+    return(xx)
   }
 
 
 
 ##############################################################################
 #
-# DWPtablecreate
+# ModelNameReverser
 #
 ##############################################################################
 
 
+  ModelNameReverser <- function(Equation, ...){
 
-  DWPtablecreate <- function(SSdata, ...){
+    xx <- Equation
+    xx <- gsub("Intercept Only", "1", xx)
+    xx <- gsub(" crossed with ", " \\* ", xx)
+    xx <- gsub(" and ", " \\+ ", xx)
+    xx <- paste("~ ", xx, sep = "")
+    return(xx)
+  }
 
-    unitops <- unique(SSdata$Unit)
-    Nunits <- length(unitops)
-    maxvisits <- 0
-    for(i in 1:Nunits){
-      maxvisits <- max(c(maxvisits, 
-                          length(SSdata$Unit[SSdata$Unit == unitops[i]])))
-    }
 
-    Nunitss <- matrix(NA, nrow = Nunits, ncol = maxvisits)
+##############################################################################
+#
+# SEAICorder
+#
+##############################################################################
 
-    for(i in 1:Nunits){
-      visitdates <- as.Date(as.character(SSdata$DateSearched[SSdata$Unit 
-                                == unitops[i]]), format = "%m/%d/%Y")
-      visitdays <- visitdates - visitdates[1]
-      Nunitss[i, 1:length(visitdays)] <- visitdays
-    }
+  SEAICorder <- function(SEmods, ...){
 
-    pastecombo <- apply(Nunitss, 1, paste, collapse = "_")
-    uniquepastecombo <- unique(pastecombo)
-    Nuss <- length(uniquepastecombo) 
+    # determine number of size classes
 
-    alignss <- rep(NA, Nunits)
-    for(i in 1:Nunits){
-      alignss[i] <- which(uniquepastecombo == pastecombo[i])
-    }
+      nsc <- length(SEmods)
 
-    DWPbysizecols <- grep("DWP", colnames(SSdata))
-    Pbscnames <- colnames(SSdata)[DWPbysizecols]
-    sizes <- gsub("DWP_", "", Pbscnames)
-    Nsizes <- length(sizes)
+    # determine number of models w/in size classes
 
-    OTsize <- rep(sizes, Nuss * Nunits)
-    OTss <- rep(rep(1:Nuss, each = Nsizes), Nunits)
-    OTunit <- rep(1:Nunits, each = Nuss * Nsizes)
-    OTdwp <- rep(0, length(OTsize))
+      nmods <- length(SEmods[[1]])
 
-    for(i in 1:Nunits){
+    # set up list of tables for output
 
-      DWPspecific <- (SSdata[which(SSdata$Unit == unitops[i])[1], 
-                                    DWPbysizecols])
-      SSspecific <- alignss[i]
-      OTdwp[which(OTunit == unitops[i] 
-                    & OTss == SSspecific)] <- as.numeric(DWPspecific)
-    }
+      AICcOrderList <- vector("list", nsc)
 
-    outtable <- data.frame(DWP = OTdwp, Size = OTsize, 
-                            SearchSchedule = OTss, Unit = OTunit)
+    # fill in
 
-    return(outtable)
+      for(i in 1:nsc){
+
+        specificAICc <- rep(NA, nmods)
+
+        for(j in 1:nmods){
+
+          specificAICc[j] <- round(unlist(SEmods[[i]][[j]]$AICc), 3)
+
+        }
+
+        AICcOrderList[[i]] <- order(specificAICc)
+
+      }
+
+    # add size col names
+
+      names(AICcOrderList) <- names(SEmods)
+
+    # return
+
+      return(AICcOrderList)
+
+  }
+
+
+##############################################################################
+#
+# CPAICorder
+#
+##############################################################################
+
+  CPAICorder <- function(CPmods,  ...){
+
+    # determine number of size classes
+
+      nsc <- length(CPmods)
+
+    # determine number of models w/in size classes
+
+      nmods <- length(CPmods[[1]])
+
+    # set up list of tables for output
+
+      AICcOrderList <- vector("list", nsc)
+
+    # fill in
+
+      for(i in 1:nsc){
+
+        specificAICc <- rep(NA, nmods)
+
+        for(j in 1:nmods){
+
+          modAIC <- AIC(CPmods[[i]][[j]]) 
+          modnpar <- (CPmods[[i]][[j]])$df
+          modnobs <- length((CPmods[[i]][[j]])$linear.predictors)
+          specificAICc[j] <- modAIC + (2 * modnpar * (modnpar + 1) ) / 
+                                (modnobs - modnpar - 1 )
+
+        }
+
+        AICcOrderList[[i]] <- order(specificAICc)
+   
+      }
+
+    # add size col names
+
+      names(AICcOrderList) <- names(CPmods)
+
+    # return
+
+      return(AICcOrderList)
 
   }

@@ -2,7 +2,7 @@
 #
 #  This script contains the UI code for the the GenEst app
 #
-#  version 0.0.0.4 October 2017
+#  version 0.0.0.5 November 2017
 #
 #  Held under GNU GPL v >= 3	
 #
@@ -68,11 +68,16 @@
               HTML('<b><big><center>View data:</center></big></b>'),
               br(),
               tabsetPanel(
-                tabPanel("Search Efficiency",  dataTableOutput("SEdata")),
-                tabPanel("Carcass Persistence",  dataTableOutput("CPin")),
-                tabPanel("Search Schedule",  dataTableOutput("SSin")),
-                tabPanel("Carcass Observations",  dataTableOutput("COin")),
-                tabPanel("Meta Data",  tableOutput("MDin"))
+                tabPanel("Search Efficiency", br(), br(), 
+                          dataTableOutput("SEdata")),
+                tabPanel("Carcass Persistence", br(), br(), 
+                          dataTableOutput("CPin")),
+                tabPanel("Search Schedule", br(), br(), 
+                          dataTableOutput("SSin")),
+                tabPanel("Carcass Observations", br(), br(), 
+                          dataTableOutput("COin")),
+                tabPanel("Meta Data", br(), br(), 
+                          tableOutput("MDin"))
               )
             )
           )
@@ -93,7 +98,11 @@
  
                 sidebarPanel(width = 3,
                     numericInput("Niterations", "Number of iterations:", 
-                           value = 1000, min = 1, max = 10000, step = 1)
+                           value = 1000, min = 1, max = 10000, step = 1),
+                    numericInput("CL", "Confidence Level:", 
+                           value = 0.9, min = 0, max = 1, step = 0.001),
+                    numericInput("ffs", "Fraction of units or area surveyed",
+                           value = 1.0, min = 0, max = 1, step = 0.001)
               ),
 
               # main panel is empty
@@ -111,15 +120,17 @@
               # side bar of model inputs
 
                 sidebarPanel(width = 3, 
-                           selectizeInput("SEvars", 
-                               "Choose predictor variables (max: 2):", 
-                               c("No data input yet"), multiple = T),
-                           selectizeInput("SEsizeclasscol", 
-                               "Choose size class column (max: 1):", 
-                               c("No data input yet"), multiple = T),
                            selectizeInput("SEobscols", 
                                "Choose observation columns (in order):",
                                c("No data input yet"), multiple = T),
+                           selectizeInput("SEsizeclasscol", 
+                               "Choose size class column:", 
+                               c("No data input yet"), multiple = T, 
+                               options = list(maxItems = 1)),
+                           selectizeInput("SEvars", 
+                               "Choose predictor variables (max: 2):", 
+                               c("No data input yet"), multiple = T, 
+                               options = list(maxItems = 2)),
                            selectizeInput("fixKchoice", "Use fixed k?",
                                c("NO", "YES"), multiple = F),
                            numericInput("fixKvalchoice", 
@@ -135,7 +146,8 @@
 
                     # Data tab shows data being modeled
 
-                      tabPanel("Data", br(), br(), tableOutput("selected_SE")
+                      tabPanel("Data", br(), br(), 
+                               dataTableOutput("selected_SE")
                       ),
 
                     # Model Table tab shows AIC table for a given size class
@@ -143,7 +155,7 @@
                       tabPanel("Model Table", br(), 
                            selectizeInput("SEaicsizeclass", 
                                       "Choose size class for AIC table:", 
-                                      "Model not yet run", multiple = F ),
+                                      "Model not yet run", multiple = F),
                            br(), 
                            actionButton("SEaictablerun", 
                                         "Generate AIC Table"), 
@@ -191,18 +203,22 @@
               # side bar of model inputs
 
                 sidebarPanel(width = 3,
-                  selectizeInput("CPvars", 
-                         "Choose predictor variables (max: 2):", 
-                         c("No data input yet"), multiple = T),
-                  selectizeInput("CPsizeclasscol", 
-                         "Choose size class column (max: 1):",
-                         c("No data input yet"), multiple = T),
                   selectizeInput("CPltp", 
-                     "Choose last time present observation column (max: 1):",
-                     c("No data input yet"), multiple = T),
+                     "Choose last time present observation column:",
+                     c("No data input yet"), multiple = T, 
+                     options = list(maxItems = 1)),
                   selectizeInput("CPfta", 
-                     "Choose first time absent observation column (max: 1):",
-                     c("No data input yet"), multiple = T),
+                     "Choose first time absent observation column:",
+                     c("No data input yet"), multiple = T, 
+                     options = list(maxItems = 1)),
+                  selectizeInput("CPsizeclasscol", 
+                     "Choose size class column:",
+                     c("No data input yet"), multiple = T, 
+                     options = list(maxItems = 1)),
+                  selectizeInput("CPvars", 
+                     "Choose predictor variables (max: 2):", 
+                     c("No data input yet"), multiple = T, 
+                     options = list(maxItems = 2)),
                   actionButton("CPmodrun", "Run CP Model")
                 ),
 
@@ -213,7 +229,8 @@
 
                     # Data tab shows data being modeled
  
-                      tabPanel("Data", tableOutput("selected_CP")
+                      tabPanel("Data", br(), br(), 
+                               dataTableOutput("selected_CP")
                       ),
 
                     # Model Table tab shows AIC table for a given size class
@@ -267,13 +284,11 @@
             tabPanel("Detection Probability",
               br(), br(), 
 
-              # side bar of model inputs
+              # side bar of model run button and search schedule translation
 
                 sidebarPanel(width = 3,
-                       numericInput("gCL", "Confidence Level:", 
-                         value = 0.9, min = 0, max = 1, step = 0.001),
                        actionButton("grun", "Estimate Detection Probability"), 
-                       br()
+                       br(), br(), tableOutput("SStable")
                 ),
 
               # main panel displays the detection probability table
@@ -294,32 +309,53 @@
               # side bar of model inputs
 
                 sidebarPanel(width = 3, 
-                  selectizeInput("COsplitcol", 
-                         "Choose split column (max: 1):", 
-                         c("No data input yet"), multiple = T),
+                  selectizeInput("COunitcol", "Choose unit column:",
+                         c("No data input yet"), multiple = T, 
+                         options = list(maxItems = 1)),
+                  selectizeInput("COdfcol", 
+                         "Choose date found column:",
+                         c("No data input yet"), multiple = T, 
+                         options = list(maxItems = 1)),
                   selectizeInput("COsizeclasscol", 
-                         "Choose size class column (max: 1):", 
-                         c("No data input yet"), multiple = T),
-                  selectizeInput("COsscol", 
-                         "Choose search schedule column (max: 1):",
-                         c("No data input yet"), multiple = T),
-                  selectizeInput("COunitcol", "Choose unit column (max: 1):",
-                         c("No data input yet"), multiple = T),
-                  numericInput("MCIw", "Confidence level:", value = 0.9, 
-                         min = 0, max = 1, step = 0.001),
-                  numericInput("ffs", "Fraction of facility surveyed",
-                         value = 1.0, min = 0, max = 1, step = 0.001),
+                         "Choose size class column:", 
+                         c("No data input yet"), multiple = T, 
+                         options = list(maxItems = 1)),
+                  selectizeInput("COsplitcol", 
+                         "Choose split column:", 
+                         c("No data input yet"), multiple = T, 
+                         options = list(maxItems = 1)),
                   actionButton("Mrun", "Estimate Total Carcasses")
                 ),
 
               # main panel shows output table and figure
 
                 mainPanel(
-                  br(), br(),
-                  tableOutput("Mhattab"),
-                  br(), br(),
-                  plotOutput("Mhatfig", width = "800px", height = "800px")
+                  tabsetPanel(
+
+                    # Data tab shows data being modeled
+ 
+                      tabPanel("Data",   
+                           br(), br(), dataTableOutput("selected_CO")
+
+                      ),
+
+                    # Table tab shows the final fatality estimation table
+
+                      tabPanel("Table",  
+                           br(), br(),
+                           tableOutput("Mhattab")
+                      ),
+
+                    # Figure tab shows the final fatality estimation figure
+
+                      tabPanel("Figure",  br(),
+                           br(), br(),
+                           plotOutput("Mhatfig", width = "800px", 
+                                      height = "800px")
+                      )
+                  )
                 )
+
             )
         )
       ),
