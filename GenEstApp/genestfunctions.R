@@ -728,16 +728,11 @@ packageLoad <- function(...){
       t1 <- data[ , which(colnames(data) == ltpc)]
       t2 <- data[ , which(colnames(data) == ftac)]
 
-      event <- rep(3, length(t1))
-      event[which(is.na(t2))] <- 0
-      event[which(t1 == t2)] <- 1
-      event[which(t1 == 0)] <- 2
-
-      t1[which(t1 == 0)] <- t2[which(t1 == 0)]
-
-
-      obs_survobj <- Surv(time = t1, time2 = t2, event = event, 
-                              type = "interval")
+      t1 <- pmax(t1, 0.0001)
+      t2 <- pmax(t2, 0.0001)
+      event <- ifelse(t1 == t2, 1, ifelse(t2 == Inf | is.na(t2), 0, 3))
+      t2[event==0]<-t1[event==0]
+      obs_survobj <- Surv(time = t1, time2 = t2, event = event, type = "interval")
 
     # select the distributions to use
 
