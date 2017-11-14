@@ -743,6 +743,7 @@ packageLoad <- function(...){
       event[which(t1 == t2)] <- 1
 
       t1[which(t1 == 0)] <- 0.0001
+      t2[which(t2 == 0)] <- 0.0001
 
       obs_survobj <- Surv(time = t1, time2 = t2, event = event, 
                               type = "interval")
