@@ -1,0 +1,254 @@
+---
+title: "GenEst Command Line Example"
+author: "Juniper L. Simonis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, include = FALSE}
+library(devtools)
+library(matrixStats)
+library(survival)
+library(mvtnorm)
+library(matrixStats)
+library(gsl)
+devtools::load_all("C:/Users/dappe/Dropbox/DAPPER/Projects/Active/GenEst/Code/Git/GenEst/GenEstPackage/GenEst")
+```
+
+This vignette walks through a full example of GenEst (v 0.0.0.1) application  
+at the command line. 
+
+## Vignette Info
+
+Created with GenEst version 0.0.1.1
+
+## Preliminaries
+
+### Read in data
+
+Read in the Searcher Efficiency, Carcass Persistence, Search Schedule, 
+and Carcass observation datasets. 
+
+
+```{r, results = "hide"}
+SEdataIn <- read.csv("data/ExampleSearcherEfficiency.csv")
+CPdataIn <- read.csv("data/ExampleCarcassPersistence.csv")
+SSdataIn <- read.csv("data/ExampleSearchSchedule.csv")
+COdataIn <- read.csv("data/ExampleCarcassObservations.csv") 
+```
+
+### General Inputs
+
+Number of replicate draws used to estimate distributions
+
+```{r, results = "hide"}
+Niterations <- 1000
+```
+
+## Searcher Efficiency
+
+### Preliminaries
+
+Select predictors, observation columns, and size class column
+
+```{r, results = "hide"}
+SEvars <- c("Season", "HabitatType")
+SEobscols <- 8:11
+SEsizeclasscol <- "Size"
+```
+  
+Declare if you will fix k or not and if so, the value.
+
+```{r, results = "hide"}
+fixKchoice <- "NO"
+fixKvalchoice <- NULL
+```
+
+### Analyses
+
+Run all searcher efficiency models across all size classes
+
+```{r, results = "hide"}
+SEmods <- se_model_set_across_sizes_fit(data = SEdataIn, predictors = SEvars, 
+                                        observation_columns = SEobscols, 
+                                        size_class_column = SEsizeclasscol,
+                                        init_k_value = 0.7, fix_k = fixKchoice, 
+                                        fix_k_value = fixKvalchoice)
+```
+
+Create a theta for each cell within each each model in each size class
+(dimension: [Niterations, 2, Ncells(SE), Nmodels(SE), Nsizeclasses])
+
+```{r, results = "hide"}
+thetaSE <- se_theta_create(data = SEdataIn, predictors = SEvars,
+                           size_class_column = SEsizeclasscol,
+                           model_fits = SEmods, replicates = Niterations,
+                           fix_k = fixKchoice, fix_k_value = fixKvalchoice)
+```
+	
+### Results
+	
+Create the AICc table for all sizes
+
+```{r, result = "hide"}
+SEtable <- se_aicc_table_create(models = SEmods)
+```
+
+AICc table for Small size class
+
+```{r, result = "asis"}
+knitr::kable(SEtable$S)
+```
+
+Plot the results
+
+```{r, fig.width = 8, fig.height = 8}
+create_se_figure(data = SEdataIn, predictors = SEvars, theta = thetaSE, 
+                 observation_columns = SEobscols, replicates = Niterations, 
+                 size_class_column = SEsizeclasscol, r = 4, j = 1, 
+				 cellwise = 25)
+```
+
+
+## Carcass Persistence
+
+### Preliminaries
+
+Select predictors, observation columns, and size class column
+
+```{r, results = "hide"}
+CPvars <- NULL
+CPsizeclasscol <- "Size"
+CPltp <- "LastPresentDecimalDays"
+CPfta <- "FirstAbsentDecimalDays"
+```
+	  
+### Analyses
+
+Run the estimator for each of the possible models for each size class
+
+```{r, results = "hide"}
+CPmods <- cp_model_set_across_sizes_fit(data = CPdataIn, predictors = CPvars,
+                                        size_class_column = CPsizeclasscol, 
+                                        last_time_present_column = CPltp, 
+                                        first_time_absent_column = CPfta)
+```
+
+Create a theta for each cell within each each model in each size class
+(dimension: [Niterations, 2, Ncells(CP), Nmodels(CP), Nsizeclasses])
+
+```{r, results = "hide"}
+thetaCP <- cp_theta_create(data = CPdataIn, predictors = CPvars,
+                           size_class_column = CPsizeclasscol,
+                           model_fits = CPmods, replicates = Niterations)
+```
+										  
+### Results
+										  
+Create the AICc table for all sizes
+
+```{r, result = "hide"}
+CPtable <- cp_aicc_table_create(models = CPmods)
+```
+
+AICc table for Small size class
+
+```{r, result = "asis"}
+knitr::kable(CPtable$S)
+```
+
+Plot the results
+
+```{r, fig.width = 8, fig.height = 8}
+create_cp_figure(models = CPmods, data = CPdataIn, predictors = CPvars,
+                 theta = thetaCP, time_unit = "days",
+                 size_class_column = CPsizeclasscol,
+                 last_time_present_column = CPltp, 
+                 first_time_absent_column = CPfta, r = 1, 
+                 model_complexity = "~ 1", 
+                 distribution_choice = "exponential")
+```
+
+
+
+## Detection Probability
+
+### Preliminaries
+
+Select the models to use for each size class
+
+```{r, results = "hide"}
+CPmodstouse <- c(1, 1, 1, 1)
+SEmodstouse <- c(1, 1, 1, 1)
+```
+	  
+### Analyses
+
+```{r, results = "hide"}
+garray <- estimate_g_across_sizes(cp_data = CPdataIn, se_data = SEdataIn, 
+                                  ss_data = SSdataIn, replicates = Niterations, 
+                                  cp_predictors = CPvars, cp_theta = thetaCP,
+								  se_predictors = SEvars, se_theta = thetaSE,  
+								  cp_models = CPmods,
+                                  se_models_to_use = SEmodstouse, 
+                                  cp_models_to_use = CPmodstouse)
+```
+
+## Fatalities
+
+### Analyses
+
+```{r, results = "hide"}
+Mhatarray <- estimate_mhat(co_data = COdataIn, ss_data = SSdataIn, 
+                           size_class_column = "Size", split_column = "Split", 
+                           unit_column = "Unit", df_column = "DateFound",
+                           replicates = Niterations, cp_predictors = CPvars, 
+                           se_predictors = SEvars, cp_data = CPdataIn, 
+                           se_data = SEdataIn, garray = garray) 
+```
+
+Condense Mhat to split categories (dimension: [Niterations, Nsplitcats])
+    
+```{r, results = "hide"}	
+Mhatsc <- condense_mhat(Mhatarray)
+```
+
+### Results
+	  
+Produce Mhat table (allows for expansion to whole facility )
+
+```{r, results = "hide"}
+Mhattab <- create_mhat_table(condensed_mhat = Mhatsc, 
+                             fraction_area_sampled = 0.85, 
+                             confidence_level = 0.9)
+```
+
+```{r, result = "asis"}
+knitr::kable(Mhattab)
+```
+
+Plot Mhat for each split
+
+```{r, fig.width = 8, fig.height = 8}
+par(mfrow = c(1, 2))
+l <- 1
+create_mhat_figure(condensed_mhat_split = Mhatsc[,l], 
+                   split_category_name = colnames(Mhatsc)[l], 
+                   fraction_area_sampled = 0.85)
+l <- 2
+create_mhat_figure(condensed_mhat_split = Mhatsc[,l], 
+                   split_category_name = colnames(Mhatsc)[l], 
+                   fraction_area_sampled = 0.85)
+```
+
