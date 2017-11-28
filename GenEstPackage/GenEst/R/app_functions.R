@@ -4,6 +4,7 @@
 #' @return Search schedule table.
 #' @examples
 #' NA
+#' @export 
 
   create_ss_table <- function(data){
 
@@ -24,7 +25,7 @@
 #' @return Model order list.
 #' @examples
 #' NA
-
+#' @export 
 
   order_se_models <- function(models){
 
@@ -72,7 +73,7 @@
 #' @return Model order list.
 #' @examples
 #' NA
-
+#' @export 
 
   order_cp_models <- function(models){
 

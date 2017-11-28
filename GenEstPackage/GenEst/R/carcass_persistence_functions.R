@@ -8,6 +8,7 @@
 #' @return Model fit list.
 #' @examples
 #' NA
+#' @export 
 
   cp_model_fit <- function(data, surv_object, equation_choice, 
                            distribution_choice ){
@@ -31,6 +32,7 @@
 #' @return List of model fit lists.
 #' @examples
 #' NA
+#' @export 
 
   cp_model_set_fit <- function(data, predictors, last_time_present_column, 
                                first_time_absent_column ){
@@ -101,6 +103,7 @@
 #' @return List of model fit lists.
 #' @examples
 #' NA
+#' @export 
 
 
   cp_model_set_across_sizes_fit <- function(data, predictors, 
@@ -160,6 +163,7 @@
 #'         cells, models, size classes) of carcass persistence.
 #' @examples
 #' NA
+#' @export 
 
 
   cp_theta_create <- function(data, predictors, size_class_column, 
@@ -268,6 +272,7 @@
 #' @return List of AICc tables (one table per size class)
 #' @examples
 #' NA
+#' @export 
 
   cp_aicc_table_create <- function(models){
 
@@ -344,6 +349,7 @@
 #' @return NA
 #' @examples
 #' NA
+#' @export 
 
   create_cp_figure <- function(models, data, predictors, theta, 
                                time_unit, size_class_column, 
@@ -580,6 +586,7 @@
 #'          given arrival between t_arrive0 and t_arrive1
 #' @examples
 #' NA
+#' @export 
 
   probability_persist_to_detection <- function(persistence_distribution, 
                                                t_arrive0, t_arrive1, t_search, 

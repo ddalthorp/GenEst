@@ -13,6 +13,7 @@
 #' @return Model fit list.
 #' @examples
 #' NA
+#' @export 
 
   se_model_fit <- function(pequation, kequation, factor_combination_table, 
                                  data, observations, observation_columns, 
@@ -130,6 +131,7 @@
 #' @return List of model fit lists.
 #' @examples
 #' NA
+#' @export 
 
   se_model_set_fit <- function(predictors, data, init_k_value, fix_k, 
                                      fix_k_value, observation_columns ){
@@ -213,6 +215,7 @@
 #' @return List of model fit lists.
 #' @examples
 #' NA
+#' @export 
 
   se_model_set_across_sizes_fit <- function(data, predictors, 
                                             observation_columns, 
@@ -270,6 +273,7 @@
 #'     cells, models, size classes) of searcher efficiency parameters (p, k).
 #' @examples
 #' NA
+#' @export 
 
 
   se_theta_create <- function(data, predictors, size_class_column, 
@@ -353,6 +357,7 @@
 #' @return Negative log likelihood of the observations, given the parameters.
 #' @examples
 #' NA
+#' @export 
 
   pkfunction <- function(searches_missed, search_found, theta, n_theta_p, 
                          groups, maxmiss, facts, 
@@ -390,6 +395,7 @@
 #' @return List of AICc tables (one table per size class)
 #' @examples
 #' NA
+#' @export 
 
   se_aicc_table_create <- function(models){
 
@@ -460,6 +466,7 @@
 #' @return NA
 #' @examples
 #' NA
+#' @export 
 
 
   create_se_figure <- function(data, predictors, theta, observation_columns, 

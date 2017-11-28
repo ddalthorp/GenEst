@@ -2,7 +2,7 @@
 #
 # package development code for GenEst
 #
-# version 0.0.1.1 November 2017
+# version 0.0.1.2 November 2017
 #
 # held under GNU GPL v >=3
 #
@@ -50,7 +50,7 @@
 
 
   devtools::build_vignettes(pkgloc)
-  devtools::build(pkgloc)
+  devtools::build(pkgloc, binary = T)
 
-  library(GenEst)
+  devtools::load_all(devtools::as.package(pkgloc))
   runGenEst()

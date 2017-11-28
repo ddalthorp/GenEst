@@ -11,6 +11,7 @@
 #' @return Simulated detection probabilities (length = replicates).
 #' @examples
 #' NA
+#' @export 
 
   estimate_g <- function(days, CPab, distibution_choice, seef, k = NULL){
 
@@ -220,7 +221,7 @@
 #'         (replicates, search schedules, cell combinations, size classes).
 #' @examples
 #' NA
-
+#' @export 
 
   estimate_g_across_sizes <- function(cp_data, se_data, ss_data, replicates, 
                                  cp_predictors, se_predictors, 
@@ -338,6 +339,7 @@
 #' @return Table of detection probabilities with means and confidence level 
 #' @examples
 #' NA
+#' @export 
 
   create_g_table <- function(garray, confidence_level ){
 

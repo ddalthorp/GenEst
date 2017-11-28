@@ -4,6 +4,7 @@
 #' @return The logit of \code{x}.
 #' @examples
 #' logit(0.5)
+#' @export 
 
   logit <- function(x) {
     log(x / (1 - x))
@@ -16,6 +17,7 @@
 #' @return The anti-logit of \code{x}.
 #' @examples
 #' alogit(0)
+#' @export 
 
   alogit <- function(x) {
     1 / (1 + exp(-x))
@@ -29,6 +31,7 @@
 #' @return Factor combination table.
 #' @examples
 #' NA
+#' @export 
 
   combine_factors <- function(predictors, data){
 
@@ -83,6 +86,7 @@
 #' @return Factor combination table.
 #' @examples
 #' NA
+#' @export 
 
   combine_factors_across_models <- function(cp_predictors, se_predictors, 
 	                                        cp_data, se_data){
@@ -160,6 +164,7 @@
 #' @return Model in reader-friendly format.
 #' @examples
 #' NA
+#' @export 
 
   model_namer <- function(model_equation){
 
@@ -179,6 +184,7 @@
 #' @return Model in equation format.
 #' @examples
 #' NA
+#' @export 
 
   model_name_reverser <- function(model_name){
 
@@ -197,6 +203,7 @@
 #' @return Vector of search schedules.
 #' @examples
 #' NA
+#' @export 
 
 
   create_ss_vec <- function(data){
