@@ -2,7 +2,7 @@
 #
 #  This script contains the UI code for the the GenEst app
 #
-#  version 0.0.1.1 November 2017
+#  version 0.0.1.2 November 2017
 #
 #  Held under GNU GPL v >= 3	
 #

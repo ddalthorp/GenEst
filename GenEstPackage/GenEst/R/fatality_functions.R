@@ -5,6 +5,7 @@
 #' @return Table of DWP values for each size, search schedule, and unit.
 #' @examples
 #' NA
+#' @export 
 
 
   create_DWP_table <- function(data){
@@ -80,6 +81,7 @@
 #'  (iterations, units, split categories, size classes).
 #' @examples
 #' NA
+#' @export 
 
 
   estimate_mhat <- function(co_data, ss_data, cp_data, se_data, 
@@ -265,6 +267,7 @@
 #' @return Matrix of Mhat values (rows: iterations, columns: splits).
 #' @examples
 #' NA
+#' @export 
 
 
   condense_mhat <- function(Mhatarray){
@@ -298,6 +301,7 @@
 #'         the searched area and the expanded area.
 #' @examples
 #' NA
+#' @export 
 
   create_mhat_table <- function(condensed_mhat, fraction_area_sampled, 
                                  confidence_level){
@@ -355,6 +359,7 @@
 #' @return .
 #' @examples
 #' NA
+#' @export 
 
   create_mhat_figure <- function(condensed_mhat_split, split_category_name, 
                                  fraction_area_sampled ){

@@ -23,15 +23,15 @@ library(survival)
 library(mvtnorm)
 library(matrixStats)
 library(gsl)
-devtools::load_all("C:/Users/dappe/Dropbox/DAPPER/Projects/Active/GenEst/Code/Git/GenEst/GenEstPackage/GenEst")
+library(GenEst)
 ```
 
-This vignette walks through a full example of GenEst (v 0.0.0.1) application  
+This vignette walks through a full example of GenEst (v 0.0.1.2) application  
 at the command line. 
 
 ## Vignette Info
 
-Created with GenEst version 0.0.1.1
+Created with GenEst version 0.0.1.2
 
 ## Preliminaries
 
