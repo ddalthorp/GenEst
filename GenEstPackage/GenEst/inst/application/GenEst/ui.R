@@ -130,7 +130,7 @@
                                c("No data input yet"), multiple = T, 
                                options = list(maxItems = 2)),
                            selectizeInput("fixKchoice", "Use fixed k?",
-                               c("NO", "YES"), multiple = F),
+                               c(FALSE, TRUE), multiple = F),
                            numericInput("fixKvalchoice", 
                                "Value for fixed k:", value = NULL, 
                                 min = 0, max = 1, step = 0.001),
