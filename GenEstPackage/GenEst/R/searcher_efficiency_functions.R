@@ -27,7 +27,12 @@
 
        pformula <- formula(pequation)
        kformulap <- formula(kequation)
-       kformula <- switch(fix_k, NO = formula(kequation), YES = formula("~1"))
+ 
+       if(fix_k){
+         kformula <- formula("~1")
+       } else{
+         kformula <- formula(kequation)
+       }
 
     # set up the model 
       Xp <- model.matrix(pformula, data)
@@ -67,7 +72,11 @@
       theta <- c(solve(t(Xp) %*% Xp) %*% t(Xp) %*% logit(empp), 
                  logit(rep(init_k_value, nk)))
 
-      theta <- switch(fix_k, YES = theta[-length(theta)], NO = theta)
+      if(fix_k){
+        theta <- theta[-length(theta)]
+      } else{
+        theta <- theta
+      }
 
     # run the pk model
 
@@ -89,9 +98,13 @@
       output$pmodel <- pformula
       output$kmodel <- kformulap
       output$betaphat <- result$par[1:ncol(Xp)]
-      output$betakhat <- switch(fix_k,
-                                NO = result$par[(ncol(Xp)+1):length(theta)],
-                                YES = NULL)
+
+      if(fix_k){
+        output$betakhat <- NULL
+      } else{
+        output$betakhat <- result$par[(ncol(Xp)+1):length(theta)]
+      }
+
       output$vartheta <- solve(result$hessian)
 
       npar <- length(result$par)
@@ -162,11 +175,20 @@
       preds <- as.character(na.omit(preds))
       eqs <- paste("~", preds, sep = " ")
 
-      peqs <- switch(fix_k, NO = rep(eqs, length(eqs)), YES = eqs)
-      keqs <- switch(fix_k,
-                     NO = rep(eqs, each = length(eqs)),
-                     YES = rep(paste("~fixed_at_", fix_k_value, sep = ""), 
-                             length(eqs)))
+      if(fix_k){
+        peqs <- eqs
+      } else{
+        peqs <- rep(eqs, length(eqs))
+      }
+
+      if(fix_k){
+        keqs <- rep(paste("~fixed_at_", fix_k_value, sep = ""), 
+                             length(eqs))
+      } else{
+        keqs <- rep(eqs, each = length(eqs))
+      }
+
+
       Nmods <- length(peqs)
 
     # set up the output
@@ -310,11 +332,14 @@
                               smod$betakhat), sigma = smod$vartheta, 
                                 method = "svd")
             pSim <- alogit(betaSim[,1:smod$np]%*%t(smod$miniXp))
-            kSim <- switch(fix_k,
-                           NO = alogit(betaSim[,(smod$np + 1):(smod$np + 
-                                      smod$nk)] %*%t (smod$miniXk)),
-                           YES = matrix(fix_k_value, ncol = Ncells, 
-                                      nrow = replicates))
+
+            if(fix_k){
+              kSim <- matrix(fix_k_value, ncol = Ncells, 
+                                      nrow = replicates)
+            } else{
+              kSim <- alogit(betaSim[,(smod$np + 1):(smod$np + 
+                                      smod$nk)] %*%t (smod$miniXk))
+            }
 
           # fill into the array   
 
@@ -355,9 +380,12 @@
   pkfunction <- function(searches_missed, search_found, theta, n_theta_p, 
                          groups, maxmiss, facts, 
                          fix_k, fix_k_value){
-    theta <- switch(fix_k,
-                    NO = theta,
-                    YES = c(theta, logit(fix_k_value)))
+
+    if(fix_k){
+      theta <- c(theta, logit(fix_k_value))
+    } else{
+      theta <- theta 
+    }
 
     Beta <- array(numeric(length(theta) * 2), dim = c(length(theta), 2))  
     Beta[1:n_theta_p,1] <- theta[1:n_theta_p]
@@ -910,7 +938,7 @@ pkm <- function(pformula, kformula = NULL, data, observation_columns = NULL, k =
     observations = cbind(zeros = zeros, found  = found),
     observation_columns = observation_columns,
     init_k_value = 0.7,
-    fix_k = ifelse(missing(k), "NO", "YES"),
+    fix_k = ifelse(missing(k), FALSE, TRUE),
     fix_k_value = k
   )
   ans$pformula <- pformula
