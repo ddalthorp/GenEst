@@ -392,7 +392,7 @@
                              and should be considered provisional.'),
                        br(),
                        br(),
-                       HTML('This is version 0.0.0.3, October 2017.'),
+                       textOutput("version_info"),
                        br(),
                        br(),
                        HTML('The development of GenEst is being supported by 
