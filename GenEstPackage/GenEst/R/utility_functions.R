@@ -33,50 +33,35 @@
 #' NA
 #' @export 
 
-  combine_factors <- function(predictors, data){
+combine_factors <- function(predictors, data) {
+# generalized to accommodate any number of predictors
+  npredictors <- length(predictors)
+  if (npredictors == 0) {
+    return(data.frame(group="all",CellNames="all"))
+  } else {
+      if(any(is.na(match(predictors,names(data))))) {
+        stop("At least one predictor missing from data.")
+      }
+      varNames <- predictors
+      varLabels <- list()
+      varNlevels <- list()
+      for (i in 1:npredictors) {
+        varLabels[[i]] <- levels(as.factor(data[[varNames[i]]]))
+        varNlevels[[i]] <- length(varLabels[[i]])
+      }
+      reps <- cumprod(varNlevels)[npredictors:1] # Reverse cumulative product
+      egDat <- data.frame(var1=gl(varNlevels[[1]],1,length=reps[1],labels=varLabels[[1]]))
+      if (npredictors > 1) {
+        for (j in 2:npredictors) {
+          egDat[[paste("var",j,collapse=NULL)]] <- gl(varNlevels[[j]],reps[j],length=reps[1],labels=varLabels[[j]])
+        }
+      }
+    }
+  names(egDat) <- varNames
+  egDat$CellNames <- apply(egDat,1,paste0,collapse=".")
+  return(egDat)
+}
 
-          # create the cell table, count cells
-
-            pv1 <- NULL
-            pv2 <- NULL
-
-            pv1 <- predictors[1][length(predictors) > 0]
-            pv2 <- predictors[2][length(predictors) > 1]
-
-            lev1 <- as.character(unique(data[, pv1]))
-            lev2 <- as.character(unique(data[, pv2]))
-
-            nlev1 <- length(lev1)
-            nlev2 <- length(lev2)
-
-            nlev1[length(lev1) == 0] <- 1
-            nlev2[length(lev2) == 0] <- 1
-
-            fctlev1 <- rep(lev1, nlev2)
-            fctlev2 <- rep(lev2, each = nlev1)
-            fctlev1[length(fctlev1) == 0] <- ""
-            fctlev2[length(fctlev2) == 0] <- ""
-
-            fctCN <- paste(fctlev1, fctlev2, sep = "")
-
-            fct <- data.frame(fctlev1, fctlev2, fctCN)
-            colnames(fct) <- predictors
-            colnames(fct)[ncol(fct)] <- "CellNames"
-
-            colnames(fct)[1][length(predictors) == 0] <- "groups"
-            fct <- fct[, which(is.na(colnames(fct)) == F)]
-            fct[,1] <- as.character(fct[,1])
-            fct[,1][which(fct[,1]=="")] <- "all"
-            fct[,"CellNames"] <- as.character(fct[,"CellNames"])
-            fct[,"CellNames"][which(fct[,"CellNames"]=="")] <- "all"
-
-          # return factor combination table
-
-            return(fct)
-  }
-  
-
-  
 #' Create the factor combination table for a set of searcher efficiency 
 #'  and carcass persistence analyses.
 #' @param cp_data Carcass persistence data.
