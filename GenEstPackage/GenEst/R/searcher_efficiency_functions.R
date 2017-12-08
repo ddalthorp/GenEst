@@ -90,6 +90,12 @@
 
     # prep the output
 
+      if(fix_k){
+        kformulap <- paste("k fixed at ", fix_k_value, sep = "")
+      } else{
+        kformulap <- kformulap
+      }
+
       output <- vector("list", 15) 
       names(output) <- c("pmodel", "kmodel", "betaphat", "betakhat", 
                          "vartheta", "AIC", "AICc", "convergence",
