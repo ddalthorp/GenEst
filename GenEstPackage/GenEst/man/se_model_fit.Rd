@@ -4,7 +4,7 @@
 \alias{se_model_fit}
 \title{Fit a single searcher efficiency model for a single size class.}
 \usage{
-se_model_fit(pequation, kequation, factor_combination_table, data, observations,
+se_model_fit(pequation, kequation, factor_combination_table, data, zeros, found,
   observation_columns, init_k_value, fix_k, fix_k_value)
 }
 \arguments{
@@ -16,7 +16,11 @@ se_model_fit(pequation, kequation, factor_combination_table, data, observations,
 
 \item{data}{Searcher efficiency data restricted to a single size class.}
 
-\item{observations}{Two-column table of searches missed and searches found.}
+\item{zeros}{Vector of the number of searches on which each 
+carcass was missed.}
+
+\item{found}{Vector of the search number for the search on which
+each carcass was found.}
 
 \item{observation_columns}{Indicator vector of which columns in the data}
 
