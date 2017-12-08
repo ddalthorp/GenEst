@@ -26,12 +26,12 @@ library(gsl)
 library(GenEst)
 ```
 
-This vignette walks through a full example of GenEst (v 0.0.1.6) application  
-at the command line. 
+This vignette walks through a full example of GenEst at the command line. 
+
 
 ## Vignette Info
 
-Created with GenEst version 0.0.1.6
+Created with GenEst version 0.0.1.7
 
 ## Preliminaries
 
