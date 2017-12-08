@@ -4,7 +4,10 @@
 #' @param kequation Equation for k (character).
 #' @param factor_combination_table Factor combination table.
 #' @param data Searcher efficiency data restricted to a single size class.
-#' @param observations Two-column table of searches missed and searches found.
+#' @param zeros Vector of the number of searches on which each 
+#'         carcass was missed.
+#' @param found Vector of the search number for the search on which
+#'         each carcass was found.
 #' @param observation_columns Indicator vector of which columns in the data
 #          are the searches.
 #' @param init_k_value Initial value of k to use in optim.
@@ -16,7 +19,7 @@
 #' @export 
 
   se_model_fit <- function(pequation, kequation, factor_combination_table, 
-                                 data, observations, observation_columns, 
+                                 data, zeros, found, observation_columns, 
                                  init_k_value, fix_k, fix_k_value ){ 
 
     # set up the formulas for p and k
@@ -72,9 +75,9 @@
                         hessian = T, groups = groups, n_theta_p = np,
                         facts = facts,
                         fix_k = fix_k, fix_k_value = fix_k_value,
-                        searches_missed = observations[,"zeros"],
-                        search_found = observations[,"found"],
-                        maxmiss = max(observations[,"zeros"]))
+                        searches_missed = zeros,
+                        search_found = found,
+                        maxmiss = max(zeros))
 
     # prep the output
 
@@ -92,7 +95,7 @@
       output$vartheta <- solve(result$hessian)
 
       npar <- length(result$par)
-      nobs <- nrow(observations)
+      nobs <- length(zeros)
       output$AIC <- 2 * result$value + 2 * npar
       output$AICc <- output$AIC + 
                        (2 * npar * (npar + 1)) / (nobs - npar - 1)
@@ -129,7 +132,7 @@
   se_model_set_fit <- function(predictors, data, init_k_value, fix_k, 
                                      fix_k_value, observation_columns ){
 
-    # set up the response data (observations)
+    # set up the response data
 
     #   zeros: # of times the carcass was missed
     #   found: # of search on which the carcass was found
@@ -141,7 +144,6 @@
 	                                 value = 1, na.rm = T) == 1)
       found <- numeric(length(zeros))
       found[foundInd] <- zeros[foundInd] + 1
-      observations <- cbind(zeros, found)
 
     # set up the factor combinations
  
@@ -178,7 +180,7 @@
         output[[i]] <- se_model_fit(pequation = peqs[i], kequation = keqs[i],  
                              factor_combination_table = fct, data = data, 
                              observation_columns = observation_columns, 
-                             observations = observations, 
+                             zeros = zeros, found = found, 
                              init_k_value = init_k_value,  
                              fix_k = fix_k, fix_k_value = fix_k_value)
 
