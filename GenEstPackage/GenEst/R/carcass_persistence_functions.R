@@ -219,7 +219,7 @@
 
           # draw the Niterations of model terms
 
-            modelTermDraws <- rmvnorm(replicates, means, vcv, method = "svd")
+            modelTermDraws <- mvtnorm::rmvnorm(replicates, means, vcv, method = "svd")
 
           # create a model matrix to translate model terms to cells 
 

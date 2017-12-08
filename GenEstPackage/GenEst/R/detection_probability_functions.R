@@ -147,9 +147,9 @@
 
           powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(nsim, maxmiss+1))
           powk[,1] <- 1
-          powk <- rowCumprods(powk)
+          powk <- matrixStats::rowCumprods(powk)
           pfind.si <- pk[,1] * powk * cbind(rep(1, nsim),
-                        rowCumprods(1 - (pk[,1] * powk[, 1:maxmiss])))
+                        matrixStats::rowCumprods(1 - (pk[,1] * powk[, 1:maxmiss])))
         }
 
       intxsearch <- unique(cbind(schedule[,2] - schedule[,1],
