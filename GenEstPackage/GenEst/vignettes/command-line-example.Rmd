@@ -26,12 +26,12 @@ library(gsl)
 library(GenEst)
 ```
 
-This vignette walks through a full example of GenEst (v 0.0.1.2) application  
+This vignette walks through a full example of GenEst (v 0.0.1.6) application  
 at the command line. 
 
 ## Vignette Info
 
-Created with GenEst version 0.0.1.2
+Created with GenEst version 0.0.1.6
 
 ## Preliminaries
 
@@ -71,7 +71,7 @@ SEsizeclasscol <- "Size"
 Declare if you will fix k or not and if so, the value.
 
 ```{r, results = "hide"}
-fixKchoice <- "NO"
+fixKchoice <- FALSE
 fixKvalchoice <- NULL
 ```
 
