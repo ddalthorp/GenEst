@@ -15,7 +15,15 @@
 
     # welcome disclaimer
 
-      showModal(modalDialog(title = "GenEst, v 0.0.0.5, November 2017", 
+      version_number <- packageDescription("GenEst", field = "Version")
+      version_date <- packageDescription("GenEst", field = "Date")
+      output$version_info <- renderText(paste("This is version ", 
+                                              version_number, " (", 
+                                              version_date, ")", 
+                                              sep = ""))
+
+      showModal(modalDialog(title = paste("GenEst v", version_number, " (",
+                                            version_date, ")", sep = ""), 
          "This software is preliminary or provisional and is subject to 
           revision. It is being provided to meet the need for timely best 
           science. The software has not received final approval by the U.S. s
