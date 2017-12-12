@@ -16,7 +16,7 @@
 
   # set the package location
 
-    pkgloc <- paste(getwd(), "/GenEst", sep = "")
+    pkgloc <- getwd()
 
 
   # Set up files
