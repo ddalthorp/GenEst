@@ -370,7 +370,7 @@
 
         t1[which(t1 == 0)] <- 0.0001
 
-        CPobvs_survobj <- Surv(time = t1, time2 = t2, event = event, 
+        CPobvs_survobj <- survival::Surv(time = t1, time2 = t2, event = event, 
                                 type = "interval")
 
       # size classes
