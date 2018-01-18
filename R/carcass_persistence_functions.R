@@ -505,8 +505,8 @@
               pts <- predxs[2:length(predxs)]
               pta0 <- rep(0, length(pts)) 
               pta1 <- rep(0.000001, length(pts))
-              predys <- probability_persist_to_detection(
-                               persistence_distribution = distrj, 
+              predys <- ppersist(
+                               distr = distrj,
                                t_arrive0 = pta0, 
                                t_arrive1 = pta1, t_search = pts, 
                                pda = meanpar[1], pdb = meanpar[2]) 
@@ -531,8 +531,8 @@
               pts <- predxs[2:length(predxs)]
               pta0 <- rep(0, length(pts)) 
               pta1 <- rep(0.000001, length(pts))
-              predys <- probability_persist_to_detection(
-                               persistence_distribution = distrj, 
+              predys <- ppersist(
+                               distr = distrj,
                                t_arrive0 = pta0,
                                t_arrive1 = pta1, t_search = pts, 
                                pda = meanpar[1], pdb = meanpar[2]) 
@@ -576,7 +576,7 @@
 
 #' Calculate the probability of persistence to detection 
 #' 
-#' @param persistence_distribution Distribution used.
+#' @param distr Distribution used.
 #' @param t_arrive0 Beginning of arrival window.
 #' @param t_arrive1 End of arrival window.
 #' @param t_search Search time.
@@ -588,11 +588,9 @@
 #' NA
 #' @export 
 
-  probability_persist_to_detection <- function(persistence_distribution, 
-                                               t_arrive0, t_arrive1, t_search, 
-                                               pdb, pda = NULL){
+  ppersist <- function(distr, t_arrive0, t_arrive1, t_search, pdb, pda = NULL){
 
-    if(persistence_distribution %in% c("Weibull", "weibull")){
+    if(distr %in% c("Weibull", "weibull")){
 
       return(t((pgamma(outer(1 / pdb, t_search - t_arrive0)^pda, 1 / pda) -
               pgamma(outer(1 / pdb, t_search - t_arrive1)^pda, 1 / pda)) * 
@@ -600,14 +598,14 @@
 
     }
 
-    if(persistence_distribution %in% c("Exponential", "exponential")){
+    if(distr %in% c("Exponential", "exponential")){
 
      return((exp(outer(t_arrive1 - t_search, 1 / pdb)) - exp(outer(t_arrive0 - 
               t_search, 1 / pdb))) / (outer(t_arrive1 - t_arrive0, 1 / pdb)))
 
     }
 
-    if(persistence_distribution %in% c("Lognormal", "lognormal")){
+    if(distr %in% c("Lognormal", "lognormal")){
 
       root_pda <- sqrt(pda)
       exp_value <- exp((pda / 2) + pdb)
@@ -623,7 +621,7 @@
 
     }
 
-    if(persistence_distribution %in% c("Log-Logistic", "loglogistic")) {
+    if(distr %in% c("Log-Logistic", "loglogistic")) {
 
       return(Vectorize(function(t_arrive0, t_arrive1, t_search, pda, pdb){
         t1 <- t_search-t_arrive1 

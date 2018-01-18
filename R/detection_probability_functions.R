@@ -4,7 +4,7 @@
 #' @param days Specific search schedule.
 #' @param CPab Matrix of parameters from CP theta
 #'                (rows: replicates, columns: a, b).
-#' @param distibution_choice Distribution to use.
+#' @param persdist Distribution to use.
 #' @param seef Matrix of parameters from SE theta 
 #'                (rows: replicates, columns: p, k).
 #' @param k k.
@@ -13,12 +13,12 @@
 #' NA
 #' @export 
 
-  estimate_g <- function(days, CPab, distibution_choice, seef, k = NULL){
+  gvec <- function(days, CPab, persdist, seef, k = NULL){
 
     nsim <- dim(CPab)[1]
     samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
     nsearch <- length(days) - 1
-    if(distibution_choice %in% c("Exponential", "exponential")){
+    if(persdist %in% c("Exponential", "exponential")){
       pdb <- CPab
       pda <- 1/pdb
       pdb0 <- exp(mean(log(pdb)))
@@ -26,11 +26,11 @@
     } else {
       pda <- CPab[, 1]
       pdb <- CPab[, 2]
-      if(distibution_choice %in% c("Weibull", "weibull", 
+      if(persdist %in% c("Weibull", "weibull",
                           "Log-logistic", "loglogistic")){
         pdb0 <- exp(mean(log(pdb)))
         pda0 <- 1/mean(1/pda)
-      } else if (distibution_choice %in% c("Lognormal", "lognormal")){
+      } else if (persdist %in% c("Lognormal", "lognormal")){
         pdb0 <- mean(pdb)
         pda0 <- mean(sqrt(pda))^2
       }
@@ -69,10 +69,8 @@
 
     # persistences:
 
-      intxsearch <- unique(cbind(schedule[,2] - schedule[,1],
-                           schedule[,3] - schedule[,2]), MAR = 1)
-      ppersu <- probability_persist_to_detection(
-	                     persistence_distribution = distibution_choice,
+      intxsearch <- unique(cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2]), MAR = 1)
+      ppersu <- ppersist(distr = persdist,
                          t_arrive0 = 0,
                          t_arrive1 = intxsearch[,1],
                          t_search = intxsearch[,1] + intxsearch[,2],
@@ -154,8 +152,8 @@
 
       intxsearch <- unique(cbind(schedule[,2] - schedule[,1],
                      schedule[,3] - schedule[,2]), MAR = 1)
-      ppersu <- probability_persist_to_detection(
-	                      persistence_distribution = distibution_choice,
+      ppersu <- ppersist(
+	                      distr = persdist,
                           t_arrive0 = 0,
                           t_arrive1 = intxsearch[,1],
                           t_search = intxsearch[,1] + intxsearch[,2],
@@ -314,8 +312,8 @@
             specificSEtheta <- se_theta[ , , specificSEcell, 
                                         se_models_to_use[i], i]
 
-            gvals <- estimate_g(days = specificSS, CPab = specificCPtheta, 
-                                distibution_choice = specificCPdist, 
+            gvals <- gvec(days = specificSS, CPab = specificCPtheta,
+                                persdist = specificCPdist,
                                 seef = specificSEtheta)
 				
             garray[ , k, j, i ] <- gvals
