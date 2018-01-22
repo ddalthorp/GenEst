@@ -1,12 +1,8 @@
 #############################################################################
 #
-#  This script contains the server code for the GenEst package
+#  This script contains the server code for the GenEst application
 #
-#  version 0.0.1.2 November 2017
-#
-#  Held under GNU GPL v >= 3	
-#
-#############################################################################
+
 
 
 # main server function
@@ -78,7 +74,7 @@
           updateSelectizeInput(session, "SEobscols", choices = rv$SEcolnames)
           updateSelectizeInput(session, "SEsizeclasscol", 
                                 choices = rv$SEcolnames)
-
+          updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
 
         })
 
@@ -96,6 +92,7 @@
           updateSelectizeInput(session, "CPltp", choices = rv$CPcolnames)
           updateSelectizeInput(session, "CPfta", choices = rv$CPcolnames)
 
+          updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
         })
 
       # when the SS file is uploaded, pull data in and update tables
@@ -108,6 +105,7 @@
           rv$DWPdatatab <- create_DWP_table(data = rv$SSdataIn)
           output$SStable <- renderTable(create_ss_table(rv$SSdataIn))
 
+          updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
         })
 
       # when the CO file is uploaded, pull data in and update column options
@@ -124,6 +122,7 @@
           updateSelectizeInput(session, "COdfcol", choices = rv$COcolnames)
           updateSelectizeInput(session, "COunitcol", choices = rv$COcolnames)
 
+          updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
         })
 
       # when the MD file is uploaded, pull data in 
@@ -132,6 +131,8 @@
 
           rv$MDdataIn <- read.csv(input$MDFile$datapath, header = T)
           output$MDin <- renderTable(rv$MDdataIn)
+
+          updateTabsetPanel(session, "LoadedDataViz", "Meta Data")
         })
   
 
@@ -163,7 +164,8 @@
             rv$SEtheta <- se_theta_create(data = rv$SEdataIn, 
                                   predictors = input$SEvars,
                                   size_class_column = input$SEsizeclasscol,
-                                  model_fits = rv$SEmods, replicates = input$Niterations,
+                                  model_fits = rv$SEmods, 
+                                  replicates = input$Niterations,
                                   fix_k = input$fixKchoice, 
                                   fix_k_value = input$fixKvalchoice)
 
@@ -220,7 +222,7 @@
           CWM[length(CWM) == 0] <- 1
           output$SEfig <- renderPlot({
                             create_se_figure(data = rv$SEdataIn, 
-                                predictors = input$SEvars, theta = rv$SEtheta, 
+                                predictors = input$SEvars, theta = rv$SEtheta,
                                 observation_columns = input$SEobscols,  
                                 replicates = input$Niterations, 
                                 size_class_column = input$SEsizeclasscol, 
@@ -283,10 +285,10 @@
                                    first_time_absent_column = input$CPfta)
 
             rv$CPtheta <- cp_theta_create(data = rv$CPdataIn, 
-                                          predictors = input$CPvars,
-                                          size_class_column = input$CPsizeclasscol,
-                                          model_fits = rv$CPmods, 
-                                          replicates = input$Niterations)
+                                     predictors = input$CPvars,
+                                     size_class_column = input$CPsizeclasscol,
+                                     model_fits = rv$CPmods, 
+                                     replicates = input$Niterations)
 
             rv$CPaictable <- cp_aicc_table_create(models = rv$CPmods)
             rv$CPaicorder <- order_cp_models(rv$CPmods)
@@ -407,14 +409,17 @@
 
             rv$garray <- estimate_g_across_sizes(cp_data = rv$CPdataIn, 
                                 se_data = rv$SEdataIn, 
-                                ss_data = rv$SSdataIn, replicates = input$Niterations, 
-                                cp_predictors = input$CPvars, se_predictors = input$SEvars, 
+                                ss_data = rv$SSdataIn, 
+                                replicates = input$Niterations, 
+                                cp_predictors = input$CPvars, 
+                                se_predictors = input$SEvars, 
                                 cp_theta = rv$CPtheta, se_theta = rv$SEtheta, 
                                 cp_models = rv$CPmods,
                                 se_models_to_use = rv$SEmodstouse, 
                                 cp_models_to_use = rv$CPmodstouse)
 
-            rv$gtable <- create_g_table(rv$garray, confidence_level = input$CL)
+            rv$gtable <- create_g_table(rv$garray, 
+                                        confidence_level = input$CL)
 
             output$gtable <- renderDataTable({
                                               rv$gtable
@@ -456,7 +461,8 @@
             rv$Mhatsc <- condense_mhat(rv$Mhatarray)
 
             output$Mhattab <-  renderTable({
-                                  create_mhat_table(condensed_mhat = rv$Mhatsc, 
+                                  create_mhat_table(
+                                            condensed_mhat = rv$Mhatsc, 
                                             fraction_area_sampled = input$ffs, 
                                             confidence_level = input$CL)
             })
