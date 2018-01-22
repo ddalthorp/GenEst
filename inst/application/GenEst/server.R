@@ -74,6 +74,7 @@
           updateSelectizeInput(session, "SEobscols", choices = rv$SEcolnames)
           updateSelectizeInput(session, "SEsizeclasscol", 
                                 choices = rv$SEcolnames)
+
           updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
 
         })
@@ -93,6 +94,7 @@
           updateSelectizeInput(session, "CPfta", choices = rv$CPcolnames)
 
           updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
+
         })
 
       # when the SS file is uploaded, pull data in and update tables
@@ -106,6 +108,7 @@
           output$SStable <- renderTable(create_ss_table(rv$SSdataIn))
 
           updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
+
         })
 
       # when the CO file is uploaded, pull data in and update column options
@@ -123,6 +126,7 @@
           updateSelectizeInput(session, "COunitcol", choices = rv$COcolnames)
 
           updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
+
         })
 
       # when the MD file is uploaded, pull data in 
@@ -195,6 +199,8 @@
             output$SEfig <- renderPlot({
                 NULL
             })
+
+            updateTabsetPanel(session, "SE_Analysis", "Model Table")
           })
         })
 
@@ -324,6 +330,9 @@
             output$CPfig <- renderPlot({
                 NULL
             })
+
+            updateTabsetPanel(session, "CP_Analysis", "Model Table")
+
           })
         })
 
@@ -478,6 +487,9 @@
                       fraction_area_sampled = input$ffs)
                 }
             }) 
+
+            updateTabsetPanel(session, "M_Analysis", "Table")
+
           }) 
         })
 
