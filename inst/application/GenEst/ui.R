@@ -2,11 +2,8 @@
 #
 #  This script contains the UI code for the the GenEst app
 #
-#  version 0.0.1.2 November 2017
-#
-#  Held under GNU GPL v >= 3	
-#
-##############################################################################
+#  
+
 
 # main page
 
@@ -67,7 +64,7 @@
             mainPanel(
               HTML('<b><big><center>View data:</center></big></b>'),
               br(),
-              tabsetPanel(
+              tabsetPanel(id = "LoadedDataViz",
                 tabPanel("Search Efficiency", br(), br(), 
                           dataTableOutput("SEdata")),
                 tabPanel("Carcass Persistence", br(), br(), 
