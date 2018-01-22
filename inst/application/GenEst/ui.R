@@ -137,7 +137,7 @@
               # main panel is a tabset panel
 
                 mainPanel(
-                  tabsetPanel(
+                  tabsetPanel(id = "SE_Analysis",
 
                     # Data tab shows data being modeled
 
@@ -220,7 +220,7 @@
               # main panel is a tabset panel
 
                 mainPanel(
-                  tabsetPanel(
+                  tabsetPanel(id = "CP_Analysis",
 
                     # Data tab shows data being modeled
  
@@ -327,7 +327,7 @@
               # main panel shows output table and figure
 
                 mainPanel(
-                  tabsetPanel(
+                  tabsetPanel(id = "M_Analysis",
 
                     # Data tab shows data being modeled
  
