@@ -41,6 +41,8 @@
               SEsizeclasses = NULL, SEnsizeclasses = NULL,  
               SEmods = NULL, SEmodnames = NULL, SEnmods = NULL, 
               SEmodstouse = NULL, SEtheta = NULL, SEdt = NULL,
+              SEvars = NULL, SEobscols = NULL, SEsizeclasscols = NULL,
+              fixKchoice = NULL, fixKvalchoice = NULL,
 
               CPdataIn = "NONE", CPcolnames = character(0), 
               CPaictable = NULL, CPaicorder = NULL, 
@@ -48,17 +50,23 @@
               CPmods = NULL, CPmodnames = NULL, CPmodnames1 = NULL, 
               CPnmodnames1 = NULL, CPmodcomps = NULL, CPdistnames = NULL,
               CPmodstouse = NULL, CPtheta = NULL,   
+              CPvars = NULL, CPltp = NULL, CPfta = NULL, CPsizeclasscols = NULL,
             
               SSdataIn = "NONE", SSs = NULL, 
               gtable = NULL, garray = NULL,  
 
               COdataIn = "NONE", COcolnames = character(0), 
-              DWPdatatab = NULL, 
+              DWPdatatab = NULL, ffs = NULL, 
+              COsizeclasscol = NULL, COsplitcol = NULL, COunitcol = NULL, 
+              COdfcol = NULL, 
 
               Mhatarray = NULL, Mhatsc = NULL, splitcats = NULL, 
               Nsplitcats = NULL, 
 
+              Niterations = NULL, CL = NULL, 
+
               MDdataIn = "NONE")
+
 
     # Data Input
 
@@ -74,6 +82,7 @@
           updateSelectizeInput(session, "SEobscols", choices = rv$SEcolnames)
           updateSelectizeInput(session, "SEsizeclasscol", 
                                 choices = rv$SEcolnames)
+
           updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
 
         })
@@ -93,6 +102,7 @@
           updateSelectizeInput(session, "CPfta", choices = rv$CPcolnames)
 
           updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
+
         })
 
       # when the SS file is uploaded, pull data in and update tables
@@ -106,6 +116,7 @@
           output$SStable <- renderTable(create_ss_table(rv$SSdataIn))
 
           updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
+
         })
 
       # when the CO file is uploaded, pull data in and update column options
@@ -123,6 +134,7 @@
           updateSelectizeInput(session, "COunitcol", choices = rv$COcolnames)
 
           updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
+
         })
 
       # when the MD file is uploaded, pull data in 
@@ -154,26 +166,33 @@
 
         observeEvent(input$SEmodrun, {
           withProgress(message = "Running SE Model", {
+
+            rv$SEvars <- input$SEvars
+            rv$SEobscols <- input$SEobscols
+            rv$SEsizeclasscol <- input$SEsizeclasscol
+            rv$fixKchoice <- input$fixKchoice
+            rv$fixKvalchoice <- input$fixKvalchoice
+            rv$Niterations <- input$Niterations
             rv$SEmods <- se_model_set_across_sizes_fit(data = rv$SEdataIn, 
-                                   observation_columns = input$SEobscols,
-                                   predictors = input$SEvars,
-                                   size_class_column = input$SEsizeclasscol,
-                                   fix_k = input$fixKchoice, 
-                                   fix_k_value = input$fixKvalchoice, 
+                                   observation_columns = rv$SEobscols,
+                                   predictors = rv$SEvars,
+                                   size_class_column = rv$SEsizeclasscol,
+                                   fix_k = rv$fixKchoice, 
+                                   fix_k_value = rv$fixKvalchoice, 
                                    init_k_value = 0.7)
             rv$SEtheta <- se_theta_create(data = rv$SEdataIn, 
-                                  predictors = input$SEvars,
-                                  size_class_column = input$SEsizeclasscol,
+                                  predictors = rv$SEvars,
+                                  size_class_column = rv$SEsizeclasscol,
                                   model_fits = rv$SEmods, 
-                                  replicates = input$Niterations,
-                                  fix_k = input$fixKchoice, 
-                                  fix_k_value = input$fixKvalchoice)
+                                  replicates = rv$Niterations,
+                                  fix_k = rv$fixKchoice, 
+                                  fix_k_value = rv$fixKvalchoice)
 
             rv$SEaictable <- se_aicc_table_create(models = rv$SEmods)
             rv$SEaicorder <- order_se_models(rv$SEmods)
-            rv$SEsizeclasses <- unique(rv$SEdataIn[, input$SEsizeclasscol])
+            rv$SEsizeclasses <- unique(rv$SEdataIn[, rv$SEsizeclasscol])
 
-            if(length(input$SEsizeclasscol) == 0){
+            if(length(rv$SEsizeclasscol) == 0){
               rv$SEsizeclasses <- "all" 
             }
             rv$SEnsizeclasses <- length(rv$SEsizeclasses)
@@ -195,6 +214,36 @@
             output$SEfig <- renderPlot({
                 NULL
             })
+
+            # hop over to the model table tab
+
+              updateTabsetPanel(session, "SE_Analysis", "Model Table")
+
+            # auto populate the model table tab
+
+              scofi <- which(rv$SEsizeclasses == input$SEaicsizeclass)
+              scofi[length(scofi) == 0] <- 1
+              output$SEaictable <- renderDataTable({
+                  rv$SEaictable[[scofi]]
+              })
+
+            # auto populate the figure
+
+              scofi <- which(rv$SEsizeclasses == input$SEfigsizeclass)
+              scofi[length(scofi) == 0] <- 1
+              mofi <- which(rv$SEmodnames == input$SEfigmodel)
+              mofi[length(mofi) == 0 ] <- 1
+              CWM <- rv$SEnmods
+              CWM[length(CWM) == 0] <- 1
+              output$SEfig <- renderPlot({
+                                create_se_figure(data = rv$SEdataIn, 
+                                    predictors = rv$SEvars, 
+                                    theta = rv$SEtheta,
+                                    observation_columns = rv$SEobscols,  
+                                    replicates = rv$Niterations, 
+                                    size_class_column = rv$SEsizeclasscol, 
+                                    r = scofi, j = mofi, cellwise = CWM)
+              })
           })
         })
 
@@ -222,10 +271,10 @@
           CWM[length(CWM) == 0] <- 1
           output$SEfig <- renderPlot({
                             create_se_figure(data = rv$SEdataIn, 
-                                predictors = input$SEvars, theta = rv$SEtheta,
-                                observation_columns = input$SEobscols,  
-                                replicates = input$Niterations, 
-                                size_class_column = input$SEsizeclasscol, 
+                                predictors = rv$SEvars, theta = rv$SEtheta,
+                                observation_columns = rv$SEobscols,  
+                                replicates = rv$Niterations, 
+                                size_class_column = rv$SEsizeclasscol, 
                                 r = scofi, j = mofi, cellwise = CWM)
           })
         })
@@ -278,21 +327,27 @@
 
         observeEvent(input$CPmodrun, {
           withProgress(message = "Running CP Model", {
+
+            rv$CPvars <- input$CPvars
+            rv$CPltp <- input$CPltp
+            rv$CPfta <- input$CPfta
+            rv$CPsizeclasscol <- input$CPsizeclasscol
+            rv$Niterations <- input$Niterations
             rv$CPmods <- cp_model_set_across_sizes_fit(data = rv$CPdataIn, 
-                                   predictors = input$CPvars,
-                                   size_class_column = input$CPsizeclasscol, 
-                                   last_time_present_column = input$CPltp, 
-                                   first_time_absent_column = input$CPfta)
+                                   predictors = rv$CPvars,
+                                   size_class_column = rv$CPsizeclasscol, 
+                                   last_time_present_column = rv$CPltp, 
+                                   first_time_absent_column = rv$CPfta)
 
             rv$CPtheta <- cp_theta_create(data = rv$CPdataIn, 
-                                     predictors = input$CPvars,
-                                     size_class_column = input$CPsizeclasscol,
+                                     predictors = rv$CPvars,
+                                     size_class_column = rv$CPsizeclasscol,
                                      model_fits = rv$CPmods, 
-                                     replicates = input$Niterations)
+                                     replicates = rv$Niterations)
 
             rv$CPaictable <- cp_aicc_table_create(models = rv$CPmods)
             rv$CPaicorder <- order_cp_models(rv$CPmods)
-            rv$CPsizeclasses <- unique(rv$CPdataIn[, input$CPsizeclasscol])
+            rv$CPsizeclasses <- unique(rv$CPdataIn[, rv$CPsizeclasscol])
 
             if(length(input$CPsizeclasscol) == 0){
               rv$CPsizeclasses <- "all" 
@@ -324,6 +379,41 @@
             output$CPfig <- renderPlot({
                 NULL
             })
+
+            # hop over to the model table tab
+
+              updateTabsetPanel(session, "CP_Analysis", "Model Table")
+
+            # auto populate the model table tab
+
+              scofi <- which(rv$CPsizeclasses == input$CPaicsizeclass)
+              scofi[length(scofi) == 0] <- 1
+              output$CPaictable <- renderDataTable({
+                  rv$CPaictable[[scofi]]
+              })
+
+            # auto populate the figure
+
+              scofi <- which(rv$CPsizeclasses == input$CPfigsizeclass)
+              scofi[length(scofi) == 0] <- 1
+              mofi <- model_name_reverser(input$CPfigmodelcomplexity)
+              mofi[which(mofi == "~ Model not yet run") ] <- "~ 1"
+              mofi[length(mofi) == 0 ] <- "~ 1"
+              DC <- input$CPfigdistemph
+              DC[length(DC) == 0] <- "exponential"
+              output$CPfig <- renderPlot({
+
+                                create_cp_figure(models = rv$CPmods, 
+                                   data = rv$CPdataIn, 
+                                   predictors = rv$CPvars, 
+                                   theta = rv$CPtheta, 
+                                   time_unit = "days", 
+                                   size_class_column = rv$CPsizeclasscol, 
+                                   last_time_present_column = rv$CPltp, 
+                                   first_time_absent_column = rv$CPfta, 
+                                   r = scofi, model_complexity = mofi, 
+                                   distribution_choice = DC)
+              })
           })
         })
 
@@ -352,12 +442,12 @@
           DC[length(DC) == 0] <- NULL
           output$CPfig <- renderPlot({
                             create_cp_figure(models = rv$CPmods, 
-                               data = rv$CPdataIn, predictors = input$CPvars, 
+                               data = rv$CPdataIn, predictors = rv$CPvars, 
                                theta = rv$CPtheta, 
                                time_unit = "days", 
-                               size_class_column = input$CPsizeclasscol, 
-                               last_time_present_column = input$CPltp, 
-                               first_time_absent_column = input$CPfta, 
+                               size_class_column = rv$CPsizeclasscol, 
+                               last_time_present_column = rv$CPltp, 
+                               first_time_absent_column = rv$CPfta, 
                                r = scofi, model_complexity = mofi, 
                                distribution_choice = DC)
           })
@@ -398,6 +488,10 @@
 
         observeEvent(input$grun, {
           withProgress(message = "Estimating Detection Probability", {
+
+            rv$Niterations <- input$Niterations
+            rv$CL <- input$CL
+
             for(i in 1:rv$SEnsizeclasses){
               rv$SEmodstouse[i] <- which(rv$SEmodnames ==
                                      input[[sprintf("SEmodstouse%d", i)]])
@@ -410,16 +504,16 @@
             rv$garray <- estimate_g_across_sizes(cp_data = rv$CPdataIn, 
                                 se_data = rv$SEdataIn, 
                                 ss_data = rv$SSdataIn, 
-                                replicates = input$Niterations, 
-                                cp_predictors = input$CPvars, 
-                                se_predictors = input$SEvars, 
+                                replicates = rv$Niterations, 
+                                cp_predictors = rv$CPvars, 
+                                se_predictors = rv$SEvars, 
                                 cp_theta = rv$CPtheta, se_theta = rv$SEtheta, 
                                 cp_models = rv$CPmods,
-                                se_models_to_use = rv$SEmodstouse, 
-                                cp_models_to_use = rv$CPmodstouse)
+                                cp_models_to_use = rv$CPmodstouse,
+                                se_models_to_use = rv$SEmodstouse)
 
             rv$gtable <- create_g_table(rv$garray, 
-                                        confidence_level = input$CL)
+                                        confidence_level = rv$CL)
 
             output$gtable <- renderDataTable({
                                               rv$gtable
@@ -447,13 +541,24 @@
 
         observeEvent(input$Mrun, {
           withProgress(message = "Estimating Fatalities", {
+
+            rv$Niterations <- input$Niterations
+            rv$CL <- input$CL
+
+            rv$ffs <- input$ffs
+            rv$COsizeclasscol <- input$COsizeclasscol
+            rv$COsplitcol <- input$COsplitcol
+            rv$COunitcol <- input$COunitcol
+            rv$COdfcol <- input$COdfcol
+
+
             rv$Mhatarray <- estimate_mhat(co_data = rv$COdataIn, 
                             ss_data = rv$SSdataIn, 
                             size_class_column = input$COsizeclasscol, 
                             split_column = input$COsplitcol, 
                             unit_column = input$COunitcol, 
                             df_column = input$COdfcol,
-                            replicates = input$Niterations,  
+                            replicates = rv$Niterations,  
                             cp_predictors = rv$CPvars, 
                             se_predictors = rv$SEvars, cp_data = rv$CPdataIn, 
                             se_data = rv$SEdataIn, garray = rv$garray) 
@@ -463,8 +568,8 @@
             output$Mhattab <-  renderTable({
                                   create_mhat_table(
                                             condensed_mhat = rv$Mhatsc, 
-                                            fraction_area_sampled = input$ffs, 
-                                            confidence_level = input$CL)
+                                            fraction_area_sampled = rv$ffs, 
+                                            confidence_level = rv$CL)
             })
 
             rv$Nsplitcats <- length(unique(rv$COdataIn[,input$COsplitcol]))
@@ -478,6 +583,9 @@
                       fraction_area_sampled = input$ffs)
                 }
             }) 
+
+            updateTabsetPanel(session, "M_Analysis", "Table")
+
           }) 
         })
 
