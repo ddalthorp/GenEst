@@ -415,7 +415,7 @@
                          which(colnames(data)[colchoice] == pv2))]
           tempname <- paste(as.character(t(data[i, 
                              colchoice2])), 
-                             collapse = "")
+                             collapse = ".")
           tempname[tempname == ""] <- "all"
           combnames[i] <-  tempname
         }
