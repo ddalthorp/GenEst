@@ -2,11 +2,6 @@
 #
 # package development code for GenEst
 #
-# version 0.0.1.2 November 2017
-#
-# held under GNU GPL v >=3
-#
-##############################################################################
 
 
   # load devtools
