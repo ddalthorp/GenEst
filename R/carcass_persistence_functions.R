@@ -293,7 +293,7 @@
       for(i in 1:nsc){
 
         tsctab <- data.frame(matrix(NA, nrow = nmods, ncol = 4))
-        colnames(tsctab) <- c("model", "ditsribution", "AICc", "Delta AICc")
+        colnames(tsctab) <- c("model", "distribution", "AICc", "Delta AICc")
 
         for(j in 1:nmods){
 
