@@ -22,7 +22,7 @@
                                             version_date, ")", sep = ""), 
          "This software is preliminary or provisional and is subject to 
           revision. It is being provided to meet the need for timely best 
-          science. The software has not received final approval by the U.S. s
+          science. The software has not received final approval by the U.S.
           Geological Survey (USGS). No warranty, expressed or implied, is 
           made by the USGS or the U.S. Government as to the functionality 
           of the software and related material nor shall the fact of release 
@@ -45,7 +45,7 @@
               fixKchoice = NULL, fixKvalchoice = NULL,
 
               CPdataIn = "NONE", CPcolnames = character(0), 
-              CPaictable = NULL, CPaicorder = NULL, 
+              CPaictable = NULL, CPaicorder = NULL, CPaicmatrix = NULL,
               CPsizeclasses = NULL, CPnsizeclasses = NULL,
               CPmods = NULL, CPmodnames = NULL, CPmodnames1 = NULL, 
               CPnmodnames1 = NULL, CPmodcomps = NULL, CPdistnames = NULL,
@@ -205,8 +205,10 @@
                                  choices = rv$SEsizeclasses)
             updateSelectizeInput(session, "SEfigsizeclass", 
                                  choices = rv$SEsizeclasses)
+
             updateSelectizeInput(session, "SEfigmodel",
-                                 choices = rv$SEmodnames)
+                                 choices = rv$SEmodnames[rv$SEaicorder[[1]]])
+
 
             output$SEaictable <- renderDataTable({
                 NULL
@@ -244,13 +246,29 @@
                                     size_class_column = rv$SEsizeclasscol, 
                                     r = scofi, j = mofi, cellwise = CWM)
               })
+
+            isolate({
+
+              output$SEmodselectinputs <- renderUI({
+
+                w <- ""
+  
+                for(i in 1:rv$SEnsizeclasses){
+                  w <- paste(w, selectizeInput(paste("SEmodstouse", 
+                                i, sep = ""),
+                                rv$SEsizeclasses[i], 
+                                choices = rv$SEmodnames[rv$SEaicorder[[i]]]))
+                }
+  
+                HTML(w)
+              })
+            })
           })
         })
 
-      # when the generate AIC table button for the SE models is pushed, 
-      #   output the table for the respective size class 
+      # when the size class is changed, update the table
 
-        observeEvent(input$SEaictablerun, {
+        observeEvent(input$SEaicsizeclass, {
 
           scofi <- which(rv$SEsizeclasses == input$SEaicsizeclass)
           scofi[length(scofi) == 0] <- 1
@@ -259,53 +277,33 @@
           })
         })
 
-      # when the generate SE figure button is pushed, output the figure for
-      #   the specific size class and model selected
+      # when the size class or model are changed, update the figure
 
-        observeEvent(input$SEfigrun, {
+        observeEvent(input$SEfigsizeclass, {
+
           scofi <- which(rv$SEsizeclasses == input$SEfigsizeclass)
           scofi[length(scofi) == 0] <- 1
-          mofi <- which(rv$SEmodnames == input$SEfigmodel)
-          mofi[length(mofi) == 0 ] <- 1
-          CWM <- rv$SEnmods
-          CWM[length(CWM) == 0] <- 1
-          output$SEfig <- renderPlot({
-                            create_se_figure(data = rv$SEdataIn, 
+
+          updateSelectizeInput(session, "SEfigmodel",
+                              choices = rv$SEmodnames[rv$SEaicorder[[scofi]]])
+
+          observeEvent(input$SEfigmodel, {
+
+            mofi <- which(rv$SEmodnames == input$SEfigmodel)
+            mofi[length(mofi) == 0 ] <- 1
+            CWM <- rv$SEnmods
+            CWM[length(CWM) == 0] <- 1
+            output$SEfig <- renderPlot({
+                              create_se_figure(data = rv$SEdataIn, 
                                 predictors = rv$SEvars, theta = rv$SEtheta,
                                 observation_columns = rv$SEobscols,  
                                 replicates = rv$Niterations, 
                                 size_class_column = rv$SEsizeclasscol, 
                                 r = scofi, j = mofi, cellwise = CWM)
-          })
-        })
-
-
-      # when the Population Options button is pushed, so long as the model
-      #   has been run, output drop down selections for each size class
-
-        observe({
-
-          if(input$SEmodOpsPop == 0 ){
-            return()
-          }
-
-          isolate({
-
-            output$SEmodselectinputs <- renderUI({
-
-              w <- ""
-
-              for(i in 1:rv$SEnsizeclasses){
-                w <- paste(w, selectizeInput(paste("SEmodstouse", 
-                              i, sep = ""),
-                              rv$SEsizeclasses[i], 
-                              choices = rv$SEmodnames[rv$SEaicorder[[i]]]))
-              }
-
-              HTML(w)
             })
           })
         })
+
 
     # Carcass Persistence
 
@@ -333,6 +331,10 @@
             rv$CPfta <- input$CPfta
             rv$CPsizeclasscol <- input$CPsizeclasscol
             rv$Niterations <- input$Niterations
+
+            rv$CPdistnames <- c("exponential", "weibull", 
+                                "loglogistic", "lognormal")
+
             rv$CPmods <- cp_model_set_across_sizes_fit(data = rv$CPdataIn, 
                                    predictors = rv$CPvars,
                                    size_class_column = rv$CPsizeclasscol, 
@@ -346,14 +348,13 @@
                                      replicates = rv$Niterations)
 
             rv$CPaictable <- cp_aicc_table_create(models = rv$CPmods)
-            rv$CPaicorder <- order_cp_models(rv$CPmods)
+            rv$CPaicorder <- order_cp_models(models = rv$CPmods)
             rv$CPsizeclasses <- unique(rv$CPdataIn[, rv$CPsizeclasscol])
 
             if(length(input$CPsizeclasscol) == 0){
               rv$CPsizeclasses <- "all" 
             }
-            rv$CPdistnames <- c("exponential", "weibull", 
-                                "loglogistic", "lognormal")
+
 
             rv$CPmodnames1 <- model_namer(names(rv$CPmods[[1]]))
             rv$CPnmodnames1 <- length(rv$CPmodnames1)
@@ -368,10 +369,13 @@
                                   choices = rv$CPsizeclasses)
             updateSelectizeInput(session, "CPfigsizeclass", 
                                   choices = rv$CPsizeclasses)
-            updateSelectizeInput(session, "CPfigmodelcomplexity", 
-                                  choices = rv$CPmodcomps)
+
+            updateSelectizeInput(session, "CPfigmodelcomplexity",
+                              choices = unique(rv$CPaictable[[1]]$model))
+            bm <- unique(rv$CPaictable[[1]]$model)[1]
+            wbm <- which(rv$CPaictable[[1]]$model == bm)
             updateSelectizeInput(session, "CPfigdistemph", 
-                                  choices = rv$CPdistnames)
+                      choices = (rv$CPaictable[[1]]$distribution)[wbm])
 
             output$CPaictable <- renderDataTable({
                 NULL
@@ -414,53 +418,6 @@
                                    r = scofi, model_complexity = mofi, 
                                    distribution_choice = DC)
               })
-          })
-        })
-
-      # when the generate AIC table button for the CP models is pushed, 
-      #   output the table for the respective size class 
-
-        observeEvent(input$CPaictablerun, {
-
-          scofi <- which(rv$CPsizeclasses == input$CPaicsizeclass)
-          scofi[length(scofi) == 0] <- 1
-          output$CPaictable <- renderDataTable({
-              rv$CPaictable[[scofi]]
-          })
-        })
-
-      # when the generate CP figure button is pushed, output the figure for
-      #   the specific size class and model selected
-
-        observeEvent(input$CPfigrun, {
-
-          scofi <- which(rv$CPsizeclasses == input$CPfigsizeclass)
-          scofi[length(scofi) == 0] <- 1
-          mofi <- model_name_reverser(input$CPfigmodelcomplexity)
-          mofi[length(mofi) == 0 ] <- "~ 1"
-          DC <- input$CPfigdistemph
-          DC[length(DC) == 0] <- NULL
-          output$CPfig <- renderPlot({
-                            create_cp_figure(models = rv$CPmods, 
-                               data = rv$CPdataIn, predictors = rv$CPvars, 
-                               theta = rv$CPtheta, 
-                               time_unit = "days", 
-                               size_class_column = rv$CPsizeclasscol, 
-                               last_time_present_column = rv$CPltp, 
-                               first_time_absent_column = rv$CPfta, 
-                               r = scofi, model_complexity = mofi, 
-                               distribution_choice = DC)
-          })
-        })
-
-      # when the Population Options button is pushed, so long as the model
-      #   has been run, output drop down selections for each size class
-
-        observe({
-
-          if(input$CPmodOpsPop == 0 ){
-            return()
-          }
 
           isolate({
 
@@ -478,7 +435,57 @@
               HTML(w)
             })
           })
+
+          })
         })
+
+      # update the table when the size class is changed
+
+        observeEvent(input$CPaicsizeclass, {
+
+          scofi <- which(rv$CPsizeclasses == input$CPaicsizeclass)
+          scofi[length(scofi) == 0] <- 1
+          output$CPaictable <- renderDataTable({
+              rv$CPaictable[[scofi]]
+          })
+        })
+
+      # update the figure when the size class or model or dist has changed
+
+        observeEvent(input$CPfigsizeclass, {
+
+          scofi <- which(rv$CPsizeclasses == input$CPfigsizeclass)
+          scofi[length(scofi) == 0] <- 1
+          updateSelectizeInput(session, "CPfigmodelcomplexity",
+                              choices = unique(rv$CPaictable[[scofi]]$model))
+
+          observeEvent(input$CPfigmodelcomplexity, {
+
+            bm <- unique(rv$CPaictable[[scofi]]$model)[1]
+            wbm <- which(rv$CPaictable[[scofi]]$model == bm)
+            updateSelectizeInput(session, "CPfigdistemph", 
+                      choices = (rv$CPaictable[[scofi]]$distribution)[wbm])
+
+            observeEvent(input$CPfigdistemph, {
+              mofi <- model_name_reverser(input$CPfigmodelcomplexity)
+              mofi[length(mofi) == 0 ] <- "~ 1"
+              DC <- input$CPfigdistemph
+              DC[length(DC) == 0] <- NULL
+              output$CPfig <- renderPlot({
+                                create_cp_figure(models = rv$CPmods, 
+                                   data = rv$CPdataIn, predictors = rv$CPvars, 
+                                   theta = rv$CPtheta, 
+                                   time_unit = "days", 
+                                   size_class_column = rv$CPsizeclasscol, 
+                                   last_time_present_column = rv$CPltp, 
+                                   first_time_absent_column = rv$CPfta, 
+                                   r = scofi, model_complexity = mofi, 
+                                   distribution_choice = DC)
+              })
+            })
+          })
+        })
+
 
 
     # Detection Probability
