@@ -246,6 +246,23 @@
                                     size_class_column = rv$SEsizeclasscol, 
                                     r = scofi, j = mofi, cellwise = CWM)
               })
+
+            isolate({
+
+              output$SEmodselectinputs <- renderUI({
+
+                w <- ""
+  
+                for(i in 1:rv$SEnsizeclasses){
+                  w <- paste(w, selectizeInput(paste("SEmodstouse", 
+                                i, sep = ""),
+                                rv$SEsizeclasses[i], 
+                                choices = rv$SEmodnames[rv$SEaicorder[[i]]]))
+                }
+  
+                HTML(w)
+              })
+            })
           })
         })
 
@@ -287,32 +304,6 @@
           })
         })
 
-      # when the Population Options button is pushed, so long as the model
-      #   has been run, output drop down selections for each size class
-
-        observe({
-
-          if(input$SEmodOpsPop == 0 ){
-            return()
-          }
-
-          isolate({
-
-            output$SEmodselectinputs <- renderUI({
-
-              w <- ""
-
-              for(i in 1:rv$SEnsizeclasses){
-                w <- paste(w, selectizeInput(paste("SEmodstouse", 
-                              i, sep = ""),
-                              rv$SEsizeclasses[i], 
-                              choices = rv$SEmodnames[rv$SEaicorder[[i]]]))
-              }
-
-              HTML(w)
-            })
-          })
-        })
 
     # Carcass Persistence
 
@@ -427,6 +418,24 @@
                                    r = scofi, model_complexity = mofi, 
                                    distribution_choice = DC)
               })
+
+          isolate({
+
+            output$CPmodselectinputs <- renderUI({
+
+              w <- ""
+
+              for(i in 1:rv$CPnsizeclasses){
+                w <- paste(w, selectizeInput(paste("CPmodstouse", 
+                               i, sep = ""),
+                               rv$CPsizeclasses[i], 
+                               choices = rv$CPmodnames[rv$CPaicorder[[i]]]))
+              }
+
+              HTML(w)
+            })
+          })
+
           })
         })
 
@@ -477,32 +486,6 @@
           })
         })
 
-      # when the Population Options button is pushed, so long as the model
-      #   has been run, output drop down selections for each size class
-
-        observe({
-
-          if(input$CPmodOpsPop == 0 ){
-            return()
-          }
-
-          isolate({
-
-            output$CPmodselectinputs <- renderUI({
-
-              w <- ""
-
-              for(i in 1:rv$CPnsizeclasses){
-                w <- paste(w, selectizeInput(paste("CPmodstouse", 
-                               i, sep = ""),
-                               rv$CPsizeclasses[i], 
-                               choices = rv$CPmodnames[rv$CPaicorder[[i]]]))
-              }
-
-              HTML(w)
-            })
-          })
-        })
 
 
     # Detection Probability
