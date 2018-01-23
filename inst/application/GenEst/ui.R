@@ -151,9 +151,6 @@
                            selectizeInput("SEaicsizeclass", 
                                       "Choose size class for AIC table:", 
                                       "Model not yet run", multiple = F),
-                           br(), 
-                           actionButton("SEaictablerun", 
-                                        "Generate AIC Table"), 
                            br(), br(), 
                            dataTableOutput("SEaictable") 
                       ),
@@ -168,8 +165,6 @@
                            selectizeInput("SEfigmodel", 
                                       "Choose model for SE figure:", 
                                       "Model not yet run", multiple = F ),
-                           br(), 
-                           actionButton("SEfigrun", "Generate SE Figure"), 
                            br(), br(), 
                            plotOutput("SEfig", width = "800px", 
                                        height = "800px")
@@ -234,9 +229,6 @@
                            selectizeInput("CPaicsizeclass", 
                                           "Choose size class for AIC table:", 
                                           "Model not yet run", multiple = F ),
-                           br(), 
-                           actionButton("CPaictablerun", 
-                                        "Generate AIC Table"),
                            br(), br(), 
                            dataTableOutput("CPaictable") 
                       ),
@@ -254,8 +246,6 @@
                            selectizeInput("CPfigdistemph",
                                        "Choose distribution to emphasize:", 
                                        "Model not yet run", multiple = F ),
-                           br(), 
-                           actionButton("CPfigrun", "Generate CP Figure"), 
                            br(), br(), 
                            plotOutput("CPfig", width = "800px", 
                                    height = "1000px")

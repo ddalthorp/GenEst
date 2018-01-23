@@ -539,7 +539,7 @@
                          which(colnames(data)[colchoice] == pv2))]
           tempname <- paste(as.character(t(data[i, 
                              colchoice2])), 
-                             collapse = "")
+                             collapse = ".")
           tempname[tempname == ""] <- "all"
           combnames[i] <-  tempname
         }
@@ -638,14 +638,22 @@
                 axis(2, las = 1, cex.axis = 1., at = seq(0, 1, .2))
 
 
-                text(xpts + 0.1, ypts + 0.075, 
+                points(predxs, CMpredys, type = 'l', lwd = 3, 
+                        col = rgb(0.5, 0.5, 0.5))
+                points(predxs, predys, type = 'l', lwd = 3)
+
+
+                for(j in 1:length(xpts)){
+                  rect((xpts[j] + 0.1) - 0.2, (ypts[j] + 0.1) - 0.05,
+                       (xpts[j] + 0.1) + 0.2, (ypts[j] + 0.1) + 0.05,
+                       border = NA, col = "white")
+                }
+
+                text(xpts + 0.1, ypts + 0.1, 
                        paste(carcassfound, carcassavail, sep = "/"), 
                        xpd = T, cex = 0.75, col = rgb(0.05, 0.05, 0.05))
 
 
-                points(predxs, CMpredys, type = 'l', lwd = 3, 
-                        col = rgb(0.1, 0.1, 0.1))
-                points(predxs, predys, type = 'l', lwd = 3)
  
               }
 
@@ -671,7 +679,7 @@
                 maxp <- max(PS)
 
                 rect(i - 0.1 - 0.2, iqp[1], i + 0.1 - 0.2, iqp[2], lwd = 2, 
-                        col = rgb(1, 1, 1, 0.4))
+                        col = rgb(1, 1, 1))
                 points(c(i - 0.1, i + 0.1) - 0.2, rep(medianp, 2), type = "l",
                         lwd = 2)
                 points(c(i - 0.05, i + 0.05) - 0.2, rep(minp, 2), type = "l",
@@ -690,17 +698,17 @@
                 CMmaxp <- max(CMPS)
 
                 rect(i - 0.1 + 0.2, CMiqp[1], i + 0.1 + 0.2, CMiqp[2], 
-                        lwd = 2, col = 0, border = rgb(0.1, 0.1, 0.1))
+                        lwd = 2, col = 0, border = rgb(0.5, 0.5, 0.5))
                 points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmedianp, 2), 
-                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1))
+                        type = "l", lwd = 2, col = rgb(0.5, 0.5, 0.5))
                 points(c(i - 0.05, i + 0.05) + 0.2, rep(CMminp, 2), 
-                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1))
+                        type = "l", lwd = 2, col = rgb(0.5, 0.5, 0.5))
                 points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmaxp, 2), 
-                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1))
+                        type = "l", lwd = 2, col = rgb(0.5, 0.5, 0.5))
                 points(c(i, i) + 0.2, c(CMiqp[1], CMminp), type = "l", 
-                        lwd = 2, col = rgb(0.1, 0.1, 0.1)) 
+                        lwd = 2, col = rgb(0.5, 0.5, 0.5)) 
                 points(c(i, i) + 0.2, c(CMiqp[2], CMmaxp), type = "l", 
-                        lwd = 2, col = rgb(0.1, 0.1, 0.1)) 
+                        lwd = 2, col = rgb(0.5, 0.5, 0.5)) 
 
               }
 
@@ -751,17 +759,17 @@
                 CMmaxk <- max(CMKS)
 
                 rect(i - 0.1 + 0.2, CMiqk[1], i + 0.1 + 0.2, CMiqk[2], 
-                        lwd = 2, col = 0, border = rgb(0.1, 0.1, 0.1))
+                        lwd = 2, col = 0, border = rgb(0.5, 0.5, 0.5))
                 points(c(i - 0.1, i + 0.1) + 0.2, rep(CMmediank, 2), 
-                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1))
+                        type = "l", lwd = 2, col = rgb(0.5, 0.5, 0.5))
                 points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmink, 2), 
-                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1))
+                        type = "l", lwd = 2, col = rgb(0.5, 0.5, 0.5))
                 points(c(i - 0.05, i + 0.05) + 0.2, rep(CMmaxk, 2), 
-                        type = "l", lwd = 2, col = rgb(0.1, 0.1, 0.1))
+                        type = "l", lwd = 2, col = rgb(0.5, 0.5, 0.5))
                 points(c(i, i) + 0.2, c(CMiqk[1], CMmink), type = "l", 
-                        lwd = 2, col = rgb(0.1, 0.1, 0.1)) 
+                        lwd = 2, col = rgb(0.5, 0.5, 0.5)) 
                 points(c(i, i) + 0.2, c(CMiqk[2], CMmaxk), type = "l", 
-                        lwd = 2, col = rgb(0.1, 0.1, 0.1)) 
+                        lwd = 2, col = rgb(0.5, 0.5, 0.5)) 
 
 
               }
@@ -783,7 +791,7 @@
                    border = NA)
               text(x = 0.21, y = 0.3, "= Selected Model", adj = 0)
               rect(0.45, 0.15, 0.5, 0.45, lwd = 2, 
-                   col = rgb(0.1, 0.1, 0.1), border = NA)
+                   col = rgb(0.5, 0.5, 0.5), border = NA)
               text(x = 0.51, y = 0.3, "= Cell Means Model", adj = 0)
   }
 
