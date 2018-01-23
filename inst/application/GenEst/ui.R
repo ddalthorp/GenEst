@@ -171,13 +171,10 @@
                       ),
 
                     # Model Selection tab is used to select a model for each
-                    #  size class. Model selection options can only be 
-                    #  populated once the model has been run
+                    #  size class.
 
                       tabPanel("Model Selection", 
                            br(), 
-                           actionButton("SEmodOpsPop", "Populate Options"),
-                           br(), br(),
                            htmlOutput("SEmodselectinputs")
                       ) 
                   )
@@ -252,12 +249,9 @@
                       ),
 
                     # Model Selection tab is used to select a model for each
-                    #  size class. Model selection options can only be 
-                    #  populated once the model has been run
+                    #  size class. 
 
                       tabPanel("Model Selection", br(), 
-                           actionButton("CPmodOpsPop","Populate Options"),
-                           br(), br(),  
                            htmlOutput("CPmodselectinputs")
                       )
                   )
