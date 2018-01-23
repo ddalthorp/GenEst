@@ -154,11 +154,12 @@ combine_factors <- function(predictors, data) {
   model_namer <- function(model_equation){
 
     xx <- model_equation
-    xx <- gsub("~ 1", "Intercept Only", xx)
+    xx <- gsub("~ 1", "Constant", xx)
+    #xx <- gsub("~ 1", "Intercept Only", xx)
     xx <- gsub("~fixed_at_", "Fixed at ", xx)
     xx <- gsub("~ ", "", xx)
-    xx <- gsub("\\*", "crossed with", xx)
-    xx <- gsub("\\+", "and", xx)
+    #xx <- gsub("\\*", "crossed with", xx)
+    #xx <- gsub("\\+", "and", xx)
     return(xx)
   }
 
@@ -174,9 +175,10 @@ combine_factors <- function(predictors, data) {
   model_name_reverser <- function(model_name){
 
     xx <- model_name
-    xx <- gsub("Intercept Only", "1", xx)
-    xx <- gsub(" crossed with ", " \\* ", xx)
-    xx <- gsub(" and ", " \\+ ", xx)
+    xx <- gsub("Constant", "1", xx) 
+   #xx <- gsub("Intercept Only", "1", xx)
+   #xx <- gsub(" crossed with ", " \\* ", xx)
+   #xx <- gsub(" and ", " \\+ ", xx)
     xx <- paste("~ ", xx, sep = "")
     return(xx)
   }
