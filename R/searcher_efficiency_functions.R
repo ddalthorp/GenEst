@@ -129,7 +129,7 @@
 pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL, 
                 fixed_k = NULL, k_init = 0.7){
 
-  if(missing(obs_cols)){
+  if(length(obs_cols) == 0){
     obs_cols <- grep("^[sS].*[0-9]$", names(data), value = TRUE)
     n_obs_cols <- length(obs_cols)
     if(n_obs_cols == 0){
@@ -148,7 +148,7 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   n_carcasses <- nrow(data)
 
   obs_data <- data[ , obs_cols]
-  obs_data <- matrix(obs_data, ncol = n_searches)
+  obs_data <- as.matrix(obs_data, ncol = n_searches)
   first_obs <- obs_data[ , 1]
   miss_data <- apply(obs_data, 2, match, 0)
 
@@ -386,6 +386,45 @@ pkLogLik <- function(misses, found_on, beta, n_beta_p,
   return(nll_miss_found)
 }
   
+#' Simulate p and k parameters from a fitted pk model.
+#'
+#' @param n_sim the number of simulation draws
+#
+#' @param pk_model A \code{\link{pkm}} object (which is returned from 
+#'  \code{pkm()})
+#
+#' @return Array of \code{nsim} simulated pairs of \code{p} and \code{k} for
+#'  cells defined by the \code{pkmodel} object.
+#' @examples
+#' pkmod1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
+#' simulated_pk <- rpk(nsim = 10, pkmodel = pkmod1)
+#' simulated_pk
+#' boxplot(simulated_pk[,, 1])
+#'
+#' data(pkmdat)
+#' pk_mod_2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
+#' rpk(n_sim = 10, pk_model = pk_mod_2)
+#' @export
 
+rpk <- function(n_sim, pk_model){
+  np <- pkmodel$np; nk <- pkmodel$nk
+  betaSim <- mvtnorm::rmvnorm(nsim,
+    mean = c(pkmodel$betahat_p, pkmodel$betahat_k),
+    sigma = pkmodel$varbeta, method = "svd")
+  pSim <- alogit(betaSim[,1:np]%*%t(pkmodel$miniXp))
+  if (is.language(pkmodel$kformula)){
+    kSim <- alogit(betaSim[,(np + 1):(np + pkmodel$nk)] %*%t (pkmodel$miniXk))
+  } else {
+    kSim <- matrix(pkmodel$kformula, ncol = pkmodel$Ncells, nrow = nsim)
+  }
+  ans <- array(
+    dim = c(nsim, 2, pkmodel$Ncells),
+    dimnames = list(NULL, c('p','k'), pkmodel$cells[,'CellNames'])
+  )
+  for(k in 1:pkmodel$Ncells){
+    ans[ , , k] <- cbind(pSim[,k], kSim[,k])
+  }
+  ans
+}
 
 
