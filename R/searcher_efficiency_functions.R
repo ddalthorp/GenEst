@@ -136,11 +136,16 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
       stop("No observation columns provided and no appropriate column names.")
     }
   }
+  if(length(obs_cols) == 1 & length(fixed_k) == 0){
+    warning("Only one observation, k cannot be estimated, fixed at 1")
+    fixed_k <- 1
+  }
 
   n_searches <- length(obs_cols)
   n_carcasses <- nrow(data)
 
   obs_data <- data[ , obs_cols]
+  obs_data <- matrix(obs_data, ncol = n_searches)
   first_obs <- obs_data[ , 1]
   miss_data <- apply(obs_data, 2, match, 0)
 
@@ -298,6 +303,7 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   output$cells <- cells
   output$n_cells <- n_cells
   output$cellwise_pk <- cell_pk_table
+  output$observations <- obs_data
   class(output) <- c("pkm", "list")
   attr(output, "hidden") <- c("p_predictors", "k_predictors",
                               "beta_hat_p", "beta_hat_k",  
@@ -305,7 +311,7 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
                               "n_beta_p", "n_beta_k", 
                               "p_levels", "k_levels",
                               "convergence", "beta_var", "AIC",
-                              "cells", "n_cells")
+                              "cells", "n_cells", "observations")
 
   return(output)
 }
