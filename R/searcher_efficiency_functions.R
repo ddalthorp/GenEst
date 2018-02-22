@@ -136,8 +136,11 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
       stop("No observation columns provided and no appropriate column names.")
     }
   }
+  if(length(kformula) > 0 & length(fixed_k) == 1){
+     message("Both formula and fixed value provided for k, fixed value used.")
+  }
   if(length(obs_cols) == 1 & length(fixed_k) == 0){
-    warning("Only one observation, k cannot be estimated, fixed at 1")
+    message("Only one observation, k cannot be estimated, fixed at 1")
     fixed_k <- 1
   }
 
@@ -175,9 +178,6 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
     k_formula <- formula(~1)  
     k_formula_out <- c(fixedk = fixed_k)
     k_levels <- .getXlevels(terms(k_formula), data)
-  }
-  if(length(kformula) > 0 & length(fixed_k) == 1){
-     message("Both formula and fixed value provided for k, fixed value used.")
   }
 
   pk_preds <- unique(c(p_preds, k_preds))
@@ -312,7 +312,6 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
                               "p_levels", "k_levels",
                               "convergence", "beta_var", "AIC",
                               "cells", "n_cells", "observations")
-
   return(output)
 }
 
