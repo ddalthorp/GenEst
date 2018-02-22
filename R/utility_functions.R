@@ -25,9 +25,9 @@
 #' Create the predictor combination table for a searcher efficiency or carcass
 #'  persistence analysis.
 #' 
-#' @param predictors Names of predictor variables to include.
+#' @param preds Names of predictor variables to include.
 #' @param data Searcher efficiency or carcass persistence data.
-#' @return Factor combination table.
+#' @return Predictor combination table.
 #' @examples
 #' NA
 #' @export 
@@ -38,29 +38,34 @@ combine_preds <- function(preds, data){
   if(n_preds == 0){
     return(data.frame(group = "all", CellNames = "all"))
   }else{
-      if(any(is.na(match(preds, names(data))))) {
+    if(any(is.na(match(preds, names(data))))) {
         stop("At least one predictor missing from data.")
-      }
-      varNames <- preds
-      varLabels <- list()
-      varNlevels <- list()
-      for(i in 1:n_preds){
-        varLabels[[i]] <- levels(as.factor(data[[varNames[i]]]))
-        varNlevels[[i]] <- length(varLabels[[i]])
-      }
-      reps <- cumprod(varNlevels)[n_preds:1] 
-      egDat <- data.frame(var1 = gl(varNlevels[[1]], 1, length = reps[1], 
-                          labels = varLabels[[1]]))
-      if(n_preds > 1){
-        for(j in 2:n_preds){
-          egDat[[paste("var", j, collapse = NULL)]] <- 
-             gl(varNlevels[[j]], reps[j], length = reps[1], 
-                labels = varLabels[[j]])
-        }
+    }
+    var_names <- preds
+    var_labels <- list()
+    var_n_levels <- list()
+    for(i in 1:n_preds){
+      var_labels[[i]] <- levels(as.factor(data[[var_names[i]]]))
+      var_n_levels[[i]] <- length(var_labels[[i]])
+    }
+    reps <- cumprod(var_n_levels)[n_preds:1]
+    reps_1 <- reps[1]
+    var_1_n_levels <- var_n_levels[[1]]
+    var_1_labels <- var_labels[[1]]
+    var_1 <- gl(var_1_n_levels, 1, length = reps_1, labels = var_1_labels)
+    output <- data.frame(var_1)
+    if(n_preds > 1){
+      for(j in 2:n_preds){
+        var_j_n_levels <- var_n_levels[[j]]
+        var_j_labels <- var_labels[[j]]
+        var_j <- gl(var_j_n_levels, 1, length = reps_1, labels = var_j_labels) 
+        output[[j]] <- var_j
+
       }
     }
-  names(egDat) <- varNames
-  egDat$CellNames <- apply(egDat, 1, paste0, collapse=".")
-  return(egDat)
+  }
+  names(output) <- var_names
+  output$CellNames <- apply(output, 1, paste0, collapse = ".")
+  return(output)
 }
 
