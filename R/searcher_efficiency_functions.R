@@ -157,7 +157,7 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   p_levels <- .getXlevels(terms(p_formula), data)
 
   k_preds <- character(0)
-  if(!missing(kformula)){
+  if(length(kformula) > 0){
     k_preds <- all.vars(kformula[[3]])
     n_k_preds <- length(k_preds)
     k_formula <- formula(delete.response(terms(kformula)))
@@ -170,6 +170,9 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
     k_formula <- formula(~1)  
     k_formula_out <- c(fixedk = fixed_k)
     k_levels <- .getXlevels(terms(k_formula), data)
+  }
+  if(length(kformula) > 0 & length(fixed_k) == 1){
+     message("Both formula and fixed value provided for k, fixed value used.")
   }
 
   pk_preds <- unique(c(p_preds, k_preds))
@@ -245,6 +248,7 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
     names(beta_hat_k) <- colnames(mm_k_data)
   }
 
+  beta_var <- solve(beta_hessian)
   beta_var_p <- beta_var[1:n_beta_p, 1:n_beta_p]
   p_cell_means <- mm_p_cells %*% beta_hat_p
   p_cell_vars <- mm_p_cells %*% beta_var_p %*% t(mm_p_cells)
@@ -263,9 +267,11 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
 
   probs <- data.frame(c(0.5, 0.025, 0.975))
   cell_p_table <- apply(probs, 1, qnorm, mean = p_cell_means, sd = p_cell_sds)
+  cell_p_table <- matrix(cell_p_table, nrow = n_cells, ncol = 3)
   cell_p_table <- alogit(cell_p_table)
   colnames(cell_p_table) <- c("p_median", "p_lower_95", "p_upper_95")
   cell_k_table <- apply(probs, 1, qnorm, mean = k_cell_means, sd = k_cell_sds)
+  cell_k_table <- matrix(cell_k_table, nrow = n_cells, ncol = 3)
   cell_k_table <- alogit(cell_k_table)
   colnames(cell_k_table) <- c("k_median", "k_lower_95", "k_upper_95")
   cell_pk_table <- data.frame(cell = cell_names, cell_p_table, cell_k_table)
@@ -293,13 +299,13 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   output$n_cells <- n_cells
   output$cellwise_pk <- cell_pk_table
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("p_formula", "k_formula", 
-                              "p_predictors", "k_predictors",
+  attr(output, "hidden") <- c("p_predictors", "k_predictors",
                               "beta_hat_p", "beta_hat_k",  
                               "mm_p_cells", "mm_k_cells", 
                               "n_beta_p", "n_beta_k", 
                               "p_levels", "k_levels",
-                              "convergence", "beta_var", "cells", "n_cells")
+                              "convergence", "beta_var", "AIC",
+                              "cells", "n_cells")
 
   return(output)
 }
