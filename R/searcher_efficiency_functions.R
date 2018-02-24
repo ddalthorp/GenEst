@@ -141,13 +141,15 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
       stop("No observation columns provided and no appropriate column names.")
     }
   }
-  if(fixed_k < 0){
-    message("Provided k is negative. Using k = 0")
-    fixed_k <- 0.0
-  }
-  if(fixed_k > 1){
-    message("Provided k too large. Using k = 1.0")
-    fixed_k <- 1.0
+  if(length(fixed_k) == 1){
+    if(fixed_k < 0){
+      message("Provided k is negative. Using k = 0")
+      fixed_k <- 0.0
+   }
+    if(fixed_k > 1){
+      message("Provided k too large. Using k = 1.0")
+      fixed_k <- 1.0
+    }
   }
   if(length(kformula) > 0 & length(fixed_k) == 1){
     message("Both formula and fixed value provided for k, fixed value used.")
@@ -386,13 +388,15 @@ print.pkm <- function(pk_model){
 #'
 pkm_set <- function(pformula, kformula = NULL, data, obs_cols = NULL, 
                     fixed_k = NULL, k_init = 0.7){
-  if(fixed_k < 0){
-    message("Provided k is negative. Using k = 0")
-    fixed_k <- 0.0
-  }
-  if(fixed_k > 1){
-    message("Provided k too large. Using k = 1.0")
-    fixed_k <- 1.0
+  if(length(fixed_k) == 1){
+    if(fixed_k < 0){
+      message("Provided k is negative. Using k = 0")
+      fixed_k <- 0.0
+   }
+    if(fixed_k > 1){
+      message("Provided k too large. Using k = 1.0")
+      fixed_k <- 1.0
+    }
   }
   if(length(kformula) > 0 & length(fixed_k) == 1){
     message("Both formula and fixed value provided for k, fixed value used.")
