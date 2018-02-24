@@ -77,9 +77,10 @@
 #' \describe{
 #'  \item{\code{call}}{the function call to fit the model}
 #'  \item{\code{predictors}}{list of covariates of \code{p} and/or \code{k}}
-#'  \item{\code{stats}}{summary statistics for estimated \code{p} and 
-#'    \code{k}, including the medians and upper & lower bounds on 95% CIs for
-#'    each parameter, indexed by cell (or combination of covariate levels).}
+#'  \item{\code{cellwise_pk}}{summary statistics for estimated cellwise 
+#'    \code{p} and \code{k}, including the medians and upper & lower bounds
+#'    on 95% CIs for each parameter, indexed by cell (or combination of
+#'    covariate levels).}
 #'  \item{\code{AIC}}{the 
 #'    \href{https://en.wikipedia.org/wiki/Akaike_information_criterion}{AIC}
 #'    value for the fitted model}
@@ -93,39 +94,43 @@
 #' The following components are not printed automatically but can be accessed
 #' via the \code{$} operator:
 #' \describe{
-#'   \item{\code{pformula}}{the model formula for the \code{p} parameter}
-#'   \item{\code{kformula}}{the model formula for the \code{k} parameter}
-#'   \item{\code{betahat_p}}{parameter estimates for the terms in the 
+#'   \item{\code{p_formula}}{the model formula for the \code{p} parameter}
+#'   \item{\code{k_formula}}{the model formula for the \code{k} parameter}
+#'   \item{\code{beta_hat_p}}{parameter estimates for the terms in the 
 #'     regression model for for \code{p} (logit scale)}
-#'   \item{\code{betahat_k}}{parameter estimates for the terms in the 
+#'   \item{\code{beta_hat_k}}{parameter estimates for the terms in the 
 #'     regression model for for \code{k} (logit scale). If \code{k} is fixed 
 #'     and known, \code{betahat_k} is not calculated.}
-#'   \item{\code{varbeta}}{the variance-covariance matrix of the estimators
+#'   \item{\code{beta_var}}{the variance-covariance matrix of the estimators
 #'     for \code{c(betahat_p, betahat_k}.}
-#'   \item{\code{miniXp}}{a simplified design matrix for covariate structure 
-#'     of \code{pformula}}
-#'   \item{\code{miniXk}}{a simplified design matrix for covariate structure 
-#'     of \code{kformula}}
-#'   \item{\code{plevels}}{all levels of each covariate of \code{p}}
-#'   \item{\code{klevels}}{all levels of each covariate of \code{k}}
-#'   \item{\code{np, nk}}{number of parameters to fit the \code{p} and 
-#'     \code{k} models}
+#'   \item{\code{mm_p_cells}}{a cellwise design matrix for covariate structure
+#'     of \code{p_formula}}
+#'   \item{\code{mm_k_cells}}{a cellwise design matrix for covariate structure 
+#'     of \code{k_formula}}
+#'   \item{\code{p_levels}}{all levels of each covariate of \code{p}}
+#'   \item{\code{k_levels}}{all levels of each covariate of \code{k}}
+#'   \item{\code{n_beta_p, n_beta_k}}{number of parameters to fit the \code{p}
+#'     and \code{k} models}
 #'   \item{\code{cells}}{cell structure of the pk-model, i.e., combinations of
 #'     all levels for each covariate of \code{p} and \code{k}. For example, if
 #'     \code{covar1} has levels \code{"a"}, \code{"b"}, and \code{"c"}, and
 #'     \code{covar2} has levels \code{"X"} and \code{"Y"}, then the cells 
 #'     would consist of \code{a.X}, \code{a.Y}, \code{b.X}, \code{b.Y}, 
 #'     \code{c.X}, and \code{c.Y}.}
-#'   \item{\code{Ncells}}{total number of cells}
+#'   \item{\code{n_cells}}{total number of cells}
+#'  \item{\code{p_predictors}}{list of covariates of \code{p}}
+#'  \item{\code{k_predictors}}{list of covariates of \code{k}}
+#'  \item{\code{observations}}{observations used to fit the model}
+#'  \item{\code{fixed_k}}{the input \code{fixed_k}}
 #'}
 #'
 #' @examples
-#' head(pkmdat)
+#' data(pkmdat)
 #' pkm(p ~ visibility, k ~ 1, data = pkmdat)
 #' pkm(p ~ visibility * season, k ~ site, data = pkmdat)
 #' pkm(p ~ visibility, k = 0.7, data = pkmdat)
 #' @export
-
+#'
 pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL, 
                 fixed_k = NULL, k_init = 0.7){
 
@@ -137,7 +142,11 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
     }
   }
   if(length(kformula) > 0 & length(fixed_k) == 1){
-     message("Both formula and fixed value provided for k, fixed value used.")
+    message("Both formula and fixed value provided for k, fixed value used.")
+  }
+  if(length(kformula) == 0 & length(fixed_k) == 0){
+    message("No formula or fixed value provided for k, fixed at 1.")
+    fixed_k <- 1
   }
   if(length(obs_cols) == 1 & length(fixed_k) == 0){
     message("Only one observation, k cannot be estimated, fixed at 1")
@@ -253,7 +262,10 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
     names(beta_hat_k) <- colnames(mm_k_data)
   }
 
-  beta_var <- solve(beta_hessian)
+  beta_var <- tryCatch(solve(beta_hessian), error = function(x) {NA})
+  if(is.na(beta_var)[1]){
+    stop("Model generates unstable variance estimate.")
+  }
   beta_var_p <- beta_var[1:n_beta_p, 1:n_beta_p]
   p_cell_means <- mm_p_cells %*% beta_hat_p
   p_cell_vars <- mm_p_cells %*% beta_var_p %*% t(mm_p_cells)
@@ -304,8 +316,9 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   output$n_cells <- n_cells
   output$cellwise_pk <- cell_pk_table
   output$observations <- obs_data
+  output$fixed_k <- fixed_k
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("p_predictors", "k_predictors",
+  attr(output, "hidden") <- c("p_predictors", "k_predictors", "fixed_k",
                               "beta_hat_p", "beta_hat_k",  
                               "mm_p_cells", "mm_k_cells", 
                               "n_beta_p", "n_beta_k", 
@@ -316,11 +329,138 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
 }
 
 #' @export
-print.pkm <- function (x) {
-  hid <- attr(x, "hidden")
-  print(x[!names(x) %in% hid])
+#'
+print.pkm <- function(pk_model){
+  hid <- attr(pk_model, "hidden")
+  which_not_hid <- !names(pk_model) %in% hid
+  print(pk_model[which_not_hid])
 }
   
+#' Run a set of pkm models based on predictor inputs
+#'
+#'
+#'
+pkm_set <- function(pformula, kformula = NULL, data, obs_cols = NULL, 
+                    fixed_k = NULL, k_init = 0.7){
+
+  if(length(kformula) > 0 & length(fixed_k) == 1){
+    message("Both formula and fixed value provided for k, fixed value used.")
+    kformula <- k ~ 1
+  }
+  if(length(kformula) == 0 & length(fixed_k) == 0){
+    message("No formula or fixed value provided for k, fixed at 1.")
+    kformula <- k ~ 1
+    fixed_k <- 1
+  }
+  if(length(obs_cols) == 1 & length(fixed_k) == 0){
+    message("Only one observation, k cannot be estimated, fixed at 1")
+    fixed_k <- 1
+  }
+  if(length(kformula) == 0){
+    kformula <- k ~ 1
+  }
+
+  p_terms <- attr(terms(pformula), "term.labels")
+  k_terms <- attr(terms(kformula), "term.labels")
+  n_p_terms <- length(p_terms)
+  n_k_terms <- length(k_terms)
+  n_p_formulae <- 2^(n_p_terms)
+  n_k_formulae <- 2^(n_k_terms)
+
+  p_drop_complex <- rep(1:n_p_terms, choose(n_p_terms, 1:n_p_terms))
+  p_drop_which <- numeric(0)
+  if(n_p_terms > 0){
+    for(i in 1:n_p_terms){
+      specifics_to_drop <- seq(1, choose(n_p_terms, (1:n_p_terms)[i]))
+      p_drop_which <- c(p_drop_which, specifics_to_drop)
+    }
+  }
+  pformula_ops <- vector("list", n_p_formulae)
+  pformula_ops[[1]] <- pformula
+  pformula_ops_keep <- rep(TRUE, n_p_formulae)
+  if(n_p_formulae > 1){
+    for(i in 2:n_p_formulae){
+      terms_drop_complex <- combn(p_terms, p_drop_complex[i - 1])
+      terms_drop_spec <- terms_drop_complex[ , p_drop_which[i - 1]]
+      terms_drop <- paste(terms_drop_spec, collapse = " - ")
+      formula_update <- paste(format(~.), "-", terms_drop)
+      updated_formula <- update.formula(pformula, formula_update)
+      pformula_ops[[i]] <- updated_formula
+      pformula_ops_keep[i] <- check_component_terms_included(updated_formula)
+    }
+    n_pformula_ops_keep <- sum(pformula_ops_keep)
+    which_pformula_ops_keep <- which(pformula_ops_keep == TRUE)
+    pformula_ops_kept <- vector("list", n_pformula_ops_keep)
+    for(i in 1:n_pformula_ops_keep){
+      pformula_ops_kept[[i]] <- pformula_ops[[which_pformula_ops_keep[i]]]
+    }
+  }else{
+    pformula_ops_kept <- pformula_ops
+  }
+  
+  k_drop_complex <- rep(1:n_k_terms, choose(n_k_terms, 1:n_k_terms))
+  k_drop_which <- numeric(0)
+  if(n_k_terms > 0){
+    for(i in 1:n_k_terms){
+      specifics_to_drop <- seq(1, choose(n_k_terms, (1:n_k_terms)[i]))
+      k_drop_which <- c(k_drop_which, specifics_to_drop)
+    }
+  }
+  kformula_ops <- vector("list", n_k_formulae)
+  kformula_ops[[1]] <- kformula
+  kformula_ops_keep <- rep(TRUE, n_k_formulae)
+  if(n_k_formulae > 1){
+    for(i in 2:n_k_formulae){
+      terms_drop_complex <- combn(k_terms, k_drop_complex[i - 1])
+      terms_drop_spec <- terms_drop_complex[ , k_drop_which[i - 1]]
+      terms_drop <- paste(terms_drop_spec, collapse = " - ")
+      formula_update <- paste(format(~.), "-", terms_drop)
+      updated_formula <- update.formula(kformula, formula_update)
+      kformula_ops[[i]] <- updated_formula
+      kformula_ops_keep[i] <- check_component_terms_included(updated_formula)
+    }
+    n_kformula_ops_keep <- sum(kformula_ops_keep)
+    which_kformula_ops_keep <- which(kformula_ops_keep == TRUE)
+    kformula_ops_kept <- vector("list", n_kformula_ops_keep)
+    for(i in 1:n_kformula_ops_keep){
+      kformula_ops_kept[[i]] <- kformula_ops[[which_kformula_ops_keep[i]]]
+    }
+  }else{
+    kformula_ops_kept <- kformula_ops
+  }
+
+  if(length(fixed_k) == 1){
+    kformula_ops_kept <- NA
+  }
+  pkformulae <- expand.grid(pformula_ops_kept, kformula_ops_kept)
+  pformulae <- pkformulae[ , 1]
+  kformulae <- pkformulae[ , 2]
+  if(length(fixed_k) == 1){
+    kformulae <- NULL
+  }
+  n_mods <- length(pformulae) 
+  output <- vector("list", n_mods)
+  for(i in 1:n_mods){
+    pform_i <- pformulae[i][[1]]
+    kform_i <- kformulae[i][[1]]
+    pkm_i <- tryCatch(pkm(pform_i, kform_i, data, obs_cols, fixed_k, k_init), 
+                      error = function(x) {"Failed model fit"})
+
+    p_name <- paste(format(pform_i), collapse = "")
+    p_name <- gsub("    ", "", p_name)
+    k_name <- paste(format(kform_i), collapse = "")
+    k_name <- gsub("    ", "", k_name)
+    if(length(fixed_k) == 1){
+      k_name <- paste("k fixed at ", fixed_k, sep = "")
+    }
+    mod_name <- paste(p_name, "; ", k_name, sep = "")
+
+    output[[i]] <- pkm_i
+    names(output)[i] <- mod_name
+  }
+  return(output)
+}
+
 #' Calculate the negative log-likelihood of a searcher efficiency model.
 #' 
 #' @param misses Number of searches when carcass was present but
@@ -388,43 +528,119 @@ pkLogLik <- function(misses, found_on, beta, n_beta_p,
   
 #' Simulate p and k parameters from a fitted pk model.
 #'
-#' @param n_sim the number of simulation draws
-#
+#' @param n the number of simulation draws
+#'
 #' @param pk_model A \code{\link{pkm}} object (which is returned from 
 #'  \code{pkm()})
-#
-#' @return Array of \code{nsim} simulated pairs of \code{p} and \code{k} for
-#'  cells defined by the \code{pkmodel} object.
-#' @examples
-#' pkmod1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
-#' simulated_pk <- rpk(nsim = 10, pkmodel = pkmod1)
-#' simulated_pk
-#' boxplot(simulated_pk[,, 1])
 #'
+#' @param seed optional input to set the seed of the RNG
+#'
+#' @return list of two matrices of \code{n} simulated \code{p} and \code{k} 
+#'  for cells defined by the \code{pk_model} object. 
+#'
+#' @examples
 #' data(pkmdat)
+#' pk_mod_1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
+#' simulated_pk <- rpk(n_sim = 10, pk_model = pk_mod_1)
+#' simulated_pk
+#'
 #' pk_mod_2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
 #' rpk(n_sim = 10, pk_model = pk_mod_2)
 #' @export
+#'
+rpk <- function(n = 1, pk_model, seed = NULL){
 
-rpk <- function(n_sim, pk_model){
-  np <- pkmodel$np; nk <- pkmodel$nk
-  betaSim <- mvtnorm::rmvnorm(nsim,
-    mean = c(pkmodel$betahat_p, pkmodel$betahat_k),
-    sigma = pkmodel$varbeta, method = "svd")
-  pSim <- alogit(betaSim[,1:np]%*%t(pkmodel$miniXp))
-  if (is.language(pkmodel$kformula)){
-    kSim <- alogit(betaSim[,(np + 1):(np + pkmodel$nk)] %*%t (pkmodel$miniXk))
-  } else {
-    kSim <- matrix(pkmodel$kformula, ncol = pkmodel$Ncells, nrow = nsim)
+  if(!"pkm" %in% class(pk_model)){
+    stop("pk_model not of class pkm.")
   }
-  ans <- array(
-    dim = c(nsim, 2, pkmodel$Ncells),
-    dimnames = list(NULL, c('p','k'), pkmodel$cells[,'CellNames'])
-  )
-  for(k in 1:pkmodel$Ncells){
-    ans[ , , k] <- cbind(pSim[,k], kSim[,k])
+
+  n_beta_p <- pk_model$n_beta_p 
+  n_beta_k <- pk_model$n_beta_k
+  which_beta_k <- (n_beta_p + 1):(n_beta_p + n_beta_k)
+  fixed_k <- pk_model$fixed_k
+  mm_p_cells <- pk_model$mm_p_cells
+  mm_k_cells <- pk_model$mm_k_cells
+  n_cells <- pk_model$n_cells
+  cell_names <- pk_model$cells[,'CellNames']
+  beta_mean <- c(pk_model$beta_hat_p, pk_model$beta_hat_k)
+  beta_var <- pk_model$beta_var
+  method <-  "svd"
+
+  if(length(seed) > 0){
+    set.seed(seed)
   }
-  ans
+  beta_sim <- mvtnorm::rmvnorm(n, mean = beta_mean, sigma = beta_var, method)
+  p_sim <- as.matrix(alogit(beta_sim[ , 1:n_beta_p] %*% t(mm_p_cells)))
+  colnames(p_sim) <- cell_names
+  rownames(p_sim) <- sprintf("sim_%d", 1:n)
+
+  if(length(fixed_k) == 0){
+    k_sim <- as.matrix(alogit(beta_sim[ , which_beta_k] %*% t(mm_k_cells)))
+  }else{
+    k_sim <- matrix(fixed_k, ncol = n_cells, nrow = n)
+  }
+  colnames(k_sim) <- cell_names
+  rownames(k_sim) <- sprintf("sim_%d", 1:n)
+
+  output <- list(p_sim, k_sim)
+  names(output) <- c("p_sim", "k_sim")
+  return(output)
 }
+
+#' Create the  AICc tables for the searcher efficiency models
+#' 
+#' @param pk_model_set Set of searcher efficiency models fit to the same
+#'  observations
+#' @return AICc table
+#' @examples
+#' NA
+#' @export 
+#'
+pkm_set_aicc_tab <- function(pk_model_set){
+
+  n_models <- length(pk_model_set)
+  pk_formulae <- names(pk_model_set)
+  p_formulae <- rep(NA, n_models)
+  k_formulae <- rep(NA, n_models)
+  AICc <- rep(NA, n_models)
+  delta_AICc <- rep(NA, n_models)
+
+  if(n_models == 1){
+    split_pk_formulae <- strsplit(pk_formulae, "; ")[[1]]
+    p_formulae <- split_pk_formulae[1] 
+    k_formulae <- split_pk_formulae[2]
+    AICc <- tryCatch(pk_model_set[[1]]$AICc, error = function(x) {1e7})
+    delta_AICc <- 0    
+    AICc_order <- 1
+  }else{
+    for(i in 1:n_models){
+      split_pk_formulae_i <- strsplit(pk_formulae[i], "; ")[[1]]
+      p_formulae[i] <- split_pk_formulae_i[1] 
+      k_formulae[i] <- split_pk_formulae_i[2]
+      AICc[i] <- tryCatch(pk_model_set[[i]]$AICc, error = function(x) {1e7})
+    }
+    AICc_order <- order(AICc)
+    delta_AICc <- AICc - min(AICc)
+    which_fails <- which(AICc == 1e7)
+    AICc[which_fails] <- NA
+    delta_AICc[which_fails] <- NA
+  }
+
+  output <- data.frame(p_formulae, k_formulae, AICc, delta_AICc)
+  output <- output[AICc_order, ]
+  colnames(output) <- c("p formula", "k formula", "AICc", "Delta AICc")
+  which_AICc_NA <- which(is.na(output$AICc))
+  which_AICc_max <- which(output$AICc == 1e7)
+  if(length(which_AICc_NA) > 0){
+    message("Models with incorrect specification were removed from output.")
+    output <- output[-which_AICc_NA, ]
+  }
+  if(length(which_AICc_max) > 0){
+    message("Models that failed during fit were removed from output.")
+    output <- output[-which_AICc_max, ]
+  }
+  return(output)
+}
+
 
 
