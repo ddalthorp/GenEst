@@ -338,7 +338,43 @@ print.pkm <- function(pk_model){
   
 #' Run a set of pkm models based on predictor inputs
 #'
+#' Function inputs follow \code{pkm}, with all simpler models being run
+#'  and returned as a list of model objects
 #'
+#' @param pformula Formula for p; an object of class "\code{\link{formula}}"
+#' (or one that can be coerced to that class): a symbolic description of the
+#' model to be fitted. Details of model specification are given under 
+#' 'Details'.
+#'
+#' @param data Dataframe with results from searcher efficiency trials and any
+#' covariates included in \code{pformula} or {kformula} (required).
+#'
+#' @param kformula Formula for k; an object of class "\code{\link{formula}}"
+#' (or one that can be coerced to that class): a symbolic description of the
+#' model to be fitted. Details of model specification are given under 
+#; 'Details'.
+#'
+#' @param obs_cols Vector of names of columns in \code{data} where results 
+#' for each search occasion are stored (optional). If no \code{obs_cols} are 
+#' provided, \code{pkm} uses as \code{obs_cols} all columns with names that 
+#' begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
+#' 's2', 's3', etc. This option is included as a convenience for the user, 
+#' but care must be taken that other data are not stored in columns with 
+#' names matching that pattern. Alternatively, \code{obs_cols} may be 
+#' entered as a vector of names, like \code{c('s1', 's2', 's3')}, 
+#' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
+#' 'lastSearch')}.
+#'
+#' @param fixed_k Parameter for user-specified \code{k} value (optional). If a
+#' value is provided, \code{kformula} is ignored and the model is fit under 
+#' the assumption that the \code{k} parameter is fixed and known to be
+#' \code{fix_k}.
+#'
+#' @param init_k Initial value used for \code{k} in the optimization.
+#'
+#' @return \code{pkm_set} returns a list of objects, each of class 
+#' "\code{pkm}", which each then a list whose components characterize the fit 
+#' of the specific model.
 #'
 pkm_set <- function(pformula, kformula = NULL, data, obs_cols = NULL, 
                     fixed_k = NULL, k_init = 0.7){
