@@ -21,11 +21,12 @@ function(input, output, session){
 
   rv <- reactiveValues(
           SE_data = NULL, SE_colnames = NULL, 
+          SE_obs_cols = NULL, SE_vars = NULL, fixed_k = NULL,
           CP_data = NULL, CP_colnames = NULL, 
           SS_data = NULL,  
           CO_data = NULL, CO_colnames = NULL,
-          SSs = NULL, DWP_datatab = NULL,
-          sc_options = NULL)
+          sc_options = NULL, sizeclass_col = NULL,
+          CL = 0.9, n_iterations = 1000)
 
   observeEvent(input$SE_file, {
     rv$SE_data <- read.csv(input$SE_file$datapath, header = T)
@@ -47,7 +48,7 @@ function(input, output, session){
     if(length(rv$sc_options) == 0){
       rv$sc_options <- rv$CP_colnames 
     }else{
-      rv$sc_options <- rv$CP_colnames[rv$SE_colnames %in% rv$sc_options]
+      rv$sc_options <- rv$CP_colnames[rv$CP_colnames %in% rv$sc_options]
     }
     output$CP_data <- DT::renderDataTable(rv$CP_data)
     updateSelectizeInput(session, "CP_vars", choices = rv$CP_colnames)
@@ -59,9 +60,9 @@ function(input, output, session){
   observeEvent(input$SS_file, {
     rv$SS_data <- read.csv(input$SS_file$datapath, header = T)
     output$SS_data <- DT::renderDataTable(rv$SS_data)
-    rv$SSs <- create_ss_vec(data = rv$SS_data)
-    rv$DWP_datatab <- create_DWP_table(data = rv$SS_data)
-    output$SS_table <- renderTable(create_ss_table(rv$SS_data))
+    #rv$SSs <- create_ss_vec(data = rv$SS_data)
+    #rv$DWP_datatab <- create_DWP_table(data = rv$SS_data)
+    #output$SS_table <- renderTable(create_ss_table(rv$SS_data))
     updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
   })
   observeEvent(input$CO_file, {
@@ -89,6 +90,23 @@ function(input, output, session){
     selected_cols <- c(input$SE_obs_cols, input$sizeclass_col, input$SE_vars)
     selected_table <- rv$SE_data[ , which(rv$SE_colnames %in% selected_cols)]
     output$selected_SE <- DT::renderDataTable(selected_table)
+  })
+
+  observeEvent(input$SE_mod_run, {
+    withProgress(message = "Running Searcher Efficiency Model", {
+      rv$SE_obs_cols <- input$SE_obs_cols
+      rv$SE_vars <- input$SE_vars
+      if(input$fix_k_choice == 1 & is.numeric(input$fixed_k)){
+        rv$fixed_k <- input$fixed_k
+      }
+      rv$n_iterations <- input$n_iterations
+      rv$CL <- input$CL
+      rv$sizeclass_col <- input$sizeclass_col
+
+      #rv$SE_mod <- pkm(pformula = p ~ 1, kformula = k ~ 1,
+      #                 data = rv$SE_data, fixed_k = rv$fixed_k)
+
+    })
   })
 }
 
