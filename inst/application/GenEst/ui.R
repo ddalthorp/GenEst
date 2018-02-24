@@ -52,13 +52,6 @@
                 "text/csv",
                 "text/comma-separated-values,text/plain",
                 ".csv")
-              ),
-              br(),
-              fileInput("MDFile", "Meta Data File",
-                accept = c(
-                "text/csv",
-                "text/comma-separated-values,text/plain",
-                ".csv")
               )
             ),
             mainPanel(
@@ -72,9 +65,7 @@
                 tabPanel("Search Schedule", br(), br(), 
                           dataTableOutput("SSin")),
                 tabPanel("Carcass Observations", br(), br(), 
-                          dataTableOutput("COin")),
-                tabPanel("Meta Data", br(), br(), 
-                          tableOutput("MDin"))
+                          dataTableOutput("COin"))
               )
             )
           )
