@@ -4,26 +4,29 @@
 \alias{rpk}
 \title{Simulate p and k parameters from a fitted pk model.}
 \usage{
-rpk(nsim, pkmodel)
+rpk(n = 1, pk_model, seed = NULL)
 }
 \arguments{
-\item{nsim}{the number of simulation draws}
+\item{n}{the number of simulation draws}
 
-\item{pkmodel}{A \code{\link{pkm}} object (which is returned from \code{pkm()})}
+\item{pk_model}{A \code{\link{pkm}} object (which is returned from 
+\code{pkm()})}
+
+\item{seed}{optional input to set the seed of the RNG}
 }
 \value{
-Array of \code{nsim} simulated pairs of \code{p} and \code{k} for
- cells defined by the \code{pkmodel} object.
+list of two matrices of \code{n} simulated \code{p} and \code{k} 
+ for cells defined by the \code{pk_model} object.
 }
 \description{
 Simulate p and k parameters from a fitted pk model.
 }
 \examples{
-pkmod1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
-simulated_pk <- rpk(nsim = 10, pkmodel = pkmod1)
+data(pkmdat)
+pk_mod_1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
+simulated_pk <- rpk(n_sim = 10, pk_model = pk_mod_1)
 simulated_pk
-boxplot(simulated_pk[,, 1])
 
-pkmod2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-rpk(nsim = 10, pkmodel = pkmod2)
+pk_mod_2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
+rpk(n_sim = 10, pk_model = pk_mod_2)
 }
