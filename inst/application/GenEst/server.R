@@ -28,10 +28,12 @@ function(input, output, session){
           SE_mods = NULL, SE_mod_names = NULL, SE_mod_tab = NULL, 
           sizeclass_chosen = NULL,
           SE_AICc_table = NULL, SE_mod_order = NULL,
+          SE_models_to_use = NULL,
           CP_data = NULL, CP_colnames = NULL, 
           SS_data = NULL,  
           CO_data = NULL, CO_colnames = NULL,
-          sc_options = NULL, sizeclass_col = NULL, sizeclasses = NULL,
+          sc_options = NULL, sizeclass_col = NULL, 
+          sizeclasses = NULL, n_sizeclasses = NULL, 
           CL = 0.9, n_iterations = 1000)
 
 
@@ -163,6 +165,9 @@ function(input, output, session){
     updateSelectizeInput(session, "SE_AICc_sc", choices = rv$sizeclasses)
     updateTabsetPanel(session, "SE_analyses", "Model Comparison Tables")
 
+
+
+
   })
 
   observeEvent(input$SE_AICc_sc, {
@@ -196,7 +201,8 @@ function(input, output, session){
         rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[rv$sizeclass_chosen]])
         rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
         rv$SE_mod_names <- names(rv$SE_mods[[1]])[rv$SE_mod_order]
-        rv$SE_mod_tab <- rv$SE_mods[[rv$sizeclass_chosen]][[rv$SE_mod_order[1]]]$cellwise_pk
+        rv$SE_mod_tab <- 
+          rv$SE_mods[[rv$sizeclass_chosen]][[rv$SE_mod_order[1]]]$cellwise_pk
       }
 
       output$SE_mod_tab <- DT::renderDataTable(rv$SE_mod_tab)
@@ -206,7 +212,8 @@ function(input, output, session){
         if(length(rv$sizeclasses) == 1){
           rv$SE_mod_tab <- rv$SE_mods[[input$SE_MT_mod]]$cellwise_pk
         }else{
-          rv$SE_mod_tab <- rv$SE_mods[[rv$sizeclass_chosen]][[input$SE_MT_mod]]$cellwise_pk
+          rv$SE_mod_tab <- 
+            rv$SE_mods[[rv$sizeclass_chosen]][[input$SE_MT_mod]]$cellwise_pk
         }
         output$SE_mod_tab <- DT::renderDataTable(rv$SE_mod_tab)
       })

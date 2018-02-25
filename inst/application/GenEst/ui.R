@@ -71,7 +71,9 @@ tabPanel("Analyses",
                            "Model not yet run", multiple = F), br(), br(), 
             DT::dataTableOutput("SE_AICc_table")
           ),
-          tabPanel("Model Selection", br())
+          tabPanel("Model Selection", br(),
+            htmlOutput("SE_model_select_inputs")
+          )
         ))
     )
   )
