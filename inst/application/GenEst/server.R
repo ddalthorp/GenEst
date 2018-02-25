@@ -23,11 +23,18 @@ function(input, output, session){
           SE_data = NULL, SE_colnames = NULL, 
           SE_obs_cols = NULL, SE_vars = NULL, 
           fix_k_choice = 0, fixed_k = NULL,
+          p_predictors = NULL, k_predictors = NULL,
+          pformula = NULL, kformula = NULL,
+          SE_mods = NULL, SE_mod_names = NULL, SE_mod_tab = NULL, 
+          sizeclass_chosen = NULL,
+          SE_AICc_table = NULL, SE_mod_order = NULL,
           CP_data = NULL, CP_colnames = NULL, 
           SS_data = NULL,  
           CO_data = NULL, CO_colnames = NULL,
-          sc_options = NULL, sizeclass_col = NULL,
+          sc_options = NULL, sizeclass_col = NULL, sizeclasses = NULL,
           CL = 0.9, n_iterations = 1000)
+
+
 
   observeEvent(input$SE_file, {
     rv$SE_data <- read.csv(input$SE_file$datapath, header = T)
@@ -111,7 +118,99 @@ function(input, output, session){
       rv$CL <- input$CL
       rv$sizeclass_col <- input$sizeclass_col
       rv$fix_k_choice <- input$fix_k_choice
+ 
+      rv$sizeclasses <- as.character(unique(rv$SE_data[ , rv$sizeclass_col]))
+      if(length(rv$sizeclass_col) == 0){
+        rv$sizeclasses <- "all"
+      }
+
+      rv$pk_predictors <- paste(rv$SE_vars, collapse = "*")
+      if(length(rv$SE_vars) == 0){
+        rv$pk_predictors <- 1
+      }
+
+      rv$pformula <- formula(paste("p~", rv$pk_predictors, sep = ""))
+      rv$kformula <- formula(paste("k~", rv$pk_predictors, sep = "")) 
+      rv$SE_mods <- pkm_set_size(pformula = rv$pformula,
+                                 kformula = rv$kformula,
+                                 data = rv$SE_data, 
+                                 obs_cols = rv$obs_cols, 
+                                 sizeclass_col = rv$sizeclass_col,
+                                 fixed_k = rv$fixed_k, k_init = 0.7)
     })
+
+
+    if(length(rv$sizeclasses) == 1){
+      rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
+      rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
+      rv$SE_mod_names <- names(rv$SE_mods)[rv$SE_mod_order]
+      rv$SE_mod_tab <- rv$SE_mods[[rv$SE_mod_order[1]]]$cellwise_pk
+    }else{
+      rv$sizeclass_chosen <- which(rv$sizeclasses == input$SE_AICc_sc)
+      if(length(rv$sizeclass_chosen) == 0){
+        rv$sizeclass_chosen <- 1
+      }
+      rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[rv$sizeclass_chosen]])
+      rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
+      rv$SE_mod_names <- names(rv$SE_mods[[1]])[rv$SE_mod_order]
+      rv$SE_mod_tab <- rv$SE_mods[[1]][[rv$SE_mod_order[1]]]$cellwise_pk
+    }
+
+    output$SE_AICc_table <- DT::renderDataTable({rv$SE_AICc_tab})    
+    output$SE_mod_tab <- DT::renderDataTable({rv$SE_mod_tab})
+    updateSelectizeInput(session, "SE_MT_sc", choices = rv$sizeclasses)
+    updateSelectizeInput(session, "SE_MT_mod", choices = rv$SE_mod_names)
+    updateSelectizeInput(session, "SE_AICc_sc", choices = rv$sizeclasses)
+    updateTabsetPanel(session, "SE_analyses", "Model Comparison Tables")
+
+  })
+
+  observeEvent(input$SE_AICc_sc, {
+    if(length(rv$SE_mods) > 0){
+      if(length(rv$sizeclasses) == 1){
+        rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
+      }else{
+        rv$sizeclass_chosen <- which(rv$sizeclasses == input$SE_AICc_sc)
+        if(length(rv$sizeclass_chosen) == 0){
+          rv$sizeclass_chosen <- 1
+        }
+        rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[rv$sizeclass_chosen]])
+      }
+      output$SE_AICc_table <- DT::renderDataTable({rv$SE_AICc_tab})
+    }
+  })
+
+  observeEvent(input$SE_MT_sc, {
+    if(length(rv$SE_mods) > 0){
+
+      if(length(rv$sizeclasses) == 1){
+        rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
+        rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
+        rv$SE_mod_names <- names(rv$SE_mods)[rv$SE_mod_order]
+        rv$SE_mod_tab <- rv$SE_mods[[rv$SE_mod_order[1]]]$cellwise_pk
+      }else{
+        rv$sizeclass_chosen <- which(rv$sizeclasses == input$SE_MT_sc)
+        if(length(rv$sizeclass_chosen) == 0){
+          rv$sizeclass_chosen <- 1
+        }
+        rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[rv$sizeclass_chosen]])
+        rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
+        rv$SE_mod_names <- names(rv$SE_mods[[1]])[rv$SE_mod_order]
+        rv$SE_mod_tab <- rv$SE_mods[[rv$sizeclass_chosen]][[rv$SE_mod_order[1]]]$cellwise_pk
+      }
+
+      output$SE_mod_tab <- DT::renderDataTable(rv$SE_mod_tab)
+      updateSelectizeInput(session, "SE_MT_mod", choices = rv$SE_mod_names)
+
+      observeEvent(input$SE_MT_mod, {
+        if(length(rv$sizeclasses) == 1){
+          rv$SE_mod_tab <- rv$SE_mods[[input$SE_MT_mod]]$cellwise_pk
+        }else{
+          rv$SE_mod_tab <- rv$SE_mods[[rv$sizeclass_chosen]][[input$SE_MT_mod]]$cellwise_pk
+        }
+        output$SE_mod_tab <- DT::renderDataTable(rv$SE_mod_tab)
+      })
+    }
   })
 }
 

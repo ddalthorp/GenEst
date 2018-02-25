@@ -259,9 +259,9 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   llik <- MLE$value
 
   n_param <- length(beta_hat)  
-  AIC <- 2 * llik + 2 * n_param
+  AIC <- round(2 * llik + 2 * n_param, 3)
   AICc_offset <- (2 * n_param * (n_param + 1)) / (n_carcasses - n_param - 1)
-  AICc <- AIC + AICc_offset
+  AICc <- AIC + round(AICc_offset, 3)
 
   beta_hat_p <- beta_hat[1:n_beta_p]
   names(beta_hat_p) <- colnames(mm_p_data)
@@ -295,11 +295,11 @@ pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   probs <- data.frame(c(0.5, 0.025, 0.975))
   cell_p_table <- apply(probs, 1, qnorm, mean = p_cell_means, sd = p_cell_sds)
   cell_p_table <- matrix(cell_p_table, nrow = n_cells, ncol = 3)
-  cell_p_table <- alogit(cell_p_table)
+  cell_p_table <- round(alogit(cell_p_table), 5)
   colnames(cell_p_table) <- c("p_median", "p_lower_95", "p_upper_95")
   cell_k_table <- apply(probs, 1, qnorm, mean = k_cell_means, sd = k_cell_sds)
   cell_k_table <- matrix(cell_k_table, nrow = n_cells, ncol = 3)
-  cell_k_table <- alogit(cell_k_table)
+  cell_k_table <- round(alogit(cell_k_table), 5)
   colnames(cell_k_table) <- c("k_median", "k_lower_95", "k_upper_95")
   cell_pk_table <- data.frame(cell = cell_names, cell_p_table, cell_k_table)
 
@@ -675,7 +675,7 @@ pkm_set_aicc_tab <- function(pk_model_set){
       AICc[i] <- tryCatch(pk_model_set[[i]]$AICc, error = function(x) {1e7})
     }
     AICc_order <- order(AICc)
-    delta_AICc <- AICc - min(AICc)
+    delta_AICc <- round(AICc - min(AICc), 3)
     which_fails <- which(AICc == 1e7)
     AICc[which_fails] <- NA
     delta_AICc[which_fails] <- NA
@@ -758,7 +758,9 @@ pkm_set_size <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   out <- vector("list", n_sizeclasses)
   names(out) <- sizeclasses
   for(i in 1:n_sizeclasses){
-    out[[i]] <- pkm_set(pformula, kformula, data, obs_cols, fixed_k, k_init)
+    sizeclass_match <- which(sizeclass_data == sizeclasses[i])
+    data_i <- data[sizeclass_match, ]
+    out[[i]] <- pkm_set(pformula, kformula, data_i, obs_cols, fixed_k, k_init)
   }
 
   return(out)
