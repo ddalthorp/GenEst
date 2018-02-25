@@ -17,11 +17,12 @@ function(input, output, session){
           condition that neither the USGS nor the U.S. Government shall be 
           held liable for any damages resulting from the authorized or 
           unauthorized use of the software.",  
-          easyClose = F, footer = modalButton("Ok")))
+          easyClose = F, footer = modalButton("OK")))
 
   rv <- reactiveValues(
           SE_data = NULL, SE_colnames = NULL, 
-          SE_obs_cols = NULL, SE_vars = NULL, fixed_k = NULL,
+          SE_obs_cols = NULL, SE_vars = NULL, 
+          fix_k_choice = 0, fixed_k = NULL,
           CP_data = NULL, CP_colnames = NULL, 
           SS_data = NULL,  
           CO_data = NULL, CO_colnames = NULL,
@@ -36,7 +37,9 @@ function(input, output, session){
     }else{
       rv$sc_options <- rv$SE_colnames[rv$SE_colnames %in% rv$sc_options]
     }
-    output$SE_data <- DT::renderDataTable({DT::datatable(rv$SE_data)})
+    output$SE_data <- DT::renderDataTable({
+                            DT::datatable(data.frame(rv$SE_data))
+                      })
     updateSelectizeInput(session, "SE_vars", choices = rv$SE_colnames)
     updateSelectizeInput(session, "SE_obs_cols", choices = rv$SE_colnames)
     updateSelectizeInput(session, "sizeclass_col", choices = rv$sc_options)
@@ -60,9 +63,6 @@ function(input, output, session){
   observeEvent(input$SS_file, {
     rv$SS_data <- read.csv(input$SS_file$datapath, header = T)
     output$SS_data <- DT::renderDataTable(rv$SS_data)
-    #rv$SSs <- create_ss_vec(data = rv$SS_data)
-    #rv$DWP_datatab <- create_DWP_table(data = rv$SS_data)
-    #output$SS_table <- renderTable(create_ss_table(rv$SS_data))
     updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
   })
   observeEvent(input$CO_file, {
@@ -84,12 +84,20 @@ function(input, output, session){
   observeEvent(input$SE_obs_cols, {
     selected_cols <- c(input$SE_obs_cols, input$sizeclass_col, input$SE_vars)
     selected_table <- rv$SE_data[ , which(rv$SE_colnames %in% selected_cols)]
-    output$selected_SE <- DT::renderDataTable(selected_table)
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_SE <- DT::renderDataTable(selected_dataframe)
   })
   observeEvent(input$SE_vars, {
     selected_cols <- c(input$SE_obs_cols, input$sizeclass_col, input$SE_vars)
     selected_table <- rv$SE_data[ , which(rv$SE_colnames %in% selected_cols)]
-    output$selected_SE <- DT::renderDataTable(selected_table)
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_SE <- DT::renderDataTable(selected_dataframe)
   })
 
   observeEvent(input$SE_mod_run, {
@@ -102,10 +110,7 @@ function(input, output, session){
       rv$n_iterations <- input$n_iterations
       rv$CL <- input$CL
       rv$sizeclass_col <- input$sizeclass_col
-
-      #rv$SE_mod <- pkm(pformula = p ~ 1, kformula = k ~ 1,
-      #                 data = rv$SE_data, fixed_k = rv$fixed_k)
-
+      rv$fix_k_choice <- input$fix_k_choice
     })
   })
 }

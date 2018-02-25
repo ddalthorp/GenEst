@@ -33,7 +33,7 @@
   # add dependencies to the description and load them here 
 
     pkgdpns <- c("shiny", "rhandsontable", "httr", "survival", 
-                 "mvtnorm", "matrixStats", "gsl")
+                 "mvtnorm", "matrixStats", "gsl", "DT")
 
     for(i in 1:length(pkgdpns)){
       devtools::use_package(pkgdpns[i], "Imports", pkgloc)
