@@ -4,3 +4,12 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
+## ---- include = FALSE----------------------------------------------------
+library(devtools)
+library(matrixStats)
+library(survival)
+library(mvtnorm)
+library(matrixStats)
+library(gsl)
+library(GenEst)
+
