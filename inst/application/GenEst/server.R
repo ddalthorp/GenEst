@@ -1,25 +1,12 @@
-#############################################################################
-#
-#  This script contains the server code for the GenEst application
-#
+function(input, output, session){
 
+  v_number <- packageDescription("GenEst", field = "Version")
+  v_date <- packageDescription("GenEst", field = "Date")
+  v_text <- paste("This is version ", v_number, " (", v_date, ")", sep = "")
+  output$version_info <- renderText(v_text)
 
-
-# main server function
-
-  function(input, output, session) {
-
-    # welcome disclaimer
-
-      version_number <- packageDescription("GenEst", field = "Version")
-      version_date <- packageDescription("GenEst", field = "Date")
-      output$version_info <- renderText(paste("This is version ", 
-                                              version_number, " (", 
-                                              version_date, ")", 
-                                              sep = ""))
-
-      showModal(modalDialog(title = paste("GenEst v", version_number, " (",
-                                            version_date, ")", sep = ""), 
+  disclaimer_title <- paste("GenEst v", v_number, " (", v_date, ")", sep = "")
+  showModal(modalDialog(title = disclaimer_title, 
          "This software is preliminary or provisional and is subject to 
           revision. It is being provided to meet the need for timely best 
           science. The software has not received final approval by the U.S.
@@ -29,572 +16,290 @@
           constitute any such warranty. The software is provided on the 
           condition that neither the USGS nor the U.S. Government shall be 
           held liable for any damages resulting from the authorized or 
-          unauthorized use of the software.", easyClose = F, 
-          footer = modalButton("Ok")))
+          unauthorized use of the software.",  
+          easyClose = F, footer = modalButton("OK")))
 
-    # initialize the object to hold reactive values
+  SE_mod_run_msg <- NULL
+  SE_mod_fit_msg <- NULL
+  rv <- reactiveValues(SE_data = NULL, SE_colnames = NULL, 
+                       SE_obs_cols = NULL, SE_vars = NULL, 
+                       fix_k_choice = 0, fixed_k = NULL,
+                       p_predictors = NULL, k_predictors = NULL,
+                       pformula = NULL, kformula = NULL,
+                       SE_mods = NULL, SE_mods_check = NULL, 
+                       SE_mod_names = NULL, SE_mod_tab = NULL, 
+                       sizeclass_chosen = NULL,
+                       SE_AICc_table = NULL, SE_mod_order = NULL,
+                       SE_models_to_use = NULL,
+                       CP_data = NULL, CP_colnames = NULL, 
+                       SS_data = NULL,  
+                       CO_data = NULL, CO_colnames = NULL,
+                       sc_options = NULL, sizeclass_col = NULL, 
+                       sizeclasses = NULL, n_sizeclasses = NULL, 
+                       CL = 0.9, n_iterations = 1000)
 
-      rv <- reactiveValues(
+
+
+  observeEvent(input$SE_file, {
+    rv$SE_data <- read.csv(input$SE_file$datapath, header = T)
+    rv$SE_colnames <- colnames(rv$SE_data)
+    if(length(rv$sc_options) == 0){
+      rv$sc_options <- rv$SE_colnames 
+    }else{
+      rv$sc_options <- rv$SE_colnames[rv$SE_colnames %in% rv$sc_options]
+    }
+    output$SE_data <- DT::renderDataTable({
+                            DT::datatable(data.frame(rv$SE_data))
+                      })
+    updateSelectizeInput(session, "SE_vars", choices = rv$SE_colnames)
+    updateSelectizeInput(session, "SE_obs_cols", choices = rv$SE_colnames)
+    updateSelectizeInput(session, "sizeclass_col", choices = rv$sc_options)
+    updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
+  })
+  observeEvent(input$CP_file, {
+    rv$CP_data <- read.csv(input$CP_file$datapath, header = T)
+    rv$CP_colnames <- colnames(rv$CP_data)
+    if(length(rv$sc_options) == 0){
+      rv$sc_options <- rv$CP_colnames 
+    }else{
+      rv$sc_options <- rv$CP_colnames[rv$CP_colnames %in% rv$sc_options]
+    }
+    output$CP_data <- DT::renderDataTable(rv$CP_data)
+    updateSelectizeInput(session, "CP_vars", choices = rv$CP_colnames)
+    updateSelectizeInput(session, "sizeclass_col", choices = rv$sc_options)
+    updateSelectizeInput(session, "CP_ltp", choices = rv$CP_colnames)
+    updateSelectizeInput(session, "CP_fta", choices = rv$CP_colnames)
+    updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
+  })
+  observeEvent(input$SS_file, {
+    rv$SS_data <- read.csv(input$SS_file$datapath, header = T)
+    output$SS_data <- DT::renderDataTable(rv$SS_data)
+    updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
+  })
+  observeEvent(input$CO_file, {
+    rv$CO_data <- read.csv(input$CO_file$datapath, header = T)
+    rv$CO_colnames <- colnames(rv$CO_data)
+    if(length(rv$sc_options) == 0){
+      rv$sc_options <- rv$CO_colnames 
+    }else{
+      rv$sc_options <- rv$CO_colnames[rv$CO_colnames %in% rv$sc_options]
+    }
+    output$CO_data <- DT::renderDataTable(rv$CO_data)
+    updateSelectizeInput(session, "CO_splits", choices = rv$CO_colnames)
+    updateSelectizeInput(session, "sizeclass_col", choices = rv$sc_options)
+    updateSelectizeInput(session, "CO_unit_col", choices = rv$CO_colnames)
+    updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
+  })
+
+  observeEvent(input$SE_obs_cols, {
+    selected_cols <- c(input$SE_obs_cols, input$sizeclass_col, input$SE_vars)
+    selected_table <- rv$SE_data[ , which(rv$SE_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_SE <- DT::renderDataTable(selected_dataframe)
+  })
+  observeEvent(input$SE_vars, {
+    selected_cols <- c(input$SE_obs_cols, input$sizeclass_col, input$SE_vars)
+    selected_table <- rv$SE_data[ , which(rv$SE_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_SE <- DT::renderDataTable(selected_dataframe)
+  })
+
+  observeEvent(input$SE_mod_run, {
+    SE_mod_run_msg <- showNotification("Running Searcher Efficiency Model")
+    rv$SE_obs_cols <- input$SE_obs_cols
+    rv$SE_vars <- input$SE_vars
+    if(input$fix_k_choice == 1 & is.numeric(input$fixed_k)){
+      rv$fixed_k <- input$fixed_k
+    }
+    rv$n_iterations <- input$n_iterations
+    rv$CL <- input$CL
+    rv$sizeclass_col <- input$sizeclass_col
+    rv$fix_k_choice <- input$fix_k_choice
  
-              SEdataIn = "NONE", SEcolnames = character(0), 
-              SEaictable = NULL, SEaicorder = NULL, 
-              SEsizeclasses = NULL, SEnsizeclasses = NULL,  
-              SEmods = NULL, SEmodnames = NULL, SEnmods = NULL, 
-              SEmodstouse = NULL, SEtheta = NULL, SEdt = NULL,
-              SEvars = NULL, SEobscols = NULL, SEsizeclasscols = NULL,
-              fixKchoice = NULL, fixKvalchoice = NULL,
+    rv$sizeclasses <- as.character(unique(rv$SE_data[ , rv$sizeclass_col]))
+    if(length(rv$sizeclass_col) == 0){
+      rv$sizeclasses <- "all"
+    }
 
-              CPdataIn = "NONE", CPcolnames = character(0), 
-              CPaictable = NULL, CPaicorder = NULL, CPaicmatrix = NULL,
-              CPsizeclasses = NULL, CPnsizeclasses = NULL,
-              CPmods = NULL, CPmodnames = NULL, CPmodnames1 = NULL, 
-              CPnmodnames1 = NULL, CPmodcomps = NULL, CPdistnames = NULL,
-              CPmodstouse = NULL, CPtheta = NULL,   
-              CPvars = NULL, CPltp = NULL, CPfta = NULL, CPsizeclasscols = NULL,
-            
-              SSdataIn = "NONE", SSs = NULL, 
-              gtable = NULL, garray = NULL,  
+    rv$pk_predictors <- paste(rv$SE_vars, collapse = "*")
+    if(length(rv$SE_vars) == 0){
+      rv$pk_predictors <- 1
+    }
 
-              COdataIn = "NONE", COcolnames = character(0), 
-              DWPdatatab = NULL, ffs = NULL, 
-              COsizeclasscol = NULL, COsplitcol = NULL, COunitcol = NULL, 
-              COdfcol = NULL, 
+    rv$pformula <- formula(paste("p~", rv$pk_predictors, sep = ""))
+    rv$kformula <- formula(paste("k~", rv$pk_predictors, sep = "")) 
+    rv$SE_mods <- pkm_set_size(pformula = rv$pformula,
+                               kformula = rv$kformula,
+                               data = rv$SE_data, 
+                               obs_cols = rv$obs_cols, 
+                               sizeclass_col = rv$sizeclass_col,
+                               fixed_k = rv$fixed_k, k_init = 0.7)
+    rv$SE_mods_check <- pkm_check(rv$SE_mods)
 
-              Mhatarray = NULL, Mhatsc = NULL, splitcats = NULL, 
-              Nsplitcats = NULL, 
+    removeNotification(SE_mod_run_msg)
 
-              Niterations = NULL, CL = NULL, 
+    if(length(rv$sizeclasses) == 1){
+      rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
+      rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
+      rv$SE_mod_names <- names(rv$SE_mods)[rv$SE_mod_order]
+      rv$SE_mod_tab <- rv$SE_mods[[rv$SE_mod_order[1]]]$cellwise_pk
+    }else{
+      rv$sizeclass_chosen <- which(rv$sizeclasses == input$SE_AICc_sc)
+      if(length(rv$sizeclass_chosen) == 0){
+        rv$sizeclass_chosen <- 1
+      }
+      rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[rv$sizeclass_chosen]])
+      rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
+      rv$SE_mod_names <- names(rv$SE_mods[[1]])[rv$SE_mod_order]
+      rv$SE_mod_tab <- rv$SE_mods[[1]][[rv$SE_mod_order[1]]]$cellwise_pk
+    }
 
-              MDdataIn = "NONE")
+    output$SE_AICc_table <- DT::renderDataTable({rv$SE_AICc_tab})    
+    output$SE_mod_tab <- DT::renderDataTable({rv$SE_mod_tab})
+    updateSelectizeInput(session, "SE_MT_sc", choices = rv$sizeclasses)
+    updateSelectizeInput(session, "SE_MT_mod", choices = rv$SE_mod_names)
+    updateSelectizeInput(session, "SE_AICc_sc", choices = rv$sizeclasses)
+    updateTabsetPanel(session, "SE_analyses", "Model Comparison Tables")
 
+    if(rv$SE_mods_check == FALSE){
+      SE_mod_fit_msg <- showNotification("Not all models were fit properly.",
+                                         type = "warning", duration = NULL)
+    }
+    isolate({
 
-    # Data Input
-
-      # when the SE file is uploaded, pull data in and update column options
-
-        observeEvent(input$SEFile, {
-
-          rv$SEdataIn <- read.csv(input$SEFile$datapath, header = T)
-          rv$SEcolnames <- colnames(rv$SEdataIn)
-          output$SEdata <- renderDataTable(rv$SEdataIn)
-
-          updateSelectizeInput(session, "SEvars", choices = rv$SEcolnames)
-          updateSelectizeInput(session, "SEobscols", choices = rv$SEcolnames)
-          updateSelectizeInput(session, "SEsizeclasscol", 
-                                choices = rv$SEcolnames)
-
-          updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
-
-        })
-
-      # when the CP file is uploaded, pull data in and update column options
-
-        observeEvent(input$CPFile, {
-
-          rv$CPdataIn <- read.csv(input$CPFile$datapath, header = T)
-          rv$CPcolnames <- colnames(rv$CPdataIn)
-          output$CPin <- renderDataTable(rv$CPdataIn)
-
-          updateSelectizeInput(session, "CPvars", choices = rv$CPcolnames)
-          updateSelectizeInput(session, "CPsizeclasscol", 
-                                 choices = rv$CPcolnames)
-          updateSelectizeInput(session, "CPltp", choices = rv$CPcolnames)
-          updateSelectizeInput(session, "CPfta", choices = rv$CPcolnames)
-
-          updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
-
-        })
-
-      # when the SS file is uploaded, pull data in and update tables
-
-        observeEvent(input$SSFile, {
-
-          rv$SSdataIn <- read.csv(input$SSFile$datapath, header = T)
-          output$SSin <- renderDataTable(rv$SSdataIn)
-          rv$SSs <- create_ss_vec(data = rv$SSdataIn)
-          rv$DWPdatatab <- create_DWP_table(data = rv$SSdataIn)
-          output$SStable <- renderTable(create_ss_table(rv$SSdataIn))
-
-          updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
-
-        })
-
-      # when the CO file is uploaded, pull data in and update column options
-
-        observeEvent(input$COFile, {
-
-          rv$COdataIn <- read.csv(input$COFile$datapath, header = T)
-          rv$COcolnames <- colnames(rv$COdataIn)
-          output$COin <- renderDataTable(rv$COdataIn)
-
-          updateSelectizeInput(session, "COsplitcol", choices = rv$COcolnames)
-          updateSelectizeInput(session, "COsizeclasscol", 
-                                 choices = rv$COcolnames)
-          updateSelectizeInput(session, "COdfcol", choices = rv$COcolnames)
-          updateSelectizeInput(session, "COunitcol", choices = rv$COcolnames)
-
-          updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
-
-        })
-
-      # when the MD file is uploaded, pull data in 
-
-        observeEvent(input$MDFile, {
-
-          rv$MDdataIn <- read.csv(input$MDFile$datapath, header = T)
-          output$MDin <- renderTable(rv$MDdataIn)
-
-          updateTabsetPanel(session, "LoadedDataViz", "Meta Data")
-        })
-  
-
-    # Search Efficiency
-
-      # when the observation columns are selected, output the table
- 
-        observeEvent(input$SEobscols, {
-
-          output$selected_SE <- renderDataTable(rv$SEdataIn[ ,
-                                     which(rv$SEcolnames
-                                     %in% c(input$SEobscols, 
-                                        input$SEsizeclasscol, input$SEvars))])
-        })
-
-      # when the SE model run button is pushed, run the SE models, calculate
-      #   theta, produce the AIC tables, and set up options for the model
-      #   selections and outputs
-
-        observeEvent(input$SEmodrun, {
-          withProgress(message = "Running SE Model", {
-
-            rv$SEvars <- input$SEvars
-            rv$SEobscols <- input$SEobscols
-            rv$SEsizeclasscol <- input$SEsizeclasscol
-            rv$fixKchoice <- input$fixKchoice
-            rv$fixKvalchoice <- input$fixKvalchoice
-            rv$Niterations <- input$Niterations
-            rv$SEmods <- se_model_set_across_sizes_fit(data = rv$SEdataIn, 
-                                   observation_columns = rv$SEobscols,
-                                   predictors = rv$SEvars,
-                                   size_class_column = rv$SEsizeclasscol,
-                                   fix_k = rv$fixKchoice, 
-                                   fix_k_value = rv$fixKvalchoice, 
-                                   init_k_value = 0.7)
-            rv$SEtheta <- se_theta_create(data = rv$SEdataIn, 
-                                  predictors = rv$SEvars,
-                                  size_class_column = rv$SEsizeclasscol,
-                                  model_fits = rv$SEmods, 
-                                  replicates = rv$Niterations,
-                                  fix_k = rv$fixKchoice, 
-                                  fix_k_value = rv$fixKvalchoice)
-
-            rv$SEaictable <- se_aicc_table_create(models = rv$SEmods)
-            rv$SEaicorder <- order_se_models(rv$SEmods)
-            rv$SEsizeclasses <- unique(rv$SEdataIn[, rv$SEsizeclasscol])
-
-            if(length(rv$SEsizeclasscol) == 0){
-              rv$SEsizeclasses <- "all" 
+      output$SE_model_menu <- renderUI({
+        
+        SE_mod_menu <- ""
+        n_sizeclasses <- length(rv$sizeclasses)
+        if(n_sizeclasses > 0){
+          if(n_sizeclasses == 1){
+            AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
+            mod_order <- as.numeric(row.names(AICc_tab))
+            mod_names <- names(rv$SE_mods)[mod_order]
+            mtu_text <- "SE_models_to_use"
+            sc_text <- "Model choice"
+            mod_select <- selectizeInput(mtu_text, sc_text, mod_names)
+            SE_mod_menu <- paste(SE_mod_menu, mod_select)  
+          }else{
+            for(i in 1:n_sizeclasses){
+              AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[i]])
+              mod_order <- as.numeric(row.names(AICc_tab))
+              mod_names <- names(rv$SE_mods[[i]])[mod_order]
+              mtu_text <- paste("SE_models_to_use", i, sep = "") 
+              sc_text <- paste("Model choice, ", rv$sizeclasses[i], sep = "")
+              mod_select <- selectizeInput(mtu_text, sc_text, mod_names)
+              SE_mod_menu <- paste(SE_mod_menu, mod_select)  
             }
-            rv$SEnsizeclasses <- length(rv$SEsizeclasses)
-            rv$SEmodstouse <- rep(NA, rv$SEnsizeclasses)
-            rv$SEnmods <- length(rv$SEmods[[1]])
-            rv$SEmodnames <- model_namer(names(rv$SEmods[[1]]))
-
-
-            updateSelectizeInput(session, "SEaicsizeclass",
-                                 choices = rv$SEsizeclasses)
-            updateSelectizeInput(session, "SEfigsizeclass", 
-                                 choices = rv$SEsizeclasses)
-
-            updateSelectizeInput(session, "SEfigmodel",
-                                 choices = rv$SEmodnames[rv$SEaicorder[[1]]])
-
-
-            output$SEaictable <- renderDataTable({
-                NULL
-            })
-            output$SEfig <- renderPlot({
-                NULL
-            })
-
-            # hop over to the model table tab
-
-              updateTabsetPanel(session, "SE_Analysis", "Model Table")
-
-            # auto populate the model table tab
-
-              scofi <- which(rv$SEsizeclasses == input$SEaicsizeclass)
-              scofi[length(scofi) == 0] <- 1
-              output$SEaictable <- renderDataTable({
-                  rv$SEaictable[[scofi]]
-              })
-
-            # auto populate the figure
-
-              scofi <- which(rv$SEsizeclasses == input$SEfigsizeclass)
-              scofi[length(scofi) == 0] <- 1
-              mofi <- which(rv$SEmodnames == input$SEfigmodel)
-              mofi[length(mofi) == 0 ] <- 1
-              CWM <- rv$SEnmods
-              CWM[length(CWM) == 0] <- 1
-              output$SEfig <- renderPlot({
-                                create_se_figure(data = rv$SEdataIn, 
-                                    predictors = rv$SEvars, 
-                                    theta = rv$SEtheta,
-                                    observation_columns = rv$SEobscols,  
-                                    replicates = rv$Niterations, 
-                                    size_class_column = rv$SEsizeclasscol, 
-                                    r = scofi, j = mofi, cellwise = CWM)
-              })
-
-            isolate({
-
-              output$SEmodselectinputs <- renderUI({
-
-                w <- ""
-  
-                for(i in 1:rv$SEnsizeclasses){
-                  w <- paste(w, selectizeInput(paste("SEmodstouse", 
-                                i, sep = ""),
-                                rv$SEsizeclasses[i], 
-                                choices = rv$SEmodnames[rv$SEaicorder[[i]]]))
-                }
-  
-                HTML(w)
-              })
-            })
-          })
-        })
-
-      # when the size class is changed, update the table
-
-        observeEvent(input$SEaicsizeclass, {
-
-          scofi <- which(rv$SEsizeclasses == input$SEaicsizeclass)
-          scofi[length(scofi) == 0] <- 1
-          output$SEaictable <- renderDataTable({
-              rv$SEaictable[[scofi]]
-          })
-        })
-
-      # when the size class or model are changed, update the figure
-
-        observeEvent(input$SEfigsizeclass, {
-
-          scofi <- which(rv$SEsizeclasses == input$SEfigsizeclass)
-          scofi[length(scofi) == 0] <- 1
-
-          updateSelectizeInput(session, "SEfigmodel",
-                              choices = rv$SEmodnames[rv$SEaicorder[[scofi]]])
-
-          observeEvent(input$SEfigmodel, {
-
-            mofi <- which(rv$SEmodnames == input$SEfigmodel)
-            mofi[length(mofi) == 0 ] <- 1
-            CWM <- rv$SEnmods
-            CWM[length(CWM) == 0] <- 1
-            output$SEfig <- renderPlot({
-                              create_se_figure(data = rv$SEdataIn, 
-                                predictors = rv$SEvars, theta = rv$SEtheta,
-                                observation_columns = rv$SEobscols,  
-                                replicates = rv$Niterations, 
-                                size_class_column = rv$SEsizeclasscol, 
-                                r = scofi, j = mofi, cellwise = CWM)
-            })
-          })
-        })
-
-
-    # Carcass Persistence
-
-      # when the observation columns are selected, output the table
-
-        observeEvent(input$CPltp, {
-          observeEvent(input$CPfta, {
-
-            output$selected_CP <- renderDataTable(rv$CPdataIn[ ,
-                                       which(rv$CPcolnames
-                                       %in% c(input$CPltp, input$CPfta, 
-                                        input$CPsizeclasscol, input$CPvars))])
-          })
-        })
-
-      # when the CP model run button is pushed, run the CP models, calculate
-      #   theta, produce the AIC tables, and set up options for the model
-      #   selections and outputs
-
-        observeEvent(input$CPmodrun, {
-          withProgress(message = "Running CP Model", {
-
-            rv$CPvars <- input$CPvars
-            rv$CPltp <- input$CPltp
-            rv$CPfta <- input$CPfta
-            rv$CPsizeclasscol <- input$CPsizeclasscol
-            rv$Niterations <- input$Niterations
-
-            rv$CPdistnames <- c("exponential", "weibull", 
-                                "loglogistic", "lognormal")
-
-            rv$CPmods <- cp_model_set_across_sizes_fit(data = rv$CPdataIn, 
-                                   predictors = rv$CPvars,
-                                   size_class_column = rv$CPsizeclasscol, 
-                                   last_time_present_column = rv$CPltp, 
-                                   first_time_absent_column = rv$CPfta)
-
-            rv$CPtheta <- cp_theta_create(data = rv$CPdataIn, 
-                                     predictors = rv$CPvars,
-                                     size_class_column = rv$CPsizeclasscol,
-                                     model_fits = rv$CPmods, 
-                                     replicates = rv$Niterations)
-
-            rv$CPaictable <- cp_aicc_table_create(models = rv$CPmods)
-            rv$CPaicorder <- order_cp_models(models = rv$CPmods)
-            rv$CPsizeclasses <- unique(rv$CPdataIn[, rv$CPsizeclasscol])
-
-            if(length(input$CPsizeclasscol) == 0){
-              rv$CPsizeclasses <- "all" 
-            }
-
-
-            rv$CPmodnames1 <- model_namer(names(rv$CPmods[[1]]))
-            rv$CPnmodnames1 <- length(rv$CPmodnames1)
-            rv$CPmodcomps <- rv$CPmodnames1[seq(1, rv$CPnmodnames1, 4)]
-
-            rv$CPnsizeclasses <- length(rv$CPsizeclasses)
-            rv$CPmodstouse <- rep(NA, rv$CPnsizeclasses)
-            rv$CPmodnames <- paste(rv$CPmodnames1, 
-                                     rv$CPdistnames, sep = " ")
-
-            updateSelectizeInput(session, "CPaicsizeclass", 
-                                  choices = rv$CPsizeclasses)
-            updateSelectizeInput(session, "CPfigsizeclass", 
-                                  choices = rv$CPsizeclasses)
-
-            updateSelectizeInput(session, "CPfigmodelcomplexity",
-                              choices = unique(rv$CPaictable[[1]]$model))
-            bm <- unique(rv$CPaictable[[1]]$model)[1]
-            wbm <- which(rv$CPaictable[[1]]$model == bm)
-            updateSelectizeInput(session, "CPfigdistemph", 
-                      choices = (rv$CPaictable[[1]]$distribution)[wbm])
-
-            output$CPaictable <- renderDataTable({
-                NULL
-            })
-            output$CPfig <- renderPlot({
-                NULL
-            })
-
-            # hop over to the model table tab
-
-              updateTabsetPanel(session, "CP_Analysis", "Model Table")
-
-            # auto populate the model table tab
-
-              scofi <- which(rv$CPsizeclasses == input$CPaicsizeclass)
-              scofi[length(scofi) == 0] <- 1
-              output$CPaictable <- renderDataTable({
-                  rv$CPaictable[[scofi]]
-              })
-
-            # auto populate the figure
-
-              scofi <- which(rv$CPsizeclasses == input$CPfigsizeclass)
-              scofi[length(scofi) == 0] <- 1
-              mofi <- model_name_reverser(input$CPfigmodelcomplexity)
-              mofi[which(mofi == "~ Model not yet run") ] <- "~ 1"
-              mofi[length(mofi) == 0 ] <- "~ 1"
-              DC <- input$CPfigdistemph
-              DC[length(DC) == 0] <- "exponential"
-              output$CPfig <- renderPlot({
-
-                                create_cp_figure(models = rv$CPmods, 
-                                   data = rv$CPdataIn, 
-                                   predictors = rv$CPvars, 
-                                   theta = rv$CPtheta, 
-                                   time_unit = "days", 
-                                   size_class_column = rv$CPsizeclasscol, 
-                                   last_time_present_column = rv$CPltp, 
-                                   first_time_absent_column = rv$CPfta, 
-                                   r = scofi, model_complexity = mofi, 
-                                   distribution_choice = DC)
-              })
-
-          isolate({
-
-            output$CPmodselectinputs <- renderUI({
-
-              w <- ""
-
-              for(i in 1:rv$CPnsizeclasses){
-                w <- paste(w, selectizeInput(paste("CPmodstouse", 
-                               i, sep = ""),
-                               rv$CPsizeclasses[i], 
-                               choices = rv$CPmodnames[rv$CPaicorder[[i]]]))
-              }
-
-              HTML(w)
-            })
-          })
-
-          })
-        })
-
-      # update the table when the size class is changed
-
-        observeEvent(input$CPaicsizeclass, {
-
-          scofi <- which(rv$CPsizeclasses == input$CPaicsizeclass)
-          scofi[length(scofi) == 0] <- 1
-          output$CPaictable <- renderDataTable({
-              rv$CPaictable[[scofi]]
-          })
-        })
-
-      # update the figure when the size class or model or dist has changed
-
-        observeEvent(input$CPfigsizeclass, {
-
-          scofi <- which(rv$CPsizeclasses == input$CPfigsizeclass)
-          scofi[length(scofi) == 0] <- 1
-          updateSelectizeInput(session, "CPfigmodelcomplexity",
-                              choices = unique(rv$CPaictable[[scofi]]$model))
-
-          observeEvent(input$CPfigmodelcomplexity, {
-
-            bm <- unique(rv$CPaictable[[scofi]]$model)[1]
-            wbm <- which(rv$CPaictable[[scofi]]$model == bm)
-            updateSelectizeInput(session, "CPfigdistemph", 
-                      choices = (rv$CPaictable[[scofi]]$distribution)[wbm])
-
-            observeEvent(input$CPfigdistemph, {
-              mofi <- model_name_reverser(input$CPfigmodelcomplexity)
-              mofi[length(mofi) == 0 ] <- "~ 1"
-              DC <- input$CPfigdistemph
-              DC[length(DC) == 0] <- NULL
-              output$CPfig <- renderPlot({
-                                create_cp_figure(models = rv$CPmods, 
-                                   data = rv$CPdataIn, predictors = rv$CPvars, 
-                                   theta = rv$CPtheta, 
-                                   time_unit = "days", 
-                                   size_class_column = rv$CPsizeclasscol, 
-                                   last_time_present_column = rv$CPltp, 
-                                   first_time_absent_column = rv$CPfta, 
-                                   r = scofi, model_complexity = mofi, 
-                                   distribution_choice = DC)
-              })
-            })
-          })
-        })
-
-
-
-    # Detection Probability
-
-      # when the Estimate Detection Probability button is pushed, estimate
-      #  detection probability for each size class
-
-        observeEvent(input$grun, {
-          withProgress(message = "Estimating Detection Probability", {
-
-            rv$Niterations <- input$Niterations
-            rv$CL <- input$CL
-
-            for(i in 1:rv$SEnsizeclasses){
-              rv$SEmodstouse[i] <- which(rv$SEmodnames ==
-                                     input[[sprintf("SEmodstouse%d", i)]])
-            }   
-            for(i in 1:rv$CPnsizeclasses){
-              rv$CPmodstouse[i] <- which(rv$CPmodnames == 
-                                    input[[sprintf("CPmodstouse%d", i)]])
-            }      
-
-            rv$garray <- estimate_g_across_sizes(cp_data = rv$CPdataIn, 
-                                se_data = rv$SEdataIn, 
-                                ss_data = rv$SSdataIn, 
-                                replicates = rv$Niterations, 
-                                cp_predictors = rv$CPvars, 
-                                se_predictors = rv$SEvars, 
-                                cp_theta = rv$CPtheta, se_theta = rv$SEtheta, 
-                                cp_models = rv$CPmods,
-                                cp_models_to_use = rv$CPmodstouse,
-                                se_models_to_use = rv$SEmodstouse)
-
-            rv$gtable <- create_g_table(rv$garray, 
-                                        confidence_level = rv$CL)
-
-            output$gtable <- renderDataTable({
-                                              rv$gtable
-            })
-          })
-        })
-
-
-    # Fatality Estimation
-
-      # when the unit and date found columns are selected, output the table
- 
-        observeEvent(input$COunitcol, {
-          observeEvent(input$COdfcol, {
-            output$selected_CO <- renderDataTable(rv$COdataIn[ ,
-                                     which(rv$COcolnames
-                                     %in% c(input$COunitcol, input$COdfcol,
-                                       input$COsizeclasscol, input$COsplitcol
-                                       ))])
-          })
-        })
-
-      # when the Estimate Total Carcasses button is pushed, estimate
-      #  total carcasses for each split category, output figure and table
-
-        observeEvent(input$Mrun, {
-          withProgress(message = "Estimating Fatalities", {
-
-            rv$Niterations <- input$Niterations
-            rv$CL <- input$CL
-
-            rv$ffs <- input$ffs
-            rv$COsizeclasscol <- input$COsizeclasscol
-            rv$COsplitcol <- input$COsplitcol
-            rv$COunitcol <- input$COunitcol
-            rv$COdfcol <- input$COdfcol
-
-
-            rv$Mhatarray <- estimate_mhat(co_data = rv$COdataIn, 
-                            ss_data = rv$SSdataIn, 
-                            size_class_column = input$COsizeclasscol, 
-                            split_column = input$COsplitcol, 
-                            unit_column = input$COunitcol, 
-                            df_column = input$COdfcol,
-                            replicates = rv$Niterations,  
-                            cp_predictors = rv$CPvars, 
-                            se_predictors = rv$SEvars, cp_data = rv$CPdataIn, 
-                            se_data = rv$SEdataIn, garray = rv$garray) 
-
-            rv$Mhatsc <- condense_mhat(rv$Mhatarray)
-
-            output$Mhattab <-  renderTable({
-                                  create_mhat_table(
-                                            condensed_mhat = rv$Mhatsc, 
-                                            fraction_area_sampled = rv$ffs, 
-                                            confidence_level = rv$CL)
-            })
-
-            rv$Nsplitcats <- length(unique(rv$COdataIn[,input$COsplitcol]))
-            rv$Nsplitcats[rv$Nsplitcats == 0] <- 1
-            output$Mhatfig <- renderPlot({
- 
-                par(mfrow = c(1, rv$Nsplitcats))
-                for(i in 1:rv$Nsplitcats){
-                    create_mhat_figure(condensed_mhat_split = rv$Mhatsc[,i], 
-	                split_category_name = colnames(rv$Mhatsc)[i],
-                      fraction_area_sampled = input$ffs)
-                }
-            }) 
-
-            updateTabsetPanel(session, "M_Analysis", "Table")
-
-          }) 
-        })
-
+          }
+        }  
+        HTML(SE_mod_menu)
+      })
+    })
+  })
+
+  observeEvent(input$SE_AICc_sc, {
+    if(length(rv$SE_mods) > 0){
+      if(length(rv$sizeclasses) == 1){
+        rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
+      }else{
+        rv$sizeclass_chosen <- which(rv$sizeclasses == input$SE_AICc_sc)
+        if(length(rv$sizeclass_chosen) == 0){
+          rv$sizeclass_chosen <- 1
+        }
+        rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[rv$sizeclass_chosen]])
+      }
+      output$SE_AICc_table <- DT::renderDataTable({rv$SE_AICc_tab})
+    }
+  })
+
+  observeEvent(input$SE_MT_sc, {
+    if(length(rv$SE_mods) > 0){
+      if(length(rv$sizeclasses) == 1){
+        rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
+        rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
+        rv$SE_mod_names <- names(rv$SE_mods)[rv$SE_mod_order]
+        rv$SE_mod_tab <- rv$SE_mods[[rv$SE_mod_order[1]]]$cellwise_pk
+      }else{
+        rv$sizeclass_chosen <- which(rv$sizeclasses == input$SE_MT_sc)
+        if(length(rv$sizeclass_chosen) == 0){
+          rv$sizeclass_chosen <- 1
+        }
+        rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[rv$sizeclass_chosen]])
+        rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
+        rv$SE_mod_names <- names(rv$SE_mods[[1]])[rv$SE_mod_order]
+        rv$SE_mod_tab <- 
+          rv$SE_mods[[rv$sizeclass_chosen]][[rv$SE_mod_order[1]]]$cellwise_pk
+      }
+
+      output$SE_mod_tab <- DT::renderDataTable(rv$SE_mod_tab)
+      updateSelectizeInput(session, "SE_MT_mod", choices = rv$SE_mod_names)
+
+      observeEvent(input$SE_MT_mod, {
+        if(length(rv$sizeclasses) == 1){
+          rv$SE_mod_tab <- rv$SE_mods[[input$SE_MT_mod]]$cellwise_pk
+        }else{
+          rv$SE_mod_tab <- 
+            rv$SE_mods[[rv$sizeclass_chosen]][[input$SE_MT_mod]]$cellwise_pk
+        }
+        output$SE_mod_tab <- DT::renderDataTable(rv$SE_mod_tab)
+      })
+    }
+  })
+
+  observeEvent(input$CP_ltp, {
+    selected_obs_cols <- c(input$CP_ltp, input$CP_fta)
+    selected_cols <- c(selected_obs_cols, input$sizeclass_col, input$CP_vars)
+    selected_table <- rv$CP_data[ , which(rv$CP_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CP <- DT::renderDataTable(selected_dataframe)
+  })
+  observeEvent(input$CP_fta, {
+    selected_obs_cols <- c(input$CP_ltp, input$CP_fta)
+    selected_cols <- c(selected_obs_cols, input$sizeclass_col, input$CP_vars)
+    selected_table <- rv$CP_data[ , which(rv$CP_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CP <- DT::renderDataTable(selected_dataframe)
+  })
+  observeEvent(input$CP_vars, {
+    selected_obs_cols <- c(input$CP_ltp, input$CP_fta)
+    selected_cols <- c(selected_obs_cols, input$sizeclass_col, input$CP_vars)
+    selected_table <- rv$CP_data[ , which(rv$CP_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CP <- DT::renderDataTable(selected_dataframe)
+  })
+
+  observeEvent(input$CO_unit_col, {
+    selected_cols <- c(input$CO_unit_col, input$sizeclass_col, input$CO_splits)
+    selected_table <- rv$CO_data[ , which(rv$CO_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CO <- DT::renderDataTable(selected_dataframe)
+  })
+  observeEvent(input$CO_splits, {
+    selected_cols <- c(input$CO_unit_col, input$sizeclass_col, input$CO_splits)
+    selected_table <- rv$CO_data[ , which(rv$CO_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CO <- DT::renderDataTable(selected_dataframe)
+  })
 }
 
