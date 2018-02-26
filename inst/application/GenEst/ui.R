@@ -151,7 +151,7 @@ tabPanel("About",
           provisional.'),
     br(), br(),
     textOutput("version_info"),
-    br(), br(),
+    br(), 
     HTML('The development of GenEst is being supported by Bat Conservation 
           International, The US Bureau of Land Management, The US Geological 
           Survey, WEST, and Oregon State University.'),
