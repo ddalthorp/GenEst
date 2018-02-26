@@ -1,392 +1,163 @@
-##############################################################################
-#
-#  This script contains the UI code for the the GenEst app
-#
-#  
-
-
-# main page
-
-  navbarPage("GenEst",
-
-    # Home tab: splash page            
-
-      tabPanel("Home",
-        br(),
-        HTML('<center><img src="GenEstLogoExample1.jpg" height = 
-                              "500"></center>'),
-        br()
-      ),
-
-    # Data Input tab: input and view each of the data tables
-
-      tabPanel("Data Input",
-
-          sidebarLayout(
-            sidebarPanel(width = 3,
-              HTML('<b><big><center>Upload data:</center></big></b>'),
-              br(),
-              fileInput("SEFile", "Choose Search Efficiency Data File",
-                accept = c(
-                "text/csv",
-                "text/comma-separated-values,text/plain",
-                ".csv")
-              ),
-              br(),
-              fileInput("CPFile", "Carcass Persistence Data File",
-                accept = c(
-                "text/csv",
-                "text/comma-separated-values,text/plain",
-                ".csv")
-              ),
-              br(),
-              fileInput("SSFile", "Search Schedule Data File",
-                accept = c(
-                "text/csv",
-                "text/comma-separated-values,text/plain",
-                ".csv")
-              ),
-              br(),
-              fileInput("COFile", "Carcass Observation Data File",
-                accept = c(
-                "text/csv",
-                "text/comma-separated-values,text/plain",
-                ".csv")
-              ),
-              br(),
-              fileInput("MDFile", "Meta Data File",
-                accept = c(
-                "text/csv",
-                "text/comma-separated-values,text/plain",
-                ".csv")
-              )
-            ),
-            mainPanel(
-              HTML('<b><big><center>View data:</center></big></b>'),
-              br(),
-              tabsetPanel(id = "LoadedDataViz",
-                tabPanel("Search Efficiency", br(), br(), 
-                          dataTableOutput("SEdata")),
-                tabPanel("Carcass Persistence", br(), br(), 
-                          dataTableOutput("CPin")),
-                tabPanel("Search Schedule", br(), br(), 
-                          dataTableOutput("SSin")),
-                tabPanel("Carcass Observations", br(), br(), 
-                          dataTableOutput("COin")),
-                tabPanel("Meta Data", br(), br(), 
-                          tableOutput("MDin"))
-              )
-            )
-          )
-      ),
-
-
-    # Analyses tab: set up and run the analyses 
-
-      tabPanel("Analyses",
-        tabsetPanel(
-
-          # General Inputs tab
-
-            tabPanel("General Inputs",
-              br(), br(),
- 
-              # side bar of general inputs 
- 
-                sidebarPanel(width = 3, 
-                    numericInput("Niterations", "Number of iterations:", 
-                           value = 1000, min = 1, max = 10000, step = 1),
-                    numericInput("CL", "Confidence Level:", 
-                           value = 0.9, min = 0, max = 1, step = 0.001)
-              ),
-
-              # main panel is empty
-
-                mainPanel(
-                  br()
-                )
-            ),
-
-          # Search Efficiency tab
-
-            tabPanel("Search Efficiency",
-              br(), br(), 
-
-              # side bar of model inputs
-
-                sidebarPanel(width = 3, 
-                           selectizeInput("SEobscols", 
-                               "Choose observation columns (in order):",
-                               c("No data input yet"), multiple = T),
-                           selectizeInput("SEsizeclasscol", 
-                               "Choose size class column (optional):", 
-                               c("No data input yet"), multiple = T, 
-                               options = list(maxItems = 1)),
-                           selectizeInput("SEvars", 
-                             "Choose predictor variables (optional, max: 2):", 
-                             c("No data input yet"), multiple = T, 
-                             options = list(maxItems = 2)),
-                           selectizeInput("fixKchoice", "Use fixed k?",
-                               c(FALSE, TRUE), multiple = F),
-                           numericInput("fixKvalchoice", 
-                               "Value for fixed k:", value = NULL, 
-                                min = 0, max = 1, step = 0.001),
-                           actionButton("SEmodrun", "Run SE Model")
-                ),
-
-              # main panel is a tabset panel
-
-                mainPanel(
-                  tabsetPanel(id = "SE_Analysis",
-
-                    # Data tab shows data being modeled
-
-                      tabPanel("Data", br(), br(), 
-                               dataTableOutput("selected_SE")
-                      ),
-
-                    # Model Table tab shows AIC table for a given size class
-
-                      tabPanel("Model Table", br(), 
-                           selectizeInput("SEaicsizeclass", 
-                                      "Choose size class for AIC table:", 
-                                      "Model not yet run", multiple = F),
-                           br(), br(), 
-                           dataTableOutput("SEaictable") 
-                      ),
-
-                    # Figure tab produces a figure for a given size class and 
-                    #  selected model
-
-                      tabPanel("Figure", br(),
-                           selectizeInput("SEfigsizeclass", 
-                                      "Choose size class for SE figure:", 
-                                      "Model not yet run", multiple = F ),
-                           selectizeInput("SEfigmodel", 
-                                      "Choose model for SE figure:", 
-                                      "Model not yet run", multiple = F ),
-                           br(), br(), 
-                           plotOutput("SEfig", width = "800px", 
-                                       height = "800px")
-                      ),
-
-                    # Model Selection tab is used to select a model for each
-                    #  size class.
-
-                      tabPanel("Model Selection", 
-                           br(), 
-                           htmlOutput("SEmodselectinputs")
-                      ) 
-                  )
-                )
-            ),
-
-
-          # Carcass Persistence tab
-
-            tabPanel("Carcass Persistence",
-              br(), br(), 
-
-              # side bar of model inputs
-
-                sidebarPanel(width = 3,
-                  selectizeInput("CPltp", 
-                     "Choose last time present observation column:",
-                     c("No data input yet"), multiple = T, 
-                     options = list(maxItems = 1)),
-                  selectizeInput("CPfta", 
-                     "Choose first time absent observation column:",
-                     c("No data input yet"), multiple = T, 
-                     options = list(maxItems = 1)),
-                  selectizeInput("CPsizeclasscol", 
-                     "Choose size class column (optional):",
-                     c("No data input yet"), multiple = T, 
-                     options = list(maxItems = 1)),
-                  selectizeInput("CPvars", 
-                     "Choose predictor variables (optional, max: 2):", 
-                     c("No data input yet"), multiple = T, 
-                     options = list(maxItems = 2)),
-                  actionButton("CPmodrun", "Run CP Model")
-                ),
-
-              # main panel is a tabset panel
-
-                mainPanel(
-                  tabsetPanel(id = "CP_Analysis",
-
-                    # Data tab shows data being modeled
- 
-                      tabPanel("Data", br(), br(), 
-                               dataTableOutput("selected_CP")
-                      ),
-
-                    # Model Table tab shows AIC table for a given size class
-
-                      tabPanel("Model Table",  br(),
-                           selectizeInput("CPaicsizeclass", 
-                                          "Choose size class for AIC table:", 
-                                          "Model not yet run", multiple = F ),
-                           br(), br(), 
-                           dataTableOutput("CPaictable") 
-                      ),
-
-                    # Figure tab produces a figure for a given size class and 
-                    #  selected model
-
-                      tabPanel("Figures",  br(),
-                           selectizeInput("CPfigsizeclass",
-                                      "Choose size class for CP figure:",
-                                      "Model not yet run", multiple = F ),
-                           selectizeInput("CPfigmodelcomplexity",
-                                     "Choose model complexity for CP figure:", 
-                                     "Model not yet run", multiple = F ),
-                           selectizeInput("CPfigdistemph",
-                                       "Choose distribution to emphasize:", 
-                                       "Model not yet run", multiple = F ),
-                           br(), br(), 
-                           plotOutput("CPfig", width = "800px", 
-                                   height = "1000px")
-                      ),
-
-                    # Model Selection tab is used to select a model for each
-                    #  size class. 
-
-                      tabPanel("Model Selection", br(), 
-                           htmlOutput("CPmodselectinputs")
-                      )
-                  )
-                )
-            ),
-
-          # Detection Probability tab
-
-            tabPanel("Detection Probability",
-              br(), br(), 
-
-              # side bar of model run button and search schedule translation
-
-                sidebarPanel(width = 3,
-                       actionButton("grun", "Estimate Detection Probability"), 
-                       br(), br(), tableOutput("SStable")
-                ),
-
-              # main panel displays the detection probability table
-
-                mainPanel(
-                  br(), 
-                  dataTableOutput("gtable"),
-                  br()
-                )
-            ),
-
-
-          # Fatality Estimation tab
-
-            tabPanel("Fatality Estimation",
-              br(), br(), 
-
-              # side bar of model inputs
-
-                sidebarPanel(width = 3, 
-                  selectizeInput("COunitcol", "Choose unit column:",
-                         c("No data input yet"), multiple = T, 
-                         options = list(maxItems = 1)),
-                  selectizeInput("COdfcol", 
-                         "Choose date found column:",
-                         c("No data input yet"), multiple = T, 
-                         options = list(maxItems = 1)),
-                  selectizeInput("COsizeclasscol", 
-                         "Choose size class column (optional):", 
-                         c("No data input yet"), multiple = T, 
-                         options = list(maxItems = 1)),
-                  selectizeInput("COsplitcol", 
-                         "Choose split column (optional):", 
-                         c("No data input yet"), multiple = T, 
-                         options = list(maxItems = 1)),
-                  numericInput("ffs", "Fraction of units or area surveyed",
-                         value = 1.0, min = 0, max = 1, step = 0.001),
-                  actionButton("Mrun", "Estimate Total Carcasses")
-                ),
-
-              # main panel shows output table and figure
-
-                mainPanel(
-                  tabsetPanel(id = "M_Analysis",
-
-                    # Data tab shows data being modeled
- 
-                      tabPanel("Data",   
-                           br(), br(), dataTableOutput("selected_CO")
-
-                      ),
-
-                    # Table tab shows the final fatality estimation table
-
-                      tabPanel("Table",  
-                           br(), br(),
-                           tableOutput("Mhattab")
-                      ),
-
-                    # Figure tab shows the final fatality estimation figure
-
-                      tabPanel("Figure",  br(),
-                           br(), br(),
-                           plotOutput("Mhatfig", width = "800px", 
-                                      height = "800px")
-                      )
-                  )
-                )
-
-            )
-        )
-      ),
-
-          # About tab: details about GenEst
-
-            tabPanel("About",
-              fluidRow(
-                column(6, offset = 3,
-                       HTML('<img src = "GenEstLogoExample1.jpg" 
-                              height = "400">'),
-                       br(), 
-                       br(),
-                       HTML('<b>Authors:</b>  
-                         Daniel Dalthorp
-                           <a href = "http://www.USGS.gov">(USGS)</a>,
-                         Juniper Simonis
-                           <a href = 
-                           "http://www.dapperstats.com">(DAPPER Stats)</a>,
-                         Lisa Madsen
-                           <a href = "http://www.OSU.edu">(OSU)</a>,
-                         Paul Rabie 
-                           <a href = "http://www.west-inc.com">(WEST)</a>, 
-                         and
-                         Manuela Huso
-                           <a href = "http://www.USGS.gov">(USGS)</a>'),
-                       br(),
-                       br(),
-                       HTML('GenEst is a tool for estimating bird and bat 
-                             fatalities at renewable power facilities.'),
-                       br(),
-                       br(),
-                       HTML('GenEst is currently in development
-                             and should be considered provisional.'),
-                       br(),
-                       br(),
-                       textOutput("version_info"),
-                       br(),
-                       br(),
-                       HTML('The development of GenEst is being supported by 
-                         BatConservation International, The US Bureau of Land
-                         Management, The US Geological Survey, WEST, and 
-                         Oregon State University.'),
-                       br(),
-                       br(),
-                       HTML('GenEst is provided under GNU GPL version 3 (and 
-                              any later versions).')
-                )
-              )
-            )
-  )
+navbarPage("GenEst",
+
+tabPanel("Home", br(),
+  HTML('<center><img src = "GenEstLogoExample1.jpg" 
+                 height = "500"></center>'), br()),
+
+tabPanel("Data Input",
+  sidebarLayout(
+    sidebarPanel(width = 3,
+      fileInput("SE_file", "Search Efficiency Data File",
+                accept = c("text/csv", "text/comma-separated-values", 
+                           "text/plain", ".csv")), 
+      fileInput("CP_file", "Carcass Persistence Data File",
+                accept = c("text/csv", "text/comma-separated-values", 
+                           "text/plain", ".csv")), 
+      fileInput("SS_file", "Search Schedule Data File",
+                accept = c("text/csv", "text/comma-separated-values", 
+                           "text/plain", ".csv")), 
+      fileInput("CO_file", "Carcass Observation Data File",
+                accept = c("text/csv", "text/comma-separated-values", 
+                           "text/plain", ".csv"))),
+    mainPanel(
+      tabsetPanel(id = "LoadedDataViz",
+        tabPanel("Search Efficiency", DT::dataTableOutput("SE_data")),
+        tabPanel("Carcass Persistence", DT::dataTableOutput("CP_data")),
+        tabPanel("Search Schedule", DT::dataTableOutput("SS_data")),
+        tabPanel("Carcass Observations", DT::dataTableOutput("CO_data")))))),
+
+tabPanel("Analyses",
+  tabsetPanel(
+
+    tabPanel("General Inputs", br(), br(),
+      sidebarPanel(width = 3,
+        numericInput("n_iterations", "Number of Iterations:", 
+                     value = 1000, min = 1, max = 10000, step = 1),
+        numericInput("CL", "Confidence Level:", 
+                     value = 0.9, min = 0, max = 1, step = 0.001),
+        selectizeInput("sizeclass_col",
+                       "Size Class Column (optional):", 
+                       c("No data input yet"), multiple = T, 
+                       options = list(maxItems = 1)))),
+
+    tabPanel("Searcher Efficiency", br(), br(),
+      sidebarPanel(width = 3,
+        selectizeInput("SE_obs_cols", "Observations:",
+                       c("No data input yet"), multiple = T),
+        selectizeInput("SE_vars", "Predictor Variables:", 
+                       c("No data input yet"), multiple = T),
+        radioButtons("fix_k_choice", "Fix k?",
+                     choices = list("No" = 0, "Yes" = 1), 
+                     selected = 0),
+        conditionalPanel(condition = "input.fix_k_choice == 1",
+          numericInput("fixed_k", "Value for fixed k:", value = 0.5, 
+                       min = 0, max = 1, step = 0.001)),
+        conditionalPanel(condition = "input.SE_obs_cols != null",
+          actionButton("SE_mod_run", "Run Searcher Efficiency Model"))),
+      mainPanel(
+        tabsetPanel(id = "SE_analyses",
+          tabPanel("Selected Data", br(), br(), 
+            DT::dataTableOutput("selected_SE")),
+          tabPanel("Figures", br()),
+          tabPanel("Model Tables", br(),
+            selectizeInput("SE_MT_sc", width = "400px", "Size Class:",
+                           "Model not yet run", multiple = F),  
+            selectizeInput("SE_MT_mod", width = "400px", "Model:",
+                           "Model not yet run", multiple = F), br(), br(),
+            DT::dataTableOutput("SE_mod_tab")),
+          tabPanel("Model Comparison Tables", br(),
+            selectizeInput("SE_AICc_sc", width = "400px", "Size Class:",
+                           "Model not yet run", multiple = F), br(), br(), 
+            DT::dataTableOutput("SE_AICc_table")),
+          tabPanel("Model Selection", br(),
+            htmlOutput("SE_model_menu"))))),
+
+    tabPanel("Carcass Persistence", br(), br(),
+      sidebarPanel(width = 3,
+        selectizeInput("CP_ltp", "Last Time Present:",
+                       c("No data input yet"), multiple = T,
+                       options = list(maxItems = 1)),
+        selectizeInput("CP_fta", "First Time Absent:", 
+                       c("No data input yet"), multiple = T,
+                       options = list(maxItems = 1)),
+        selectizeInput("CP_vars", "Predictor Variables:", 
+                       c("No data input yet"), multiple = T),
+        conditionalPanel(
+          condition = "input.CP_ltp != null & input.CP_fta != null",
+          actionButton("CP_mod_run", "Run Carcass Persistence Model"))),
+      mainPanel(
+        tabsetPanel(id = "CP_analyses",
+          tabPanel("Selected Data", br(), br(),
+            DT::dataTableOutput("selected_CP")),
+          tabPanel("Figures", br()),
+          tabPanel("Model Tables", br()),
+          tabPanel("Model Comparison Tables", br()),
+          tabPanel("Model Selection", br())))),
+
+    tabPanel("Detection Probability", br(), br(),
+      sidebarPanel(width = 3, 
+        conditionalPanel(
+          condition = "input.SE_mod_run > 0 & input.CP_mod_run > 0",
+          actionButton("g_run", "Estimate Detection Probability"))),
+      mainPanel(br())),
+
+    tabPanel("Fatality Estimation", br(), br(),
+      sidebarPanel(width = 3,
+        selectizeInput("CO_unit_col", "Search Unit:",
+                       c("No data input yet"), multiple = T,
+                       options = list(maxItems = 1)),
+        selectizeInput("CO_splits", "Data Splits:", 
+                       c("No data input yet"), multiple = T,
+                       options = list(maxItems = 2)),
+        numericInput("CO_f_surveyed", "Fraction of Area or Units Surveyed:", 
+                     value = 1.0, min = 0, max = 1, step = 0.001),
+        conditionalPanel(
+          condition = "input.g_run > 0 & input.CO_unit_col != null",
+          actionButton("M_mod_run", "Estimate Total Carcasses"))),
+      mainPanel(
+        tabsetPanel(id = "M_analyses",
+          tabPanel("Selected Data", br(), br(),
+            DT::dataTableOutput("selected_CO")),
+          tabPanel("Figures", br()),
+          tabPanel("Model Tables", br())))))),
+
+tabPanel("About",
+  fluidRow(column(6, offset = 3,
+    HTML('<img src = "GenEstLogoExample1.jpg" height = "400">'),
+    br(), br(),
+    HTML('<b>Authors:</b>  
+      Juniper Simonis 
+        <a href = "http://www.dapperstats.com">(DAPPER Stats)</a>,
+      Daniel Dalthorp
+         <a href = "http://www.USGS.gov">(USGS)</a>,
+      Lisa Madsen
+         <a href = "http://www.OSU.edu">(OSU)</a>,
+      Paul Rabie 
+         <a href = "http://www.west-inc.com">(WEST)</a>, 
+      Jared Studyvin
+         <a href = "http://www.west-inc.com">(WEST)</a>, 
+      Robert Wolpert
+         <a href = "http://http://www2.stat.duke.edu/~rlw/">(Duke)</a>, 
+      Franzi Korner-Nievergelt
+         <a href = "http://http://www.oikostat.ch/">(oikostat)</a>, 
+      and
+      Manuela Huso
+         <a href = "http://www.USGS.gov">(USGS)</a>'),
+    br(), br(),
+    HTML('GenEst is a tool for estimating bird and bat fatalities at renewable
+         power facilities.'),
+    br(), br(),
+    HTML('GenEst is currently in development and should be considered
+          provisional.'),
+    br(), br(),
+    textOutput("version_info"),
+    br(), 
+    HTML('The development of GenEst is being supported by Bat Conservation 
+          International, The US Bureau of Land Management, The US Geological 
+          Survey, WEST, and Oregon State University.'),
+    br(), br(),
+    HTML('GenEst is provided under GNU GPL v3 (and later versions).'))))
+
+)
 
 
