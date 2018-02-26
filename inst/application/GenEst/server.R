@@ -21,23 +21,22 @@ function(input, output, session){
 
   SE_mod_run_msg <- NULL
   SE_mod_fit_msg <- NULL
-  rv <- reactiveValues(
-          SE_data = NULL, SE_colnames = NULL, 
-          SE_obs_cols = NULL, SE_vars = NULL, 
-          fix_k_choice = 0, fixed_k = NULL,
-          p_predictors = NULL, k_predictors = NULL,
-          pformula = NULL, kformula = NULL,
-          SE_mods = NULL, SE_mods_check = NULL, 
-          SE_mod_names = NULL, SE_mod_tab = NULL, 
-          sizeclass_chosen = NULL,
-          SE_AICc_table = NULL, SE_mod_order = NULL,
-          SE_models_to_use = NULL,
-          CP_data = NULL, CP_colnames = NULL, 
-          SS_data = NULL,  
-          CO_data = NULL, CO_colnames = NULL,
-          sc_options = NULL, sizeclass_col = NULL, 
-          sizeclasses = NULL, n_sizeclasses = NULL, 
-          CL = 0.9, n_iterations = 1000)
+  rv <- reactiveValues(SE_data = NULL, SE_colnames = NULL, 
+                       SE_obs_cols = NULL, SE_vars = NULL, 
+                       fix_k_choice = 0, fixed_k = NULL,
+                       p_predictors = NULL, k_predictors = NULL,
+                       pformula = NULL, kformula = NULL,
+                       SE_mods = NULL, SE_mods_check = NULL, 
+                       SE_mod_names = NULL, SE_mod_tab = NULL, 
+                       sizeclass_chosen = NULL,
+                       SE_AICc_table = NULL, SE_mod_order = NULL,
+                       SE_models_to_use = NULL,
+                       CP_data = NULL, CP_colnames = NULL, 
+                       SS_data = NULL,  
+                       CO_data = NULL, CO_colnames = NULL,
+                       sc_options = NULL, sizeclass_col = NULL, 
+                       sizeclasses = NULL, n_sizeclasses = NULL, 
+                       CL = 0.9, n_iterations = 1000)
 
 
 
@@ -86,9 +85,8 @@ function(input, output, session){
       rv$sc_options <- rv$CO_colnames[rv$CO_colnames %in% rv$sc_options]
     }
     output$CO_data <- DT::renderDataTable(rv$CO_data)
-    updateSelectizeInput(session, "CO_split_col", choices = rv$CO_colnames)
+    updateSelectizeInput(session, "CO_splits", choices = rv$CO_colnames)
     updateSelectizeInput(session, "sizeclass_col", choices = rv$sc_options)
-    updateSelectizeInput(session, "CO_df_col", choices = rv$CO_colnames)
     updateSelectizeInput(session, "CO_unit_col", choices = rv$CO_colnames)
     updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
   })
@@ -203,8 +201,6 @@ function(input, output, session){
         HTML(SE_mod_menu)
       })
     })
-
-
   })
 
   observeEvent(input$SE_AICc_sc, {
@@ -224,7 +220,6 @@ function(input, output, session){
 
   observeEvent(input$SE_MT_sc, {
     if(length(rv$SE_mods) > 0){
-
       if(length(rv$sizeclasses) == 1){
         rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
         rv$SE_mod_order <- as.numeric(row.names(rv$SE_AICc_tab))
@@ -255,6 +250,56 @@ function(input, output, session){
         output$SE_mod_tab <- DT::renderDataTable(rv$SE_mod_tab)
       })
     }
+  })
+
+  observeEvent(input$CP_ltp, {
+    selected_obs_cols <- c(input$CP_ltp, input$CP_fta)
+    selected_cols <- c(selected_obs_cols, input$sizeclass_col, input$CP_vars)
+    selected_table <- rv$CP_data[ , which(rv$CP_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CP <- DT::renderDataTable(selected_dataframe)
+  })
+  observeEvent(input$CP_fta, {
+    selected_obs_cols <- c(input$CP_ltp, input$CP_fta)
+    selected_cols <- c(selected_obs_cols, input$sizeclass_col, input$CP_vars)
+    selected_table <- rv$CP_data[ , which(rv$CP_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CP <- DT::renderDataTable(selected_dataframe)
+  })
+  observeEvent(input$CP_vars, {
+    selected_obs_cols <- c(input$CP_ltp, input$CP_fta)
+    selected_cols <- c(selected_obs_cols, input$sizeclass_col, input$CP_vars)
+    selected_table <- rv$CP_data[ , which(rv$CP_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CP <- DT::renderDataTable(selected_dataframe)
+  })
+
+  observeEvent(input$CO_unit_col, {
+    selected_cols <- c(input$CO_unit_col, input$sizeclass_col, input$CO_splits)
+    selected_table <- rv$CO_data[ , which(rv$CO_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CO <- DT::renderDataTable(selected_dataframe)
+  })
+  observeEvent(input$CO_splits, {
+    selected_cols <- c(input$CO_unit_col, input$sizeclass_col, input$CO_splits)
+    selected_table <- rv$CO_data[ , which(rv$CO_colnames %in% selected_cols)]
+    selected_dataframe <- data.frame(selected_table)
+    if(length(selected_cols) == 1){
+      colnames(selected_dataframe) <- selected_cols
+    }
+    output$selected_CO <- DT::renderDataTable(selected_dataframe)
   })
 }
 
