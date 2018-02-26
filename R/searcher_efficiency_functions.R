@@ -766,3 +766,50 @@ pkm_set_size <- function(pformula, kformula = NULL, data, obs_cols = NULL,
   return(out)
 }
 
+#' Verify that a suite of searcher efficiency models all fit successfully.
+#'
+#' @param pkm_to_check A \code{pkm} model or a set of them or a suite of sets
+#'  associated with multiple sizes
+#'
+#' @return A single (total) logcal 
+#'
+#' @export
+#'
+pkm_check <- function(pkm_to_check){
+
+  check_status <- 0
+  class_single <- class(pkm_to_check)
+  class_set <- class(pkm_to_check[[1]])
+  class_size <- class(pkm_to_check[[1]][[1]]) 
+  if("pkm" %in% class_single){
+    check_status <- 1
+  }
+  if("pkm" %in% class_set){
+    n_in_set <- length(pkm_to_check)
+    checks <- rep(0, n_in_set)
+    for(i in 1:n_in_set){
+      check_class <- class(pkm_to_check[[i]])
+      if("pkm" %in% check_class){
+        checks[i] <- 1
+      }
+    }
+    check_status <- floor(mean(checks))
+  }
+  if("pkm" %in% class_size){
+    n_sizeclasses <- length(pkm_to_check)
+    n_in_set <- length(pkm_to_check[[1]])
+    checks <- matrix(0, n_sizeclasses, n_in_set)
+    for(i in 1:n_sizeclasses){
+      for(j in 1:n_in_set){
+        check_class <- class(pkm_to_check[[i]][[j]])
+        if("pkm" %in% check_class){
+          checks[i, j] <- 1
+        }
+      }
+    }
+    check_status <- floor(mean(checks))
+  }
+  output <- as.logical(check_status)
+  return(output)
+}
+

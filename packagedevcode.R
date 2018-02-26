@@ -32,7 +32,7 @@
 
   # add dependencies to the description and load them here 
 
-    pkgdpns <- c("shiny", "rhandsontable", "httr", "survival", 
+    pkgdpns <- c("shiny", "shinythemes", "rhandsontable", "httr", "survival", 
                  "mvtnorm", "matrixStats", "gsl", "DT")
 
     for(i in 1:length(pkgdpns)){
