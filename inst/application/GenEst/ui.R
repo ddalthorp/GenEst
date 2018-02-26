@@ -72,7 +72,7 @@ tabPanel("Analyses",
             DT::dataTableOutput("SE_AICc_table")
           ),
           tabPanel("Model Selection", br(),
-            htmlOutput("SE_model_select_inputs")
+            htmlOutput("SE_model_menu")
           )
         ))
     )

@@ -19,13 +19,16 @@ function(input, output, session){
           unauthorized use of the software.",  
           easyClose = F, footer = modalButton("OK")))
 
+  SE_mod_run_msg <- NULL
+  SE_mod_fit_msg <- NULL
   rv <- reactiveValues(
           SE_data = NULL, SE_colnames = NULL, 
           SE_obs_cols = NULL, SE_vars = NULL, 
           fix_k_choice = 0, fixed_k = NULL,
           p_predictors = NULL, k_predictors = NULL,
           pformula = NULL, kformula = NULL,
-          SE_mods = NULL, SE_mod_names = NULL, SE_mod_tab = NULL, 
+          SE_mods = NULL, SE_mods_check = NULL, 
+          SE_mod_names = NULL, SE_mod_tab = NULL, 
           sizeclass_chosen = NULL,
           SE_AICc_table = NULL, SE_mod_order = NULL,
           SE_models_to_use = NULL,
@@ -110,37 +113,38 @@ function(input, output, session){
   })
 
   observeEvent(input$SE_mod_run, {
-    withProgress(message = "Running Searcher Efficiency Model", {
-      rv$SE_obs_cols <- input$SE_obs_cols
-      rv$SE_vars <- input$SE_vars
-      if(input$fix_k_choice == 1 & is.numeric(input$fixed_k)){
-        rv$fixed_k <- input$fixed_k
-      }
-      rv$n_iterations <- input$n_iterations
-      rv$CL <- input$CL
-      rv$sizeclass_col <- input$sizeclass_col
-      rv$fix_k_choice <- input$fix_k_choice
+    SE_mod_run_msg <- showNotification("Running Searcher Efficiency Model")
+    rv$SE_obs_cols <- input$SE_obs_cols
+    rv$SE_vars <- input$SE_vars
+    if(input$fix_k_choice == 1 & is.numeric(input$fixed_k)){
+      rv$fixed_k <- input$fixed_k
+    }
+    rv$n_iterations <- input$n_iterations
+    rv$CL <- input$CL
+    rv$sizeclass_col <- input$sizeclass_col
+    rv$fix_k_choice <- input$fix_k_choice
  
-      rv$sizeclasses <- as.character(unique(rv$SE_data[ , rv$sizeclass_col]))
-      if(length(rv$sizeclass_col) == 0){
-        rv$sizeclasses <- "all"
-      }
+    rv$sizeclasses <- as.character(unique(rv$SE_data[ , rv$sizeclass_col]))
+    if(length(rv$sizeclass_col) == 0){
+      rv$sizeclasses <- "all"
+    }
 
-      rv$pk_predictors <- paste(rv$SE_vars, collapse = "*")
-      if(length(rv$SE_vars) == 0){
-        rv$pk_predictors <- 1
-      }
+    rv$pk_predictors <- paste(rv$SE_vars, collapse = "*")
+    if(length(rv$SE_vars) == 0){
+      rv$pk_predictors <- 1
+    }
 
-      rv$pformula <- formula(paste("p~", rv$pk_predictors, sep = ""))
-      rv$kformula <- formula(paste("k~", rv$pk_predictors, sep = "")) 
-      rv$SE_mods <- pkm_set_size(pformula = rv$pformula,
-                                 kformula = rv$kformula,
-                                 data = rv$SE_data, 
-                                 obs_cols = rv$obs_cols, 
-                                 sizeclass_col = rv$sizeclass_col,
-                                 fixed_k = rv$fixed_k, k_init = 0.7)
-    })
+    rv$pformula <- formula(paste("p~", rv$pk_predictors, sep = ""))
+    rv$kformula <- formula(paste("k~", rv$pk_predictors, sep = "")) 
+    rv$SE_mods <- pkm_set_size(pformula = rv$pformula,
+                               kformula = rv$kformula,
+                               data = rv$SE_data, 
+                               obs_cols = rv$obs_cols, 
+                               sizeclass_col = rv$sizeclass_col,
+                               fixed_k = rv$fixed_k, k_init = 0.7)
+    rv$SE_mods_check <- pkm_check(rv$SE_mods)
 
+    removeNotification(SE_mod_run_msg)
 
     if(length(rv$sizeclasses) == 1){
       rv$SE_AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
@@ -165,7 +169,40 @@ function(input, output, session){
     updateSelectizeInput(session, "SE_AICc_sc", choices = rv$sizeclasses)
     updateTabsetPanel(session, "SE_analyses", "Model Comparison Tables")
 
+    if(rv$SE_mods_check == FALSE){
+      SE_mod_fit_msg <- showNotification("Not all models were fit properly.",
+                                         type = "warning", duration = NULL)
+    }
+    isolate({
 
+      output$SE_model_menu <- renderUI({
+        
+        SE_mod_menu <- ""
+        n_sizeclasses <- length(rv$sizeclasses)
+        if(n_sizeclasses > 0){
+          if(n_sizeclasses == 1){
+            AICc_tab <- pkm_set_aicc_tab(rv$SE_mods) 
+            mod_order <- as.numeric(row.names(AICc_tab))
+            mod_names <- names(rv$SE_mods)[mod_order]
+            mtu_text <- "SE_models_to_use"
+            sc_text <- "Model choice"
+            mod_select <- selectizeInput(mtu_text, sc_text, mod_names)
+            SE_mod_menu <- paste(SE_mod_menu, mod_select)  
+          }else{
+            for(i in 1:n_sizeclasses){
+              AICc_tab <- pkm_set_aicc_tab(rv$SE_mods[[i]])
+              mod_order <- as.numeric(row.names(AICc_tab))
+              mod_names <- names(rv$SE_mods[[i]])[mod_order]
+              mtu_text <- paste("SE_models_to_use", i, sep = "") 
+              sc_text <- paste("Model choice, ", rv$sizeclasses[i], sep = "")
+              mod_select <- selectizeInput(mtu_text, sc_text, mod_names)
+              SE_mod_menu <- paste(SE_mod_menu, mod_select)  
+            }
+          }
+        }  
+        HTML(SE_mod_menu)
+      })
+    })
 
 
   })
