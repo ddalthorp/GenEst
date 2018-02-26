@@ -1,12 +1,15 @@
 Package: GenEst
 Title: Generalised Fatality Estimator
-Version: 0.0.3.0
-Date: 2018-02-23
+Version: 0.0.2.8
+Date: 2018-02-25
 Authors@R: c(
- person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
+    person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
 	person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
 	person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
+	person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
+	person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"),
+	person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"),	
 	person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"))
 Description: A tool for estimating bird and bat fatalities at wind and solar power facilities.
 Depends: R (>= 3.4.1)
