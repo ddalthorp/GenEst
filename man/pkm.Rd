@@ -4,23 +4,23 @@
 \alias{pkm}
 \title{Fit a single searcher efficiency model.}
 \usage{
-pkm(pformula, kformula = NULL, data, obs_cols = NULL, fixed_k = NULL,
-  k_init = 0.7)
+pkm(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
+  kInit = 0.7)
 }
 \arguments{
-\item{pformula}{Formula for p; an object of class "\code{\link{formula}}"
+\item{formula_p}{Formula for p; an object of class "\code{\link{formula}}"
 (or one that can be coerced to that class): a symbolic description of the
 model to be fitted. Details of model specification are given under 
 'Details'.}
 
-\item{kformula}{Formula for k; an object of class "\code{\link{formula}}"
+\item{formula_k}{Formula for k; an object of class "\code{\link{formula}}"
 (or one that can be coerced to that class): a symbolic description of the
 model to be fitted. Details of model specification are given under}
 
 \item{data}{Dataframe with results from searcher efficiency trials and any
-covariates included in \code{pformula} or {kformula} (required).}
+covariates included in \code{formula_p} or {formula_k} (required).}
 
-\item{obs_cols}{Vector of names of columns in \code{data} where results 
+\item{obsCol}{Vector of names of columns in \code{data} where results 
 for each search occasion are stored (optional). If no \code{obs_cols} are 
 provided, \code{pkm} uses as \code{obs_cols} all columns with names that 
 begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
@@ -31,12 +31,12 @@ entered as a vector of names, like \code{c('s1', 's2', 's3')},
 \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
 'lastSearch')}.}
 
-\item{fixed_k}{Parameter for user-specified \code{k} value (optional). If a
-value is provided, \code{kformula} is ignored and the model is fit under 
+\item{kFixed}{Parameter for user-specified \code{k} value (optional). If a
+value is provided, \code{formula_k} is ignored and the model is fit under 
 the assumption that the \code{k} parameter is fixed and known to be
 \code{fix_k}.}
 
-\item{init_k}{Initial value used for \code{k} in the optimization.}
+\item{kInit}{Initial value used for \code{k} in the optimization.}
 }
 \value{
 \code{pkm} returns an object of class "\code{pkm}", which is a list
@@ -50,7 +50,7 @@ The following components are displayed automatically:
 \describe{
  \item{\code{call}}{the function call to fit the model}
  \item{\code{predictors}}{list of covariates of \code{p} and/or \code{k}}
- \item{\code{cellwise_pk}}{summary statistics for estimated cellwise 
+ \item{\code{cellwiseTable}}{summary statistics for estimated cellwise 
    \code{p} and \code{k}, including the medians and upper & lower bounds
    on 95% CIs for each parameter, indexed by cell (or combination of
    covariate levels).}
@@ -67,22 +67,22 @@ The following components are displayed automatically:
 The following components are not printed automatically but can be accessed
 via the \code{$} operator:
 \describe{
-  \item{\code{p_formula}}{the model formula for the \code{p} parameter}
-  \item{\code{k_formula}}{the model formula for the \code{k} parameter}
-  \item{\code{beta_hat_p}}{parameter estimates for the terms in the 
+  \item{\code{formula_p}}{the model formula for the \code{p} parameter}
+  \item{\code{formula_k}}{the model formula for the \code{k} parameter}
+  \item{\code{betahat_p}}{parameter estimates for the terms in the 
     regression model for for \code{p} (logit scale)}
-  \item{\code{beta_hat_k}}{parameter estimates for the terms in the 
+  \item{\code{betahat_k}}{parameter estimates for the terms in the 
     regression model for for \code{k} (logit scale). If \code{k} is fixed 
     and known, \code{betahat_k} is not calculated.}
-  \item{\code{beta_var}}{the variance-covariance matrix of the estimators
+  \item{\code{betavar}}{the variance-covariance matrix of the estimators
     for \code{c(betahat_p, betahat_k}.}
-  \item{\code{mm_p_cells}}{a cellwise design matrix for covariate structure
-    of \code{p_formula}}
-  \item{\code{mm_k_cells}}{a cellwise design matrix for covariate structure 
-    of \code{k_formula}}
-  \item{\code{p_levels}}{all levels of each covariate of \code{p}}
-  \item{\code{k_levels}}{all levels of each covariate of \code{k}}
-  \item{\code{n_beta_p, n_beta_k}}{number of parameters to fit the \code{p}
+  \item{\code{cellMM_p}}{a cellwise model (design) matrix for covariate 
+    structure of \code{p_formula}}
+  \item{\code{cellMM_k}}{a cellwise model(design) matrix for covariate 
+    structure of \code{k_formula}}
+  \item{\code{levels_p}}{all levels of each covariate of \code{p}}
+  \item{\code{levels_k}}{all levels of each covariate of \code{k}}
+  \item{\code{nbeta_p, nbeta_k}}{number of parameters to fit the \code{p}
     and \code{k} models}
   \item{\code{cells}}{cell structure of the pk-model, i.e., combinations of
     all levels for each covariate of \code{p} and \code{k}. For example, if
@@ -90,11 +90,11 @@ via the \code{$} operator:
     \code{covar2} has levels \code{"X"} and \code{"Y"}, then the cells 
     would consist of \code{a.X}, \code{a.Y}, \code{b.X}, \code{b.Y}, 
     \code{c.X}, and \code{c.Y}.}
-  \item{\code{n_cells}}{total number of cells}
- \item{\code{p_predictors}}{list of covariates of \code{p}}
- \item{\code{k_predictors}}{list of covariates of \code{k}}
+  \item{\code{ncell}}{total number of cells}
+ \item{\code{predictors_k}}{list of covariates of \code{p}}
+ \item{\code{predictors_p}}{list of covariates of \code{k}}
  \item{\code{observations}}{observations used to fit the model}
- \item{\code{fixed_k}}{the input \code{fixed_k}}
+ \item{\code{kFixed}}{the input \code{kFixed}}
 }
 }
 \description{
@@ -113,12 +113,12 @@ is \code{p} on the first search after carcass arrival and is assumed to
 decrease by a factor of \code{k} each time the carcass is missed in 
 searches. Both \code{p} and \code{k} may depend on covariates such as 
 ground cover, season, species, etc., and a separate model format 
-(\code{pformula} and \code{kformula}) may be entered for each. The models 
+(\code{formula_p} and \code{formula_k}) may be entered for each. The models 
 are entered as they would be in the familiar \code{lm} or \code{glm} 
 functions in R. For example, \code{p} might vary with \code{visibility}, 
 \code{season}, and \code{site}, while \code{k} varies only with 
 \code{visibility}. A user might then enter \code{p ~ visibility + season + 
-site} for \code{pformula} and \code{k ~ visibility} for \code{kformula}. 
+site} for \code{formula_p} and \code{k ~ visibility} for \code{formula_k}. 
 Other R conventions for defining formulas may also be used, with 
 \code{covar1:covar2} for the interaction between covariates 1 and 2 and 
 \code{covar1 * covar2} as short-hand for \code{covar1 + covar2 + 

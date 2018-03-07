@@ -6,9 +6,9 @@
 #' logit(0.5)
 #' @export 
 #'
-  logit <- function(x) {
-    log(x / (1 - x))
-  }
+logit <- function(x) {
+  log(x / (1 - x))
+}
 
 #' Compute the anti-logit.
 #' 
@@ -18,9 +18,9 @@
 #' alogit(0)
 #' @export 
 #'
-  alogit <- function(x) {
-    1 / (1 + exp(-x))
-  }
+alogit <- function(x) {
+  1 / (1 + exp(-x))
+}
   
 #' Create the predictor combination table for a searcher efficiency or carcass
 #'  persistence analysis.
@@ -32,37 +32,37 @@
 #' NA
 #' @export 
 #'
-combine_preds <- function(preds, data){
+combinePreds <- function(preds, data){
 
-  n_preds <- length(preds)
-  if(n_preds == 0){
+  npred <- length(preds)
+  if (npred == 0){
     return(data.frame(group = "all", CellNames = "all"))
   }else{
     if(any(is.na(match(preds, names(data))))) {
         stop("At least one predictor missing from data.")
     }
-    var_names <- preds
-    var_labels <- list()
-    var_n_levels <- list()
-    for(i in 1:n_preds){
-      var_labels[[i]] <- levels(as.factor(data[[var_names[i]]]))
-      var_n_levels[[i]] <- length(var_labels[[i]])
+    predNames <- preds
+    predLevels <- list()
+    npredLevels <- list()
+    for(predi in 1:npred){
+      predLevels[[predi]] <- levels(as.factor(data[[predNames[predi]]]))
+      npredLevels[[predi]] <- length(predLevels[[predi]])
     }
-    reps <- cumprod(var_n_levels)[n_preds:1]
-    var_n_levels_1 <- var_n_levels[[1]]
-    var_labels_1 <- var_labels[[1]]
-    var_1 <- gl(var_n_levels_1, 1, length = reps[1], labels = var_labels_1)
-    output <- data.frame(var_1)
-    if(n_preds > 1){
-      for(j in 2:n_preds){
-        var_n_levels_j <- var_n_levels[[j]]
-        var_labels_j <- var_labels[[j]]
-        var_j <- gl(var_n_levels_j, reps[j], labels = var_labels_j) 
-        output[[j]] <- var_j
+    reps <- cumprod(npredLevels)[npred:1]
+    npredLevels_1 <- npredLevels[[1]]
+    predLevels_1 <- predLevels[[1]]
+    pred_1 <- gl(npredLevels_1, 1, length = reps[1], labels = predLevels_1)
+    output <- data.frame(pred_1)
+    if (npred > 1){
+      for (predi in 2:npred){
+        npredLevels_i <- npredLevels[[predi]]
+        predLevels_i <- predLevels[[predi]]
+        pred_i <- gl(npredLevels_i, reps[predi], labels = predLevels_i) 
+        output[[predi]] <- pred_i
       }
     }
   }
-  names(output) <- var_names
+  names(output) <- predNames
   output$CellNames <- apply(output, 1, paste0, collapse = ".")
   return(output)
 }
@@ -77,51 +77,51 @@ combine_preds <- function(preds, data){
 #'
 #' @export 
 #'
-check_component_terms_included <- function(formula_in){
+checkComponents <- function(formula){
  
-  term_orders <- attr(terms(formula_in), "order")
-  term_names <- attr(terms(formula_in), "term.labels")
-  n_terms <- length(term_names)
+  termOrders <- attr(terms(formula), "order")
+  termNames <- attr(terms(formula), "term.labels")
+  nterm <- length(termNames)
 
-  if(n_terms == 0){
+  if(nterm == 0){
     return(TRUE)
   }
-  if(max(term_orders) == 1){
+  if(max(termOrders) == 1){
     return(TRUE)
   }
 
-  term_names_alph <- rep(NA, n_terms)
-  for(i in 1:n_terms){
-    temp <- strsplit(term_names[i], ":")[[1]]
+  termNamesAlph <- rep(NA, nterm)
+  for (termi in 1:nterm){
+    temp <- strsplit(termNames[termi], ":")[[1]]
     temp <- sort(temp)
-    term_names_alph[i] <- paste(temp, collapse = ":")
+    termNamesAlph[termi] <- paste(temp, collapse = ":")
   }
-  term_orders_sort <- term_orders[order(term_orders, term_names_alph)]
-  term_names_sort <- term_names_alph[order(term_orders, term_names_alph)]
+  termOrdersSort <- termOrders[order(termOrders, termNamesAlph)]
+  termNamesSort <- termNamesAlph[order(termOrders, termNamesAlph)]
 
-  ixns <- which(term_orders_sort > 1)
-  n_ixns <- length(ixns)
-  ixn_orders <- term_orders_sort[ixns]
-  all_there <- rep(FALSE, n_ixns)
+  ixns <- which(termOrdersSort > 1)
+  nixn <- length(ixns)
+  ixnOrders <- termOrdersSort[ixns]
+  allThere <- rep(FALSE, nixn)
 
-  for(i in 1:n_ixns){
-    ixn_name <- term_names_sort[ixns[i]]
-    ixn_parts <- strsplit(ixn_name, ":")[[1]]
-    ixn_sub_order <- ixn_orders[i] - 1
-    to_check <- NULL
+  for (ixni in 1:nixn){
+    ixnName <- termNamesSort[ixns[ixni]]
+    ixnParts <- strsplit(ixnName, ":")[[1]]
+    ixnSubOrder <- ixnOrders[ixni] - 1
+    toCheck <- NULL
    
-    for(j in 1:ixn_sub_order){
-
-      comb_parts_options <- combn(ixn_parts, j)
-      add_to_check <- apply(comb_parts_options, 2, paste, collapse = ":")
-      to_check <- c(to_check, add_to_check)
+    for (orderi in 1:ixnSubOrder){
+      combPartsOptions <- combn(ixnParts, orderi)
+      addToCheck <- apply(combPartsOptions, 2, paste, collapse = ":")
+      toCheck <- c(toCheck, addToCheck)
 
     }
 
-    all_there[i] <- all(to_check %in% term_names_alph)
+    allThere[ixni] <- all(toCheck %in% termNamesAlph)
   }
-  output <- all(all_there)
+  output <- all(allThere)
   return(output)
 }
+
 
 

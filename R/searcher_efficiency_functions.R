@@ -1,6 +1,5 @@
-
 #' Fit a single searcher efficiency model.
-#'
+#' 
 #' Searcher efficiency is modeled as a function of the number of times a 
 #' carcass has been missed in previous searches and any number of covariates. 
 #' Format and usage parallel that of common \code{R} functions such as 
@@ -15,12 +14,12 @@
 #' decrease by a factor of \code{k} each time the carcass is missed in 
 #' searches. Both \code{p} and \code{k} may depend on covariates such as 
 #' ground cover, season, species, etc., and a separate model format 
-#' (\code{pformula} and \code{kformula}) may be entered for each. The models 
+#' (\code{formula_p} and \code{formula_k}) may be entered for each. The models 
 #' are entered as they would be in the familiar \code{lm} or \code{glm} 
 #' functions in R. For example, \code{p} might vary with \code{visibility}, 
 #' \code{season}, and \code{site}, while \code{k} varies only with 
 #' \code{visibility}. A user might then enter \code{p ~ visibility + season + 
-#' site} for \code{pformula} and \code{k ~ visibility} for \code{kformula}. 
+#' site} for \code{formula_p} and \code{k ~ visibility} for \code{formula_k}. 
 #' Other R conventions for defining formulas may also be used, with 
 #' \code{covar1:covar2} for the interaction between covariates 1 and 2 and 
 #' \code{covar1 * covar2} as short-hand for \code{covar1 + covar2 + 
@@ -35,20 +34,20 @@
 #' Additional columns with values for categorical covariates (e.g., 
 #' visibility = E, M, or D) may also be included.
 #'
-#' @param pformula Formula for p; an object of class "\code{\link{formula}}"
+#' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
 #' (or one that can be coerced to that class): a symbolic description of the
 #' model to be fitted. Details of model specification are given under 
 #' 'Details'.
 #'
 #' @param data Dataframe with results from searcher efficiency trials and any
-#' covariates included in \code{pformula} or {kformula} (required).
+#' covariates included in \code{formula_p} or {formula_k} (required).
 #'
-#' @param kformula Formula for k; an object of class "\code{\link{formula}}"
+#' @param formula_k Formula for k; an object of class "\code{\link{formula}}"
 #' (or one that can be coerced to that class): a symbolic description of the
 #' model to be fitted. Details of model specification are given under 
 #; 'Details'.
 #'
-#' @param obs_cols Vector of names of columns in \code{data} where results 
+#' @param obsCol Vector of names of columns in \code{data} where results 
 #' for each search occasion are stored (optional). If no \code{obs_cols} are 
 #' provided, \code{pkm} uses as \code{obs_cols} all columns with names that 
 #' begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
@@ -59,12 +58,12 @@
 #' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
 #' 'lastSearch')}.
 #'
-#' @param fixed_k Parameter for user-specified \code{k} value (optional). If a
-#' value is provided, \code{kformula} is ignored and the model is fit under 
+#' @param kFixed Parameter for user-specified \code{k} value (optional). If a
+#' value is provided, \code{formula_k} is ignored and the model is fit under 
 #' the assumption that the \code{k} parameter is fixed and known to be
 #' \code{fix_k}.
 #'
-#' @param init_k Initial value used for \code{k} in the optimization.
+#' @param kInit Initial value used for \code{k} in the optimization.
 #'
 #' @return \code{pkm} returns an object of class "\code{pkm}", which is a list
 #' whose components characterize the fit of the model. Due to the large number
@@ -77,7 +76,7 @@
 #' \describe{
 #'  \item{\code{call}}{the function call to fit the model}
 #'  \item{\code{predictors}}{list of covariates of \code{p} and/or \code{k}}
-#'  \item{\code{cellwise_pk}}{summary statistics for estimated cellwise 
+#'  \item{\code{cellwiseTable}}{summary statistics for estimated cellwise 
 #'    \code{p} and \code{k}, including the medians and upper & lower bounds
 #'    on 95% CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
@@ -94,22 +93,22 @@
 #' The following components are not printed automatically but can be accessed
 #' via the \code{$} operator:
 #' \describe{
-#'   \item{\code{p_formula}}{the model formula for the \code{p} parameter}
-#'   \item{\code{k_formula}}{the model formula for the \code{k} parameter}
-#'   \item{\code{beta_hat_p}}{parameter estimates for the terms in the 
+#'   \item{\code{formula_p}}{the model formula for the \code{p} parameter}
+#'   \item{\code{formula_k}}{the model formula for the \code{k} parameter}
+#'   \item{\code{betahat_p}}{parameter estimates for the terms in the 
 #'     regression model for for \code{p} (logit scale)}
-#'   \item{\code{beta_hat_k}}{parameter estimates for the terms in the 
+#'   \item{\code{betahat_k}}{parameter estimates for the terms in the 
 #'     regression model for for \code{k} (logit scale). If \code{k} is fixed 
 #'     and known, \code{betahat_k} is not calculated.}
-#'   \item{\code{beta_var}}{the variance-covariance matrix of the estimators
+#'   \item{\code{betavar}}{the variance-covariance matrix of the estimators
 #'     for \code{c(betahat_p, betahat_k}.}
-#'   \item{\code{mm_p_cells}}{a cellwise design matrix for covariate structure
-#'     of \code{p_formula}}
-#'   \item{\code{mm_k_cells}}{a cellwise design matrix for covariate structure 
-#'     of \code{k_formula}}
-#'   \item{\code{p_levels}}{all levels of each covariate of \code{p}}
-#'   \item{\code{k_levels}}{all levels of each covariate of \code{k}}
-#'   \item{\code{n_beta_p, n_beta_k}}{number of parameters to fit the \code{p}
+#'   \item{\code{cellMM_p}}{a cellwise model (design) matrix for covariate 
+#'     structure of \code{p_formula}}
+#'   \item{\code{cellMM_k}}{a cellwise model(design) matrix for covariate 
+#'     structure of \code{k_formula}}
+#'   \item{\code{levels_p}}{all levels of each covariate of \code{p}}
+#'   \item{\code{levels_k}}{all levels of each covariate of \code{k}}
+#'   \item{\code{nbeta_p, nbeta_k}}{number of parameters to fit the \code{p}
 #'     and \code{k} models}
 #'   \item{\code{cells}}{cell structure of the pk-model, i.e., combinations of
 #'     all levels for each covariate of \code{p} and \code{k}. For example, if
@@ -117,11 +116,11 @@
 #'     \code{covar2} has levels \code{"X"} and \code{"Y"}, then the cells 
 #'     would consist of \code{a.X}, \code{a.Y}, \code{b.X}, \code{b.Y}, 
 #'     \code{c.X}, and \code{c.Y}.}
-#'   \item{\code{n_cells}}{total number of cells}
-#'  \item{\code{p_predictors}}{list of covariates of \code{p}}
-#'  \item{\code{k_predictors}}{list of covariates of \code{k}}
+#'   \item{\code{ncell}}{total number of cells}
+#'  \item{\code{predictors_k}}{list of covariates of \code{p}}
+#'  \item{\code{predictors_p}}{list of covariates of \code{k}}
 #'  \item{\code{observations}}{observations used to fit the model}
-#'  \item{\code{fixed_k}}{the input \code{fixed_k}}
+#'  \item{\code{kFixed}}{the input \code{kFixed}}
 #'}
 #'
 #' @examples
@@ -131,636 +130,516 @@
 #' pkm(p ~ visibility, k = 0.7, data = pkmdat)
 #' @export
 #'
-pkm <- function(pformula, kformula = NULL, data, obs_cols = NULL, 
-                fixed_k = NULL, k_init = 0.7){
+pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
+         kFixed = NULL, kInit = 0.7){
 
-  if(length(obs_cols) == 0){
-    obs_cols <- grep("^[sS].*[0-9]$", names(data), value = TRUE)
-    n_obs_cols <- length(obs_cols)
-    if(n_obs_cols == 0){
+  if (length(obsCol) == 0){
+    obsCol <- grep("^[sS].*[0-9]$", names(data), value = TRUE)
+    nobsCol <- length(obsCol)
+    if (nobsCol == 0){
       stop("No observation columns provided and no appropriate column names.")
     }
   }
-  if(length(fixed_k) == 1){
-    if(fixed_k < 0){
+  if (length(kFixed) == 1){
+    if (kFixed < 0){
       message("Provided k is negative. Using k = 0")
-      fixed_k <- 0.0
+      kFixed <- 0.0
    }
-    if(fixed_k > 1){
+    if (kFixed > 1){
       message("Provided k too large. Using k = 1.0")
-      fixed_k <- 1.0
+      kFixed <- 1.0
     }
   }
-  if(length(kformula) > 0 & length(fixed_k) == 1){
+  if (length(formula_k) > 0 & length(kFixed) == 1){
     message("Both formula and fixed value provided for k, fixed value used.")
   }
-  if(length(kformula) == 0 & length(fixed_k) == 0){
+  if (length(formula_k) == 0 & length(kFixed) == 0){
     message("No formula or fixed value provided for k, fixed at 1.")
-    fixed_k <- 1
+    kFixed <- 1
   }
-  if(length(obs_cols) == 1 & length(fixed_k) == 0){
+  if (length(obsCol) == 1 & length(kFixed) == 0){
     message("Only one observation, k cannot be estimated, fixed at 1")
-    fixed_k <- 1
+    kFixed <- 1
   }
 
-  n_searches <- length(obs_cols)
-  n_carcasses <- nrow(data)
+  nsearch <- length(obsCol)
+  ncarc <- nrow(data)
 
-  obs_data <- data[ , obs_cols]
-  obs_data <- as.matrix(obs_data, ncol = n_searches)
-  first_obs <- obs_data[ , 1]
-  miss_data <- apply(obs_data, 2, match, 0)
+  obsData <- data[ , obsCol]
+  obsData <- as.matrix(obsData, ncol = nsearch)
+  firstObs <- obsData[ , 1]
+  missData <- apply(obsData, 2, match, 0)
 
-  misses <- apply(miss_data, 1, sum, na.rm = TRUE)
-  max_misses <- max(misses)
-  found <- apply(obs_data, 1, sum, na.rm = TRUE)
-  carcasses_found <- which(found == 1)
-  found_on <- numeric(n_carcasses)
-  found_on[carcasses_found] <- misses[carcasses_found] + 1
+  misses <- apply(missData, 1, sum, na.rm = TRUE)
+  maxmisses <- max(misses)
+  found <- apply(obsData, 1, sum, na.rm = TRUE)
+  carcassesFound <- which(found == 1)
+  foundOn <- numeric(ncarc)
+  foundOn[carcassesFound] <- misses[carcassesFound] + 1
 
-  p_preds <- all.vars(pformula[[3]])
-  n_p_preds <- length(p_preds)
-  p_formula <- formula(delete.response(terms(pformula)))
-  p_levels <- .getXlevels(terms(p_formula), data)
+  preds_p <- all.vars(formula_p[[3]])
+  formulaRHS_p <- formula(delete.response(terms(formula_p)))
+  levels_p <- .getXlevels(terms(formulaRHS_p), data)
 
-  k_preds <- character(0)
-  if(length(kformula) > 0){
-    k_preds <- all.vars(kformula[[3]])
-    n_k_preds <- length(k_preds)
-    k_formula <- formula(delete.response(terms(kformula)))
-    k_formula_out <- k_formula
-    k_levels <- .getXlevels(terms(k_formula), data)
+  preds_k <- character(0)
+  if (length(formula_k) > 0){
+    preds_k <- all.vars(formula_k[[3]])
+    formulaRHS_k <- formula(delete.response(terms(formula_k)))
+    levels_k <- .getXlevels(terms(formulaRHS_k), data)
   }
-  if(length(fixed_k) == 1){
-    k_preds <- character(0)
-    n_k_preds <- length(k_preds)
-    k_formula <- formula(~1)  
-    k_formula_out <- c(fixedk = fixed_k)
-    k_levels <- .getXlevels(terms(k_formula), data)
+  if (length(kFixed) == 1){
+    preds_k <- character(0)
+    formulaRHS_k <- formula(~1)  
+    formula_k <- c(fixedk = kFixed)
+    levels_k <- .getXlevels(terms(formulaRHS_k), data)
   }
 
-  pk_preds <- unique(c(p_preds, k_preds))
-  cells <- combine_preds(pk_preds, data)
-  n_cells <- nrow(cells)
-  cell_names <- cells$CellNames
+  preds <- unique(c(preds_p, preds_k))
+  cells <- combinePreds(preds, data)
+  ncell <- nrow(cells)
+  cellNames <- cells$CellNames
 
-  mm_p_data <- model.matrix(p_formula, data)
-  mm_k_data <- model.matrix(k_formula, data)
-  mm_pk_data <- t(cbind(mm_p_data, mm_k_data))
-  mm_p_cells <- model.matrix(p_formula, cells)
-  mm_k_cells <- model.matrix(k_formula, cells)
-  mm_pk_cells <- cbind(mm_p_cells, mm_k_cells)
+  dataMM_p <- model.matrix(formulaRHS_p, data)
+  dataMM_k <- model.matrix(formulaRHS_k, data)
+  dataMM <- t(cbind(dataMM_p, dataMM_k))
+  cellMM_p <- model.matrix(formulaRHS_p, cells)
+  cellMM_k <- model.matrix(formulaRHS_k, cells)
+  cellMM <- cbind(cellMM_p, cellMM_k)
 
-  n_beta_k <- ncol(mm_k_data)
-  n_beta_p <- ncol(mm_p_data)
-  n_beta_pk <- n_beta_p + n_beta_k
+  nbeta_k <- ncol(dataMM_k)
+  nbeta_p <- ncol(dataMM_p)
+  nbeta <- nbeta_p + nbeta_k
 
-  carcass_cell <- numeric(n_carcasses)
-  for(k in 1:n_cells){
-    group_pattern <- mm_pk_cells[k, ]
-    matching_matrix <- mm_pk_data == group_pattern
-    matching_parts <- apply(matching_matrix, 2, sum)
-    matching_total <- matching_parts == ncol(mm_pk_cells)
-    carcass_cell[matching_total] <- k
+  cellByCarc <- numeric(ncarc)
+  for (celli in 1:ncell){
+    groupPattern <- cellMM[celli, ]
+    matchingMatrix <- dataMM == groupPattern
+    matchingParts <- apply(matchingMatrix, 2, sum)
+    matchingTotal <- matchingParts == ncol(cellMM)
+    cellByCarc[matchingTotal] <- celli
   }
 
-  p_init <- numeric(n_carcasses)
-  for(k in 1:n_cells){
-    in_cell <- which(carcass_cell == k)
-    cell_mean_p_init <- mean(first_obs[in_cell])
-    p_init[in_cell] <- cell_mean_p_init
+  pInit <- numeric(ncarc)
+  for (celli in 1:ncell){
+    cellMatch <- which(cellByCarc == celli)
+    pInitCellMean <- mean(firstObs[cellMatch])
+    pInit[cellMatch] <- pInitCellMean
   }
-  p_init[which(p_init < 0.1)] <- 0.1
-  p_init[which(p_init > 0.9)] <- 0.9 
+  pInit[which(pInit < 0.1)] <- 0.1
+  pInit[which(pInit > 0.9)] <- 0.9 
 
-  p_cell_matrix <- solve(t(mm_p_data) %*% mm_p_data)
-  p_cell_impact <- t(mm_p_data) %*% logit(p_init)
-  beta_p_init <- p_cell_matrix %*% p_cell_impact
-  beta_k_init <- logit(rep(k_init, n_beta_k))
-  beta_init <- c(beta_p_init, beta_k_init)
+  cellMatrix_p <- solve(t(dataMM_p) %*% dataMM_p)
+  cellImpact_p <- t(dataMM_p) %*% logit(pInit)
+  betaInit_p <- cellMatrix_p %*% cellImpact_p
+  betaInit_k <- logit(rep(kInit, nbeta_k))
+  betaInit <- c(betaInit_p, betaInit_k)
 
-  if(length(fixed_k) == 1){
-    beta_init <- beta_init[-length(beta_init)]
+  if (length(kFixed) == 1){
+    betaInit <- betaInit[-length(betaInit)]
   }
 
-  MLE <- tryCatch(optim(par = beta_init, fn = pkLogLik, method = "BFGS",
-                        hessian = T, 
-                        carcass_cell = carcass_cell, 
-                        misses = misses, max_misses = max_misses,
-                        found_on = found_on, 
-                        mm_pk_cells = mm_pk_cells, 
-                        n_beta_p = n_beta_p,
-                        fixed_k = fixed_k), 
-                   error = function(x) {NA})
+  MLE <- tryCatch(
+           optim(par = betaInit, fn = pkLogLik, method = "BFGS", hessian = T, 
+             cellByCarc = cellByCarc, misses = misses, maxmisses = maxmisses,
+             foundOn = foundOn, cellMM = cellMM, nbeta_p = nbeta_p, 
+             kFixed = kFixed
+           ), 
+           error = function(x) {NA}
+         )
 
   convergence <- MLE$convergence
-  beta_hat <- MLE$par
-  beta_hessian <- MLE$hessian
+  betahat <- MLE$par
+  betaHessian <- MLE$hessian
   llik <- MLE$value
 
-  n_param <- length(beta_hat)  
-  AIC <- round(2 * llik + 2 * n_param, 3)
-  AICc_offset <- (2 * n_param * (n_param + 1)) / (n_carcasses - n_param - 1)
-  AICc <- AIC + round(AICc_offset, 3)
+  nparam <- length(betahat)  
+  AIC <- round(2 * llik + 2 * nparam, 3)
+  AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
+  AICc <- AIC + round(AICcOffset, 3)
 
-  beta_hat_p <- beta_hat[1:n_beta_p]
-  names(beta_hat_p) <- colnames(mm_p_data)
-  beta_hat_k <- NULL
-  if(length(fixed_k) == 0){
-    which_k <- (n_beta_p + 1):(n_beta_pk)
-    beta_hat_k <- beta_hat[which_k]
-    names(beta_hat_k) <- colnames(mm_k_data)
+  betahat_p <- betahat[1:nbeta_p]
+  names(betahat_p) <- colnames(dataMM_p)
+  betahat_k <- NULL
+  if (length(kFixed) == 0){
+    betahat_k <- betahat[(nbeta_p + 1):(nbeta)]
+    names(betahat_k) <- colnames(dataMM_k)
   }
 
-  beta_var <- tryCatch(solve(beta_hessian), error = function(x) {NA})
-  if(is.na(beta_var)[1]){
+  varbeta <- tryCatch(solve(betaHessian), error = function(x) {NA})
+  if (is.na(varbeta)[1]){
     stop("Model generates unstable variance estimate.")
   }
-  beta_var_p <- beta_var[1:n_beta_p, 1:n_beta_p]
-  p_cell_means <- mm_p_cells %*% beta_hat_p
-  p_cell_vars <- mm_p_cells %*% beta_var_p %*% t(mm_p_cells)
-  p_cell_sds <- sqrt(diag(p_cell_vars))
+  varbeta_p <- varbeta[1:nbeta_p, 1:nbeta_p]
+  cellMean_p <- cellMM_p %*% betahat_p
+  cellVar_p <- cellMM_p %*% varbeta_p %*% t(cellMM_p)
+  cellSD_p <- sqrt(diag(cellVar_p))
 
-  if(length(fixed_k) == 0){
-    which_k <- (n_beta_p + 1):(n_beta_pk)
-    beta_var_k <- beta_var[which_k, which_k]
-    k_cell_means <- mm_k_cells %*% beta_hat_k
-    k_cell_vars <- mm_k_cells %*% beta_var_k %*% t(mm_k_cells)
-    k_cell_sds <- sqrt(diag(k_cell_vars))
+  if (length(kFixed) == 0){
+    which_k <- (nbeta_p + 1):(nbeta)
+    varbeta_k <- varbeta[which_k, which_k]
+    cellMean_k <- cellMM_k %*% betahat_k
+    cellVar_k <- cellMM_k %*% varbeta_k %*% t(cellMM_k)
+    cellSD_k <- sqrt(diag(cellVar_k))
   }else{
-    k_cell_means <- rep(fixed_k, n_cells)
-    k_cell_sds <- rep(0, n_cells)
+    cellMean_k <- rep(kFixed, ncell)
+    cellSD_k <- rep(0, ncell)
   }
 
   probs <- data.frame(c(0.5, 0.025, 0.975))
-  cell_p_table <- apply(probs, 1, qnorm, mean = p_cell_means, sd = p_cell_sds)
-  cell_p_table <- matrix(cell_p_table, nrow = n_cells, ncol = 3)
-  cell_p_table <- round(alogit(cell_p_table), 5)
-  colnames(cell_p_table) <- c("p_median", "p_lower_95", "p_upper_95")
-  cell_k_table <- apply(probs, 1, qnorm, mean = k_cell_means, sd = k_cell_sds)
-  cell_k_table <- matrix(cell_k_table, nrow = n_cells, ncol = 3)
-  cell_k_table <- round(alogit(cell_k_table), 5)
-  colnames(cell_k_table) <- c("k_median", "k_lower_95", "k_upper_95")
-  cell_pk_table <- data.frame(cell = cell_names, cell_p_table, cell_k_table)
+  cellTable_p <- apply(probs, 1, qnorm, mean = cellMean_p, sd = cellSD_p)
+  cellTable_p <- matrix(cellTable_p, nrow = ncell, ncol = 3)
+  cellTable_p <- round(alogit(cellTable_p), 5)
+  colnames(cellTable_p) <- c("p_median", "p_lower_95", "p_upper_95")
+  cellTable_k <- apply(probs, 1, qnorm, mean = cellMean_k, sd = cellSD_k)
+  cellTable_k <- matrix(cellTable_k, nrow = ncell, ncol = 3)
+  cellTable_k <- round(alogit(cellTable_k), 5)
+  colnames(cellTable_k) <- c("k_median", "k_lower_95", "k_upper_95")
+  cellTable <- data.frame(cell = cellNames, cellTable_p, cellTable_k)
 
   output <- list()
   output$call <- match.call()
-  output$p_formula <- p_formula
-  output$k_formula <- k_formula_out
-  output$predictors <- pk_preds
-  output$p_predictors <- p_preds
-  output$k_predictors <- k_preds
+  output$formula_p <- formula_p
+  output$formula_k <- formula_k
+  output$predictors <- preds
+  output$predictors_p <- preds_p
+  output$predictors_k <- preds_k
   output$AIC <- AIC
   output$AICc <- AICc
   output$convergence <- convergence
-  output$beta_var <- beta_var
-  output$mm_p_cells <- mm_p_cells
-  output$mm_k_cells <- mm_k_cells
-  output$n_beta_p <- n_beta_p  
-  output$n_beta_k <- n_beta_k
-  output$beta_hat_p <- beta_hat_p
-  output$beta_hat_k <- beta_hat_k
-  output$p_levels <- p_levels
-  output$k_levels <- k_levels
+  output$varbeta <- varbeta
+  output$cellMM_p <- cellMM_p
+  output$cellMM_k <- cellMM_k
+  output$nbeta_p <- nbeta_p  
+  output$nbeta_k <- nbeta_k
+  output$betahat_p <- betahat_p
+  output$betahat_k <- betahat_k
+  output$levels_p <- levels_p
+  output$levels_k <- levels_k
   output$cells <- cells
-  output$n_cells <- n_cells
-  output$cellwise_pk <- cell_pk_table
-  output$observations <- obs_data
-  output$fixed_k <- fixed_k
+  output$ncell <- ncell
+  output$cellwiseTable <- cellTable
+  output$observations <- obsData
+  output$kFixed <- kFixed
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("p_predictors", "k_predictors", "fixed_k",
-                              "beta_hat_p", "beta_hat_k",  
-                              "mm_p_cells", "mm_k_cells", 
-                              "n_beta_p", "n_beta_k", 
-                              "p_levels", "k_levels",
-                              "convergence", "beta_var", "AIC",
-                              "cells", "n_cells", "observations")
+  attr(output, "hidden") <- c("predictors_p", "predictors_k", "kFixed",
+                              "betahat_p", "betahat_k", "cellMM_p", 
+                              "cellMM_k", "nbeta_p", "nbeta_k", "varbeta",
+                              "levels_p", "levels_k", "convergence",  
+                              "AIC", "cells", "ncell", "observations"
+                            )
+
   return(output)
 }
 
 #' @export
 #'
-print.pkm <- function(pk_model){
-  hid <- attr(pk_model, "hidden")
-  which_not_hid <- !names(pk_model) %in% hid
-  print(pk_model[which_not_hid])
+print.pkm <- function(model){
+  hid <- attr(model, "hidden")
+  notHid <- !names(model) %in% hid
+  print(model[notHid])
 }
-  
-#' Run a set of pkm models based on predictor inputs
-#'
-#' Function inputs follow \code{pkm}, with all simpler models being run
-#'  and returned as a list of model objects
-#'
-#' @param pformula Formula for p; an object of class "\code{\link{formula}}"
-#' (or one that can be coerced to that class): a symbolic description of the
-#' model to be fitted. Details of model specification are given under 
-#' 'Details'.
-#'
-#' @param data Dataframe with results from searcher efficiency trials and any
-#' covariates included in \code{pformula} or {kformula} (required).
-#'
-#' @param kformula Formula for k; an object of class "\code{\link{formula}}"
-#' (or one that can be coerced to that class): a symbolic description of the
-#' model to be fitted. Details of model specification are given under 
-#; 'Details'.
-#'
-#' @param obs_cols Vector of names of columns in \code{data} where results 
-#' for each search occasion are stored (optional). If no \code{obs_cols} are 
-#' provided, \code{pkm} uses as \code{obs_cols} all columns with names that 
-#' begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
-#' 's2', 's3', etc. This option is included as a convenience for the user, 
-#' but care must be taken that other data are not stored in columns with 
-#' names matching that pattern. Alternatively, \code{obs_cols} may be 
-#' entered as a vector of names, like \code{c('s1', 's2', 's3')}, 
-#' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
-#' 'lastSearch')}.
-#'
-#' @param fixed_k Parameter for user-specified \code{k} value (optional). If a
-#' value is provided, \code{kformula} is ignored and the model is fit under 
-#' the assumption that the \code{k} parameter is fixed and known to be
-#' \code{fix_k}.
-#'
-#' @param init_k Initial value used for \code{k} in the optimization.
-#'
-#' @return \code{pkm_set} returns a list of objects, each of class 
-#' "\code{pkm}", which each then a list whose components characterize the fit 
-#' of the specific model.
-#'
-pkm_set <- function(pformula, kformula = NULL, data, obs_cols = NULL, 
-                    fixed_k = NULL, k_init = 0.7){
-  if(length(fixed_k) == 1){
-    if(fixed_k < 0){
-      message("Provided k is negative. Using k = 0")
-      fixed_k <- 0.0
-   }
-    if(fixed_k > 1){
-      message("Provided k too large. Using k = 1.0")
-      fixed_k <- 1.0
-    }
-  }
-  if(length(kformula) > 0 & length(fixed_k) == 1){
-    message("Both formula and fixed value provided for k, fixed value used.")
-    kformula <- k ~ 1
-  }
-  if(length(kformula) == 0 & length(fixed_k) == 0){
-    message("No formula or fixed value provided for k, fixed at 1.")
-    kformula <- k ~ 1
-    fixed_k <- 1
-  }
-  if(length(obs_cols) == 1 & length(fixed_k) == 0){
-    message("Only one observation, k cannot be estimated, fixed at 1")
-    fixed_k <- 1
-  }
-  if(length(kformula) == 0){
-    kformula <- k ~ 1
-  }
-
-  p_terms <- attr(terms(pformula), "term.labels")
-  k_terms <- attr(terms(kformula), "term.labels")
-  n_p_terms <- length(p_terms)
-  n_k_terms <- length(k_terms)
-  n_p_formulae <- 2^(n_p_terms)
-  n_k_formulae <- 2^(n_k_terms)
-
-  p_drop_complex <- rep(1:n_p_terms, choose(n_p_terms, 1:n_p_terms))
-  p_drop_which <- numeric(0)
-  if(n_p_terms > 0){
-    for(i in 1:n_p_terms){
-      specifics_to_drop <- seq(1, choose(n_p_terms, (1:n_p_terms)[i]))
-      p_drop_which <- c(p_drop_which, specifics_to_drop)
-    }
-  }
-  pformula_ops <- vector("list", n_p_formulae)
-  pformula_ops[[1]] <- pformula
-  pformula_ops_keep <- rep(TRUE, n_p_formulae)
-  if(n_p_formulae > 1){
-    for(i in 2:n_p_formulae){
-      terms_drop_complex <- combn(p_terms, p_drop_complex[i - 1])
-      terms_drop_spec <- terms_drop_complex[ , p_drop_which[i - 1]]
-      terms_drop <- paste(terms_drop_spec, collapse = " - ")
-      formula_update <- paste(format(~.), "-", terms_drop)
-      updated_formula <- update.formula(pformula, formula_update)
-      pformula_ops[[i]] <- updated_formula
-      pformula_ops_keep[i] <- check_component_terms_included(updated_formula)
-    }
-    n_pformula_ops_keep <- sum(pformula_ops_keep)
-    which_pformula_ops_keep <- which(pformula_ops_keep == TRUE)
-    pformula_ops_kept <- vector("list", n_pformula_ops_keep)
-    for(i in 1:n_pformula_ops_keep){
-      pformula_ops_kept[[i]] <- pformula_ops[[which_pformula_ops_keep[i]]]
-    }
-  }else{
-    pformula_ops_kept <- pformula_ops
-  }
-  
-  k_drop_complex <- rep(1:n_k_terms, choose(n_k_terms, 1:n_k_terms))
-  k_drop_which <- numeric(0)
-  if(n_k_terms > 0){
-    for(i in 1:n_k_terms){
-      specifics_to_drop <- seq(1, choose(n_k_terms, (1:n_k_terms)[i]))
-      k_drop_which <- c(k_drop_which, specifics_to_drop)
-    }
-  }
-  kformula_ops <- vector("list", n_k_formulae)
-  kformula_ops[[1]] <- kformula
-  kformula_ops_keep <- rep(TRUE, n_k_formulae)
-  if(n_k_formulae > 1){
-    for(i in 2:n_k_formulae){
-      terms_drop_complex <- combn(k_terms, k_drop_complex[i - 1])
-      terms_drop_spec <- terms_drop_complex[ , k_drop_which[i - 1]]
-      terms_drop <- paste(terms_drop_spec, collapse = " - ")
-      formula_update <- paste(format(~.), "-", terms_drop)
-      updated_formula <- update.formula(kformula, formula_update)
-      kformula_ops[[i]] <- updated_formula
-      kformula_ops_keep[i] <- check_component_terms_included(updated_formula)
-    }
-    n_kformula_ops_keep <- sum(kformula_ops_keep)
-    which_kformula_ops_keep <- which(kformula_ops_keep == TRUE)
-    kformula_ops_kept <- vector("list", n_kformula_ops_keep)
-    for(i in 1:n_kformula_ops_keep){
-      kformula_ops_kept[[i]] <- kformula_ops[[which_kformula_ops_keep[i]]]
-    }
-  }else{
-    kformula_ops_kept <- kformula_ops
-  }
-
-  if(length(fixed_k) == 1){
-    kformula_ops_kept <- NA
-  }
-  pkformulae <- expand.grid(pformula_ops_kept, kformula_ops_kept)
-  pformulae <- pkformulae[ , 1]
-  kformulae <- pkformulae[ , 2]
-  if(length(fixed_k) == 1){
-    kformulae <- NULL
-  }
-  n_mods <- length(pformulae) 
-  output <- vector("list", n_mods)
-  for(i in 1:n_mods){
-    pform_i <- pformulae[i][[1]]
-    kform_i <- kformulae[i][[1]]
-    pkm_i <- tryCatch(pkm(pform_i, kform_i, data, obs_cols, fixed_k, k_init), 
-                      error = function(x) {"Failed model fit"})
-
-    p_name <- paste(format(pform_i), collapse = "")
-    p_name <- gsub("    ", "", p_name)
-    k_name <- paste(format(kform_i), collapse = "")
-    k_name <- gsub("    ", "", k_name)
-    if(length(fixed_k) == 1){
-      k_name <- paste("k fixed at ", fixed_k, sep = "")
-    }
-    mod_name <- paste(p_name, "; ", k_name, sep = "")
-
-    output[[i]] <- pkm_i
-    names(output)[i] <- mod_name
-  }
-  return(output)
-}
-
+ 
 #' Calculate the negative log-likelihood of a searcher efficiency model.
 #' 
 #' @param misses Number of searches when carcass was present but
 #'  not found.
-#' @param found_on Search on which carcass was found.
+#' @param foundOn Search on which carcass was found.
 #' @param beta Parameters to be optimized.
-#' @param n_beta_p Number of parameters associated with p
-#' @param carcass_cell Which cell each observation belongs to.
-#' @param max_misses Maximum possible number of misses for a carcass.
-#' @param mm_pk_cells Combined pk model matrix.
-#' @param fixed_k_value Value of k if fixed. 
+#' @param nbeta_p Number of parameters associated with p
+#' @param cellByCarc Which cell each observation belongs to.
+#' @param maxmisses Maximum possible number of misses for a carcass.
+#' @param cellMM Combined pk model matrix.
+#' @param kFixed Value of k if fixed. 
 #' @return Negative log likelihood of the observations, given the parameters.
 #' @examples
 #' NA
 #' @export 
 #'
-pkLogLik <- function(misses, found_on, beta, n_beta_p, 
-                         carcass_cell, max_misses, mm_pk_cells, 
-                         fixed_k = NULL){
+pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, 
+              cellMM, kFixed = NULL){
 
-  if(length(fixed_k) == 1){
-    beta <- c(beta, logit(fixed_k))
+  if (length(kFixed) == 1){
+    beta <- c(beta, logit(kFixed))
   }
 
-  n_cells <- nrow(mm_pk_cells)
-  n_pk <- length(beta)
-  which_p <- 1:n_beta_p
-  which_k <- (n_beta_p + 1):n_pk
+  ncell <- nrow(cellMM)
+  nbeta <- length(beta)
+  which_p <- 1:nbeta_p
+  which_k <- (nbeta_p + 1):nbeta
 
   beta_p <- beta[which_p]
   beta_k <- beta[which_k]
-  Beta <- matrix(0, nrow = n_pk, ncol = 2)
+  Beta <- matrix(0, nrow = nbeta, ncol = 2)
   Beta[which_p, 1] <- beta[which_p]
   Beta[which_k, 2] <- beta[which_k]
 
-  pk <- alogit(mm_pk_cells %*% Beta)
+  pk <- alogit(cellMM %*% Beta)
   p <- pk[ , 1]
   k <- pk[ , 2]
 
-  powk <- matrix(k, nrow = n_cells, ncol = max_misses + 1)
+  powk <- matrix(k, nrow = ncell, ncol = maxmisses + 1)
   powk[ , 1] <- 1
   powk <- matrixStats::rowCumprods(powk)
 
-  pmiss <- matrix(1 - (p * powk[ , 1:(max_misses + 1)]), nrow = n_cells)
+  pmiss <- matrix(1 - (p * powk[ , 1:(maxmisses + 1)]), nrow = ncell)
   pmiss <- matrixStats::rowCumprods(pmiss)
   pfind <- matrixStats::rowDiffs(1 - pmiss)
   pfind_si <- cbind(pk[ , 1], pfind)
 
-  not_found_cell <- carcass_cell[found_on == 0]
-  not_found_misses <- misses[found_on == 0]
-  not_found_cell_misses <- cbind(not_found_cell, not_found_misses)
-  found_cell <- carcass_cell[found_on > 0]
-  found_found_on <- found_on[found_on > 0]
-  found_cell_found_on <- cbind(found_cell, found_found_on)
+  notFoundCell <- cellByCarc[foundOn == 0]
+  notFoundMisses <- misses[foundOn == 0]
+  notFoundCellMisses <- cbind(notFoundCell, notFoundMisses)
+  foundCell <- cellByCarc[foundOn > 0]
+  foundFoundOn <- foundOn[foundOn > 0]
+  foundCellFoundOn <- cbind(foundCell, foundFoundOn)
 
-  lls_miss <- log(pmiss[not_found_cell_misses])
-  ll_miss <- sum(lls_miss)
-  lls_found <- log(pfind_si[found_cell_found_on])
-  ll_found <- sum(lls_found)
-  ll_miss_found <- ll_miss + ll_found
-  nll_miss_found <- -ll_miss_found
+  ll_miss <- sum(log(pmiss[notFoundCellMisses]))
+  ll_found <- sum(log(pfind_si[foundCellFoundOn]))
+  nll_total <- -(ll_miss + ll_found)
  
-  return(nll_miss_found)
-}
-  
-#' Simulate p and k parameters from a fitted pk model.
-#'
-#' @param n the number of simulation draws
-#'
-#' @param pk_model A \code{\link{pkm}} object (which is returned from 
-#'  \code{pkm()})
-#'
-#' @param seed optional input to set the seed of the RNG
-#'
-#' @return list of two matrices of \code{n} simulated \code{p} and \code{k} 
-#'  for cells defined by the \code{pk_model} object. 
-#'
-#' @examples
-#' data(pkmdat)
-#' pk_mod_1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
-#' simulated_pk <- rpk(n_sim = 10, pk_model = pk_mod_1)
-#' simulated_pk
-#'
-#' pk_mod_2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-#' rpk(n_sim = 10, pk_model = pk_mod_2)
-#' @export
-#'
-rpk <- function(n = 1, pk_model, seed = NULL){
-
-  if(!"pkm" %in% class(pk_model)){
-    stop("pk_model not of class pkm.")
-  }
-
-  n_beta_p <- pk_model$n_beta_p 
-  n_beta_k <- pk_model$n_beta_k
-  which_beta_k <- (n_beta_p + 1):(n_beta_p + n_beta_k)
-  fixed_k <- pk_model$fixed_k
-  mm_p_cells <- pk_model$mm_p_cells
-  mm_k_cells <- pk_model$mm_k_cells
-  n_cells <- pk_model$n_cells
-  cell_names <- pk_model$cells[,'CellNames']
-  beta_mean <- c(pk_model$beta_hat_p, pk_model$beta_hat_k)
-  beta_var <- pk_model$beta_var
-  method <-  "svd"
-
-  if(length(seed) > 0){
-    set.seed(seed)
-  }
-  beta_sim <- mvtnorm::rmvnorm(n, mean = beta_mean, sigma = beta_var, method)
-  p_sim <- as.matrix(alogit(beta_sim[ , 1:n_beta_p] %*% t(mm_p_cells)))
-  colnames(p_sim) <- cell_names
-  rownames(p_sim) <- sprintf("sim_%d", 1:n)
-
-  if(length(fixed_k) == 0){
-    k_sim <- as.matrix(alogit(beta_sim[ , which_beta_k] %*% t(mm_k_cells)))
-  }else{
-    k_sim <- matrix(fixed_k, ncol = n_cells, nrow = n)
-  }
-  colnames(k_sim) <- cell_names
-  rownames(k_sim) <- sprintf("sim_%d", 1:n)
-
-  output <- list(p_sim, k_sim)
-  names(output) <- c("p_sim", "k_sim")
-  return(output)
+  return(nll_total)
 }
 
-#' Create the  AICc tables for the searcher efficiency models
-#' 
-#' @param pk_model_set Set of searcher efficiency models fit to the same
-#'  observations
-#' @return AICc table
-#' @examples
-#' NA
-#' @export 
+#' Run a set of pkm models based on predictor inputs
 #'
-pkm_set_aicc_tab <- function(pk_model_set){
-
-  n_models <- length(pk_model_set)
-  pk_formulae <- names(pk_model_set)
-  p_formulae <- rep(NA, n_models)
-  k_formulae <- rep(NA, n_models)
-  AICc <- rep(NA, n_models)
-  delta_AICc <- rep(NA, n_models)
-
-  if(n_models == 1){
-    split_pk_formulae <- strsplit(pk_formulae, "; ")[[1]]
-    p_formulae <- split_pk_formulae[1] 
-    k_formulae <- split_pk_formulae[2]
-    AICc <- tryCatch(pk_model_set[[1]]$AICc, error = function(x) {1e7})
-    delta_AICc <- 0    
-    AICc_order <- 1
-  }else{
-    for(i in 1:n_models){
-      split_pk_formulae_i <- strsplit(pk_formulae[i], "; ")[[1]]
-      p_formulae[i] <- split_pk_formulae_i[1] 
-      k_formulae[i] <- split_pk_formulae_i[2]
-      AICc[i] <- tryCatch(pk_model_set[[i]]$AICc, error = function(x) {1e7})
-    }
-    AICc_order <- order(AICc)
-    delta_AICc <- round(AICc - min(AICc), 3)
-    which_fails <- which(AICc == 1e7)
-    AICc[which_fails] <- NA
-    delta_AICc[which_fails] <- NA
-  }
-
-  output <- data.frame(p_formulae, k_formulae, AICc, delta_AICc)
-  output <- output[AICc_order, ]
-  colnames(output) <- c("p formula", "k formula", "AICc", "Delta AICc")
-  which_AICc_NA <- which(is.na(output$AICc))
-  which_AICc_max <- which(output$AICc == 1e7)
-  if(length(which_AICc_NA) > 0){
-    message("Models with incorrect specification were removed from output.")
-    output <- output[-which_AICc_NA, ]
-  }
-  if(length(which_AICc_max) > 0){
-    message("Models that failed during fit were removed from output.")
-    output <- output[-which_AICc_max, ]
-  }
-  return(output)
-}
-
-#' Fit all possible searcher efficiency models across all size classes.
+#' Function inputs follow \code{pkm}, with all simpler models being run
+#'  and returned as a list of model objects
 #'
-#' Function inputs generally follow \code{pkm_set} and \code{pkm} but with an 
-#'  additional size column input and calculation of the set of pkm models for
-#'  each of the size classes
-#'
-#' @param pformula Formula for p; an object of class "\code{\link{formula}}"
+#' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
 #' (or one that can be coerced to that class): a symbolic description of the
 #' model to be fitted. Details of model specification are given under 
 #' 'Details'.
 #'
 #' @param data Dataframe with results from searcher efficiency trials and any
-#' covariates included in \code{pformula} or {kformula} (required).
+#' covariates included in \code{formula_p} or {formula_k} (required).
 #'
-#' @param kformula Formula for k; an object of class "\code{\link{formula}}"
+#' @param formula_k Formula for k; an object of class "\code{\link{formula}}"
 #' (or one that can be coerced to that class): a symbolic description of the
 #' model to be fitted. Details of model specification are given under 
 #; 'Details'.
 #'
-#' @param obs_cols Vector of names of columns in \code{data} where results 
-#' for each search occasion are stored (optional). If no \code{obs_cols} are 
-#' provided, \code{pkm} uses as \code{obs_cols} all columns with names that 
+#' @param obsCol Vector of names of columns in \code{data} where results 
+#' for each search occasion are stored (optional). If no \code{obsCol} are 
+#' provided, \code{pkm} uses as \code{obsCol} all columns with names that 
 #' begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
 #' 's2', 's3', etc. This option is included as a convenience for the user, 
 #' but care must be taken that other data are not stored in columns with 
-#' names matching that pattern. Alternatively, \code{obs_cols} may be 
+#' names matching that pattern. Alternatively, \code{obsCol} may be 
 #' entered as a vector of names, like \code{c('s1', 's2', 's3')}, 
 #' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
 #' 'lastSearch')}.
 #'
-#' @param fixed_k Parameter for user-specified \code{k} value (optional). If a
-#' value is provided, \code{kformula} is ignored and the model is fit under 
+#' @param kFixed Parameter for user-specified \code{k} value (optional). If a
+#' value is provided, \code{formula_k} is ignored and the model is fit under 
+#' the assumption that the \code{k} parameter is fixed and known to be
+#' \code{fix_k}.
+#'
+#' @param kInit Initial value used for \code{k} in the optimization.
+#'
+#' @return \code{pkmSet} returns a list of objects, each of class 
+#' "\code{pkm}", which each then a list whose components characterize the fit 
+#' of the specific model.
+#'
+pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
+             kFixed = NULL, kInit = 0.7){
+
+  if (length(kFixed) == 1){
+    if (kFixed < 0){
+      message("Provided k is negative. Using k = 0")
+      kFixed <- 0.0
+   }
+    if (kFixed > 1){
+      message("Provided k too large. Using k = 1.0")
+      kFixed <- 1.0
+    }
+  }
+  if (length(formula_k) > 0 & length(kFixed) == 1){
+    message("Both formula and fixed value provided for k, fixed value used.")
+    formula_k <- k ~ 1
+  }
+  if (length(formula_k) == 0 & length(kFixed) == 0){
+    message("No formula or fixed value provided for k, fixed at 1.")
+    formula_k <- k ~ 1
+    kFixed <- 1
+  }
+  if (length(obsCol) == 1 & length(kFixed) == 0){
+    message("Only one observation, k cannot be estimated, fixed at 1")
+    kFixed <- 1
+  }
+  if (length(formula_k) == 0){
+    formula_k <- k ~ 1
+  }
+
+  # create the set of models to explore, based on the input parameters
+  
+  terms_p <- attr(terms(formula_p), "term.labels")
+  terms_k <- attr(terms(formula_k), "term.labels")
+  nterms_p <- length(terms_p)
+  nterms_k <- length(terms_k)
+  nformula_p <- 2^(nterms_p)
+  nformula_k <- 2^(nterms_k)
+
+  dropComplex_p <- rep(1:nterms_p, choose(nterms_p, 1:nterms_p))
+  dropWhich_p <- numeric(0)
+  if (nterms_p > 0){
+    for (termi in 1:nterms_p){
+      specificDrop <- seq(1, choose(nterms_p, (1:nterms_p)[termi]))
+      dropWhich_p <- c(dropWhich_p, specificDrop)
+    }
+  }
+  optionFormula_p <- vector("list", nformula_p)
+  optionFormula_p[[1]] <- formula_p
+  keepFormula_p <- rep(TRUE, nformula_p)
+  if (nformula_p > 1){
+    for (formi in 2:nformula_p){
+      termDropComplex <- combn(terms_p, dropComplex_p[formi - 1])
+      termDropSpec <- termDropComplex[ , dropWhich_p[formi - 1]]
+      termDrop <- paste(termDropSpec, collapse = " - ")
+      formulaUpdate <- paste(format(~.), "-", termDrop)
+      updatedFormula <- update.formula(formula_p, formulaUpdate)
+      optionFormula_p[[formi]] <- updatedFormula
+      keepFormula_p[formi] <- checkComponents(updatedFormula)
+    }
+    nkeepFormula_p <- sum(keepFormula_p)
+    whichKeepFormula_p <- which(keepFormula_p == TRUE)
+    keptFormula_p <- vector("list", nkeepFormula_p)
+    for (kepti in 1:nkeepFormula_p){
+      keptFormula_p[[kepti]] <- optionFormula_p[[whichKeepFormula_p[kepti]]]
+    }
+  }else{
+    keptFormula_p <- optionFormula_p
+  }
+  
+  dropComplex_k <- rep(1:nterms_k, choose(nterms_k, 1:nterms_k))
+  dropWhich_k <- numeric(0)
+  if (nterms_k > 0){
+    for (termi in 1:nterms_k){
+      specificDrop <- seq(1, choose(nterms_k, (1:nterms_k)[termi]))
+      dropWhich_k <- c(dropWhich_k, specificDrop)
+    }
+  }
+  optionFormula_k <- vector("list", nformula_k)
+  optionFormula_k[[1]] <- formula_k
+  keepFormula_k <- rep(TRUE, nformula_k)
+  if (nformula_k > 1){
+    for (formi in 2:nformula_k){
+      termDropComplex <- combn(terms_k, dropComplex_k[formi - 1])
+      termDropSpec <- termDropComplex[ , dropWhich_k[formi - 1]]
+      termDrop <- paste(termDropSpec, collapse = " - ")
+      formulaUpdate <- paste(format(~.), "-", termDrop)
+      updatedFormula <- update.formula(formula_k, formulaUpdate)
+      optionFormula_k[[formi]] <- updatedFormula
+      keepFormula_k[formi] <- checkComponents(updatedFormula)
+    }
+    nkeepFormula_k <- sum(keepFormula_k)
+    whichKeepFormula_k <- which(keepFormula_k == TRUE)
+    keptFormula_k <- vector("list", nkeepFormula_k)
+    for (kepti in 1:nkeepFormula_k){
+      keptFormula_k[[kepti]] <- optionFormula_k[[whichKeepFormula_k[kepti]]]
+    }
+  }else{
+    keptFormula_k <- optionFormula_k
+  }
+  if (length(kFixed) == 1){
+    keptFormula_k <- NA
+  }
+
+  expandedKeptFormulae <- expand.grid(keptFormula_p, keptFormula_k)
+  keptFormula_p <- expandedKeptFormulae[ , 1]
+  keptFormula_k <- expandedKeptFormulae[ , 2]
+  if (length(kFixed) == 1){
+    keptFormula_k <- NULL
+  }
+  nmod <- nrow(expandedKeptFormulae) 
+  output <- vector("list", nmod)
+  for (modi in 1:nmod){
+    formi_p <- keptFormula_p[modi][[1]]
+    formi_k <- keptFormula_k[modi][[1]]
+    pkm_i <- tryCatch(
+               pkm(formi_p, formi_k, data, obsCol, kFixed, kInit), 
+               error = function(x) {"Failed model fit"}
+             )
+
+    name_p <- paste(format(formi_p), collapse = "")
+    name_p <- gsub("    ", "", name_p)
+    name_k <- paste(format(formi_k), collapse = "")
+    name_k <- gsub("    ", "", name_k)
+    if(length(kFixed) == 1){
+      name_k <- paste("k fixed at ", kFixed, sep = "")
+    }
+    modName <- paste(name_p, "; ", name_k, sep = "")
+
+    output[[modi]] <- pkm_i
+    names(output)[modi] <- modName
+  }
+  return(output)
+}
+
+
+#' Fit all possible searcher efficiency models across all size classes.
+#'
+#' Function inputs generally follow \code{pkmSet} and \code{pkm} but with an 
+#'  additional size column input and calculation of the set of pkm models for
+#'  each of the size classes
+#'
+#' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
+#' (or one that can be coerced to that class): a symbolic description of the
+#' model to be fitted. Details of model specification are given under 
+#' 'Details'.
+#'
+#' @param data Dataframe with results from searcher efficiency trials and any
+#' covariates included in \code{formula_p} or {formula_k} (required).
+#'
+#' @param formula_k Formula for k; an object of class "\code{\link{formula}}"
+#' (or one that can be coerced to that class): a symbolic description of the
+#' model to be fitted. Details of model specification are given under 
+#; 'Details'.
+#'
+#' @param obsCols Vector of names of columns in \code{data} where results 
+#' for each search occasion are stored (optional). If no \code{obsCols} are 
+#' provided, \code{pkm} uses as \code{obsCols} all columns with names that 
+#' begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
+#' 's2', 's3', etc. This option is included as a convenience for the user, 
+#' but care must be taken that other data are not stored in columns with 
+#' names matching that pattern. Alternatively, \code{obsCols} may be 
+#' entered as a vector of names, like \code{c('s1', 's2', 's3')}, 
+#' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
+#' 'lastSearch')}.
+#'
+#' @param kFixed Parameter for user-specified \code{k} value (optional). If a
+#' value is provided, \code{formula_k} is ignored and the model is fit under 
 #' the assumption that the \code{k} parameter is fixed and known to be
 #' \code{fix_k}.
 #'
 #' @param init_k Initial value used for \code{k} in the optimization.
 #'
-#' @param sizeclass_col Name of colum in \code{data} where the size classes
+#' @param sizeclassCol Name of colum in \code{data} where the size classes
 #'  are recorded
 #'
-#' @return \code{pkm_set} returns a list of objects, each of which is a list
+#' @return \code{pkmSet} returns a list of objects, each of which is a list
 #'  of \code{pkm}" outputs (each corresponding to the fit of a specific model
 #'  within the set of \code{pkm} models fit for the given size class), that is
 #'  of length equal to the total number of size classes
 #'
-pkm_set_size <- function(pformula, kformula = NULL, data, obs_cols = NULL, 
-                         sizeclass_col = NULL, fixed_k = NULL, k_init = 0.7){
+pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL, 
+                sizeclassCol = NULL, kFixed = NULL, kInit = 0.7){
 
-  if(length(sizeclass_col) == 0){
-    message("No size class provided, function run as if pkm_set")
-    output <- pkm_set(pformula, kformula, data, obs_cols, fixed_k, k_init)
+  if (length(sizeclassCol) == 0){
+    message("No size class provided, function run as if pkmSet")
+    output <- pkmSet(formula_p, formula_k, data, obsCols, kFixed, kInit)
     return(output)
   }
 
-  sizeclass_data <- as.character(data[ , sizeclass_col])
-  sizeclasses <- unique(sizeclass_data)
-  n_sizeclasses <- length(sizeclasses)
+  sizeclassData <- as.character(data[ , sizeclassCol])
+  sizeclasses <- unique(sizeclassData)
+  nsizeclasses <- length(sizeclasses)
 
-  out <- vector("list", n_sizeclasses)
+  out <- vector("list", nsizeclasses)
   names(out) <- sizeclasses
-  for(i in 1:n_sizeclasses){
-    sizeclass_match <- which(sizeclass_data == sizeclasses[i])
-    data_i <- data[sizeclass_match, ]
-    out[[i]] <- pkm_set(pformula, kformula, data_i, obs_cols, fixed_k, k_init)
+  for (sci in 1:nsizeclasses){
+    sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
+    data_i <- data[sizeclassMatch, ]
+    out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCols, kFixed, kInit)
   }
 
   return(out)
@@ -768,48 +647,168 @@ pkm_set_size <- function(pformula, kformula = NULL, data, obs_cols = NULL,
 
 #' Verify that a suite of searcher efficiency models all fit successfully.
 #'
-#' @param pkm_to_check A \code{pkm} model or a set of them or a suite of sets
+#' @param pkmToCheck A \code{pkm} model or a set of them or a suite of sets
 #'  associated with multiple sizes
 #'
 #' @return A single (total) logcal 
 #'
 #' @export
 #'
-pkm_check <- function(pkm_to_check){
+pkmCheck <- function(pkmToCheck){
 
-  check_status <- 0
-  class_single <- class(pkm_to_check)
-  class_set <- class(pkm_to_check[[1]])
-  class_size <- class(pkm_to_check[[1]][[1]]) 
-  if("pkm" %in% class_single){
-    check_status <- 1
+  status <- 0
+  classSingle <- class(pkmToCheck)
+  classSet <- class(pkmToCheck[[1]])
+  classSize <- class(pkmToCheck[[1]][[1]]) 
+  if ("pkm" %in% classSingle){
+    status <- 1
   }
-  if("pkm" %in% class_set){
-    n_in_set <- length(pkm_to_check)
-    checks <- rep(0, n_in_set)
-    for(i in 1:n_in_set){
-      check_class <- class(pkm_to_check[[i]])
-      if("pkm" %in% check_class){
-        checks[i] <- 1
+  if ("pkm" %in% classSet){
+    ninSet <- length(pkmToCheck)
+    checks <- rep(0, ninSet)
+    for (modi in 1:ninSet){
+      checkClass <- class(pkmToCheck[[modi]])
+      if ("pkm" %in% checkClass){
+        checks[modi] <- 1
       }
     }
-    check_status <- floor(mean(checks))
+    status <- floor(mean(checks))
   }
-  if("pkm" %in% class_size){
-    n_sizeclasses <- length(pkm_to_check)
-    n_in_set <- length(pkm_to_check[[1]])
-    checks <- matrix(0, n_sizeclasses, n_in_set)
-    for(i in 1:n_sizeclasses){
-      for(j in 1:n_in_set){
-        check_class <- class(pkm_to_check[[i]][[j]])
-        if("pkm" %in% check_class){
-          checks[i, j] <- 1
+  if ("pkm" %in% classSize){
+    nsizeclasses <- length(pkmToCheck)
+    ninSet <- length(pkmToCheck[[1]])
+    checks <- matrix(0, nsizeclasses, ninSet)
+    for (sci in 1:nsizeclasses){
+      for (modi in 1:ninSet){
+        checkClass <- class(pkmToCheck[[sci]][[modi]])
+        if ("pkm" %in% checkClass){
+          checks[sci, modi] <- 1
         }
       }
     }
-    check_status <- floor(mean(checks))
+    status <- floor(mean(checks))
   }
-  output <- as.logical(check_status)
+  output <- as.logical(status)
   return(output)
 }
+
+#' Create the  AICc tables for the searcher efficiency models
+#' 
+#' @param pkmset Set of searcher efficiency models fit to the same
+#'  observations
+#' @return AICc table
+#' @examples
+#' NA
+#' @export 
+#'
+pkmSetAICcTab <- function(pkmset){
+
+  nmod <- length(pkmset)
+  formulas <- names(pkmset)
+  formulas_p <- rep(NA, nmod)
+  formulas_k <- rep(NA, nmod)
+  AICc <- rep(NA, nmod)
+  deltaAICc <- rep(NA, nmod)
+
+  if (nmod == 1){
+    splitFormulas <- strsplit(formulas, "; ")[[1]]
+    formulas_p <- splitFormulas[1] 
+    formulas_k <- splitFormulas[2]
+    AICc <- tryCatch(pkmset[[1]]$AICc, error = function(x) {1e7})
+    deltaAICc <- 0    
+    AICcOrder <- 1
+  }else{
+    for (modi in 1:nmod){
+      splitFormulas_i <- strsplit(formulas[modi], "; ")[[1]]
+      formulas_p[modi] <- splitFormulas_i[1] 
+      formulas_k[modi] <- splitFormulas_i[2]
+      AICc[modi] <- tryCatch(pkmset[[modi]]$AICc, error = function(x) {1e7})
+    }
+    AICcOrder <- order(AICc)
+    deltaAICc <- round(AICc - min(AICc), 3)
+    which_fails <- which(AICc == 1e7)
+    AICc[which_fails] <- NA
+    deltaAICc[which_fails] <- NA
+  }
+
+  output <- data.frame(formulas_p, formulas_k, AICc, deltaAICc)
+  output <- output[AICcOrder, ]
+  colnames(output) <- c("p formula", "k formula", "AICc", "Delta AICc")
+  whichAICcNA <- which(is.na(output$AICc))
+  whichAICcMax <- which(output$AICc == 1e7)
+  if (length(whichAICcNA) > 0){
+    message("Models with incorrect specification were removed from output.")
+    output <- output[-whichAICcNA, ]
+  }
+  if (length(whichAICcMax) > 0){
+    message("Models that failed during fit were removed from output.")
+    output <- output[-whichAICcMax, ]
+  }
+  return(output)
+}
+
+
+#' Simulate p and k parameters from a fitted pk model.
+#'
+#' @param n the number of simulation draws
+#'
+#' @param model A \code{\link{pkm}} object (which is returned from 
+#'  \code{pkm()})
+#'
+#' @param seed optional input to set the seed of the RNG
+#'
+#' @return list of two matrices of \code{n} simulated \code{p} and \code{k} 
+#'  for cells defined by the \code{model} object. 
+#'
+#' @examples
+#' data(pkmdat)
+#' pkmod_1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
+#' simulated_pk <- rpk(n = 10, model = pkmod_1)
+#' simulated_pk
+#'
+#' pkmod_2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
+#' rpk(n = 10, model = pkmod_2)
+#' @export
+#'
+rpk <- function(n = 1, model, seed = NULL){
+
+  if (!"pkm" %in% class(model)){
+    stop("model not of class pkm.")
+  }
+
+  nbeta_p <- model$nbeta_p 
+  nbeta_k <- model$nbeta_k
+  which_beta_k <- (nbeta_p + 1):(nbeta_p + nbeta_k)
+  kFixed <- model$kFixed
+  cellMM_p <- model$cellMM_p
+  cellMM_k <- model$cellMM_k
+  ncell <- model$ncell
+  cellNames <- model$cells[,'CellNames']
+  meanbeta <- c(model$betahat_p, model$betahat_k)
+  varbeta <- model$varbeta
+  method <-  "svd"
+
+  if (length(seed) > 0){
+    set.seed(seed)
+  }
+  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
+  sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
+  colnames(sim_p) <- cellNames
+
+  if (length(kFixed) == 0){
+    sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
+  }else{
+    sim_k <- matrix(kFixed, ncol = ncell, nrow = n)
+  }
+  colnames(sim_k) <- cellNames
+
+  output <- vector("list", ncell)
+  names(output) <- cellNames
+  for (celli in 1:ncell){
+    pkdf <- data.frame(p = sim_p[ , celli], k = sim_k[ , celli])
+    output[[celli]] <-  pkdf
+  }
+  return(output)
+}
+
 
