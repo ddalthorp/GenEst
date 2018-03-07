@@ -242,8 +242,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
            optim(par = betaInit, fn = pkLogLik, method = "BFGS", hessian = T, 
              cellByCarc = cellByCarc, misses = misses, maxmisses = maxmisses,
              foundOn = foundOn, cellMM = cellMM, nbeta_p = nbeta_p, 
-             kFixed = kFixed), 
-           error = function(x) {NA})
+             kFixed = kFixed
+           ), 
+           error = function(x) {NA}
+         )
 
   convergence <- MLE$convergence
   betahat <- MLE$par
@@ -323,7 +325,8 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
                               "betahat_p", "betahat_k", "cellMM_p", 
                               "cellMM_k", "nbeta_p", "nbeta_k", "varbeta",
                               "levels_p", "levels_k", "convergence",  
-                              "AIC", "cells", "ncell", "observations")
+                              "AIC", "cells", "ncell", "observations"
+                            )
 
   return(output)
 }
@@ -554,7 +557,8 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formi_k <- keptFormula_k[modi][[1]]
     pkm_i <- tryCatch(
                pkm(formi_p, formi_k, data, obsCol, kFixed, kInit), 
-               error = function(x) {"Failed model fit"})
+               error = function(x) {"Failed model fit"}
+             )
 
     name_p <- paste(format(formi_p), collapse = "")
     name_p <- gsub("    ", "", name_p)
@@ -574,7 +578,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 
 #' Fit all possible searcher efficiency models across all size classes.
 #'
-#' Function inputs generally follow \code{pkm_set} and \code{pkm} but with an 
+#' Function inputs generally follow \code{pkmSet} and \code{pkm} but with an 
 #'  additional size column input and calculation of the set of pkm models for
 #'  each of the size classes
 #'
@@ -612,7 +616,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' @param sizeclassCol Name of colum in \code{data} where the size classes
 #'  are recorded
 #'
-#' @return \code{pkm_set} returns a list of objects, each of which is a list
+#' @return \code{pkmSet} returns a list of objects, each of which is a list
 #'  of \code{pkm}" outputs (each corresponding to the fit of a specific model
 #'  within the set of \code{pkm} models fit for the given size class), that is
 #'  of length equal to the total number of size classes
@@ -621,8 +625,8 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL,
                 sizeclassCol = NULL, kFixed = NULL, kInit = 0.7){
 
   if (length(sizeclassCol) == 0){
-    message("No size class provided, function run as if pkm_set")
-    output <- pkm_set(formula_p, formula_k, data, obsCols, kFixed, kInit)
+    message("No size class provided, function run as if pkmSet")
+    output <- pkmSet(formula_p, formula_k, data, obsCols, kFixed, kInit)
     return(output)
   }
 
