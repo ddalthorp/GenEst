@@ -58,7 +58,7 @@
 #' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
 #' 'lastSearch')}.
 #'
-#' @param kFixed Parameter for user-specified \code{k} value (optional). If a
+#' @param kFix Parameter for user-specified \code{k} value (optional). If a
 #' value is provided, \code{formula_k} is ignored and the model is fit under 
 #' the assumption that the \code{k} parameter is fixed and known to be
 #' \code{fix_k}.
@@ -120,7 +120,7 @@
 #'  \item{\code{predictors_k}}{list of covariates of \code{p}}
 #'  \item{\code{predictors_p}}{list of covariates of \code{k}}
 #'  \item{\code{observations}}{observations used to fit the model}
-#'  \item{\code{kFixed}}{the input \code{kFixed}}
+#'  \item{\code{kFix}}{the input \code{kFix}}
 #'}
 #'
 #' @examples
@@ -130,8 +130,8 @@
 #' pkm(p ~ visibility, k = 0.7, data = pkmdat)
 #' @export
 #'
-pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-         kFixed = NULL, kInit = 0.7){
+pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, kFix = NULL, 
+         kInit = 0.7){
 
   if (length(obsCol) == 0){
     obsCol <- grep("^[sS].*[0-9]$", names(data), value = TRUE)
@@ -140,26 +140,26 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
       stop("No observation columns provided and no appropriate column names.")
     }
   }
-  if (length(kFixed) == 1){
-    if (kFixed < 0){
+  if (length(kFix) == 1){
+    if (kFix < 0){
       message("Provided k is negative. Using k = 0")
-      kFixed <- 0.0
+      kFix <- 0.0
    }
-    if (kFixed > 1){
+    if (kFix > 1){
       message("Provided k too large. Using k = 1.0")
-      kFixed <- 1.0
+      kFix <- 1.0
     }
   }
-  if (length(formula_k) > 0 & length(kFixed) == 1){
+  if (length(formula_k) > 0 & length(kFix) == 1){
     message("Both formula and fixed value provided for k, fixed value used.")
   }
-  if (length(formula_k) == 0 & length(kFixed) == 0){
+  if (length(formula_k) == 0 & length(kFix) == 0){
     message("No formula or fixed value provided for k, fixed at 1.")
-    kFixed <- 1
+    kFix <- 1
   }
-  if (length(obsCol) == 1 & length(kFixed) == 0){
+  if (length(obsCol) == 1 & length(kFix) == 0){
     message("Only one observation, k cannot be estimated, fixed at 1")
-    kFixed <- 1
+    kFix <- 1
   }
 
   nsearch <- length(obsCol)
@@ -187,10 +187,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formulaRHS_k <- formula(delete.response(terms(formula_k)))
     levels_k <- .getXlevels(terms(formulaRHS_k), data)
   }
-  if (length(kFixed) == 1){
+  if (length(kFix) == 1){
     preds_k <- character(0)
     formulaRHS_k <- formula(~1)  
-    formula_k <- c(fixedk = kFixed)
+    formula_k <- c(fixedk = kFix)
     levels_k <- .getXlevels(terms(formulaRHS_k), data)
   }
 
@@ -234,7 +234,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   betaInit_k <- logit(rep(kInit, nbeta_k))
   betaInit <- c(betaInit_p, betaInit_k)
 
-  if (length(kFixed) == 1){
+  if (length(kFix) == 1){
     betaInit <- betaInit[-length(betaInit)]
   }
 
@@ -242,7 +242,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
            optim(par = betaInit, fn = pkLogLik, method = "BFGS", hessian = T, 
              cellByCarc = cellByCarc, misses = misses, maxmisses = maxmisses,
              foundOn = foundOn, cellMM = cellMM, nbeta_p = nbeta_p, 
-             kFixed = kFixed), 
+             kFix = kFix), 
            error = function(x) {NA})
 
   convergence <- MLE$convergence
@@ -258,7 +258,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   betahat_p <- betahat[1:nbeta_p]
   names(betahat_p) <- colnames(dataMM_p)
   betahat_k <- NULL
-  if (length(kFixed) == 0){
+  if (length(kFix) == 0){
     betahat_k <- betahat[(nbeta_p + 1):(nbeta)]
     names(betahat_k) <- colnames(dataMM_k)
   }
@@ -272,14 +272,14 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   cellVar_p <- cellMM_p %*% varbeta_p %*% t(cellMM_p)
   cellSD_p <- sqrt(diag(cellVar_p))
 
-  if (length(kFixed) == 0){
+  if (length(kFix) == 0){
     which_k <- (nbeta_p + 1):(nbeta)
     varbeta_k <- varbeta[which_k, which_k]
     cellMean_k <- cellMM_k %*% betahat_k
     cellVar_k <- cellMM_k %*% varbeta_k %*% t(cellMM_k)
     cellSD_k <- sqrt(diag(cellVar_k))
   }else{
-    cellMean_k <- rep(kFixed, ncell)
+    cellMean_k <- rep(kFix, ncell)
     cellSD_k <- rep(0, ncell)
   }
 
@@ -317,9 +317,9 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output$ncell <- ncell
   output$cellwiseTable <- cellTable
   output$observations <- obsData
-  output$kFixed <- kFixed
+  output$kFix <- kFix
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("predictors_p", "predictors_k", "kFixed",
+  attr(output, "hidden") <- c("predictors_p", "predictors_k", "kFix",
                               "betahat_p", "betahat_k", "cellMM_p", 
                               "cellMM_k", "nbeta_p", "nbeta_k", "varbeta",
                               "levels_p", "levels_k", "convergence",  
@@ -346,17 +346,17 @@ print.pkm <- function(model){
 #' @param cellByCarc Which cell each observation belongs to.
 #' @param maxmisses Maximum possible number of misses for a carcass.
 #' @param cellMM Combined pk model matrix.
-#' @param kFixed Value of k if fixed. 
+#' @param kFix_value Value of k if fixed. 
 #' @return Negative log likelihood of the observations, given the parameters.
 #' @examples
 #' NA
 #' @export 
 #'
 pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, 
-              cellMM, kFixed = NULL){
+              cellMM, kFix = NULL){
 
-  if (length(kFixed) == 1){
-    beta <- c(beta, logit(kFixed))
+  if (length(kFix) == 1){
+    beta <- c(beta, logit(kFix))
   }
 
   ncell <- nrow(cellMM)
@@ -742,69 +742,3 @@ pkmSetAICcTab <- function(pkmset){
   }
   return(output)
 }
-
-
-#' Simulate p and k parameters from a fitted pk model.
-#'
-#' @param n the number of simulation draws
-#'
-#' @param model A \code{\link{pkm}} object (which is returned from 
-#'  \code{pkm()})
-#'
-#' @param seed optional input to set the seed of the RNG
-#'
-#' @return list of two matrices of \code{n} simulated \code{p} and \code{k} 
-#'  for cells defined by the \code{model} object. 
-#'
-#' @examples
-#' data(pkmdat)
-#' pkmod_1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
-#' simulated_pk <- rpk(n = 10, model = pkmod_1)
-#' simulated_pk
-#'
-#' pkmod_2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-#' rpk(n = 10, model = pkmod_2)
-#' @export
-#'
-rpk <- function(n = 1, model, seed = NULL){
-
-  if (!"pkm" %in% class(model)){
-    stop("model not of class pkm.")
-  }
-
-  nbeta_p <- model$nbeta_p 
-  nbeta_k <- model$nbeta_k
-  which_beta_k <- (nbeta_p + 1):(nbeta_p + nbeta_k)
-  kFixed <- model$kFixed
-  cellMM_p <- model$cellMM_p
-  cellMM_k <- model$cellMM_k
-  ncell <- model$ncell
-  cellNames <- model$cells[,'CellNames']
-  meanbeta <- c(model$betahat_p, model$betahat_k)
-  varbeta <- model$varbeta
-  method <-  "svd"
-
-  if (length(seed) > 0){
-    set.seed(seed)
-  }
-  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
-  sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
-  colnames(sim_p) <- cellNames
-
-  if (length(kFixed) == 0){
-    sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
-  }else{
-    sim_k <- matrix(kFixed, ncol = ncell, nrow = n)
-  }
-  colnames(sim_k) <- cellNames
-
-  output <- vector("list", ncell)
-  names(output) <- cellNames
-  for (celli in 1:ncell){
-    pkdf <- data.frame(p = sim_p[ , celli], k = sim_k[ , celli])
-    output[[celli]] <-  pkdf
-  }
-  return(output)
-}
-
-
