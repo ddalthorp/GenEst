@@ -747,7 +747,6 @@ pkmSetAICcTab <- function(pkmset){
   return(output)
 }
 
-
 #' Simulate p and k parameters from a fitted pk model.
 #'
 #' @param n the number of simulation draws
@@ -805,7 +804,7 @@ rpk <- function(n = 1, model, seed = NULL){
   output <- vector("list", ncell)
   names(output) <- cellNames
   for (celli in 1:ncell){
-    pkdf <- data.frame(p = sim_p[ , celli], k = sim_k[ , celli])
+    pkdf <- cbind(p = sim_p[ , celli], k = sim_k[ , celli])
     output[[celli]] <-  pkdf
   }
   return(output)
