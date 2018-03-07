@@ -4,26 +4,26 @@
 \alias{pkLogLik}
 \title{Calculate the negative log-likelihood of a searcher efficiency model.}
 \usage{
-pkLogLik(misses, found_on, beta, n_beta_p, carcass_cell, max_misses,
-  mm_pk_cells, fixed_k = NULL)
+pkLogLik(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, cellMM,
+  kFixed = NULL)
 }
 \arguments{
 \item{misses}{Number of searches when carcass was present but
 not found.}
 
-\item{found_on}{Search on which carcass was found.}
+\item{foundOn}{Search on which carcass was found.}
 
 \item{beta}{Parameters to be optimized.}
 
-\item{n_beta_p}{Number of parameters associated with p}
+\item{nbeta_p}{Number of parameters associated with p}
 
-\item{carcass_cell}{Which cell each observation belongs to.}
+\item{cellByCarc}{Which cell each observation belongs to.}
 
-\item{max_misses}{Maximum possible number of misses for a carcass.}
+\item{maxmisses}{Maximum possible number of misses for a carcass.}
 
-\item{mm_pk_cells}{Combined pk model matrix.}
+\item{cellMM}{Combined pk model matrix.}
 
-\item{fixed_k_value}{Value of k if fixed.}
+\item{kFixed}{Value of k if fixed.}
 }
 \value{
 Negative log likelihood of the observations, given the parameters.
