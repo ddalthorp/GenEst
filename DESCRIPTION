@@ -3,8 +3,8 @@ Title: Generalised Fatality Estimator
 Version: 0.0.2.8
 Date: 2018-02-25
 Authors@R: c(
-    person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
+    person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
 	person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
 	person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
 	person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
