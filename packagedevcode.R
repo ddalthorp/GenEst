@@ -3,8 +3,8 @@
 
   pkgloc <- getwd()
 
-  pkgdpns <- c("shiny", "shinythemes", "rhandsontable", "httr", "survival", 
-                "mvtnorm", "matrixStats", "gsl", "DT")
+  pkgdpns <- c("shiny", "shinythemes", "httr", "survival", 
+               "mvtnorm", "matrixStats", "gsl", "DT")
 
   for(i in 1:length(pkgdpns)){
     devtools::use_package(pkgdpns[i], "Imports", pkgloc)

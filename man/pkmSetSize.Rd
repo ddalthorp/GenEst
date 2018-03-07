@@ -42,13 +42,13 @@ the assumption that the \code{k} parameter is fixed and known to be
 \item{init_k}{Initial value used for \code{k} in the optimization.}
 }
 \value{
-\code{pkm_set} returns a list of objects, each of which is a list
+\code{pkmSet} returns a list of objects, each of which is a list
  of \code{pkm}" outputs (each corresponding to the fit of a specific model
  within the set of \code{pkm} models fit for the given size class), that is
  of length equal to the total number of size classes
 }
 \description{
-Function inputs generally follow \code{pkm_set} and \code{pkm} but with an 
+Function inputs generally follow \code{pkmSet} and \code{pkm} but with an 
  additional size column input and calculation of the set of pkm models for
  each of the size classes
 }

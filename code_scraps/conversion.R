@@ -80,4 +80,7 @@ specifics_to_drop specificDrop
 formula_p_ops optionsFormula_p
 
 pformula_ke expandedFormulae
+
+
+
 output of pkm pformula and kformula now have responses
