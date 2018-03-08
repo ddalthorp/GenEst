@@ -829,7 +829,7 @@ rpk <- function(n = 1, model, seed = NULL){
 # FUNCTIONS BELOW HERE STILL NEED DOCUMENTATION
 #
 
-pkmSetParamPlot <- function(modelSet, specificModel, pk = "p", n = 1000, 
+pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n = 1000, 
                      seed_spec = NULL, seed_full = NULL, col_spec = "black",
                      col_full = "grey"){
 
@@ -944,7 +944,7 @@ pkmParamPlot <- function(model, pk = "p", n = 1000, seed = NULL,
 
 }
 
-pkmSetSECellPlot <- function(modelSet, specificModel, specificCell, 
+pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell, 
                       col_spec = "black", col_full = "grey", 
                       axis_y = TRUE, axis_x = TRUE){
 
