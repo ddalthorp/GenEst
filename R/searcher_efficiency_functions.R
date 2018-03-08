@@ -65,6 +65,8 @@
 #'
 #' @param kInit Initial value used for \code{k} in the optimization.
 #'
+#' @param CL confidence level
+#'
 #' @return \code{pkm} returns an object of class "\code{pkm}", which is a list
 #' whose components characterize the fit of the model. Due to the large number
 #' and complexity of components, only a subset of them is printed 
@@ -78,7 +80,7 @@
 #'  \item{\code{predictors}}{list of covariates of \code{p} and/or \code{k}}
 #'  \item{\code{cellwiseTable}}{summary statistics for estimated cellwise 
 #'    \code{p} and \code{k}, including the medians and upper & lower bounds
-#'    on 95% CIs for each parameter, indexed by cell (or combination of
+#'    on CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
 #'  \item{\code{AIC}}{the 
 #'    \href{https://en.wikipedia.org/wiki/Akaike_information_criterion}{AIC}
@@ -121,6 +123,7 @@
 #'  \item{\code{predictors_p}}{list of covariates of \code{k}}
 #'  \item{\code{observations}}{observations used to fit the model}
 #'  \item{\code{kFixed}}{the input \code{kFixed}}
+#'  \item{\code{CL}}{the input \code{CL}}
 #'}
 #'
 #' @examples
@@ -131,7 +134,7 @@
 #' @export
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-         kFixed = NULL, kInit = 0.7){
+         kFixed = NULL, kInit = 0.7, CL = 0.9){
 
   if (length(obsCol) == 0){
     obsCol <- grep("^[sS].*[0-9]$", names(data), value = TRUE)
@@ -218,6 +221,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     matchingTotal <- matchingParts == ncol(cellMM)
     cellByCarc[matchingTotal] <- celli
   }
+  carcCells <- cellNames[cellByCarc]
 
   pInit <- numeric(ncarc)
   for (celli in 1:ncell){
@@ -285,15 +289,15 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     cellSD_k <- rep(0, ncell)
   }
 
-  probs <- data.frame(c(0.5, 0.025, 0.975))
+  probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
   cellTable_p <- apply(probs, 1, qnorm, mean = cellMean_p, sd = cellSD_p)
   cellTable_p <- matrix(cellTable_p, nrow = ncell, ncol = 3)
   cellTable_p <- round(alogit(cellTable_p), 5)
-  colnames(cellTable_p) <- c("p_median", "p_lower_95", "p_upper_95")
+  colnames(cellTable_p) <- c("p_median", "p_lower", "p_upper")
   cellTable_k <- apply(probs, 1, qnorm, mean = cellMean_k, sd = cellSD_k)
   cellTable_k <- matrix(cellTable_k, nrow = ncell, ncol = 3)
   cellTable_k <- round(alogit(cellTable_k), 5)
-  colnames(cellTable_k) <- c("k_median", "k_lower_95", "k_upper_95")
+  colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
   cellTable <- data.frame(cell = cellNames, cellTable_p, cellTable_k)
 
   output <- list()
@@ -320,12 +324,15 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output$cellwiseTable <- cellTable
   output$observations <- obsData
   output$kFixed <- kFixed
+  output$carcCells <- carcCells
+  output$CL <- CL
   class(output) <- c("pkm", "list")
   attr(output, "hidden") <- c("predictors_p", "predictors_k", "kFixed",
                               "betahat_p", "betahat_k", "cellMM_p", 
                               "cellMM_k", "nbeta_p", "nbeta_k", "varbeta",
                               "levels_p", "levels_k", "convergence",  
-                              "AIC", "cells", "ncell", "observations"
+                              "AIC", "cells", "ncell", "observations",
+                              "carcCells", "CL"
                             )
 
   return(output)
@@ -436,12 +443,14 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #'
 #' @param kInit Initial value used for \code{k} in the optimization.
 #'
+#' @param CL confidence level
+#'
 #' @return \code{pkmSet} returns a list of objects, each of class 
 #' "\code{pkm}", which each then a list whose components characterize the fit 
 #' of the specific model.
 #'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-             kFixed = NULL, kInit = 0.7){
+             kFixed = NULL, kInit = 0.7, CL = 0.9){
 
   if (length(kFixed) == 1){
     if (kFixed < 0){
@@ -556,7 +565,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formi_p <- keptFormula_p[modi][[1]]
     formi_k <- keptFormula_k[modi][[1]]
     pkm_i <- tryCatch(
-               pkm(formi_p, formi_k, data, obsCol, kFixed, kInit), 
+               pkm(formi_p, formi_k, data, obsCol, kFixed, kInit, CL), 
                error = function(x) {"Failed model fit"}
              )
 
@@ -572,6 +581,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     output[[modi]] <- pkm_i
     names(output)[modi] <- modName
   }
+  class(output) <- c("pkmSet", "list")
   return(output)
 }
 
@@ -613,6 +623,8 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 #' @param init_k Initial value used for \code{k} in the optimization.
 #'
+#' @param CL confidence level
+#'
 #' @param sizeclassCol Name of colum in \code{data} where the size classes
 #'  are recorded
 #'
@@ -622,7 +634,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'  of length equal to the total number of size classes
 #'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL, 
-                sizeclassCol = NULL, kFixed = NULL, kInit = 0.7){
+                sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, CL = 0.9){
 
   if (length(sizeclassCol) == 0){
     message("No size class provided, function run as if pkmSet")
@@ -639,7 +651,9 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL,
   for (sci in 1:nsizeclasses){
     sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
     data_i <- data[sizeclassMatch, ]
-    out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCols, kFixed, kInit)
+    out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCols, kFixed, 
+                    kInit, CL
+                  )
   }
 
   return(out)
@@ -747,7 +761,6 @@ pkmSetAICcTab <- function(pkmset){
   return(output)
 }
 
-
 #' Simulate p and k parameters from a fitted pk model.
 #'
 #' @param n the number of simulation draws
@@ -805,10 +818,254 @@ rpk <- function(n = 1, model, seed = NULL){
   output <- vector("list", ncell)
   names(output) <- cellNames
   for (celli in 1:ncell){
-    pkdf <- data.frame(p = sim_p[ , celli], k = sim_k[ , celli])
-    output[[celli]] <-  pkdf
+    cellpk <- cbind(p = sim_p[ , celli], k = sim_k[ , celli])
+    output[[celli]] <-  cellpk
   }
   return(output)
+}
+
+
+#
+# FUNCTIONS BELOW HERE STILL NEED DOCUMENTATION
+#
+
+pkmSetParamPlot <- function(modelSet, specificModel, pk = "p", n = 1000, 
+                     seed_spec = NULL, seed_full = NULL, col_spec = "black",
+                     col_full = "grey"){
+
+  model_spec <- modelSet[[specificModel]]
+  model_full <- modelSet[[1]]
+
+  CL <- model_full$CL
+  probs <- c(0, (1 - CL) / 2, 0.25, 0.5, 0.75, 1 - (1 - CL) / 2, 1)
+  observations_spec <- model_spec$observations
+  observations_full <- model_full$observations
+  ncell_spec <- model_spec$ncell
+  ncell_full <- model_full$ncell
+  cellNames_full <- model_full$cells[ , "CellNames"]
+  predictors_spec <- model_spec$predictors
+  predictors_full <- model_full$predictors
+
+  pks_spec <- rpk(n, model_spec, seed_spec)
+  pks_full <- rpk(n, model_full, seed_full) 
+  cellMatch <- matchCells(model_spec, model_full)
+
+  if (pk == "p"){
+    maxy <- 1
+  } else if (pk == "k"){
+    maxy <- 1
+    for (celli in 1:ncell_full){
+      maxcell <- max(pks_full[[celli]][ , "k"]) * 1.01
+      maxy <- max(maxy, maxcell)
+    }
+  }
+
+  par(mar = c(2,4,2,1))
+  plot(1, type = "n", xlab = "", ylab = "", bty = "L", xaxt = 'n', yaxt = 'n',
+    ylim = c(0, maxy), xlim = c(0.5, ncell_full + 0.5)
+  )
+
+  for (celli in 1:ncell_full){
+    cMi <- cellMatch[celli]
+    x_s <- celli - 0.2
+    y_s <- quantile(pks_spec[[cMi]][ , pk], probs)
+    x_f <- celli + 0.2
+    y_f <- quantile(pks_full[[celli]][ , pk], probs)
+    
+    med <- c(-0.1, 0.1)
+    tb <- c(-0.07, 0.07)
+
+    rect(x_s - 0.1, y_s[3], x_s + 0.1, y_s[5], lwd = 2, border = col_spec) 
+    points(x_s + med, rep(y_s[4], 2), type = 'l', lwd = 2, col = col_spec)
+    points(x_s + tb, rep(y_s[2], 2), type = 'l', lwd = 2, col = col_spec)
+    points(x_s + tb, rep(y_s[6], 2), type = 'l', lwd = 2, col = col_spec)
+    points(rep(x_s, 3), y_s[1:3], type = 'l', lwd = 2, col = col_spec)
+    points(rep(x_s, 3), y_s[5:7], type = 'l', lwd = 2, col = col_spec)
+
+    rect(x_f - 0.1, y_f[3], x_f + 0.1, y_f[5], lwd = 2, border = col_full) 
+    points(x_f + med, rep(y_f[4], 2), type = 'l', lwd = 2, col = col_full)
+    points(x_f + tb, rep(y_f[2], 2), type = 'l', lwd = 2, col = col_full)
+    points(x_f + tb, rep(y_f[6], 2), type = 'l', lwd = 2, col = col_full)
+    points(rep(x_f, 3), y_f[1:3], type = 'l', lwd = 2, col = col_full)
+    points(rep(x_f, 3), y_f[5:7], type = 'l', lwd = 2, col = col_full)
+  }
+
+  axis(1, at = 1:ncell_full, cellNames_full, las = 1, cex.axis = 1.125)
+  axis(2, at = round(seq(0, maxy, 0.2), 2), las = 1, cex.axis = 1.125)
+  mtext(side = 2, pk, line = 2.75, cex = 1.5)
+
+}
+
+pkmParamPlot <- function(model, pk = "p", n = 1000, seed = NULL, 
+                  col = "black"){
+
+  ncell <- model$ncell
+  cellNames <- model$cells[ , "CellNames"]
+  predictors <- model$predictors
+  CL <- model$CL
+  probs <- c(0, (1 - CL) / 2, 0.25, 0.5, 0.75, 1 - (1 - CL) / 2, 1)
+  pks <- rpk(n, model, seed)
+  pks_full <- rpk(n, model, seed) 
+
+  if (pk == "p"){
+    maxy <- 1
+  } else if (pk == "k"){
+    maxy <- 1
+    for (celli in 1:ncell){
+      maxcell <- max(pks[[celli]][ , "k"]) * 1.01
+      maxy <- max(maxy, maxcell)
+    }
+  }
+
+  par(mar = c(2,4,2,1))
+  plot(1, type = "n", xlab = "", ylab = "", bty = "L", xaxt = 'n', yaxt = 'n',
+    ylim = c(0, maxy), xlim = c(0.5, ncell + 0.5)
+  )
+
+  for (celli in 1:ncell){
+    x <- celli
+    y <- quantile(pks[[celli]][ , pk], probs)
+
+    med <- c(-0.1, 0.1)
+    tb <- c(-0.07, 0.07)
+
+    rect(x - 0.1, y[3], x + 0.1, y[5], lwd = 2, border = col) 
+    points(x + med, rep(y[4], 2), type = 'l', lwd = 2, col = col)
+    points(x + tb, rep(y[2], 2), type = 'l', lwd = 2, col = col)
+    points(x + tb, rep(y[6], 2), type = 'l', lwd = 2, col = col)
+    points(rep(x, 3), y[1:3], type = 'l', lwd = 2, col = col)
+    points(rep(x, 3), y[5:7], type = 'l', lwd = 2, col = col)
+
+  }
+
+  axis(1, at = 1:ncell, cellNames, las = 1, cex.axis = 1.125)
+  axis(2, at = round(seq(0, maxy, 0.2), 2), las = 1, cex.axis = 1.125)
+  mtext(side = 2, pk, line = 2.75, cex = 1.5)
+
+}
+
+pkmSetSECellPlot <- function(modelSet, specificModel, specificCell, 
+                      col_spec = "black", col_full = "grey", 
+                      axis_y = TRUE, axis_x = TRUE){
+
+  model_spec <- modelSet[[specificModel]]
+  model_full <- modelSet[[1]]
+
+  cellwise_spec <- model_spec$cellwiseTable
+  cellwise_full <- model_full$cellwiseTable
+  cellNames_spec <- model_spec$cells[ , "CellNames"]
+  cellNames_full <- model_full$cells[ , "CellNames"]
+
+  whichCarcs <- which(model_full$carcCell == specificCell)
+  observations <- model_full$observations[whichCarcs, ]
+  nobs <- ncol(observations)
+  ncarc <- nrow(observations)
+  carcFound <- apply(observations, 2, sum, na.rm = TRUE)
+  carcUnavail <- apply(apply(observations, 2, is.na), 2, sum)
+  carcAvail <- ncarc - carcUnavail
+
+  cellMatch <- matchCells(model_spec, model_full)
+  reducedCell <- cellMatch[cellNames_full == specificCell]
+  
+  whichSpecificCell_spec <- which(cellNames_spec == reducedCell)
+  whichSpecificCell_full <- which(cellNames_full == specificCell)
+  p_spec <- cellwise_spec[whichSpecificCell_spec, "p_median"]
+  k_spec <- cellwise_spec[whichSpecificCell_spec, "k_median"]
+  p_full <- cellwise_full[whichSpecificCell_full, "p_median"]
+  k_full <- cellwise_full[whichSpecificCell_full, "k_median"]
+
+  par(mar = c(3,3,2,1))
+
+  x_pts <- 1:nobs
+  y_pts <- carcFound / carcAvail
+  plot(x_pts, y_pts, ylim = c(0, 1), xlim = c(0.5, nobs + 0.5), xlab = "", 
+    ylab = "", xaxt = "n", yaxt = "n", bty = "L", col = rgb(0.02, 0.02, 0.02),
+    lwd = 2, pch = 1, cex = 1.5
+  )
+
+  y_spec <- p_spec * k_spec^(x_pts - 1) 
+  y_full <- p_full * k_full^(x_pts - 1)
+
+  points(x_pts, y_full, type = 'l', lwd = 3, col = col_full)
+  points(x_pts, y_spec, type = 'l', lwd = 3, col = col_spec)
+
+  for (obi in 1:nobs){
+    x1 <- x_pts[obi] - 0.12
+    y1 <- y_pts[obi] + 0.01
+    x2 <- x_pts[obi] + 0.12
+    y2 <- y_pts[obi] + 0.09
+    rect(x1, y1, x2, y2, border = NA, col = "white")
+  }
+  obsLabels <- paste(carcFound, carcAvail, sep = "/") 
+  text(x_pts + 0.05, y_pts + 0.05, obsLabels, cex = 0.75, adj = 1)
+
+  if (axis_x == TRUE){
+    axis(1, at = x_pts, las = 1, cex.axis = 1.125)
+  }
+  if (axis_y == TRUE){
+    axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 1.125)
+  }
+  text(0.5, 1.02, specificCell, adj = 0, cex = 1.25, font = 2)
+
+}
+ 
+pkmSECellPlot <- function(model, specificCell, col = "black", 
+                   axis_y = TRUE, axis_x = TRUE, n = 1000, seed = NULL){
+
+  cellwise <- model$cellwiseTable
+  cellNames <- model$cells[ , "CellNames"]
+
+  whichCarcs <- which(model$carcCell == specificCell)
+  observations <- model$observations[whichCarcs, ]
+  nobs <- ncol(observations)
+  ncarc <- nrow(observations)
+  carcFound <- apply(observations, 2, sum, na.rm = TRUE)
+  carcUnavail <- apply(apply(observations, 2, is.na), 2, sum)
+  carcAvail <- ncarc - carcUnavail
+
+  whichSpecificCell <- which(cellNames == specificCell)
+  p <- cellwise[whichSpecificCell, "p_median"]
+  k <- cellwise[whichSpecificCell, "k_median"]
+  pks <- rpk(n, model, seed)
+  ps <- pks[[whichSpecificCell]][ , "p"]
+  ks <- pks[[whichSpecificCell]][ , "k"]
+
+  par(mar = c(3,3,2,1))
+
+  x_pts <- 1:nobs
+  y_pts <- carcFound / carcAvail
+  plot(x_pts, y_pts, ylim = c(0, 1), xlim = c(0.5, nobs + 0.5), xlab = "", 
+    ylab = "", xaxt = "n", yaxt = "n", bty = "L", col = rgb(0.02, 0.02, 0.02),
+    lwd = 2, pch = 1, cex = 1.5
+  )
+
+  y <- p * k^(x_pts - 1) 
+
+  ys <- matrix(NA, nrow = n, ncol = nobs)
+  for (ni in 1:n){
+    ys[ni, ] <- ps[ni] * ks[ni]^(x_pts - 1)
+  }
+
+  points(x_pts, y, type = 'l', lwd = 3, col = col)
+
+  for (obi in 1:nobs){
+    x1 <- x_pts[obi] - 0.15
+    y1 <- y_pts[obi] + 0.01
+    x2 <- x_pts[obi] + 0.15
+    y2 <- y_pts[obi] + 0.09
+    rect(x1, y1, x2, y2, border = NA, col = "white")
+  }
+  obsLabels <- paste(carcFound, carcAvail, sep = "/") 
+  text(x_pts + 0.05, y_pts + 0.05, obsLabels, cex = 0.75, adj = 1)
+
+  if (axis_x == TRUE){
+    axis(1, at = x_pts, las = 1, cex.axis = 1.125)
+  }
+  if (axis_y == TRUE){
+    axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 1.125)
+  }
+  text(0.5, 1.02, specificCell, adj = 0, cex = 1.25, font = 2)
+
 }
 
 

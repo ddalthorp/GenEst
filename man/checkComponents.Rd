@@ -7,10 +7,11 @@
 checkComponents(formula)
 }
 \arguments{
-\item{formula_in}{A formula object
-
-Terms are automatically alphabatized within interactions.}
+\item{formula_in}{A formula object}
+}
+\value{
+a logical regarding complete set of terms and interactions
 }
 \description{
-Check if all component terms and interactions are included in a formula
+Terms are automatically alphabatized within interactions.
 }
