@@ -64,15 +64,24 @@ tabPanel("Analyses",
           tabPanel("Selected Data", br(), br(), 
             DT::dataTableOutput("selectedSE")
           ),
-          tabPanel("Figures", br()),
+          tabPanel("Figures", br(),
+            selectizeInput("figSizeClassSE", width = "400px", 
+              "Size Class:", "Model not yet run", multiple = F
+            ),  
+            selectizeInput("figModSE", width = "400px", "Model:",
+              "Model not yet run", multiple = F
+            ), 
+            br(), br(), plotOutput("figSE", height = "1000px")
+          ),
           tabPanel("Model Tables", br(),
             selectizeInput("modTabSizeClassSE", width = "400px", 
               "Size Class:", "Model not yet run", multiple = F
             ),  
             selectizeInput("modTabModSE", width = "400px", "Model:",
-              "Model not yet run", multiple = F), br(), br(),
-              DT::dataTableOutput("modTabSE")
-            ),
+              "Model not yet run", multiple = F
+            ), 
+            br(), br(), DT::dataTableOutput("modTabSE")
+          ),
           tabPanel("Model Comparison Tables", br(),
             selectizeInput("aicTabSizeClassSE", width = "400px", 
               "Size Class:", "Model not yet run", multiple = F), br(), br(), 
