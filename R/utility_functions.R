@@ -70,11 +70,11 @@ combinePreds <- function(preds, data){
 
 #' Check if all component terms and interactions are included in a formula
 #'
+#' Terms are automatically alphabatized within interactions.
 #'
 #' @param formula_in A formula object
 #'
-#' Terms are automatically alphabatized within interactions.
-#'
+#' @return a logical regarding complete set of terms and interactions
 #' @export 
 #'
 checkComponents <- function(formula){
@@ -123,5 +123,49 @@ checkComponents <- function(formula){
   return(output)
 }
 
+#' Match cells between a (potentially) reduced and full model
+#'
+#' Terms are automatically alphabatized to insure matching across models.
+#'
+#' @param model_spec specific model compared against the full
+#' @param model_full full model to compare to the specific
+#'
+#' @return vector of length equal to the number of cells in the full model, 
+#'  each element containing the related cell name in the reduced model
+#' @export 
+#'
+matchCells <- function(model_spec, model_full){
 
+  cells_spec <- model_spec$cells
+  cells_full <- model_full$cells
+  ncell_full <- model_full$ncell
+
+  predictors_spec <- model_spec$predictors
+  predictors_full <- model_full$predictors
+  predictorsMatch_spec <- which(predictors_spec %in% predictors_full)
+  predictorsMatch_full <- which(predictors_full %in% predictors_spec)
+ 
+  if (!all(predictors_spec %in% predictors_full)){
+    stop("Full model does not include specific model's terms.")
+  }
+
+  if (length(predictorsMatch_spec) == 0){
+    out <- as.character(rep(cells_spec$CellNames, ncell_full))
+  }else{
+
+    matchedPredictors_full <- sort(colnames(cells_full)[predictorsMatch_full])
+    matchedPredictors_spec <- sort(colnames(cells_spec)[predictorsMatch_spec])
+    cellSubSet_spec <- data.frame(cells_spec[ , matchedPredictors_spec])
+    cellSubSet_full <- data.frame(cells_full[ , matchedPredictors_full])
+    pasteCellNames_spec <- apply(cellSubSet_spec, 1, paste, collapse = ".")   
+    pasteCellNames_full <- apply(cellSubSet_full, 1, paste, collapse = ".")   
+
+    out <- rep(NA, ncell_full)
+    for (celli in 1:ncell_full){
+      cellMatch <- which(pasteCellNames_spec == pasteCellNames_full[celli])
+      out[celli] <- cells_spec$CellNames[cellMatch]
+    }
+  }
+  return(out)
+}
 

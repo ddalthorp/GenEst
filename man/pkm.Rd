@@ -5,7 +5,7 @@
 \title{Fit a single searcher efficiency model.}
 \usage{
 pkm(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
-  kInit = 0.7)
+  kInit = 0.7, CL = 0.9)
 }
 \arguments{
 \item{formula_p}{Formula for p; an object of class "\code{\link{formula}}"
@@ -37,6 +37,8 @@ the assumption that the \code{k} parameter is fixed and known to be
 \code{fix_k}.}
 
 \item{kInit}{Initial value used for \code{k} in the optimization.}
+
+\item{CL}{confidence level}
 }
 \value{
 \code{pkm} returns an object of class "\code{pkm}", which is a list
@@ -52,7 +54,7 @@ The following components are displayed automatically:
  \item{\code{predictors}}{list of covariates of \code{p} and/or \code{k}}
  \item{\code{cellwiseTable}}{summary statistics for estimated cellwise 
    \code{p} and \code{k}, including the medians and upper & lower bounds
-   on 95% CIs for each parameter, indexed by cell (or combination of
+   on CIs for each parameter, indexed by cell (or combination of
    covariate levels).}
  \item{\code{AIC}}{the 
    \href{https://en.wikipedia.org/wiki/Akaike_information_criterion}{AIC}
@@ -95,6 +97,7 @@ via the \code{$} operator:
  \item{\code{predictors_p}}{list of covariates of \code{k}}
  \item{\code{observations}}{observations used to fit the model}
  \item{\code{kFixed}}{the input \code{kFixed}}
+ \item{\code{CL}}{the input \code{CL}}
 }
 }
 \description{
