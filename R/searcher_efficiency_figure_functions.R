@@ -152,16 +152,16 @@ plot.pkm <- function(model,  n = 1000, seed = 1, col = "black"){
     ylab = "", ylim = c(0, 1), xlim = c(0, 1)
   )
 
-  points(c(0, 0.05), c(0.25, 0.25), type = 'l', lwd = 2, col = col)
-  text(x = 0.06, y = 0.3, "= Median", adj = 0)
+  points(c(0.05, 0.1), c(0.25, 0.25), type = 'l', lwd = 2, col = col)
+  text(x = 0.11, y = 0.3, "= Median", adj = 0)
   points(c(0.2, 0.25), c(0.25, 0.25), type = 'l', lwd = 2, lty = 3, col = col)
   text(x = 0.26, y = 0.3, "= Confidence Bounds", adj = 0)
 
   labelsText <- paste(model$predictors, collapse = ".")
   text_label <- paste("Labels: ", labelsText, sep = "")
   text_model <- paste("Model: ", modelName, sep = "")
-  text(x = 0.58, y = 0.1, text_label, adj = 0, cex = 0.75)
-  text(x = 0.58, y = 0.6, text_model, adj = 0, cex = 0.75)
+  text(x = 0.58, y = 0.3, text_label, adj = 0, cex = 0.75)
+  text(x = 0.58, y = 0.7, text_model, adj = 0, cex = 0.75)
 
   par(mar = c(2,4,2,1))
   par(fig = c(0, 0.5, 0.725, 0.975), new = TRUE)
@@ -181,7 +181,7 @@ plot.pkm <- function(model,  n = 1000, seed = 1, col = "black"){
   ncell <- model$ncell
   cellNames <- model$cells[ , "CellNames"]
 
-  nmatrix_col <- 2
+  nmatrix_col <- min(3, ncell)
   nmatrix_row <- ceiling(ncell / nmatrix_col)
   figxspace <- 0.95 / nmatrix_col
   figyspace <- 0.675 / nmatrix_row
@@ -189,8 +189,8 @@ plot.pkm <- function(model,  n = 1000, seed = 1, col = "black"){
   x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.05
   y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.04
   y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.04
-  bottomCells <- c(ncell - 1, ncell)
-  leftCells <- which(1:ncell %% 2 == 1)
+  bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
+  leftCells <- which(1:ncell %% nmatrix_col == 1)
 
   for (celli in 1:ncell){
     par(mar = c(2, 2, 0, 0))
@@ -392,7 +392,6 @@ plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000,
                  seed_spec = 1, seed_full = 1, col_spec = "black", 
                  col_full = "grey"){
 
-
   if (length(specificModel) == 0){
     devAskNewPage(TRUE)
     nmod <- length(modelSet)
@@ -418,16 +417,16 @@ plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000,
       ylab = "", ylim = c(0, 1), xlim = c(0, 1)
     )
 
-    rect(0.0, 0.1, 0.05, 0.4, lwd = 2, col = col_spec, border = NA)
-    text(x = 0.06, y = 0.3, "= Selected Model", adj = 0)
-    rect(0.3, 0.1, 0.35, 0.4, lwd = 2, col = col_full, border = NA)
-    text(x = 0.36, y = 0.3, "= Full Model", adj = 0)
+    rect(0.05, 0.2, 0.1, 0.5, lwd = 2, col = col_spec, border = NA)
+    text(x = 0.11, y = 0.4, "= Selected Model", adj = 0)
+    rect(0.3, 0.2, 0.35, 0.5, lwd = 2, col = col_full, border = NA)
+    text(x = 0.36, y = 0.4, "= Full Model", adj = 0)
 
     labelsText <- paste(model_full$predictors, collapse = ".")
     text_label <- paste("Labels: ", labelsText, sep = "")
     text_model <- paste("Model: ", specificModel, sep = "")
-    text(x = 0.52, y = 0.1, text_label, adj = 0, cex = 0.75)
-    text(x = 0.52, y = 0.6, text_model, adj = 0, cex = 0.75)
+    text(x = 0.52, y = 0.3, text_label, adj = 0, cex = 0.75)
+    text(x = 0.52, y = 0.7, text_model, adj = 0, cex = 0.75)
 
     par(mar = c(2,4,2,1))
     par(fig = c(0, 0.5, 0.725, 0.975), new = TRUE)
@@ -449,7 +448,7 @@ plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000,
     ncell <- model_full$ncell
     cellNames <- model_full$cells[ , "CellNames"]
 
-    nmatrix_col <- 2
+    nmatrix_col <- min(3, ncell)
     nmatrix_row <- ceiling(ncell / nmatrix_col)
     figxspace <- 0.95 / nmatrix_col
     figyspace <- 0.675 / nmatrix_row
@@ -457,8 +456,8 @@ plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000,
     x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.05
     y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.04
     y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.04
-    bottomCells <- c(ncell - 1, ncell)
-    leftCells <- which(1:ncell %% 2 == 1)
+    bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
+    leftCells <- which(1:ncell %% nmatrix_col == 1)
 
     for (celli in 1:ncell){
       par(mar = c(2, 2, 0, 0))
