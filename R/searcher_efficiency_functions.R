@@ -818,8 +818,10 @@ rpk <- function(n = 1, model, seed = NULL){
   output <- vector("list", ncell)
   names(output) <- cellNames
   for (celli in 1:ncell){
+
     cellpk <- cbind(p = sim_p[ , celli], k = sim_k[ , celli])
     output[[celli]] <-  cellpk
+
   }
   return(output)
 }
