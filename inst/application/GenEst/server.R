@@ -28,7 +28,8 @@ function(input, output, session){
           predictors_k = NULL, formula_p = NULL, formula_k = NULL,
           modsSE = NULL, modsCheckSE = NULL, modNamesSE = NULL, 
           modTabSE = NULL, AICcTabSE = NULL, modOrderSE = NULL,
-          modelChoicesSE = NULL,
+          modelChoicesSE = NULL, modSetSE_spec = NULL, 
+          bestSE = NULL, specSE = NULL,
           
           dataCP = NULL, colNamesCP = NULL, 
 
@@ -140,7 +141,8 @@ function(input, output, session){
     rv$modsSE <- pkmSetSize(formula_p = rv$formula_p,
                    formula_k = rv$formula_k, data = rv$dataSE, 
                    obsCols = rv$obsColsSE, sizeclassCol = rv$sizeclassCol,
-                   kFixed = rv$kFixed, kInit = 0.7)
+                   kFixed = rv$kFixed, kInit = 0.7
+                 )
     rv$modsCheckSE <- pkmCheck(rv$modsSE)
 
     removeNotification(msgRunModSE)
@@ -150,6 +152,7 @@ function(input, output, session){
       rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
       rv$modNamesSE <- names(rv$modsSE)[rv$modOrderSE]
       rv$modTabSE <- rv$modsSE[[rv$modOrderSE[1]]]$cellwise_pk
+      rv$modSetSE_spec <- rv$modsSE
     }else{
       rv$sizeclassChosen <- which(rv$sizeclasses == input$aicTabSizeClassSE)
       if (length(rv$sizeclassChosen) == 0){
@@ -159,10 +162,17 @@ function(input, output, session){
       rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
       rv$modNamesSE <- names(rv$modsSE[[1]])[rv$modOrderSE]
       rv$modTabSE <- rv$modsSE[[1]][[rv$modOrderSE[1]]]$cellwiseTable
+      rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
     }
 
+    rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
     output$AICcTabSE <- DT::renderDataTable({rv$AICcTabSE})    
     output$modTabSE <- DT::renderDataTable({rv$modTabSE})
+    output$figSE <- renderPlot({
+                      plot(rv$modSetSE_spec, specificModel = rv$bestSE)}
+                    )
+    updateSelectizeInput(session, "figSizeClassSE", choices = rv$sizeclasses)
+    updateSelectizeInput(session, "figModSE", choices = rv$modNamesSE)
     updateSelectizeInput(session, "modTabSizeClassSE", 
       choices = rv$sizeclasses
     )
@@ -257,6 +267,45 @@ function(input, output, session){
     }
   })
 
+  observeEvent(input$figSizeClassSE, {
+    if (length(rv$modsSE) > 0){
+      if (length(rv$sizeclasses) == 1){
+        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE) 
+        rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
+        rv$modNamesSE <- names(rv$modsSE)[rv$modOrderSE]
+        rv$modSetSE_spec <- rv$modsSE
+      }else{
+        rv$sizeclassChosen <- which(rv$sizeclasses == input$figSizeClassSE)
+        if (length(rv$sizeclassChosen) == 0){
+          rv$sizeclassChosen <- 1
+        }
+        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]])
+        rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
+        rv$modNamesSE <- names(rv$modsSE[[1]])[rv$modOrderSE]
+        rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
+      }
+
+      rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
+      output$figSE <- renderPlot({ 
+                        plot(rv$modSetSE_spec, specificModel = rv$bestSE)}
+                      )
+  
+      updateSelectizeInput(session, "figModSE", choices = rv$modNamesSE)
+
+      observeEvent(input$figModSE, {
+        if (length(rv$sizeclasses) == 1){
+          rv$modSetSE_spec <- rv$modsSE[[1]]
+        }else{
+          rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
+        }
+        output$figSE <- renderPlot({
+                           plot(rv$modSetSE_spec, 
+                             specificModel = input$figModSE
+                           )}
+                        )
+      })
+    }
+  })
   observeEvent(input$ltp, {
     obsColsSelected <- c(input$ltp, input$fta)
     selectedCols <- c(obsColsSelected, input$sizeclassCol, input$predsCP)
