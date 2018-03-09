@@ -65,6 +65,8 @@
 #'
 #' @param kInit Initial value used for \code{k} in the optimization.
 #'
+#' @param CL confidence level
+#'
 #' @return \code{pkm} returns an object of class "\code{pkm}", which is a list
 #' whose components characterize the fit of the model. Due to the large number
 #' and complexity of components, only a subset of them is printed 
@@ -78,7 +80,7 @@
 #'  \item{\code{predictors}}{list of covariates of \code{p} and/or \code{k}}
 #'  \item{\code{cellwiseTable}}{summary statistics for estimated cellwise 
 #'    \code{p} and \code{k}, including the medians and upper & lower bounds
-#'    on 95% CIs for each parameter, indexed by cell (or combination of
+#'    on CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
 #'  \item{\code{AIC}}{the 
 #'    \href{https://en.wikipedia.org/wiki/Akaike_information_criterion}{AIC}
@@ -121,6 +123,7 @@
 #'  \item{\code{predictors_p}}{list of covariates of \code{k}}
 #'  \item{\code{observations}}{observations used to fit the model}
 #'  \item{\code{kFixed}}{the input \code{kFixed}}
+#'  \item{\code{CL}}{the input \code{CL}}
 #'}
 #'
 #' @examples
@@ -131,7 +134,7 @@
 #' @export
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-         kFixed = NULL, kInit = 0.7){
+         kFixed = NULL, kInit = 0.7, CL = 0.9){
 
   if (length(obsCol) == 0){
     obsCol <- grep("^[sS].*[0-9]$", names(data), value = TRUE)
@@ -218,6 +221,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     matchingTotal <- matchingParts == ncol(cellMM)
     cellByCarc[matchingTotal] <- celli
   }
+  carcCells <- cellNames[cellByCarc]
 
   pInit <- numeric(ncarc)
   for (celli in 1:ncell){
@@ -285,15 +289,15 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     cellSD_k <- rep(0, ncell)
   }
 
-  probs <- data.frame(c(0.5, 0.025, 0.975))
+  probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
   cellTable_p <- apply(probs, 1, qnorm, mean = cellMean_p, sd = cellSD_p)
   cellTable_p <- matrix(cellTable_p, nrow = ncell, ncol = 3)
   cellTable_p <- round(alogit(cellTable_p), 5)
-  colnames(cellTable_p) <- c("p_median", "p_lower_95", "p_upper_95")
+  colnames(cellTable_p) <- c("p_median", "p_lower", "p_upper")
   cellTable_k <- apply(probs, 1, qnorm, mean = cellMean_k, sd = cellSD_k)
   cellTable_k <- matrix(cellTable_k, nrow = ncell, ncol = 3)
   cellTable_k <- round(alogit(cellTable_k), 5)
-  colnames(cellTable_k) <- c("k_median", "k_lower_95", "k_upper_95")
+  colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
   cellTable <- data.frame(cell = cellNames, cellTable_p, cellTable_k)
 
   output <- list()
@@ -320,12 +324,15 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output$cellwiseTable <- cellTable
   output$observations <- obsData
   output$kFixed <- kFixed
+  output$carcCells <- carcCells
+  output$CL <- CL
   class(output) <- c("pkm", "list")
   attr(output, "hidden") <- c("predictors_p", "predictors_k", "kFixed",
                               "betahat_p", "betahat_k", "cellMM_p", 
                               "cellMM_k", "nbeta_p", "nbeta_k", "varbeta",
                               "levels_p", "levels_k", "convergence",  
-                              "AIC", "cells", "ncell", "observations"
+                              "AIC", "cells", "ncell", "observations",
+                              "carcCells", "CL"
                             )
 
   return(output)
@@ -436,12 +443,14 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #'
 #' @param kInit Initial value used for \code{k} in the optimization.
 #'
+#' @param CL confidence level
+#'
 #' @return \code{pkmSet} returns a list of objects, each of class 
 #' "\code{pkm}", which each then a list whose components characterize the fit 
 #' of the specific model.
 #'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-             kFixed = NULL, kInit = 0.7){
+             kFixed = NULL, kInit = 0.7, CL = 0.9){
 
   if (length(kFixed) == 1){
     if (kFixed < 0){
@@ -556,7 +565,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formi_p <- keptFormula_p[modi][[1]]
     formi_k <- keptFormula_k[modi][[1]]
     pkm_i <- tryCatch(
-               pkm(formi_p, formi_k, data, obsCol, kFixed, kInit), 
+               pkm(formi_p, formi_k, data, obsCol, kFixed, kInit, CL), 
                error = function(x) {"Failed model fit"}
              )
 
@@ -572,6 +581,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     output[[modi]] <- pkm_i
     names(output)[modi] <- modName
   }
+  class(output) <- c("pkmSet", "list")
   return(output)
 }
 
@@ -613,6 +623,8 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 #' @param init_k Initial value used for \code{k} in the optimization.
 #'
+#' @param CL confidence level
+#'
 #' @param sizeclassCol Name of colum in \code{data} where the size classes
 #'  are recorded
 #'
@@ -622,7 +634,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'  of length equal to the total number of size classes
 #'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL, 
-                sizeclassCol = NULL, kFixed = NULL, kInit = 0.7){
+                sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, CL = 0.9){
 
   if (length(sizeclassCol) == 0){
     message("No size class provided, function run as if pkmSet")
@@ -639,7 +651,9 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL,
   for (sci in 1:nsizeclasses){
     sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
     data_i <- data[sizeclassMatch, ]
-    out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCols, kFixed, kInit)
+    out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCols, kFixed, 
+                    kInit, CL
+                  )
   }
 
   return(out)
@@ -804,10 +818,11 @@ rpk <- function(n = 1, model, seed = NULL){
   output <- vector("list", ncell)
   names(output) <- cellNames
   for (celli in 1:ncell){
-    pkdf <- cbind(p = sim_p[ , celli], k = sim_k[ , celli])
-    output[[celli]] <-  pkdf
+
+    cellpk <- cbind(p = sim_p[ , celli], k = sim_k[ , celli])
+    output[[celli]] <-  cellpk
+
   }
   return(output)
 }
-
 
