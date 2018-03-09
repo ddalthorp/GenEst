@@ -5,7 +5,7 @@
 \title{Fit all possible searcher efficiency models across all size classes.}
 \usage{
 pkmSetSize(formula_p, formula_k = NULL, data, obsCols = NULL,
-  sizeclassCol = NULL, kFixed = NULL, kInit = 0.7)
+  sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, CL = 0.9)
 }
 \arguments{
 \item{formula_p}{Formula for p; an object of class "\code{\link{formula}}"
@@ -38,6 +38,8 @@ are recorded}
 value is provided, \code{formula_k} is ignored and the model is fit under 
 the assumption that the \code{k} parameter is fixed and known to be
 \code{fix_k}.}
+
+\item{CL}{confidence level}
 
 \item{init_k}{Initial value used for \code{k} in the optimization.}
 }
