@@ -140,5 +140,5 @@ visibility = E, M, or D) may also be included.
 data(pkmdat)
 pkm(p ~ visibility, k ~ 1, data = pkmdat)
 pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-pkm(p ~ visibility, k = 0.7, data = pkmdat)
+pkm(p ~ visibility, kFixed = 0.7, data = pkmdat)
 }
