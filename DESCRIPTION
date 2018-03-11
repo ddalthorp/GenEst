@@ -25,7 +25,8 @@ Imports:
     matrixStats,
     gsl,
     DT,
-    shinythemes
+    shinythemes,
+    numDeriv
 RoxygenNote: 6.0.1
 Suggests:
     knitr,

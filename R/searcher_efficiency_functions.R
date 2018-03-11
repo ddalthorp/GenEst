@@ -130,18 +130,25 @@
 #' data(pkmdat)
 #' pkm(p ~ visibility, k ~ 1, data = pkmdat)
 #' pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-#' pkm(p ~ visibility, k = 0.7, data = pkmdat)
+#' pkm(p ~ visibility, kFixed = 0.7, data = pkmdat)
 #' @export
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
          kFixed = NULL, kInit = 0.7, CL = 0.9){
 
+  if(sum(obsCol %in% colnames(data)) != length(obsCol)){
+    stop("Observation column provided not in data.")
+  }
   if (length(obsCol) == 0){
     obsCol <- grep("^[sS].*[0-9]$", names(data), value = TRUE)
     nobsCol <- length(obsCol)
     if (nobsCol == 0){
       stop("No observation columns provided and no appropriate column names.")
     }
+  }
+  predCheck <- c(all.vars(formula_p[[3]]), all.vars(formula_k[[3]]))
+  if (sum(predCheck %in% colnames(data)) != length(predCheck)){
+    stop("Predictor(s) in formula(e) not found in data.")
   }
   if (length(kFixed) == 1){
     if (kFixed < 0){
@@ -243,12 +250,11 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   MLE <- tryCatch(
-           optim(par = betaInit, fn = pkLogLik, method = "BFGS", hessian = T, 
-             cellByCarc = cellByCarc, misses = misses, maxmisses = maxmisses,
-             foundOn = foundOn, cellMM = cellMM, nbeta_p = nbeta_p, 
-             kFixed = kFixed
-           ), 
-           error = function(x) {NA}
+           optim(par = betaInit, fn = pkLogLik, method = "BFGS", 
+             hessian = TRUE, cellByCarc = cellByCarc, misses = misses, 
+             maxmisses = maxmisses, foundOn = foundOn, cellMM = cellMM, 
+             nbeta_p = nbeta_p, kFixed = kFixed
+           ), error = function(x) {NA}
          )
 
   convergence <- MLE$convergence
