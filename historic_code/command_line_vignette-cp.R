@@ -8,8 +8,8 @@ right <- "FirstAbsentDecimalDays"
 data <- data_CP
 
 formula <- cp~Visibility*Season
-dist <- "exponential"
+dist <- "lognormal"
 
-cpm(formula, data, left, right, "lognormal")
+cpm(formula, data, left, right, "exponential")
 
 cpLogLik(dataMM, thetaStart, t1, t2, dist) 
