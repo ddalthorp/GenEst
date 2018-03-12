@@ -1,14 +1,12 @@
 # working here to bring in the CP functions from paul and dan
 # currently in progress on the cpm function. 
 # component functions are up top
-# everything is still in flux, no documentation yet
-# probably still need to rename things
 # 
 # switched the fitting to be done with optim, advoiding all the hess nonsense
-
-weibullMoM <- function(b, varx, meanx){
-  exp(lgamma(1 + (2 / b)) - 1 * lgamma(1 + 1 / b)) - 1 - varx / (meanx^2)
-}
+# using eweibull in EnvStats to do the MME estimation for the init vals
+#
+# in general this is looking good! 
+#need to add documentation and then can build upwards
 
 weibullStart <- function(x){
  
@@ -19,15 +17,10 @@ weibullStart <- function(x){
     x[length(x)] <- x[length(x)] + 1 / length(x)
   }
 
-  meanx <- mean(x)
-  varx <- var(x)
-  maxx <- max(x)
-  interval <- c(1e-1, maxx)
-
-  b <- nlminb(start = 1e-1, objective = weibullMoM, varx = varx, 
-         meanx = meanx, lower = 1e-5
-       )$par
-  a <- meanx / gamma(1 + 1 / b)
+  MME <- EnvStats::eweibull(x, method = "mme")
+  a <- as.numeric(MME$parameters["scale"])
+  b <- as.numeric(MME$parameters["shape"])
+  
   return(c(log(a), 1 / b))
 }
 
@@ -104,6 +97,7 @@ cpm <- function(formula, data = NULL, left = NULL, right = NULL,
 
   t1 <- data[ , left]
   t2 <- data[ , right]
+  obsData <- data[ , c(left, right)]
   if (any(is.infinite(t2))){
     t2[which(is.infinite(t2))] <- NA
   }
@@ -119,37 +113,89 @@ cpm <- function(formula, data = NULL, left = NULL, right = NULL,
   betaInit[1, ] <- betaInit1
   betaInit <- as.vector(betaInit)
 
+  probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
+
   if (dist == "exponential"){
     MLE <- tryCatch(
              optim(par = betaInit, fn = cpLogLik_exp, method = "BFGS",
-               t1 = t1, t2 = t2, dataMM = dataMM, hessian = TRUE
+               t1 = t1, t2 = t2, dataMM = dataMM, hessian = TRUE,
+               control = list(maxit = 5000)
              ), error = function(x) {NA}
            )
+    betahat <- MLE$par
+    betahatMatrix <- matrix(betahat, nrow = ncol(cellMM))
+    locations <- cellMM %*% betahatMatrix 
+    cellTable_loc <- apply(probs, 1, survival::qsurvreg, mean = locations, 
+                       scale = 1, distribution = "exponential")
+    colnames(cellTable_loc) <- c("loc_median", "loc_lower", "loc_upper")
+    cellTable_sc <- matrix(1, nrow = ncell, ncol = 1)
+    colnames(cellTable_sc) <- c("scale")
+    cellTable <- data.frame(cell = cellNames, cellTable_loc, cellTable_sc)
   } else{
     MLE <- tryCatch(
              optim(par = betaInit, fn = cpLogLik, method = "BFGS",
-               t1 = t1, t2 = t2, dataMM = dataMM, dist = dist, hessian = TRUE
+               t1 = t1, t2 = t2, dataMM = dataMM, dist = dist, hessian = TRUE,
+               control = list(maxit = 5000)
              ), error = function(x) {NA}
            )
+    betahat <- MLE$par
+    betahatMatrix <- matrix(betahat, nrow = ncol(cellMM))
+
+    locations <- cellMM %*% betahatMatrix[ , 1]
+    scales <- cellMM %*% betahatMatrix[ , 2]
+    cellTable_loc <- apply(probs, 1, survival::qsurvreg, mean = locations, 
+                   scale = scales, distribution = dist)
+    colnames(cellTable_loc) <- c("loc_median", "loc_lower", "loc_upper")
+    cellTable_sc <- matrix(scales, ncol = 1)
+    colnames(cellTable_sc) <- c("scale")
+    cellTable <- data.frame(cell = cellNames, cellTable_loc, cellTable_sc)
   }
 
-# seems like this is working well! now just need to process the output
-
   convergence <- MLE$convergence
-  betahat <- matrix(MLE$par, nrow = ncol(cellMM))
+  betaHessian <- MLE$hessian
+  llik <- MLE$value  
 
-  llik <- MLE$objective  
+  nparam <- length(betahat)
+  ncarc <- length(t12)
+  AIC <- 2 * llik + 2 * nparam
+  AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
+  AICc <- round(AIC + AICcOffset, 3)
 
+  varbeta <- tryCatch(solve(betaHessian), error = function(x) {NA})
+  if (is.na(varbeta)[1]){
+    stop("Model generates unstable variance estimate.")
+  }
 
+  cellByCarc <- numeric(ncarc)
+  for (celli in 1:ncell){
+    groupPattern <- cellMM[celli, ]
+    matchingMatrix <- t(dataMM) == groupPattern
+    matchingParts <- apply(matchingMatrix, 2, sum)
+    matchingTotal <- matchingParts == ncol(cellMM)
+    cellByCarc[matchingTotal] <- celli
+  }
+  carcCells <- cellNames[cellByCarc]
 
   output <- list()
   output$call <- match.call()
   output$formula <- formula
-  #output$ <- 
- # output$ <- 
+  output$predictors <- preds 
+  output$AIC <- AIC
+  output$AICc <- AICc
+  output$convergence <- convergence
+  output$varbeta <- varbeta
+  output$betahat <- betahat
+  output$cellMM <- cellMM
+  output$cells <- cells
+  output$ncell <- ncell
+  output$cellwiseTable <- cellTable
+  output$observations <- obsData
+  output$carcCells <- carcCells
   output$CL <- CL
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("CL"
+  attr(output, "hidden") <- c("predictors", "AIC", "convergence", "varbeta",
+                              "cellMM", "cells", "ncell", "observations",
+                              "carcCells", "CL"
                               )
   return(output)
 }

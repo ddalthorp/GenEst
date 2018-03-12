@@ -3,7 +3,7 @@
 
   pkgloc <- getwd()
 
-  pkgdpns <- c("shiny", "shinythemes", "httr", "survival", 
+  pkgdpns <- c("shiny", "shinythemes", "httr", "survival", "EnvStats",
                "mvtnorm", "matrixStats", "gsl", "DT", "numDeriv")
 
   for(i in 1:length(pkgdpns)){
