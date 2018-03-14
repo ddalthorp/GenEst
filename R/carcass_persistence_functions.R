@@ -81,13 +81,13 @@ cpm <- function(formula, data = NULL, left = NULL, right = NULL,
   if (!right %in% colnames(data)){
     stop("Column name for first time absent (right) is not in the data.")
   }
-  predCheck <- all.vars(formula[[3]])
+  predCheck <- all.vars(formulaRHS)
   if (sum(predCheck %in% colnames(data)) != length(predCheck)){
     stop("Predictor(s) in formula(e) not found in data.")
   }
 
   formulaRHS <- formula(delete.response(terms(formula)))
-  preds <- all.vars(formula[[3]])
+  preds <- all.vars(formulaRHS) # safer alternative to formula[[3]]
   cells <- combinePreds(preds, data)
   ncell <- nrow(cells)
   cellNames <- cells$CellNames
