@@ -10,6 +10,7 @@ data <- data_CP
 formula <- cp~Visibility*Season
 dist <- "lognormal"
 
-cpm(formula, data, left, right, "exponential")
+x<-cpm(formula, data, left, right, "exponential")
+print(x)
 
 cpLogLik(dataMM, thetaStart, t1, t2, dist) 
