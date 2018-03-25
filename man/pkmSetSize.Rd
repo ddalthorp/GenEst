@@ -11,25 +11,15 @@ pkmSetSize(formula_p, formula_k = NULL, data, obsCols = NULL,
 \item{formula_p}{Formula for p; an object of class "\code{\link{formula}}"
 (or one that can be coerced to that class): a symbolic description of the
 model to be fitted. Details of model specification are given under 
-'Details'.}
+"Details".}
 
 \item{formula_k}{Formula for k; an object of class "\code{\link{formula}}"
 (or one that can be coerced to that class): a symbolic description of the
-model to be fitted. Details of model specification are given under}
+model to be fitted. Details of model specification are given under 
+"Details".}
 
 \item{data}{Dataframe with results from searcher efficiency trials and any
 covariates included in \code{formula_p} or {formula_k} (required).}
-
-\item{obsCols}{Vector of names of columns in \code{data} where results 
-for each search occasion are stored (optional). If no \code{obsCols} are 
-provided, \code{pkm} uses as \code{obsCols} all columns with names that 
-begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
-'s2', 's3', etc. This option is included as a convenience for the user, 
-but care must be taken that other data are not stored in columns with 
-names matching that pattern. Alternatively, \code{obsCols} may be 
-entered as a vector of names, like \code{c('s1', 's2', 's3')}, 
-\code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
-'lastSearch')}.}
 
 \item{sizeclassCol}{Name of colum in \code{data} where the size classes
 are recorded}
@@ -41,16 +31,27 @@ the assumption that the \code{k} parameter is fixed and known to be
 
 \item{CL}{confidence level}
 
+\item{obsCol}{Vector of names of columns in \code{data} where results 
+for each search occasion are stored (optional). If no \code{obsCol} are 
+provided, \code{pkm} uses as \code{obsCol} all columns with names that 
+begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
+"s2", "s3", etc. This option is included as a convenience for the user, 
+but care must be taken that other data are not stored in columns with 
+names matching that pattern. Alternatively, \code{obsCol} may be 
+entered as a vector of names, like \code{c("s1", "s2", "s3")}, 
+\code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch", 
+"lastSearch")}.}
+
 \item{init_k}{Initial value used for \code{k} in the optimization.}
 }
 \value{
 \code{pkmSet} returns a list of objects, each of which is a list
- of \code{pkm}" outputs (each corresponding to the fit of a specific model
- within the set of \code{pkm} models fit for the given size class), that is
- of length equal to the total number of size classes
+  of \code{pkm}" outputs (each corresponding to the fit of a specific model
+  within the set of \code{pkm} models fit for the given size class), that
+  is of length equal to the total number of size classes
 }
 \description{
 Function inputs generally follow \code{pkmSet} and \code{pkm} but with an 
- additional size column input and calculation of the set of pkm models for
- each of the size classes
+  additional size column input and calculation of the set of pkm models for
+  each of the size classes
 }

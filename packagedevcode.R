@@ -1,20 +1,17 @@
 
-  library(devtools)
+pkgloc <- getwd()
+pkgdpns <- c("shiny", "shinythemes", "httr", "survival", "EnvStats",
+               "mvtnorm", "matrixStats", "gsl", "DT", "numDeriv")
 
-  pkgloc <- getwd()
+for(i in 1:length(pkgdpns)){
+  devtools::use_package(pkgdpns[i], "Imports", pkgloc)
+}
 
-  pkgdpns <- c("shiny", "shinythemes", "httr", "survival", 
-               "mvtnorm", "matrixStats", "gsl", "DT")
+devtools::load_all()
+devtools::document()
 
-  for(i in 1:length(pkgdpns)){
-    devtools::use_package(pkgdpns[i], "Imports", pkgloc)
-  }
+devtools::build_vignettes()
+devtools::build(binary = T)
 
-  devtools::load_all(devtools::as.package(pkgloc))
-  devtools::document(devtools::as.package(pkgloc))
-
-  devtools::build_vignettes(pkgloc)
-  devtools::build(pkgloc, binary = T)
-
-  devtools::load_all(devtools::as.package(pkgloc))
-  runGenEst()
+devtools::load_all()
+runGenEst()

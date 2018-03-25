@@ -1,7 +1,7 @@
 SE_data <- read.csv("inst/extdata/ExampleSearcherEfficiency.csv")
 
 SE_data <- SE_data[SE_data$Size == "S", ]
-model <- pkm(formula_p = p~Visibility, kFix = 0.5, data = SE_data)
+model <- pkm(formula_p = p~Visibility*Season, kFix = 0.5, data = SE_data)
 mo<-pkmSet(data = SE_data, formula_p = p ~ HabitatType*Visibility, kFix = 0.5)
 pkmSetAICcTab(mo)
 SE_data <- read.csv("inst/extdata/ExampleSearcherEfficiency.csv")
