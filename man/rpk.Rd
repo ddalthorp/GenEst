@@ -16,7 +16,7 @@ rpk(n = 1, model, seed = NULL)
 }
 \value{
 list of two matrices of \code{n} simulated \code{p} and \code{k} 
- for cells defined by the \code{model} object.
+  for cells defined by the \code{model} object.
 }
 \description{
 Simulate p and k parameters from a fitted pk model.

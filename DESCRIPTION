@@ -1,11 +1,11 @@
 Package: GenEst
 Title: Generalised Fatality Estimator
-Version: 0.0.3.1
-Date: 2018-03-09
+Version: 0.0.3.2
+Date: 2018-03-25
 Authors@R: c(
-    person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
-	person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
+	person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
+    person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
 	person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
 	person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
 	person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"),
@@ -25,7 +25,9 @@ Imports:
     matrixStats,
     gsl,
     DT,
-    shinythemes
+    shinythemes,
+    numDeriv,
+    EnvStats
 RoxygenNote: 6.0.1
 Suggests:
     knitr,
