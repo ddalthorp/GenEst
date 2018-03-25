@@ -1,20 +1,151 @@
-cpLogLik <- function(beta, t1, t2, dataMM, dist){
-  t2[which(is.na(t2))] <- Inf
-  beta <- matrix(beta, ncol = 2)
-  Beta <- dataMM %*% beta
-  psurv_t1 <- survival::psurvreg(t1, Beta[ , 1], Beta[ , 2], dist)
-  psurv_t2 <- survival::psurvreg(t2, Beta[ , 1], Beta[ , 2], dist)
-  psurv_t2[which(is.na(psurv_t2))] <- 1
-  lik <- psurv_t2 - psurv_t1
-  too_small <- t1 + .Machine$double.eps >= t2
-  lik[too_small] <- survival::dsurvreg(t2, Beta[ , 1], Beta[ , 2], dist)
-  lik <- pmax(lik, .Machine$double.eps) 
-  nll <- -sum(log(lik))
-  return(nll)
-}
+#' Fit a single carcass persistence model.
+#' 
+#' Carcass persistence is modeled as survival function where the one or both  
+#'   parameter(s) can depend on any number of covariates. Format and usage 
+#'   parallel that of common \code{R} functions such as \code{lm}, \code{glm},
+#'   and \code{gam}. However, the input data (\code{data}) are structured 
+#'   differently to accommodate the survival model approach (see "Details"),
+#'   and model formulas may be entered for both \code{l} ("location") and 
+#'   \code{s} ("scale").
+#'
+#' The probability of a carcass persisting to a particular time is dictated
+#'   by the specific distribution chosen and its underlying location (l) and 
+#'   scale (s) parameters (for all models except the exponential, which only 
+#'   has a location parameter). Both \code{l} and \code{s} may depend on 
+#'   covariates such as ground cover, season, species, etc., and a separate 
+#'   model format (\code{formula_l} and \code{formula_s}) may be entered for 
+#'   each. The models are entered as they would be in the familiar \code{lm} 
+#'   or \code{glm} functions in R. For example, \code{l} might vary with 
+#'   \code{visibility}, \code{season}, and \code{site}, while \code{s} varies 
+#'   only with \code{visibility}. A user might then enter 
+#'   \code{l ~ visibility + season + site} for \code{formula_l} and 
+#'   \code{s ~ visibility} for \code{formula_s}. Other R conventions for 
+#'   defining formulas may also be used, with \code{covar1:covar2} for the 
+#'   interaction between covariates 1 and 2 and \code{covar1 * covar2} as 
+#'   short-hand for \code{covar1 + covar2 + covar1:covar2}.
+#'
+#' Carcass persistence \code{data} must be entered in a data frame with data 
+#'   in each row giving the fate of a single carcass in the trials. There
+#'   must be a column for each of the last time the carcass was observed 
+#'   present and the first time the carcass was observed absent (or NA if the
+#'   carcass was always present). Additional columns with values for
+#'   categorical covariates (e.g., visibility = E, M, or D) may also be 
+#'   included.
+#'
+#' @param formula_l Formula for location; an object of class 
+#'  "\code{\link{formula}}" (or one that can be coerced to that class):
+#'  a symbolic description of the model to be fitted. Details of model 
+#'  specification are given under 'Details'.
+#'
+#' @param formula_s Formula for scale; an object of class 
+#'   "\code{\link{formula}}" (or one that can be coerced to that class):
+#'   a symbolic description of the model to be fitted. Details of model 
+#'   specification are given under 'Details'.
+#'
+#' @param data Dataframe with results from carcass persistence trials and any
+#'   covariates included in \code{formula_l} or {formula_s} (required).
+#'
+#' @param left Name of columns in \code{data} where the time of last present
+#'   observation is stored.
+#'
+#' @param right Name of columns in \code{data} where the time of first absent
+#'   observation is stored.
+#'
+#' @param dist Distribution name ("exponential", "weibull", "loglogistic", or 
+#'   "lognormal")
+#'
+#' @param CL confidence level
+#'
+#' @return \code{cpm} returns an object of class "\code{cpm}", which is a list
+#'   whose components characterize the fit of the model. Due to the large 
+#'   number and complexity of components, only a subset of them is printed 
+#'   automatically; the rest can be viewed/accessed directly via the \code{$}
+#'   operator if desired.
+#'
+#' The following components are displayed automatically:
+#'
+#' \describe{
+#'  \item{\code{call}}{the function call to fit the model}
+#'  \item{\code{formula_l}}{the model formula for the \code{p} parameter}
+#'  \item{\code{formula_s}}{the model formula for the \code{k} parameter}
+#'  \item{\code{distribution}}{distribution used}
+#'  \item{\code{predictors}}{list of covariates of \code{l} and/or \code{s}}
+#'  \item{\code{cellwiseTable_ls}}{summary statistics for estimated cellwise 
+#'    \code{l} and \code{s}, including the medians and upper & lower bounds
+#'    on CIs for each parameter, indexed by cell (or combination of
+#'    covariate levels).}
+#'  \item{\code{cellwiseTable_ab}}{summary statistics for estimated cellwise 
+#'    \code{pda} and \code{pdb}, including the medians and upper & lower 
+#'    bounds on CIs for each parameter, indexed by cell (or combination of
+#'    covariate levels).}
+#'  \item{\code{AICc}}{the AIC value as corrected for small sample size}
+#'  \item{\code{convergence}}{convergence status of the numerical optimization 
+#'    to find the maximum likelihood estimates of \code{p} and \code{k}. A 
+#'    value of \code{0} indicates that the model was fit successfully. For 
+#'    help in deciphering other values, see \code{\link{optim}}.}
+#' }
+#'
+#' The following components are not printed automatically but can be accessed
+#' via the \code{$} operator:
+#' \describe{
+#'   \item{\code{betahat_l}}{parameter estimates for the terms in the 
+#'     regression model for for \code{l}}
+#'   \item{\code{betahat_s}}{parameter estimates for the terms in the 
+#'     regression model for for \code{s}. If dist = "exponential", \code{s} 
+#'     is set at 1 and not calculated.}
+#'   \item{\code{varbeta}}{the variance-covariance matrix of the estimators
+#'     for \code{c(betahat_l, betahat_s}.}
+#'   \item{\code{cellMM_l}}{a cellwise model (design) matrix for covariate 
+#'     structure of \code{l_formula}}
+#'   \item{\code{cellMM_s}}{a cellwise model(design) matrix for covariate 
+#'     structure of \code{s_formula}}
+#'   \item{\code{levels_l}}{all levels of each covariate of \code{l}}
+#'   \item{\code{levels_s}}{all levels of each covariate of \code{s}}
+#'   \item{\code{nbeta_l}}{number of parameters fit for \code{l}}
+#'   \item{\code{nbeta_s}}{number of parameters fit for \code{s}}
+#'   \item{\code{cells}}{cell structure of the pk-model, i.e., combinations of
+#'     all levels for each covariate of \code{p} and \code{k}. For example, if
+#'     \code{covar1} has levels \code{"a"}, \code{"b"}, and \code{"c"}, and
+#'     \code{covar2} has levels \code{"X"} and \code{"Y"}, then the cells 
+#'     would consist of \code{a.X}, \code{a.Y}, \code{b.X}, \code{b.Y}, 
+#'     \code{c.X}, and \code{c.Y}.}
+#'  \item{\code{ncell}}{total number of cells}
+#'  \item{\code{predictors_l}}{list of covariates of \code{l}}
+#'  \item{\code{predictors_s}}{list of covariates of \code{s}}
+#'  \item{\code{observations}}{observations used to fit the model}
+#'  \item{\code{carcCells}}{the cell to which each carcass belongs}
+#'  \item{\code{AIC}}{the 
+#'    \href{https://en.wikipedia.org/wiki/Akaike_information_criterion}{AIC}
+#'    value for the fitted model}
+#'  \item{\code{CL}}{the input \code{CL}}
+#'}
+#'
+#' @export
+#'
+cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
+                right = NULL, dist = "weibull", CL = 0.9){
 
-cpm <- function(formula, data = NULL, left = NULL, right = NULL, 
-                dist = "weibull", CL = 0.9){
+  if (length(formula_s) == 0){
+    if (dist != "exponential"){
+      message("No formula given for scale, intercept-only model used.")
+    }
+    formula_s <- formula(s ~ 1)
+  } 
+  if (length(formula_s) == 1 & dist == "exponential"){
+    msg <- paste("Formula given for scale, but exponential distribution ",
+             "chosen, which does have a scale parameter. Formula ignored.", 
+             sep = "")
+    message(msg)
+    formula_s <- formula(s ~ 1)
+  } 
+
+  formulaRHS_l <- formula(delete.response(terms(formula_l)))
+  preds_l <- all.vars(formulaRHS_l)
+  levels_l <- .getXlevels(terms(formulaRHS_l), data)
+  formulaRHS_s <- formula(delete.response(terms(formula_s)))
+  preds_s <- all.vars(formulaRHS_s)
+  predCheck <- c(preds_l, preds_s)
+  levels_s <- .getXlevels(terms(formulaRHS_s), data)
 
   if (length(left) == 0){
     left <- "left"
@@ -42,20 +173,36 @@ cpm <- function(formula, data = NULL, left = NULL, right = NULL,
   if (!right %in% colnames(data)){
     stop("Column name for last time absent (right) is not in the data.")
   }
-
-  formulaRHS <- formula(delete.response(terms(formula)))
-  predCheck <- all.vars(formulaRHS)
   if (sum(predCheck %in% colnames(data)) != length(predCheck)){
     stop("Predictor(s) in formula(e) not found in data.")
   }
 
-  preds <- all.vars(formulaRHS) 
+  preds <- unique(preds_l, preds_s) 
   cells <- combinePreds(preds, data)
   ncell <- nrow(cells)
   cellNames <- cells$CellNames
 
-  dataMM <- model.matrix(formulaRHS, data)
-  cellMM <- model.matrix(formulaRHS, cells) 
+  dataMM_l <- model.matrix(formulaRHS_l, data)
+  dataMM_s <- model.matrix(formulaRHS_s, data)
+  dataMM <- t(cbind(dataMM_l, dataMM_s))
+  cellMM_l <- model.matrix(formulaRHS_l, cells)
+  cellMM_s <- model.matrix(formulaRHS_s, cells)
+  cellMM <- cbind(cellMM_l, cellMM_s)
+
+  nbeta_l <- ncol(dataMM_l)
+  nbeta_s <- ncol(dataMM_s)
+  nbeta <- nbeta_l + nbeta_s
+
+  ncarc <- nrow(data)
+  cellByCarc <- numeric(ncarc)
+  for (celli in 1:ncell){
+    groupPattern <- cellMM[celli, ]
+    matchingMatrix <- dataMM == groupPattern
+    matchingParts <- apply(matchingMatrix, 2, sum)
+    matchingTotal <- matchingParts == ncol(cellMM)
+    cellByCarc[matchingTotal] <- celli
+  }
+  carcCells <- cellNames[cellByCarc]
 
   t1 <- data[ , left]
   t2 <- data[ , right]
@@ -65,74 +212,187 @@ cpm <- function(formula, data = NULL, left = NULL, right = NULL,
   t1 <- pmax(t1, 0.0001)
   tevent <- survival::Surv(time = t1, time2 = t2, event = event, 
               type = "interval")
-  init_form <- reformulate(as.character(formulaRHS)[-1], response = "tevent")
+  init_formRHS <- as.character(formulaRHS_l)[-1]
+  init_form <- reformulate(init_formRHS, response = "tevent")
   init_mod <- survival::survreg(formula = init_form, data = data, dist = dist)
-  init_scales <- rep(init_mod$scale, length(init_mod$coef))
-  betaInit <- matrix(c(init_mod$coef, init_scales), ncol = 2)
-  probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
+  init_l <- init_mod$coef
+  names(init_l) <- paste("l_", names(init_l), sep = "")
+  init_s <- rep(init_mod$scale, nbeta_s)
+  names(init_s) <- paste("s_", colnames(cellMM_s), sep = "")
+  betaInit <- c(init_l, init_s)
 
   MLE <- tryCatch(
            optim(par = betaInit, fn = cpLogLik, method = "BFGS", 
-             t1 = t1, t2 = t2, dataMM = dataMM, dist = dist, hessian = TRUE,
+             t1 = t1, t2 = t2, cellMM = cellMM, dist = dist, hessian = TRUE,
+             nbeta_l = nbeta_l, cellByCarc = cellByCarc, dataMM = dataMM, 
              control = list(maxit = 5000)
            ), error = function(x) {NA}
          )
   betahat <- MLE$par
   convergence <- MLE$convergence
   betaHessian <- MLE$hessian
+  if (dist == "exponential"){
+    which_s <- (nbeta_l + 1):nbeta
+    betaHessian <- betaHessian[-which_s, -which_s]
+  }
   llik <- MLE$value  
 
-
-
-
-
-
-
-
-
-
-  nparam <- length(betahat)
-  ncarc <- length(t12)
+  nparam <- length(betahat)  
+  if (dist == "exponential"){
+    nparam <- length(betahat) - 1
+  }
   AIC <- 2 * llik + 2 * nparam
   AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
   AICc <- round(AIC + AICcOffset, 3)
+
+  betahat_l <- betahat[1:nbeta_l]
+  names(betahat_l) <- colnames(dataMM_l)
+  betahat_s <- betahat[(nbeta_l + 1):(nbeta)]
+  names(betahat_s) <- colnames(dataMM_s)
 
   varbeta <- tryCatch(solve(betaHessian), error = function(x) {NA})
   if (is.na(varbeta)[1]){
     stop("Model generates unstable variance estimate.")
   }
+  varbeta_l <- varbeta[1:nbeta_l, 1:nbeta_l]
+  cellMean_l <- cellMM_l %*% betahat_l
+  cellVar_l <- cellMM_l %*% varbeta_l %*% t(cellMM_l)
+  cellSD_l <- sqrt(diag(cellVar_l))
 
-  cellByCarc <- numeric(ncarc)
-  for (celli in 1:ncell){
-    groupPattern <- cellMM[celli, ]
-    matchingMatrix <- t(dataMM) == groupPattern
-    matchingParts <- apply(matchingMatrix, 2, sum)
-    matchingTotal <- matchingParts == ncol(cellMM)
-    cellByCarc[matchingTotal] <- celli
+  if (dist == "exponential"){
+    cellMean_s <- 1
+    cellSD_s <- 0
+  } else {
+    which_s <- (nbeta_l + 1):(nbeta)
+    varbeta_s <- varbeta[which_s, which_s]
+    cellMean_s <- cellMM_s %*% betahat_s
+    cellVar_s <- cellMM_s %*% varbeta_s %*% t(cellMM_s)
+    cellSD_s <- sqrt(diag(cellVar_s))
   }
-  carcCells <- cellNames[cellByCarc]
 
+  probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
+  cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
+  cellTable_l <- matrix(cellTable_l, nrow = ncell, ncol = 3)
+  colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
+  cellTable_s <- apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s)
+  cellTable_s <- matrix(cellTable_s, nrow = ncell, ncol = 3)
+  colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
+  cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
+
+  if (dist == "exponential"){
+    cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
+    colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+    cellTable_b <- exp(cellTable_l)
+    colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+  }
+  if (dist == "weibull"){
+    cellTable_a <- 1 / cellTable_s
+    colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+    cellTable_b <- exp(cellTable_l)
+    colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+  }
+  if (dist == "lognormal"){
+    cellTable_a <- cellTable_s^2
+    colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+    cellTable_b <- cellTable_l
+    colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+  }
+  if (dist == "loglogistic"){
+    cellTable_a <- 1 / cellTable_s
+    colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+    cellTable_b <- exp(cellTable_l)
+    colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+  }  
+  cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
+
+
+  if (dist == "exponential"){
+    nbeta_s <- 0
+  }
   output <- list()
   output$call <- match.call()
-  output$formula <- formula
+  output$formula_l <- formula_l
+  output$formula_s <- formula_s
+  output$distribution <- dist
   output$predictors <- preds 
+  output$predictors_l <- preds_l
+  output$predictors_s <- preds_s
   output$AIC <- AIC
   output$AICc <- AICc
   output$convergence <- convergence
   output$varbeta <- varbeta
-  output$betahat <- betahat
-  output$cellMM <- cellMM
+  output$cellMM_l <- cellMM_l
+  output$cellMM_s <- cellMM_s
+  output$nbeta_l <- nbeta_l  
+  output$nbeta_s <- nbeta_s
+  output$betahat_l <- betahat_l
+  output$betahat_s <- betahat_s
+  output$levels_l <- levels_l
+  output$levels_s <- levels_s
   output$cells <- cells
   output$ncell <- ncell
-  output$cellwiseTable <- cellTable
-  output$observations <- obsData
+  output$cellwiseTable_ls <- cellTable_ls
+  output$cellwiseTable_ab <- cellTable_ab
+  output$observations <- data[ , c(left, right)]
   output$carcCells <- carcCells
   output$CL <- CL
   class(output) <- c("cpm", "list")
-  attr(output, "hidden") <- c("predictors", "AIC", "convergence", "varbeta",
-                              "cellMM", "cells", "ncell", "observations",
-                              "carcCells", "CL"
-                              )
+  attr(output, "hidden") <- c("predictors_l", "predictors_s", 
+                              "betahat_l", "betahat_s", "cellMM_l", 
+                              "cellMM_s", "nbeta_l", "nbeta_s", "varbeta",
+                              "levels_l", "levels_s", "carcCells", "CL", 
+                              "AIC", "cells", "ncell", "observations"
+                            )
   return(output)
+}
+
+#' @export
+#'
+print.cpm <- function(model){
+  hid <- attr(model, "hidden")
+  notHid <- !names(model) %in% hid
+  print(model[notHid])
+}
+ 
+#' Calculate the negative log-likelihood of a carcass persistence model.
+#' 
+#' @param t1 last times observed present
+#' @param t2 first times observed absent
+#' @param beta Parameters to be optimized.
+#' @param nbeta_l Number of parameters associated with l.
+#' @param cellByCarc Which cell each observation belongs to.
+#' @param cellMM Combined model matrix.
+#' @param dataMM Combined model matrix expanded to the data.
+#' @param dist Name of distribution. 
+#' @return Negative log likelihood of the observations, given the parameters.
+#' @examples
+#' NA
+#' @export 
+#'
+cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
+  t2[which(is.na(t2))] <- Inf
+  ncell <- nrow(cellMM)
+  nbeta <- length(beta)
+  nbeta_s <- nbeta - nbeta_l
+  which_l <- 1:nbeta_l
+  which_s <- (nbeta_l + 1):nbeta
+  beta_l <- beta[which_l]
+  beta_s <- beta[which_s]
+  if (dist == "exponential"){
+    beta_s <- c(1, rep(0, nbeta_s - 1))
+  } 
+  dataMM_l <- matrix(dataMM[which_l, ], ncol = nbeta_l, byrow = TRUE)
+  dataMM_s <- matrix(dataMM[which_s, ], ncol = nbeta_s, byrow = TRUE)
+  Beta_l <- dataMM_l %*% beta_l 
+  Beta_s <- dataMM_s %*% beta_s  
+  psurv_t1 <- survival::psurvreg(t1, Beta_l, Beta_s, dist)
+  psurv_t2 <- survival::psurvreg(t2, Beta_l, Beta_s, dist)
+  psurv_t2[which(is.na(psurv_t2))] <- 1
+  lik <- psurv_t2 - psurv_t1
+  too_small <- t1 + .Machine$double.eps >= t2
+  lik[too_small] <- survival::dsurvreg(t2, Beta_l, Beta_s, dist)
+  lik <- pmax(lik, .Machine$double.eps) 
+  nll <- -sum(log(lik))
+  return(nll)
 }
 
