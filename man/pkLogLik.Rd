@@ -15,7 +15,7 @@ not found.}
 
 \item{beta}{Parameters to be optimized.}
 
-\item{nbeta_p}{Number of parameters associated with p}
+\item{nbeta_p}{Number of parameters associated with p.}
 
 \item{cellByCarc}{Which cell each observation belongs to.}
 

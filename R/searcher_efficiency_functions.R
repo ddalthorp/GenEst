@@ -1,90 +1,89 @@
 #' Fit a single searcher efficiency model.
 #' 
 #' Searcher efficiency is modeled as a function of the number of times a 
-#' carcass has been missed in previous searches and any number of covariates. 
-#' Format and usage parallel that of common \code{R} functions such as 
-#' \code{lm}, \code{glm}, and \code{gam}. However, the input data 
-#' (\code{data}) is structured differently to accommodate the multiple-search
-#' searcher efficiency trials (see 'Details'), and model formulas may be 
-#' entered for both \code{p} (akin to an intercept) and \code{k} (akin to a 
-#' slope).
+#'   carcass has been missed in previous searches and any number of 
+#'   such as covariates. Format and usage parallel that of common \code{R} 
+#'   functions \code{lm}, \code{glm}, and \code{gam}. However, the input data 
+#'   (\code{data}) is structured differently to accommodate the 
+#'   multiple-search searcher efficiency trials (see 'Details'), and model 
+#'   formulas may be entered for both \code{p} (akin to an intercept) and  
+#'   \code{k} (akin to aslope).
 #'
 #' The probability of finding a carcass that is present at the time of search
-#' is \code{p} on the first search after carcass arrival and is assumed to
-#' decrease by a factor of \code{k} each time the carcass is missed in 
-#' searches. Both \code{p} and \code{k} may depend on covariates such as 
-#' ground cover, season, species, etc., and a separate model format 
-#' (\code{formula_p} and \code{formula_k}) may be entered for each. The models 
-#' are entered as they would be in the familiar \code{lm} or \code{glm} 
-#' functions in R. For example, \code{p} might vary with \code{visibility}, 
-#' \code{season}, and \code{site}, while \code{k} varies only with 
-#' \code{visibility}. A user might then enter \code{p ~ visibility + season + 
-#' site} for \code{formula_p} and \code{k ~ visibility} for \code{formula_k}. 
-#' Other R conventions for defining formulas may also be used, with 
-#' \code{covar1:covar2} for the interaction between covariates 1 and 2 and 
-#' \code{covar1 * covar2} as short-hand for \code{covar1 + covar2 + 
-#' covar1:covar2}.
+#'   is \code{p} on the first search after carcass arrival and is assumed to
+#'   decrease by a factor of \code{k} each time the carcass is missed in 
+#'   searches. Both \code{p} and \code{k} may depend on covariates such as 
+#'   ground cover, season, species, etc., and a separate model format 
+#'   (\code{formula_p} and \code{formula_k}) may be entered for each. The 
+#'   models are entered as they would be in the familiar \code{lm} or 
+#'   \code{glm} functions in R. For example, \code{p} might vary with
+#'   \code{visibility}, \code{season}, and \code{site}, while \code{k} varies
+#'   only with \code{visibility}. A user might then enter \code{p ~ visibility
+#'   + season + site} for \code{formula_p} and \code{k ~ visibility} for 
+#'   \code{formula_k}. Other R conventions for defining formulas may also be 
+#'   used, with \code{covar1:covar2} for the interaction between covariates 
+#'   1 and 2 and \code{covar1 * covar2} as short-hand for \code{covar1 +
+#'   covar2 + covar1:covar2}.
 #'
 #' Search trial \code{data} must be entered in a data frame with data in 
-#' each row giving the fate of a single carcass in the field trials. There
-#' must be a column for each search occassion, with 0, 1, or NA depending on 
-#' whether the carcass was missed, found, or not available (typically because 
-#' it was found and removed on a previous search, had been earlier removed by 
-#' scavengers, or was not searched for) on the given search occasion. 
-#' Additional columns with values for categorical covariates (e.g., 
-#' visibility = E, M, or D) may also be included.
+#'   each row giving the fate of a single carcass in the field trials. There
+#'   must be a column for each search occassion, with 0, 1, or NA depending on 
+#'   whether the carcass was missed, found, or not available (typically 
+#'   because it was found and removed on a previous search, had been earlier
+#'   removed by  scavengers, or was not searched for) on the given search  
+#'   occasion. Additional columns with values for categorical covariates  
+#'   (e.g., visibility = E, M, or D) may also be included.
 #'
 #' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
-#' (or one that can be coerced to that class): a symbolic description of the
-#' model to be fitted. Details of model specification are given under 
-#' 'Details'.
+#'   (or one that can be coerced to that class): a symbolic description of 
+#'   the model to be fitted. Details of model specification are given under 
+#'   "Details".
 #'
 #' @param data Dataframe with results from searcher efficiency trials and any
 #' covariates included in \code{formula_p} or {formula_k} (required).
 #'
 #' @param formula_k Formula for k; an object of class "\code{\link{formula}}"
-#' (or one that can be coerced to that class): a symbolic description of the
-#' model to be fitted. Details of model specification are given under 
-#; 'Details'.
+#'   (or one that can be coerced to that class): a symbolic description of the
+#'   model to be fitted. Details of model specification are given under 
+#'   "Details".
 #'
 #' @param obsCol Vector of names of columns in \code{data} where results 
-#' for each search occasion are stored (optional). If no \code{obs_cols} are 
-#' provided, \code{pkm} uses as \code{obs_cols} all columns with names that 
-#' begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
-#' 's2', 's3', etc. This option is included as a convenience for the user, 
-#' but care must be taken that other data are not stored in columns with 
-#' names matching that pattern. Alternatively, \code{obs_cols} may be 
-#' entered as a vector of names, like \code{c('s1', 's2', 's3')}, 
-#' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
-#' 'lastSearch')}.
+#'   for each search occasion are stored (optional). If no \code{obsCol} are 
+#'   provided, \code{pkm} uses as \code{obsCol} all columns with names that 
+#'   begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
+#'   "s2", "s3", etc. This option is included as a convenience for the user, 
+#'   but care must be taken that other data are not stored in columns with 
+#'   names matching that pattern. Alternatively, \code{obsCol} may be 
+#'   entered as a vector of names, like \code{c("s1", "s2", "s3")}, 
+#'   \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch", 
+#'   "lastSearch")}.
 #'
 #' @param kFixed Parameter for user-specified \code{k} value (optional). If a
-#' value is provided, \code{formula_k} is ignored and the model is fit under 
-#' the assumption that the \code{k} parameter is fixed and known to be
-#' \code{fix_k}.
+#'   value is provided, \code{formula_k} is ignored and the model is fit under 
+#'   the assumption that the \code{k} parameter is fixed and known to be
+#'   \code{fix_k}.
 #'
 #' @param kInit Initial value used for \code{k} in the optimization.
 #'
 #' @param CL confidence level
 #'
 #' @return \code{pkm} returns an object of class "\code{pkm}", which is a list
-#' whose components characterize the fit of the model. Due to the large number
-#' and complexity of components, only a subset of them is printed 
-#' automatically; the rest can be viewed/accessed directly via the \code{$}
-#' operator if desired.
+#'   whose components characterize the fit of the model. Due to the large
+#'   number and complexity of components, only a subset of them is printed 
+#'   automatically; the rest can be viewed/accessed directly via the \code{$}
+#'  operator if desired.
 #'
 #' The following components are displayed automatically:
 #'
 #' \describe{
 #'  \item{\code{call}}{the function call to fit the model}
+#'   \item{\code{formula_p}}{the model formula for the \code{p} parameter}
+#'   \item{\code{formula_k}}{the model formula for the \code{k} parameter}
 #'  \item{\code{predictors}}{list of covariates of \code{p} and/or \code{k}}
 #'  \item{\code{cellwiseTable}}{summary statistics for estimated cellwise 
 #'    \code{p} and \code{k}, including the medians and upper & lower bounds
 #'    on CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
-#'  \item{\code{AIC}}{the 
-#'    \href{https://en.wikipedia.org/wiki/Akaike_information_criterion}{AIC}
-#'    value for the fitted model}
 #'  \item{\code{AICc}}{the AIC value as corrected for small sample size}
 #'  \item{\code{convergence}}{convergence status of the numerical optimization 
 #'    to find the maximum likelihood estimates of \code{p} and \code{k}. A 
@@ -95,14 +94,12 @@
 #' The following components are not printed automatically but can be accessed
 #' via the \code{$} operator:
 #' \describe{
-#'   \item{\code{formula_p}}{the model formula for the \code{p} parameter}
-#'   \item{\code{formula_k}}{the model formula for the \code{k} parameter}
 #'   \item{\code{betahat_p}}{parameter estimates for the terms in the 
 #'     regression model for for \code{p} (logit scale)}
 #'   \item{\code{betahat_k}}{parameter estimates for the terms in the 
 #'     regression model for for \code{k} (logit scale). If \code{k} is fixed 
 #'     and known, \code{betahat_k} is not calculated.}
-#'   \item{\code{betavar}}{the variance-covariance matrix of the estimators
+#'   \item{\code{varbeta}}{the variance-covariance matrix of the estimators
 #'     for \code{c(betahat_p, betahat_k}.}
 #'   \item{\code{cellMM_p}}{a cellwise model (design) matrix for covariate 
 #'     structure of \code{p_formula}}
@@ -123,6 +120,10 @@
 #'  \item{\code{predictors_p}}{list of covariates of \code{k}}
 #'  \item{\code{observations}}{observations used to fit the model}
 #'  \item{\code{kFixed}}{the input \code{kFixed}}
+#'  \item{\code{AIC}}{the 
+#'    \href{https://en.wikipedia.org/wiki/Akaike_information_criterion}{AIC}
+#'    value for the fitted model}
+#'  \item{\code{carcCells}}{the cell to which each carcass belongs}
 #'  \item{\code{CL}}{the input \code{CL}}
 #'}
 #'
@@ -336,9 +337,8 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   attr(output, "hidden") <- c("predictors_p", "predictors_k", "kFixed",
                               "betahat_p", "betahat_k", "cellMM_p", 
                               "cellMM_k", "nbeta_p", "nbeta_k", "varbeta",
-                              "levels_p", "levels_k", "convergence",  
-                              "AIC", "cells", "ncell", "observations",
-                              "carcCells", "CL"
+                              "levels_p", "levels_k", "carcCells", "CL",   
+                              "AIC", "cells", "ncell", "observations"
                             )
 
   return(output)
@@ -358,7 +358,7 @@ print.pkm <- function(model){
 #'  not found.
 #' @param foundOn Search on which carcass was found.
 #' @param beta Parameters to be optimized.
-#' @param nbeta_p Number of parameters associated with p
+#' @param nbeta_p Number of parameters associated with p.
 #' @param cellByCarc Which cell each observation belongs to.
 #' @param maxmisses Maximum possible number of misses for a carcass.
 #' @param cellMM Combined pk model matrix.
@@ -416,44 +416,44 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #' Run a set of pkm models based on predictor inputs
 #'
 #' Function inputs follow \code{pkm}, with all simpler models being run
-#'  and returned as a list of model objects
+#'   and returned as a list of model objects
 #'
 #' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
-#' (or one that can be coerced to that class): a symbolic description of the
-#' model to be fitted. Details of model specification are given under 
-#' 'Details'.
+#'   (or one that can be coerced to that class): a symbolic description of the
+#'   model to be fitted. Details of model specification are given under 
+#'   "Details".
 #'
 #' @param data Dataframe with results from searcher efficiency trials and any
-#' covariates included in \code{formula_p} or {formula_k} (required).
+#'   covariates included in \code{formula_p} or {formula_k} (required).
 #'
 #' @param formula_k Formula for k; an object of class "\code{\link{formula}}"
-#' (or one that can be coerced to that class): a symbolic description of the
-#' model to be fitted. Details of model specification are given under 
-#; 'Details'.
+#'   (or one that can be coerced to that class): a symbolic description of the
+#'   model to be fitted. Details of model specification are given under 
+#'   "Details".
 #'
 #' @param obsCol Vector of names of columns in \code{data} where results 
-#' for each search occasion are stored (optional). If no \code{obsCol} are 
-#' provided, \code{pkm} uses as \code{obsCol} all columns with names that 
-#' begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
-#' 's2', 's3', etc. This option is included as a convenience for the user, 
-#' but care must be taken that other data are not stored in columns with 
-#' names matching that pattern. Alternatively, \code{obsCol} may be 
-#' entered as a vector of names, like \code{c('s1', 's2', 's3')}, 
-#' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
-#' 'lastSearch')}.
+#'   for each search occasion are stored (optional). If no \code{obsCol} are 
+#'   provided, \code{pkm} uses as \code{obsCol} all columns with names that 
+#'   begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
+#'   "s2", "s3", etc. This option is included as a convenience for the user, 
+#'   but care must be taken that other data are not stored in columns with 
+#'   names matching that pattern. Alternatively, \code{obsCol} may be 
+#'   entered as a vector of names, like \code{c("s1", "s2", "s3")}, 
+#'   \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch", 
+#'   "lastSearch")}.
 #'
 #' @param kFixed Parameter for user-specified \code{k} value (optional). If a
-#' value is provided, \code{formula_k} is ignored and the model is fit under 
-#' the assumption that the \code{k} parameter is fixed and known to be
-#' \code{fix_k}.
+#'   value is provided, \code{formula_k} is ignored and the model is fit under 
+#'   the assumption that the \code{k} parameter is fixed and known to be
+#'   \code{fix_k}.
 #'
 #' @param kInit Initial value used for \code{k} in the optimization.
 #'
 #' @param CL confidence level
 #'
 #' @return \code{pkmSet} returns a list of objects, each of class 
-#' "\code{pkm}", which each then a list whose components characterize the fit 
-#' of the specific model.
+#'   "\code{pkm}", which each then a list whose components characterize the 
+#'   fit of the specific model.
 #'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
              kFixed = NULL, kInit = 0.7, CL = 0.9){
@@ -595,37 +595,37 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' Fit all possible searcher efficiency models across all size classes.
 #'
 #' Function inputs generally follow \code{pkmSet} and \code{pkm} but with an 
-#'  additional size column input and calculation of the set of pkm models for
-#'  each of the size classes
+#'   additional size column input and calculation of the set of pkm models for
+#'   each of the size classes
 #'
 #' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
-#' (or one that can be coerced to that class): a symbolic description of the
-#' model to be fitted. Details of model specification are given under 
-#' 'Details'.
+#'   (or one that can be coerced to that class): a symbolic description of the
+#'   model to be fitted. Details of model specification are given under 
+#'   "Details".
 #'
 #' @param data Dataframe with results from searcher efficiency trials and any
-#' covariates included in \code{formula_p} or {formula_k} (required).
+#'   covariates included in \code{formula_p} or {formula_k} (required).
 #'
 #' @param formula_k Formula for k; an object of class "\code{\link{formula}}"
-#' (or one that can be coerced to that class): a symbolic description of the
-#' model to be fitted. Details of model specification are given under 
-#; 'Details'.
+#'   (or one that can be coerced to that class): a symbolic description of the
+#'   model to be fitted. Details of model specification are given under 
+#'   "Details".
 #'
-#' @param obsCols Vector of names of columns in \code{data} where results 
-#' for each search occasion are stored (optional). If no \code{obsCols} are 
-#' provided, \code{pkm} uses as \code{obsCols} all columns with names that 
-#' begin with an \code{'s'} or \code{'S'} and end with a number, e.g., 's1',
-#' 's2', 's3', etc. This option is included as a convenience for the user, 
-#' but care must be taken that other data are not stored in columns with 
-#' names matching that pattern. Alternatively, \code{obsCols} may be 
-#' entered as a vector of names, like \code{c('s1', 's2', 's3')}, 
-#' \code{paste0('s', 1:3)}, or \code{c('initialSearch', 'anotherSearch', 
-#' 'lastSearch')}.
+#' @param obsCol Vector of names of columns in \code{data} where results 
+#'   for each search occasion are stored (optional). If no \code{obsCol} are 
+#'   provided, \code{pkm} uses as \code{obsCol} all columns with names that 
+#'   begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
+#'   "s2", "s3", etc. This option is included as a convenience for the user, 
+#'   but care must be taken that other data are not stored in columns with 
+#'   names matching that pattern. Alternatively, \code{obsCol} may be 
+#'   entered as a vector of names, like \code{c("s1", "s2", "s3")}, 
+#'   \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch", 
+#'   "lastSearch")}.
 #'
 #' @param kFixed Parameter for user-specified \code{k} value (optional). If a
-#' value is provided, \code{formula_k} is ignored and the model is fit under 
-#' the assumption that the \code{k} parameter is fixed and known to be
-#' \code{fix_k}.
+#'   value is provided, \code{formula_k} is ignored and the model is fit under 
+#'   the assumption that the \code{k} parameter is fixed and known to be
+#'   \code{fix_k}.
 #'
 #' @param init_k Initial value used for \code{k} in the optimization.
 #'
@@ -635,12 +635,13 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'  are recorded
 #'
 #' @return \code{pkmSet} returns a list of objects, each of which is a list
-#'  of \code{pkm}" outputs (each corresponding to the fit of a specific model
-#'  within the set of \code{pkm} models fit for the given size class), that is
-#'  of length equal to the total number of size classes
+#'   of \code{pkm}" outputs (each corresponding to the fit of a specific model
+#'   within the set of \code{pkm} models fit for the given size class), that
+#'   is of length equal to the total number of size classes
 #'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL, 
-                sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, CL = 0.9){
+                       sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, 
+                       CL = 0.9){
 
   if (length(sizeclassCol) == 0){
     message("No size class provided, function run as if pkmSet")
@@ -668,7 +669,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL,
 #' Verify that a suite of searcher efficiency models all fit successfully.
 #'
 #' @param pkmToCheck A \code{pkm} model or a set of them or a suite of sets
-#'  associated with multiple sizes
+#'   associated with multiple sizes
 #'
 #' @return A single (total) logcal 
 #'
@@ -715,7 +716,7 @@ pkmCheck <- function(pkmToCheck){
 #' Create the  AICc tables for the searcher efficiency models
 #' 
 #' @param pkmset Set of searcher efficiency models fit to the same
-#'  observations
+#'   observations
 #' @return AICc table
 #' @examples
 #' NA
@@ -772,12 +773,12 @@ pkmSetAICcTab <- function(pkmset){
 #' @param n the number of simulation draws
 #'
 #' @param model A \code{\link{pkm}} object (which is returned from 
-#'  \code{pkm()})
+#'   \code{pkm()})
 #'
 #' @param seed optional input to set the seed of the RNG
 #'
 #' @return list of two matrices of \code{n} simulated \code{p} and \code{k} 
-#'  for cells defined by the \code{model} object. 
+#'   for cells defined by the \code{model} object. 
 #'
 #' @examples
 #' data(pkmdat)
@@ -816,7 +817,7 @@ rpk <- function(n = 1, model, seed = NULL){
 
   if (length(kFixed) == 0){
     sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
-  }else{
+  } else{
     sim_k <- matrix(kFixed, ncol = ncell, nrow = n)
   }
   colnames(sim_k) <- cellNames
