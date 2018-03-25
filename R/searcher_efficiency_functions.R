@@ -803,7 +803,7 @@ rpk <- function(n = 1, model, seed = NULL){
   cellMM_p <- model$cellMM_p
   cellMM_k <- model$cellMM_k
   ncell <- model$ncell
-  cellNames <- model$cells[,'CellNames']
+  cellNames <- model$cells[ , "CellNames"]
   meanbeta <- c(model$betahat_p, model$betahat_k)
   varbeta <- model$varbeta
   method <-  "svd"
@@ -825,11 +825,10 @@ rpk <- function(n = 1, model, seed = NULL){
   output <- vector("list", ncell)
   names(output) <- cellNames
   for (celli in 1:ncell){
-
     cellpk <- cbind(p = sim_p[ , celli], k = sim_k[ , celli])
     output[[celli]] <-  cellpk
-
   }
+
   return(output)
 }
 

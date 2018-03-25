@@ -131,7 +131,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     }
     formula_s <- formula(s ~ 1)
   } 
-  if (length(formula_s) == 1 & dist == "exponential"){
+  if (length(formula_s) != 0 & dist == "exponential"){
     msg <- paste("Formula given for scale, but exponential distribution ",
              "chosen, which does have a scale parameter. Formula ignored.", 
              sep = "")
@@ -394,5 +394,103 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
   lik <- pmax(lik, .Machine$double.eps) 
   nll <- -sum(log(lik))
   return(nll)
+}
+
+
+#' Simulate parameters from a fitted cp model.
+#'
+#' @param n the number of simulation draws
+#'
+#' @param model A \code{\link{ckm}} object (which is returned from 
+#'   \code{cpm()})
+#'
+#' @param type The type of parameters requested. \code{"survreg"} or 
+#'   \code{"ppersist"}
+#'
+#' @param seed optional input to set the seed of the RNG
+#'
+#' @return list of two matrices of \code{n} simulated \code{l} and \code{s} 
+#'   (if \code{type = "survreg"}) or \code{a} and \code{b} (if \code{type = 
+#'   "ppersist"})for cells defined by the \code{model} object. 
+#'
+#' @examples
+#'  NA
+#' @export
+#'
+rcp <- function(n = 1, model, seed = NULL, type = "ppersist"){
+
+  if (!"cpm" %in% class(model)){
+    stop("model not of class cpm.")
+  }
+  if (!type %in% c("survreg", "ppersist")){
+    stop(paste("type ", type, " is not supported.", sep = ""))
+  }
+  dist <- model$dist
+  nbeta_l <- model$nbeta_l 
+  nbeta_s <- model$nbeta_s
+  if (dist == "exponential"){
+    nbeta_s <- 1
+  } 
+  which_beta_s <- (nbeta_l + 1):(nbeta_l + nbeta_s)
+  cellMM_l <- model$cellMM_l
+  cellMM_s <- model$cellMM_s
+  ncell <- model$ncell
+  cellNames <- model$cells[ , "CellNames"]
+  meanbeta <- c(model$betahat_l, model$betahat_s)
+  if (dist == "exponential"){
+    varbeta <- rbind(cbind(model$varbeta, 0), 0)
+  } else{
+    varbeta <- model$varbeta
+  }
+  method <-  "svd"
+
+  if (length(seed) > 0){
+    set.seed(seed)
+  }
+  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
+
+  sim_l <- as.matrix(sim_beta[ , 1:nbeta_l] %*% t(cellMM_l))
+  sim_s <- as.matrix(sim_beta[ , which_beta_s] %*% t(cellMM_s))
+
+  if (type == "ppersist"){
+    if (dist == "exponential"){
+      sim_a <- matrix(NA, nrow = n, ncol = ncell)
+      sim_b <- exp(sim_l)
+    }
+    if (dist == "weibull"){
+      sim_a <- 1 / sim_s
+      sim_b <- exp(sim_l)
+    }
+    if (dist == "lognormal"){
+      sim_a <- sim_s^2
+      sim_b <- sim_l
+    }
+    if (dist == "loglogistic"){
+      sim_a <- 1 / sim_s
+      sim_b <- exp(sim_l)
+    } 
+    sim_p1 <- sim_a
+    sim_p2 <- sim_b
+  } else{
+    sim_p1 <- sim_l
+    sim_p2 <- sim_s    
+  }
+
+  colnames(sim_p1) <- cellNames
+  colnames(sim_p2) <- cellNames
+
+
+  paramNames <- switch(type, 
+                  "survreg" = c("l", "s"), "ppersist" = c("pda", "pdb"))
+
+  output <- vector("list", ncell)
+  names(output) <- cellNames
+  for (celli in 1:ncell){
+    cellp12 <- cbind(sim_p1[ , celli], sim_p2[ , celli])
+    colnames(cellp12) <- paramNames
+    output[[celli]] <-  cellp12
+  }
+
+  return(output)
 }
 
