@@ -7,10 +7,14 @@ right <- "FirstAbsentDecimalDays"
 
 data <- data_CP
 
-formula_l <- l ~ Visibility
-formula_s <- s ~ Season
+formula_l <- l ~ Visibility*Season
+formula_s <- s ~ Visibility*Season
 dist <- "exponential"
 
-x<-cpm(formula_l, formula_s, data, left, right, dist)
+x<-cpm(formula_l, data = data, left = left, right = right, dist = dist)
 print(x)
 rcp(n = 1, model = x, seed = 1, type = "ppersist")
+
+dists <- c("weibull", "exponential", "lognormal", "loglogistic")
+xx <- cpmSet(formula_l, formula_s, data, left, right, dists)
+cpmSetAICcTab(xx)
