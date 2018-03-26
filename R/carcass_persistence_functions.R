@@ -525,9 +525,9 @@ rcp <- function(n = 1, model, seed = NULL, type = "ppersist"){
 #'
 #' @param CL confidence level
 #'
-#' @return \code{cpmSet} returns a list of objects, each of class 
-#'   "\code{cpm}", which each then a list whose components characterize the 
-#'   fit of the specific model.
+#' @return \code{cpmSet} returns a class-\code{cpmSet} list of objects, each
+#'   of class "\code{cpm}", which each then a list whose components 
+#'   characterize the fit of the specific model.
 #'
 cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL, 
                    right = NULL, dists = "weibull", CL = 0.9){
@@ -641,6 +641,71 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
   }
   class(output) <- c("cpmSet", "list")
   return(output)
+}
+
+
+#' Fit all possible carcass persistence models across all size classes.
+#'
+#' Function inputs generally follow \code{cpmSet} and \code{cpm} but with an 
+#'   additional size column input and calculation of the set of cpm models for
+#'   each of the size classes
+#'
+#' @param formula_l Formula for location; an object of class 
+#'  "\code{\link{formula}}" (or one that can be coerced to that class):
+#'  a symbolic description of the model to be fitted. Details of model 
+#'  specification are given under 'Details'.
+#'
+#' @param formula_s Formula for scale; an object of class 
+#'   "\code{\link{formula}}" (or one that can be coerced to that class):
+#'   a symbolic description of the model to be fitted. Details of model 
+#'   specification are given under 'Details'.
+#'
+#' @param data Dataframe with results from carcass persistence trials and any
+#'   covariates included in \code{formula_l} or {formula_s} (required).
+#'
+#' @param left Name of columns in \code{data} where the time of last present
+#'   observation is stored.
+#'
+#' @param right Name of columns in \code{data} where the time of first absent
+#'   observation is stored.
+#'
+#' @param dists Names of the distributions (from "exponential", "weibull", 
+#'   "loglogistic", and "lognormal") that are to be included
+#'
+#' @param CL confidence level
+#'
+#' @param sizeclassCol Name of colum in \code{data} where the size classes
+#'  are recorded
+#'
+#' @return \code{cpmSetSize} returns a class-\code{cpmSetSize} list of 
+#'   objects, each of which is a class-\code{cpmSet} list of \code{cpm}" 
+#'   outputs (each corresponding to the fit of a specific model
+#'   within the set of \code{cpm} models fit for the given size class), that
+#'   is of length equal to the total number of size classes
+#'
+cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
+                       right = NULL, dists = "weibull", sizeclassCol = NULL, 
+                       CL = 0.9){
+
+  if (length(sizeclassCol) == 0){
+    message("No size class provided, function run as if pkmSet")
+    output <- cpmSet(formula_l, formula_s, data, left, right, dists, CL)
+    return(output)
+  }
+
+  sizeclassData <- as.character(data[ , sizeclassCol])
+  sizeclasses <- unique(sizeclassData)
+  nsizeclasses <- length(sizeclasses)
+
+  out <- vector("list", nsizeclasses)
+  names(out) <- sizeclasses
+  for (sci in 1:nsizeclasses){
+    sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
+    data_i <- data[sizeclassMatch, ]
+    out[[sci]] <- cpmSet(formula_l, formula_s, data_i, left, right, dists, CL) 
+  }
+
+  return(out)
 }
 
 #' Verify that a suite of carcass persistence models all fit successfully.

@@ -45,8 +45,9 @@ entered as a vector of names, like \code{c("s1", "s2", "s3")},
 \item{init_k}{Initial value used for \code{k} in the optimization.}
 }
 \value{
-\code{pkmSet} returns a list of objects, each of which is a list
-  of \code{pkm}" outputs (each corresponding to the fit of a specific model
+\code{pkmSetSize} returns a class-\code{pkmSetSize} list of 
+  objects, each of which is a class-\code{pkmSet} list of \code{pkm}" 
+  outputs (each corresponding to the fit of a specific model
   within the set of \code{pkm} models fit for the given size class), that
   is of length equal to the total number of size classes
 }

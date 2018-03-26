@@ -634,8 +634,9 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' @param sizeclassCol Name of colum in \code{data} where the size classes
 #'  are recorded
 #'
-#' @return \code{pkmSet} returns a list of objects, each of which is a list
-#'   of \code{pkm}" outputs (each corresponding to the fit of a specific model
+#' @return \code{pkmSetSize} returns a class-\code{pkmSetSize} list of 
+#'   objects, each of which is a class-\code{pkmSet} list of \code{pkm}" 
+#'   outputs (each corresponding to the fit of a specific model
 #'   within the set of \code{pkm} models fit for the given size class), that
 #'   is of length equal to the total number of size classes
 #'
@@ -645,7 +646,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL,
 
   if (length(sizeclassCol) == 0){
     message("No size class provided, function run as if pkmSet")
-    output <- pkmSet(formula_p, formula_k, data, obsCols, kFixed, kInit)
+    output <- pkmSet(formula_p, formula_k, data, obsCols, kFixed, kInit, CL)
     return(output)
   }
 
