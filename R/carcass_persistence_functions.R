@@ -417,7 +417,7 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
 #'  NA
 #' @export
 #'
-rcp <- function(n = 1, model, seed = NULL, type = "ppersist"){
+rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 
   if (!"cpm" %in% class(model)){
     stop("model not of class cpm.")
@@ -530,7 +530,8 @@ rcp <- function(n = 1, model, seed = NULL, type = "ppersist"){
 #'   characterize the fit of the specific model.
 #'
 cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL, 
-                   right = NULL, dists = "weibull", CL = 0.9){
+                   right = NULL, dists = c("exponential", "weibull",
+                   "lognormal", "loglogistic"), CL = 0.9){
 
   if (length(formula_s) == 0){
     formula_s <- formula(s ~ 1)
@@ -684,7 +685,8 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'   is of length equal to the total number of size classes
 #'
 cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
-                       right = NULL, dists = "weibull", sizeclassCol = NULL, 
+                       right = NULL, dists = c("exponential", "weibull", 
+                       "lognormal", "loglogistic", sizeclassCol = NULL, 
                        CL = 0.9){
 
   if (length(sizeclassCol) == 0){
