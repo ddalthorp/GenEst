@@ -686,7 +686,7 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'
 cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
                        right = NULL, dists = c("exponential", "weibull", 
-                       "lognormal", "loglogistic", sizeclassCol = NULL, 
+                       "lognormal", "loglogistic"), sizeclassCol = NULL, 
                        CL = 0.9){
 
   if (length(sizeclassCol) == 0){
