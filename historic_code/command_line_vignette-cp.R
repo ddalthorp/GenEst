@@ -11,7 +11,7 @@ formula_l <- l ~ Visibility*Season
 formula_s <- s ~ Visibility
 dist <- "exponential"
 
-x<-cpm(formula_l, data = data, left = left, right = right, dist = dist)
+x<-cpm(formula_l, formula_s, data, left, right, dist = dist)
 print(x)
 rcp(n = 1, model = x, seed = 1, type = "ppersist")
 

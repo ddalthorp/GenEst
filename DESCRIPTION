@@ -1,6 +1,6 @@
 Package: GenEst
 Title: Generalised Fatality Estimator
-Version: 0.0.3.5
+Version: 0.0.3.6
 Date: 2018-03-26
 Authors@R: c(
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),

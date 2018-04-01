@@ -686,7 +686,7 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'
 cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
                        right = NULL, dists = c("exponential", "weibull", 
-                       "lognormal", "loglogistic", sizeclassCol = NULL, 
+                       "lognormal", "loglogistic"), sizeclassCol = NULL, 
                        CL = 0.9){
 
   if (length(sizeclassCol) == 0){
@@ -815,5 +815,67 @@ cpmSetAICcTab <- function(cpmset){
     output <- output[-whichAICcMax, ]
   }
   return(output)
+}
+
+#' Calculate the probability of persistence to detection 
+#' 
+#' @param pda parameter a.
+#' @param pdb parameter b.
+#' @param dist Distribution used.
+#' @param t_arrive0 Beginning of arrival window.
+#' @param t_arrive1 End of arrival window.
+#' @param t_search Search time.
+#' @return Probability of persistence of detection to at t_search, 
+#'          given arrival between t_arrive0 and t_arrive1
+#' @examples
+#' NA
+#' @export 
+#'
+ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
+
+  dist <- tolower(dist)
+
+  if (dist == "weibull"){
+
+    sa0 <- pgamma(outer(1 / pdb, t_search - t_arrive0)^pda, 1 / pda)
+    sa1 <- pgamma(outer(1 / pdb, t_search - t_arrive1)^pda, 1 / pda)
+    a1a0 <- outer(pdb, 1 / (t_arrive1 - t_arrive0))
+    probs <- (sa0 - sa1) * gamma(1 + 1 / pda) * a1a0
+    probs <- t(probs)
+
+  } else if (dist == "exponential"){
+
+    a1a0 <- outer(t_arrive1 - t_arrive0, 1 / pdb)
+    a0s <- outer(t_arrive0 - t_search, 1 / pdb)
+    a1s <- outer(t_arrive1 - t_search, 1 / pdb)
+    probs <- (exp(a1s) - exp(a0s)) / (a1a0)
+
+  } else if (dist == "lognormal"){
+
+    root_pda <- sqrt(pda)
+    exp_value <- exp((pda / 2) + pdb)
+    tt <- t_search - t_arrive0
+    p1 <- pnorm(outer(pdb, -log(tt), "+") / root_pda)
+    p2 <- pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda) * exp_value
+    part0 <- t(p1) * tt + t(p2)
+    tt <- t_search - t_arrive1
+    p1 <- pnorm(outer(pdb, -log(tt), "+") / root_pda)
+    p2 <- pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda) * exp_value
+    part1 <- t(p1) * tt + t(p2)
+    probs <- -(part1 - part0) / (t_arrive1 - t_arrive0)
+
+  } else if (dist == "loglogistic"){
+
+    t0 <- t_search - t_arrive0
+    sa0 <- gsl::hyperg_2F1(1, 1, 1 + 1 / pda, 1 / (1 + (t0 / pdb)^(-pda)))
+    part0 <- t0 / (1 + (t0 / pdb)^pda) * sa0
+    t1 <- t_search - t_arrive1
+    sa1 <- gsl::hyperg_2F1(1, 1, 1 + 1 / pda, 1 / (1 + (t1 / pdb)^(-pda)))
+    part1 <- ifelse(t1 == 0, 0, t1 / (1 + (t1 / pdb)^pda) *  sa1)
+    probs <- -(part1 - part0) / (t_arrive1 - t_arrive0)
+    probs <- matrix(probs, ncol = 1)
+  }
+
+  return(probs)
 }
 

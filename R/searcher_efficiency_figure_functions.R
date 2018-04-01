@@ -68,7 +68,7 @@ pkmParamPlot <- function(model, pk = "p", n, seed, col){
 #' @export
 #'
 pkmSECellPlot <- function(model, specificCell, col, n, seed, 
-                   axis_y = TRUE, axis_x = TRUE){
+                          axis_y = TRUE, axis_x = TRUE){
 
   CL <- model$CL
   cellwise <- model$cellwiseTable
@@ -223,7 +223,7 @@ plot.pkm <- function(model,  n = 1000, seed = 1, col = "black"){
 #' @export
 #' 
 pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n, 
-                         seed_spec, seed_full, col_spec, col_full){
+                                seed_spec, seed_full, col_spec, col_full){
 
   model_spec <- modelSet[[specificModel]]
   model_full <- modelSet[[1]]
@@ -305,8 +305,8 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n,
 #' @export
 #' 
 pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell, 
-                          col_spec, col_full, axis_y = TRUE, axis_x = TRUE, n, 
-                          seed_spec, seed_full){
+                                 col_spec, col_full, axis_y = TRUE,
+                                 axis_x = TRUE, n, seed_spec, seed_full){
 
   model_spec <- modelSet[[specificModel]]
   model_full <- modelSet[[1]]
@@ -389,8 +389,8 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 #' @export
 #'
 plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000, 
-                 seed_spec = 1, seed_full = 1, col_spec = "black", 
-                 col_full = "grey"){
+                        seed_spec = 1, seed_full = 1, col_spec = "black", 
+                        col_full = "grey"){
 
   if (length(specificModel) == 0){
     devAskNewPage(TRUE)
