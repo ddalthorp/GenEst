@@ -8,7 +8,7 @@ cpmCPCellPlot(model, specificCell, col, lwd, n, seed, axis_y = TRUE,
   axis_x = TRUE)
 }
 \arguments{
-\item{model}{model of class pkm}
+\item{model}{model of class cpm}
 
 \item{specificCell}{name of the specific cell to plot}
 

@@ -28,7 +28,6 @@ pkmParamPlot <- function(model, pk = "p", n, seed, col){
     }
   }
 
-  par(mar = c(2,4,2,1))
   plot(1, type = "n", xlab = "", ylab = "", bty = "L", xaxt = 'n', yaxt = 'n',
     ylim = c(0, maxy), xlim = c(0.5, ncell + 0.5)
   )
@@ -116,12 +115,9 @@ pkmSECellPlot <- function(model, specificCell, col, n, seed,
   obsLabels <- paste(carcFound, carcAvail, sep = "/") 
   text(x_pts + 0.05, y_pts + 0.1, obsLabels, cex = 0.75)
 
-  if (axis_x == TRUE){
-    axis(1, at = x_pts, las = 1, cex.axis = 0.75)
-  }
-  if (axis_y == TRUE){
-    axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75)
-  }
+  axis(1, at = x_pts, las = 1, cex.axis = 0.75, labels = axis_x)
+  axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axis_y)
+
   text(0.5, 0.95, specificCell, adj = 0, cex = 0.75, font = 2)
 
 }
@@ -184,7 +180,7 @@ plot.pkm <- function(model,  n = 1000, seed = 1, col = "black"){
   nmatrix_col <- min(3, ncell)
   nmatrix_row <- ceiling(ncell / nmatrix_col)
   figxspace <- 0.95 / nmatrix_col
-  figyspace <- 0.675 / nmatrix_row
+  figyspace <- 0.65 / nmatrix_row
   x1 <- rep(figxspace * ((1:nmatrix_col) - 1), nmatrix_row) + 0.05
   x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.05
   y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.04
@@ -193,7 +189,7 @@ plot.pkm <- function(model,  n = 1000, seed = 1, col = "black"){
   leftCells <- which(1:ncell %% nmatrix_col == 1)
 
   for (celli in 1:ncell){
-    par(mar = c(2, 2, 0, 0))
+    par(mar = c(2.5, 2, 0, 0))
     par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
     specificCell <- cellNames[celli]
     axis_x <- FALSE
@@ -366,12 +362,8 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   obsLabels <- paste(carcFound, carcAvail, sep = "/") 
   text(x_pts + 0.05, y_pts + 0.1, obsLabels, cex = 0.75)
 
-  if (axis_x == TRUE){
-    axis(1, at = x_pts, las = 1, cex.axis = 0.75)
-  }
-  if (axis_y == TRUE){
-    axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75)
-  }
+  axis(1, at = x_pts, las = 1, cex.axis = 0.75, labels = axis_x)
+  axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axis_y)
   text(0.5, 0.95, specificCell, adj = 0, cex = 0.75, font = 2)
 
 }
@@ -451,7 +443,7 @@ plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000,
     nmatrix_col <- min(3, ncell)
     nmatrix_row <- ceiling(ncell / nmatrix_col)
     figxspace <- 0.95 / nmatrix_col
-    figyspace <- 0.675 / nmatrix_row
+    figyspace <- 0.65 / nmatrix_row
     x1 <- rep(figxspace * ((1:nmatrix_col) - 1), nmatrix_row) + 0.05
     x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.05
     y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.04
@@ -460,7 +452,7 @@ plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000,
     leftCells <- which(1:ncell %% nmatrix_col == 1)
 
     for (celli in 1:ncell){
-      par(mar = c(2, 2, 0, 0))
+      par(mar = c(2.5, 2, 0, 0))
       par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
       specificCell <- cellNames[celli]
       axis_x <- FALSE
