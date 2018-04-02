@@ -5,7 +5,8 @@
 \title{Fit all possible carcass persistence models across all size classes.}
 \usage{
 cpmSetSize(formula_l, formula_s = NULL, data, left = NULL, right = NULL,
-  dists = "weibull", sizeclassCol = NULL, CL = 0.9)
+  dists = c("exponential", "weibull", "lognormal", "loglogistic"),
+  sizeclassCol = NULL, CL = 0.9)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 
