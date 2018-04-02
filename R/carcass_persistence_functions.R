@@ -817,3 +817,85 @@ cpmSetAICcTab <- function(cpmset){
   return(output)
 }
 
+#' Calculate the probability of persistence to detection 
+#' 
+#' @param pda parameter a.
+#' @param pdb parameter b.
+#' @param dist Distribution used.
+#' @param t_arrive0 Beginning of arrival window.
+#' @param t_arrive1 End of arrival window.
+#' @param t_search Search time.
+#' @return Probability of persistence of detection to at t_search, 
+#'          given arrival between t_arrive0 and t_arrive1
+#' @examples
+#' NA
+#' @export 
+#'
+ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
+
+  dist <- tolower(dist)
+
+  if (dist == "weibull"){
+
+    sa0 <- pgamma(outer(1 / pdb, t_search - t_arrive0)^pda, 1 / pda)
+    sa1 <- pgamma(outer(1 / pdb, t_search - t_arrive1)^pda, 1 / pda)
+    a1a0 <- outer(pdb, 1 / (t_arrive1 - t_arrive0))
+    probs <- (sa0 - sa1) * gamma(1 + 1 / pda) * a1a0
+    probs <- t(probs)
+
+  } else if (dist == "exponential"){
+
+    a1a0 <- outer(t_arrive1 - t_arrive0, 1 / pdb)
+    a0s <- outer(t_arrive0 - t_search, 1 / pdb)
+    a1s <- outer(t_arrive1 - t_search, 1 / pdb)
+    probs <- (exp(a1s) - exp(a0s)) / (a1a0)
+
+  } else if (dist == "lognormal"){
+
+    root_pda <- sqrt(pda)
+    exp_value <- exp((pda / 2) + pdb)
+    tt <- t_search - t_arrive0
+    p1 <- pnorm(outer(pdb, -log(tt), "+") / root_pda)
+    p2 <- pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda) * exp_value
+    part0 <- t(p1) * tt + t(p2)
+    tt <- t_search - t_arrive1
+    p1 <- pnorm(outer(pdb, -log(tt), "+") / root_pda)
+    p2 <- pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda) * exp_value
+    part1 <- t(p1) * tt + t(p2)
+    probs <- -(part1 - part0) / (t_arrive1 - t_arrive0)
+
+  } else if (dist == "loglogistic"){
+
+    probs <- Vectorize(ppersist_loglogistic, 
+               vectorize.args = c("pdb", "pda"))(t_arrive0, t_arrive1, 
+               t_search, pda, pdb)
+  }
+
+  return(probs)
+}
+
+#' Calculate the probability of persistence to for a loglogistic 
+#' 
+#' @param pda parameter a.
+#' @param pdb parameter b.
+#' @param t_arrive0 Beginning of arrival window.
+#' @param t_arrive1 End of arrival window.
+#' @param t_search Search time.
+#' @return Probability of persistence of detection to at t_search, 
+#'          given arrival between t_arrive0 and t_arrive1
+#' @examples
+#' NA
+#' @export 
+#'
+ppersist_loglogistic <- function(t_arrive0, t_arrive1, t_search, pda, pdb){
+
+  t1 <- t_search-t_arrive1 
+  t0 <- t_search-t_arrive0
+  part1 <- ifelse(t1 == 0, 0, t1 / (1 + (t1 / pdb)^pda) *  
+             gsl::hyperg_2F1(1, 1, 1 + 1 / pda, 1 / (1 + (t1 / pdb)^(-pda))))
+  part0 <- t0 / (1 + (t0 / pdb)^pda) * gsl::hyperg_2F1(1, 1, 1 + 1 / pda, 
+                                         1 / (1 + (t0 / pdb)^(-pda)))
+  out <- -(part1 - part0)/(t_arrive1 - t_arrive0)
+  return(out)
+}
+

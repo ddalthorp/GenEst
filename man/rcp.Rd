@@ -4,7 +4,7 @@
 \alias{rcp}
 \title{Simulate parameters from a fitted cp model.}
 \usage{
-rcp(n = 1, model, seed = NULL, type = "ppersist")
+rcp(n = 1, model, seed = NULL, type = "survreg")
 }
 \arguments{
 \item{n}{the number of simulation draws}
