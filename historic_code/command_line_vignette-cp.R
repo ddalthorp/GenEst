@@ -9,7 +9,7 @@ data <- data_CP
 
 formula_l <- l ~ Visibility*Season
 formula_s <- s ~ Visibility
-dist <- "exponential"
+dist <- "loglogistic"
 
 x<-cpm(formula_l, formula_s, data, left, right, dist = dist)
 print(x)

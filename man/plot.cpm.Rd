@@ -4,7 +4,7 @@
 \alias{plot.cpm}
 \title{Plot results of a single cp model}
 \usage{
-\method{plot}{cpm}(model, n = 1000, seed = 1, col = "black")
+\method{plot}{cpm}(model, n = 500, seed = 1, col = "black")
 }
 \arguments{
 \item{model}{model of class cpm}
