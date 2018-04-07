@@ -189,6 +189,17 @@ function(input, output, session){
                       )
     }
 
+    colnames(rv$modTabSE) <- c("Cell", 
+                               "p Median", 
+                      paste("p ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+                      paste("p ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                               "k Median",
+                      paste("k ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                      paste("k ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+                             )
+    colnames(rv$AICcTabSE) <- c("p Formula", "k Formula", "AICc", 
+                                "Delta AICc"
+                              )
     output$AICcTabSE <- DT::renderDataTable({rv$AICcTabSE})    
     output$modTabSE <- DT::renderDataTable({rv$modTabSE})
 
@@ -251,6 +262,9 @@ function(input, output, session){
         }
         rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]])
       }
+      colnames(rv$AICcTabSE) <- c("p Formula", "k Formula", "AICc", 
+                                  "Delta AICc"
+                                )
       output$AICcTabSE <- DT::renderDataTable({rv$AICcTabSE})
     }
   })
@@ -284,6 +298,14 @@ function(input, output, session){
           rv$modTabSE <- 
             rv$modsSE[[rv$sizeclassChosen]][[input$modTabModSE]]$cellwiseTable
         }
+        colnames(rv$modTabSE) <- c("Cell", 
+                                   "p Median", 
+                      paste("p ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+                      paste("p ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                                   "k Median",
+                      paste("k ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                      paste("k ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+                                   )
         output$modTabSE <- DT::renderDataTable(rv$modTabSE)
       })
     }
@@ -438,6 +460,20 @@ function(input, output, session){
                         height = rv$figCPht, width = rv$figCPwh
                       )
     }
+    rv$AICcTabCP[ , "s formula"] <- gsub("NULL", "", 
+                                        rv$AICcTabCP[ , "s formula"]
+                                      )
+    colnames(rv$AICcTabCP) <- c("Distribution", "Location Formula", 
+                                "Scale Formula", "AICc", "Delta AICc"
+                                )
+    colnames(rv$modTabCP) <- c("Cell", 
+                               "Location Median", 
+               paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+               paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                               "Scale Median",
+               paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+               paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+                               )
     output$AICcTabCP <- DT::renderDataTable({rv$AICcTabCP})    
     output$modTabCP <- DT::renderDataTable({rv$modTabCP})
 
@@ -465,22 +501,24 @@ function(input, output, session){
         nsizeclasses <- length(rv$sizeclasses)
         if (nsizeclasses > 0){
           if (nsizeclasses == 1){
-            AICcTab <- pkmSetAICcTab(rv$modsCP) 
-            modOrder <- as.numeric(row.names(AICcTab))
-            modNames <- names(rv$modsCP)[modOrder]
-            mtuText <- "modelChoicesCP"
-            scText <- "Model choice"
-            modSelect <- selectizeInput(mtuText, scText, modNames)
-            modelMenuCP <- paste(modelMenuCP, modSelect)  
+            AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
+            modOrderCP <- as.numeric(row.names(AICcTabCP))
+            modNamesCP <- names(rv$modsCP)[modOrderCP]
+            mtuTextCP <- "modelChoicesCP"
+            scTextCP <- "Model choice"
+            modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP)
+            modelMenuCP <- paste(modelMenuCP, modSelectCP)  
           }else{
             for(sci in 1:nsizeclasses){
-              AICcTab <- pkmSetAICcTab(rv$modsCP[[sci]])
-              modOrder <- as.numeric(row.names(AICcTab))
-              modNames <- names(rv$modsCP[[sci]])[modOrder]
-              mtuText <- paste("modelChoicesCP", sci, sep = "") 
-              scText <- paste("Model choice, ", rv$sizeclasses[sci], sep = "")
-              modSelect <- selectizeInput(mtuText, scText, modNames)
-              modelMenuCP <- paste(modelMenuCP, modSelect)  
+              AICcTabCP <- cpmSetAICcTab(rv$modsCP[[sci]])
+              modOrderCP <- as.numeric(row.names(AICcTabCP))
+              modNamesCP <- names(rv$modsCP[[sci]])[modOrderCP]
+              mtuTextCP <- paste("modelChoicesCP", sci, sep = "") 
+              scTextCP <- paste("Model choice, ", rv$sizeclasses[sci], 
+                            sep = ""
+                          )
+              modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP)
+              modelMenuCP <- paste(modelMenuCP, modSelectCP)  
             }
           }
         }  
@@ -499,6 +537,12 @@ function(input, output, session){
         }
         rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
       }
+      rv$AICcTabCP[ , "s formula"] <- gsub("NULL", "", 
+                                        rv$AICcTabCP[ , "s formula"]
+                                      )
+      colnames(rv$AICcTabCP) <- c("Distribution", "Location Formula", 
+                                  "Scale Formula", "AICc", "Delta AICc"
+                                  )
       output$AICcTabCP <- DT::renderDataTable({rv$AICcTabCP})
     }
   })
@@ -533,6 +577,14 @@ function(input, output, session){
           rv$modTabCP <- 
          rv$modsCP[[rv$sizeclassChosen]][[input$modTabModCP]]$cellwiseTable_ls
         }
+        colnames(rv$modTabCP) <- c("Cell", 
+                                   "Location Median", 
+               paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+               paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                                   "Scale Median",
+               paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+               paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+                                   )
         output$modTabCP <- DT::renderDataTable(rv$modTabCP)
       })
     }

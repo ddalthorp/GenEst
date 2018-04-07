@@ -9,14 +9,14 @@ data <- data_CP
 
 formula_l <- l ~ Visibility*Season
 formula_s <- s ~ Visibility
-dist <- "loglogistic"
+dist <- "exponential"
 
 x<-cpm(formula_l, formula_s, data, left, right, dist = dist)
 print(x)
 rcp(n = 1, model = x, seed = 1, type = "ppersist")
 
 dists <- c("weibull", "exponential", "lognormal", "loglogistic")
-xx <- cpmSet(formula_l, formula_s, data, left, right, dists)
+xx <- cpmSet(formula_l, formula_s, data, left, right, dist)
 cpmSetAICcTab(xx)
 
 dists <- c("weibull", "exponential")
