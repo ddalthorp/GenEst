@@ -68,7 +68,10 @@ tabPanel("Analyses",
             selectizeInput("figSizeClassSE", width = "400px", 
               "Size Class:", "Model not yet run", multiple = F
             ),  
-            selectizeInput("figModSE", width = "400px", "Model:",
+            selectizeInput("figModSEp", width = "400px", "p Model:",
+              "Model not yet run", multiple = F
+            ), 
+            selectizeInput("figModSEk", width = "400px", "k Model:",
               "Model not yet run", multiple = F
             ), 
             br(), plotOutput("figSE")
@@ -77,7 +80,10 @@ tabPanel("Analyses",
             selectizeInput("modTabSizeClassSE", width = "400px", 
               "Size Class:", "Model not yet run", multiple = F
             ),  
-            selectizeInput("modTabModSE", width = "400px", "Model:",
+            selectizeInput("modTabModSEp", width = "400px", "p Model:",
+              "Model not yet run", multiple = F
+            ), 
+            selectizeInput("modTabModSEk", width = "400px", "k Model:",
               "Model not yet run", multiple = F
             ), 
             br(),  DT::dataTableOutput("modTabSE")
