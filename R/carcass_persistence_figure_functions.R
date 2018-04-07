@@ -51,16 +51,19 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
   form <- formula("survobj ~ 1")
   survfit <- survival::survfit(form, data = observations)
 
-  plot(survfit, ylim = c(0, 1), xlim = c(0, max_x), main = specificCell, 
+  plot(survfit, ylim = c(0, 1), xlim = c(0, max_x),  
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
   )
-  axis(1, las = 1, cex.axis = 1., at = seq(0, max_x, by = 10), label = axis_x)
-  axis(2, las = 1, cex.axis = 1., at = seq(0, 1, 0.2), labels = axis_y)
+  axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), 
+    label = axis_x
+  )
+  axis(2, las = 1, cex.axis = 0.9, at = seq(0, 1, 0.2), labels = axis_y)
   points(pts, pred_y, type = "l", col = col, lwd = lwd)
   points(pts, pred_yl, type = "l", col = col, lwd = lwd, lty = 3)
   points(pts, pred_yu, type = "l", col = col, lwd = lwd, lty = 3)
   countText <- paste("N = ", ncarc, sep = "")
-  text(x = 1, y = 1.07, countText, cex = 1, xpd = TRUE, adj = 0)
+  text(x = max_x, y = 0.95, countText, cex = 0.75, xpd = TRUE, adj = 1)
+  text(max_x, 1.02, specificCell, adj = 1, cex = 0.75, font = 2)
 }
 
 #' Plot results of a single cp model
@@ -100,8 +103,8 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
   plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
     ylab = ""
   )
-  mtext(side = 1, "Time", line = -0.5, cex = 1.75)
-  mtext(side = 2, "Carcass Persistence", line = -0.5, cex = 1.75)
+  mtext(side = 1, "Time", line = 0, cex = 1.5)
+  mtext(side = 2, "Carcass Persistence", line = -0.25, cex = 1.5)
 
   ncell <- model$ncell
   cellNames <- model$cells[ , "CellNames"]
@@ -118,7 +121,7 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
   leftCells <- which(1:ncell %% nmatrix_col == 1)
 
   for (celli in 1:ncell){
-    par(mar = c(2.5, 1.25, 1, 1))
+    par(mar = c(2, 1, 0, 1))
     par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
     specificCell <- cellNames[celli]
     axis_x <- FALSE
@@ -250,8 +253,8 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = ""
     )
-    mtext(side = 1, "Time", line = -0.5, cex = 1.75)
-    mtext(side = 2, "Carcass Persistence", line = -0.5, cex = 1.75)
+    mtext(side = 1, "Time", line = 0, cex = 1.5)
+    mtext(side = 2, "Carcass Persistence", line = -0.25, cex = 1.5)
 
     par(fig = c(0, 1, 0.95, 1), mar = c(0, 0, 0, 0), new = TRUE)
     plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
@@ -296,7 +299,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     leftCells <- which(1:ncell %% nmatrix_col == 1)
 
     for (celli in 1:ncell){
-      par(mar = c(2.5, 1.25, 1, 1))
+      par(mar = c(2, 1, 0, 1))
       par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
       specificCell <- cellNames[celli]
       axis_x <- FALSE
@@ -365,13 +368,16 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, fullModel,
   form <- formula("survobj ~ 1")
   survfit <- survival::survfit(form, data = observations)
 
-  plot(survfit, ylim = c(0, 1), xlim = c(0, max_x), main = specificCell, 
+  plot(survfit, ylim = c(0, 1), xlim = c(0, max_x),  
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
   )
-  axis(1, las = 1, cex.axis = 1., at = seq(0, max_x, by = 10), label = axis_x)
-  axis(2, las = 1, cex.axis = 1., at = seq(0, 1, 0.2), labels = axis_y)
+  axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), 
+    label = axis_x
+  )
+  axis(2, las = 1, cex.axis = 0.9, at = seq(0, 1, 0.2), labels = axis_y)
   countText <- paste("N = ", ncarc, sep = "")
-  text(x = 1, y = 1.02, countText, cex = 0.9, xpd = TRUE, adj = 0)
+  text(x = max_x, y = 0.95, countText, cex = 0.75, xpd = TRUE, adj = 1)
+  text(max_x, 1.02, specificCell, adj = 1, cex = 0.75, font = 2)
 
   whichSpecificModel <- which(names(modelSet) == specificModel)
   modsToPlot <- modelMatches[[whichSpecificModel]]
