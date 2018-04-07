@@ -128,7 +128,13 @@ tabPanel("Analyses",
             selectizeInput("figSizeClassCP", width = "400px", 
               "Size Class:", "Model not yet run", multiple = F
             ),
-            selectizeInput("figModCP", width = "400px", "Model:",
+            selectizeInput("figModCPdist", width = "400px", "Distribution:",
+              "Model not yet run", multiple = F
+            ), 
+            selectizeInput("figModCPl", width = "400px", "Location Model:",
+              "Model not yet run", multiple = F
+            ), 
+            selectizeInput("figModCPs", width = "400px", "Scale Model:",
               "Model not yet run", multiple = F
             ), 
             br(), plotOutput("figCP")
@@ -137,7 +143,13 @@ tabPanel("Analyses",
             selectizeInput("modTabSizeClassCP", width = "400px", 
               "Size Class:", "Model not yet run", multiple = F
             ),  
-            selectizeInput("modTabModCP", width = "400px", "Model:",
+            selectizeInput("modTabModCPdist", width = "400px", 
+              "Distribution:", "Model not yet run", multiple = F
+            ), 
+            selectizeInput("modTabModCPl", width = "400px", "Location Model:",
+              "Model not yet run", multiple = F
+            ), 
+            selectizeInput("modTabModCPs", width = "400px", "Scale Model:",
               "Model not yet run", multiple = F
             ), 
             br(), DT::dataTableOutput("modTabCP")

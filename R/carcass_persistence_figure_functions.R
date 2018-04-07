@@ -276,7 +276,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
       rect(0.45, 0.15, 0.49, 0.35, col = col["lognormal"], border = NA)
       text(x = 0.5, y = 0.3, "= Log-Normal", adj = 0) 
     }
-    labelsText <- paste(model_spec$predictors, collapse = ".")
+    labelsText <- paste(model_full$predictors, collapse = ".")
     text_label <- paste("Labels: ", labelsText, sep = "")
     forms <- modelSetNames_matrix[whichSpecificModel, c("form_l", "form_s")]
     modelsText <- paste(forms, collapse = "; ")
