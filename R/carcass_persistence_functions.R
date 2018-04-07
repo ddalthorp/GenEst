@@ -272,35 +272,35 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
   probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
   cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
-  cellTable_l <- matrix(cellTable_l, nrow = ncell, ncol = 3)
+  cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 5)
   colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
   cellTable_s <- apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s)
-  cellTable_s <- matrix(cellTable_s, nrow = ncell, ncol = 3)
+  cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 5)
   colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
   cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
 
   if (dist == "exponential"){
     cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- exp(cellTable_l)
+    cellTable_b <- round(exp(cellTable_l), 5)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "weibull"){
-    cellTable_a <- 1 / cellTable_s
+    cellTable_a <- round(1 / cellTable_s, 5)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- exp(cellTable_l)
+    cellTable_b <- round(exp(cellTable_l), 5)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "lognormal"){
-    cellTable_a <- cellTable_s^2
+    cellTable_a <- round(cellTable_s^2, 5)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- cellTable_l
+    cellTable_b <- round(cellTable_l, 5)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "loglogistic"){
-    cellTable_a <- 1 / cellTable_s
+    cellTable_a <- round(1 / cellTable_s, 5)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- exp(cellTable_l)
+    cellTable_b <- round(exp(cellTable_l), 5)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }  
   cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
