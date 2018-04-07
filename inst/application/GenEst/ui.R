@@ -42,6 +42,8 @@ tabPanel("Analyses",
     ),
     tabPanel("Searcher Efficiency", br(), br(),
       sidebarPanel(width = 3,
+        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+        br(), br(),
         selectizeInput("obsColsSE", "Observations:", c("No data input yet"), 
           multiple = T
         ),
@@ -57,8 +59,14 @@ tabPanel("Analyses",
           )
         ),
         conditionalPanel(condition = "input.obsColsSE != null",
-          actionButton("runModSE", "Run Searcher Efficiency Model"))
+          actionButton("runModSE", "Run Searcher Efficiency Model")
         ),
+        conditionalPanel(condition = "input.runModSE == 1", 
+          br(), 
+       HTML("<big><strong><u> Table & Figure Selection: </u></strong></big>"), 
+          br()
+        )
+      ),
       mainPanel(
         tabsetPanel(id = "analysesSE",
           tabPanel("Selected Data", br(), br(), 
@@ -100,6 +108,8 @@ tabPanel("Analyses",
     ),
     tabPanel("Carcass Persistence", br(), br(),
       sidebarPanel(width = 3,
+        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+        br(), br(),
         selectizeInput("ltp", "Last Time Present:", c("No data input yet"), 
           multiple = T, options = list(maxItems = 1)
         ),
@@ -118,6 +128,11 @@ tabPanel("Analyses",
         conditionalPanel(
           condition = "input.ltp != null & input.fta != null",
           actionButton("runModCP", "Run Carcass Persistence Model")
+        ),
+        conditionalPanel(condition = "input.runModCP == 1", 
+          br(), 
+       HTML("<big><strong><u> Table & Figure Selection: </u></strong></big>"), 
+          br()
         )
       ),
       mainPanel(
@@ -202,9 +217,9 @@ tabPanel("Analyses",
 tabPanel("About",
   fluidRow(
     column(6, offset = 3,
-      HTML('<img src = "Logo.jpg" height = "400">'),
+      HTML("<img src = "Logo.jpg" height = "400">"),
       br(), br(),
-      HTML('<b>Authors:</b>  
+      HTML("<b>Authors:</b>  
         Juniper Simonis 
           <a href = "http://www.dapperstats.com">(DAPPER Stats)</a>,
         Daniel Dalthorp
@@ -220,23 +235,23 @@ tabPanel("About",
         Franzi Korner-Nievergelt
           <a href = "http://http://www.oikostat.ch/">(oikostat)</a>, 
         and Manuela Huso
-          <a href = "http://www.USGS.gov">(USGS)</a>'),
+          <a href = "http://www.USGS.gov">(USGS)</a>"),
       br(), br(),
-      HTML('GenEst is a tool for estimating bird and bat fatalities at 
-        renewable power facilities.'
+      HTML("GenEst is a tool for estimating fatalities from efficiency, 
+        persistence, and carcass data."
       ),
       br(), br(),
-      HTML('GenEst is currently in development and should be considered
-        provisional.'
+      HTML("GenEst is currently in development and should be considered
+        provisional."
       ),
       br(), br(),
       textOutput("versionInfo"),
       br(), 
-      HTML('The development of GenEst is being supported by Bat Conservation 
+      HTML("The development of GenEst is being supported by Bat Conservation 
         International, The US Bureau of Land Management, The US Geological 
-        Survey, WEST, and Oregon State University.'),
+        Survey, WEST, and Oregon State University."),
       br(), br(),
-      HTML('GenEst is provided under GNU GPL v3 (and later versions).')
+      HTML("GenEst is provided under GNU GPL v3 (and later versions).")
     )
   )
 )
