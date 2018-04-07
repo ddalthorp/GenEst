@@ -864,13 +864,18 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     part1 <- t(p1) * tt + t(p2)
     probs <- -(part1 - part0) / (t_arrive1 - t_arrive0)
 
-  } else if (dist == "loglogistic"){
-
-    probs <- Vectorize(ppersist_loglogistic, 
-               vectorize.args = c("pdb", "pda"))(t_arrive0, t_arrive1, 
-               t_search, pda, pdb)
+  } else if (dist == "loglogistic" | dist == "log-logistic"){
+    yox <- function(x, y) y/x
+    t1 <- t_search-t_arrive1
+    t0 <- t_search-t_arrive0
+    tob <- outer(pdb, t1, "yox")
+    part1 <- t1/t(1 + tob^pda) * 
+        t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+    tob <- outer(pdb, t0, "yox")
+    part0 <- t0 / t(1 + tob^pda) *
+        t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+    prob <- (part0 - part1)/(t_arrive1 - t_arrive0)
   }
-
   return(probs)
 }
 
