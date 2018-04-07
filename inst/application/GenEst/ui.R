@@ -84,9 +84,10 @@ tabPanel("Analyses",
           ),
           tabPanel("Model Comparison Tables", br(),
             selectizeInput("aicTabSizeClassSE", width = "400px", 
-              "Size Class:", "Model not yet run", multiple = F), br(),  
-              DT::dataTableOutput("AICcTabSE")
+              "Size Class:", "Model not yet run", multiple = F
             ),
+            br(), DT::dataTableOutput("AICcTabSE")
+          ),
           tabPanel("Model Selection", br(), htmlOutput("modelMenuSE"))
         )
       )
@@ -102,6 +103,12 @@ tabPanel("Analyses",
         selectizeInput("predsCP", "Predictor Variables:", 
           c("No data input yet"), multiple = T
         ),
+        checkboxGroupInput("dists", label = "Distributions to Include",
+          choices = list("exponential" = "exponential", "weibull" = "weibull",
+                      "lognormal" = "lognormal", "loglogistic" = "loglogistic"
+                    ), 
+          selected = c("exponential", "weibull", "lognormal", "loglogistic")
+        ),
         conditionalPanel(
           condition = "input.ltp != null & input.fta != null",
           actionButton("runModCP", "Run Carcass Persistence Model")
@@ -111,10 +118,31 @@ tabPanel("Analyses",
         tabsetPanel(id = "analysesCP",
           tabPanel("Selected Data", br(), br(),
             DT::dataTableOutput("selectedCP")),
-          tabPanel("Figures", br()),
-          tabPanel("Model Tables", br()),
-          tabPanel("Model Comparison Tables", br()),
-          tabPanel("Model Selection", br())
+          tabPanel("Figures", br(),
+            selectizeInput("figSizeClassCP", width = "400px", 
+              "Size Class:", "Model not yet run", multiple = F
+            ),
+            selectizeInput("figModCP", width = "400px", "Model:",
+              "Model not yet run", multiple = F
+            ), 
+            br(), plotOutput("figCP")
+          ),
+          tabPanel("Model Tables", br(),
+            selectizeInput("modTabSizeClassCP", width = "400px", 
+              "Size Class:", "Model not yet run", multiple = F
+            ),  
+            selectizeInput("modTabModCP", width = "400px", "Model:",
+              "Model not yet run", multiple = F
+            ), 
+            br(), DT::dataTableOutput("modTabCP")
+          ),
+          tabPanel("Model Comparison Tables", br(),
+            selectizeInput("aicTabSizeClassCP", width = "400px", 
+              "Size Class:", "Model not yet run", multiple = F
+            ), 
+            br(), DT::dataTableOutput("AICcTabCP")
+          ),
+          tabPanel("Model Selection", br(), htmlOutput("modelMenuCP"))
         )
       )
     ),

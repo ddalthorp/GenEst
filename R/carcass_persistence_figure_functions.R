@@ -187,14 +187,17 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
   if (length(specificModel) == 0){
     devAskNewPage(TRUE)
     nmod <- nmodelsInSet
+    modNames_spec <- modelSetNames
     modNames <- modelSetNames
   }else{
+    specificModel <- gsub("NULL", "s ~ 1", specificModel )
     if ((specificModel %in% modelSetNames) == FALSE){
       stop("Selected model not in set. To see options use names(modelSet).")
     }
     devAskNewPage(FALSE)
     nmod <- 1
-    modNames <- specificModel 
+    modNames_spec <- specificModel
+    modNames <- modelSetNames 
   }
 
   modelMatches <- vector("list", length = nmodelsInSet)
@@ -220,7 +223,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
 
   for (modi in 1:nmod){
 
-    specificModel <- modNames[modi]
+    specificModel <- modNames_spec[modi]
     whichSpecificModel <- which(names(modelSet) == specificModel)
     model_spec <- modelSet[[whichSpecificModel]]
     dist_spec <- model_spec$dist
@@ -368,7 +371,7 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, fullModel,
   axis(1, las = 1, cex.axis = 1., at = seq(0, max_x, by = 10), label = axis_x)
   axis(2, las = 1, cex.axis = 1., at = seq(0, 1, 0.2), labels = axis_y)
   countText <- paste("N = ", ncarc, sep = "")
-  text(x = 1, y = 1.07, countText, cex = 0.9, xpd = TRUE, adj = 0)
+  text(x = 1, y = 1.02, countText, cex = 0.9, xpd = TRUE, adj = 0)
 
   whichSpecificModel <- which(names(modelSet) == specificModel)
   modsToPlot <- modelMatches[[whichSpecificModel]]
