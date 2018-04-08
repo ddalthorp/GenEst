@@ -59,12 +59,22 @@ tabPanel("Analyses",
           )
         ),
         conditionalPanel(condition = "input.obsColsSE != null",
-          actionButton("runModSE", "Run Searcher Efficiency Model")
-        ),
-        conditionalPanel(condition = "input.runModSE == 1", 
           br(), 
+          actionButton("runModSE", "Run Searcher Efficiency Model")          
+        ),
+        conditionalPanel(condition = "input.runModSE > 0", 
+          br(), br(),
        HTML("<big><strong><u> Table & Figure Selection: </u></strong></big>"), 
-          br()
+          br(), br(), 
+          selectizeInput("tabfigSizeClassSE", width = "400px", 
+            "Size Class:", "Model not yet run", multiple = F
+          ),  
+          selectizeInput("tabfigSEp", width = "400px", "p Model:",
+            "Model not yet run", multiple = F
+          ), 
+          selectizeInput("tabfigSEk", width = "400px", "k Model:",
+            "Model not yet run", multiple = F
+          )
         )
       ),
       mainPanel(
@@ -72,37 +82,15 @@ tabPanel("Analyses",
           tabPanel("Selected Data", br(), br(), 
             DT::dataTableOutput("selectedSE")
           ),
-          tabPanel("Figures", br(),
-            selectizeInput("figSizeClassSE", width = "400px", 
-              "Size Class:", "Model not yet run", multiple = F
-            ),  
-            selectizeInput("figModSEp", width = "400px", "p Model:",
-              "Model not yet run", multiple = F
-            ), 
-            selectizeInput("figModSEk", width = "400px", "k Model:",
-              "Model not yet run", multiple = F
-            ), 
-            br(), plotOutput("figSE")
+          tabPanel("Figures", plotOutput("figSE")
           ),
           tabPanel("Model Tables", br(),
-            selectizeInput("modTabSizeClassSE", width = "400px", 
-              "Size Class:", "Model not yet run", multiple = F
-            ),  
-            selectizeInput("modTabModSEp", width = "400px", "p Model:",
-              "Model not yet run", multiple = F
-            ), 
-            selectizeInput("modTabModSEk", width = "400px", "k Model:",
-              "Model not yet run", multiple = F
-            ), 
             br(),  DT::dataTableOutput("modTabSE")
           ),
           tabPanel("Model Comparison Tables", br(),
-            selectizeInput("aicTabSizeClassSE", width = "400px", 
-              "Size Class:", "Model not yet run", multiple = F
-            ),
             br(), DT::dataTableOutput("AICcTabSE")
           ),
-          tabPanel("Model Selection", br(), htmlOutput("modelMenuSE"))
+          tabPanel("Model Selection", br(), br(), htmlOutput("modelMenuSE"))
         )
       )
     ),
@@ -217,25 +205,25 @@ tabPanel("Analyses",
 tabPanel("About",
   fluidRow(
     column(6, offset = 3,
-      HTML("<img src = "Logo.jpg" height = "400">"),
+      HTML("<img src = 'Logo.jpg' height = '400'>"),
       br(), br(),
       HTML("<b>Authors:</b>  
         Juniper Simonis 
-          <a href = "http://www.dapperstats.com">(DAPPER Stats)</a>,
+          <a href = 'http://www.dapperstats.com'>(DAPPER Stats)</a>,
         Daniel Dalthorp
-          <a href = "http://www.USGS.gov">(USGS)</a>,
+          <a href = 'http://www.USGS.gov'>(USGS)</a>,
         Lisa Madsen
-          <a href = "http://www.OSU.edu">(OSU)</a>,
+          <a href = 'http://www.OSU.edu'>(OSU)</a>,
         Paul Rabie 
-          <a href = "http://www.west-inc.com">(WEST)</a>, 
+          <a href = 'http://www.west-inc.com'>(WEST)</a>, 
         Jared Studyvin
-          <a href = "http://www.west-inc.com">(WEST)</a>, 
+          <a href = 'http://www.west-inc.com'>(WEST)</a>, 
         Robert Wolpert
-          <a href = "http://http://www2.stat.duke.edu/~rlw/">(Duke)</a>, 
+          <a href = 'http://http://www2.stat.duke.edu/~rlw/'>(Duke)</a>, 
         Franzi Korner-Nievergelt
-          <a href = "http://http://www.oikostat.ch/">(oikostat)</a>, 
+          <a href = 'http://http://www.oikostat.ch/'>(oikostat)</a>, 
         and Manuela Huso
-          <a href = "http://www.USGS.gov">(USGS)</a>"),
+          <a href = 'http://www.USGS.gov'>(USGS)</a>"),
       br(), br(),
       HTML("GenEst is a tool for estimating fatalities from efficiency, 
         persistence, and carcass data."
