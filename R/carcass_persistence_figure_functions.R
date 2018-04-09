@@ -170,7 +170,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     if (length(uniqueForm_s) > 1){
       uniqueForm_s <- uniqueForm_s[-which(uniqueForm_s == "s ~ 1")]
       nuniqueForm_s <- length(uniqueForm_s)
-      for (uniqueForm_si in nuniqueForm_s){
+      for (uniqueForm_si in 1:nuniqueForm_s){
         replacement <- uniqueForm_s[uniqueForm_si]
         newEntries <- modelSetNames_matrix[whichExp, ]
         newEntries[ , "form_s"] <- replacement
@@ -264,7 +264,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
       rect(0.0, 0.15, 0.04, 0.35, col = col["exponential"], border = NA)
       text(x = 0.05, y = 0.3, "= Exponential", adj = 0)
     }
-    if ("exponential" %in% distsIncluded){
+    if ("weibull" %in% distsIncluded){
       rect(0.16, 0.15, 0.2, 0.35, col = col["weibull"], border = NA)
       text(x = 0.21, y = 0.3, "= Weibull", adj = 0)
     }
