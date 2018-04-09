@@ -41,7 +41,7 @@ function(input, output, session){
           modSetCP_spec = NULL, figCPnrow = NULL, figCPht = 600, 
           figCPwh = 800, bestCP = NULL,
           modNamesCPdist = NULL, modNamesCPl = NULL, modNamesCPs = NULL,
-          figModCPdls = NULL, modTabModCPdls = NULL, 
+          tabfigCPdls_fig = NULL, tabfigCPdls_tab = NULL, 
 
           dataSS = NULL,  
 
@@ -294,7 +294,14 @@ function(input, output, session){
         rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
         rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
       }
-
+      colnames(rv$modTabSE) <- c("Cell", 
+                                 "p Median", 
+                    paste("p ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+                    paste("p ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                                 "k Median",
+                    paste("k ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                    paste("k ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+                                 )
       output$modTabSE <- DT::renderDataTable(rv$modTabSE)
       output$figSE <- renderPlot({ 
                         plot(rv$modSetSE_spec, specificModel = rv$bestSE)},
@@ -465,7 +472,7 @@ function(input, output, session){
       }
       rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
       rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
-      rv$modNamesCP <- names(rv$modsCP[[1]])[rv$modOrderCP]
+      rv$modNamesCP <- names(rv$modsCP[[rv$sizeclassChosen]])[rv$modOrderCP]
       rv$modNamesCPdist <- rv$modNamesCP
       rv$modNamesCPl <- rv$modNamesCP
       rv$modNamesCPs <- rv$modNamesCP
@@ -506,21 +513,12 @@ function(input, output, session){
     output$AICcTabCP <- DT::renderDataTable({rv$AICcTabCP})    
     output$modTabCP <- DT::renderDataTable({rv$modTabCP})
 
-    updateSelectizeInput(session, "figSizeClassCP", choices = rv$sizeclasses)
-    updateSelectizeInput(session, "figModCPdist", choices = rv$modNamesCPdist)
-    updateSelectizeInput(session, "figModCPl", choices = rv$modNamesCPl)
-    updateSelectizeInput(session, "figModCPs", choices = rv$modNamesCPs)
-    updateSelectizeInput(session, "modTabSizeClassCP", 
+    updateSelectizeInput(session, "tabfigSizeClassCP", 
       choices = rv$sizeclasses
     )
-    updateSelectizeInput(session, "modTabModCPdist", 
-      choices = rv$modNamesCPdist
-    )
-    updateSelectizeInput(session, "modTabModCPl", choices = rv$modNamesCPl)
-    updateSelectizeInput(session, "modTabModCPs", choices = rv$modNamesCPs)
-    updateSelectizeInput(session, "aicTabSizeClassCP", 
-      choices = rv$sizeclasses
-    )
+    updateSelectizeInput(session, "tabfigCPdist", choices = rv$modNamesCPdist)
+    updateSelectizeInput(session, "tabfigCPl", choices = rv$modNamesCPl)
+    updateSelectizeInput(session, "tabfigCPs", choices = rv$modNamesCPs)
     updateTabsetPanel(session, "analysesCP", "Model Comparison Tables")
 
     removeNotification(msgRunModCP)
@@ -561,29 +559,7 @@ function(input, output, session){
       })
     })
   })
-  observeEvent(input$aicTabSizeClassCP, {
-    if (length(rv$modsCP) > 0){
-      if (length(rv$sizeclasses) == 1){
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
-      }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$aicTabSizeClassCP)
-        if (length(rv$sizeclassChosen) == 0){
-          rv$sizeclassChosen <- 1
-        }
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
-      }
-      rv$AICcTabCP[ , "s formula"] <- gsub("NULL", "", 
-                                        rv$AICcTabCP[ , "s formula"]
-                                      )
-      colnames(rv$AICcTabCP) <- c("Distribution", "Location Formula", 
-                                  "Scale Formula", "AICc", "Delta AICc"
-                                  )
-      output$AICcTabCP <- DT::renderDataTable({rv$AICcTabCP})
-    }
-  })
-
-
-  observeEvent(input$modTabSizeClassCP, {
+  observeEvent(input$tabfigSizeClassCP, {
     if (length(rv$modsCP) > 0){
       if (length(rv$sizeclasses) == 1){
         rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
@@ -602,154 +578,10 @@ function(input, output, session){
           rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
         }
         rv$modTabCP <- rv$modsCP[[rv$modOrderCP[1]]]$cellwiseTable_ls
-      }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$modTabSizeClassCP)
-        if (length(rv$sizeclassChosen) == 0){
-          rv$sizeclassChosen <- 1
-        }
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
-        rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
-        rv$modNamesCP <- names(rv$modsCP[[rv$sizeclassChosen]])[rv$modOrderCP]
-        rv$modNamesCPdist <- rv$modNamesCP
-        rv$modNamesCPl <- rv$modNamesCP
-        rv$modNamesCPs <- rv$modNamesCP
-        for (modi in 1:length(rv$modNamesCP)){
-          rv$modNamesCPdist[modi] <- 
-            strsplit(rv$modNamesCP[modi], "; ")[[1]][1]
-          rv$modNamesCPl[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][2]
-          rv$modNamesCPs[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][3]
-          rv$modNamesCPdist[modi] <- 
-            gsub("dist: ", "", rv$modNamesCPdist[modi])
-          rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
-        }
-        rv$modTabCP <- 
-          rv$modsCP[[rv$sizeclassChosen]][[rv$modOrderCP[1]]]$cellwiseTable_ls
-      }
-
-      output$modTabCP <- DT::renderDataTable(rv$modTabCP)
-      updateSelectizeInput(session, "modTabModCPdist", 
-        choices = rv$modNamesCPdist
-      )
-      updateSelectizeInput(session, "modTabModCPl", choices = rv$modNamesCPl)
-      updateSelectizeInput(session, "modTabModCPs", choices = rv$modNamesCPs)
-
-      observeEvent(input$modTabModCPdist, {
-        if (input$modTabModCPdist == "exponential"){
-          rv$modTabModCPdls <- paste("dist: ", input$modTabModCPdist, "; ",
-                                input$modTabModCPl, "; NULL", sep = ""
-                               )
-        } else{
-          rv$modTabModCPdls <- paste("dist: ", input$modTabModCPdist, "; ",
-                                input$modTabModCPl, "; ", input$modTabModCPs, 
-                                sep = ""
-                               )
-        }
-
-        if (length(rv$sizeclasses) == 1){
-               rv$modTabCP <- rv$modsCP[[rv$modTabModCPdls]]$cellwiseTable_ls
-        }else{
-          rv$modTabCP <- 
-        rv$modsCP[[rv$sizeclassChosen]][[rv$modTabModCPdls]]$cellwiseTable_ls
-        }
-        colnames(rv$modTabCP) <- c("Cell", 
-                                   "Location Median", 
-               paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
-               paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
-                                   "Scale Median",
-               paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
-               paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
-                                   )
-        output$modTabCP <- DT::renderDataTable(rv$modTabCP)
-      })
-      observeEvent(input$modTabModCPl, {
-        if (input$modTabModCPdist == "exponential"){
-          rv$modTabModCPdls <- paste("dist: ", input$modTabModCPdist, "; ",
-                                input$modTabModCPl, "; NULL", sep = ""
-                               )
-        } else{
-          rv$modTabModCPdls <- paste("dist: ", input$modTabModCPdist, "; ",
-                                input$modTabModCPl, "; ", input$modTabModCPs, 
-                                sep = ""
-                               )
-        }
-
-
-        if (length(rv$sizeclasses) == 1){
-                rv$modTabCP <- rv$modsCP[[rv$modTabModCPdls]]$cellwiseTable_ls
-        }else{
-          rv$modTabCP <- 
-        rv$modsCP[[rv$sizeclassChosen]][[rv$modTabModCPdls]]$cellwiseTable_ls
-        }
-        colnames(rv$modTabCP) <- c("Cell", 
-                                   "Location Median", 
-               paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
-               paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
-                                   "Scale Median",
-               paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
-               paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
-                                   )
-        output$modTabCP <- DT::renderDataTable(rv$modTabCP)
-      })
-      observeEvent(input$modTabModCPs, {
-        if (input$modTabModCPdist == "exponential"){
-          rv$modTabModCPdls <- paste("dist: ", input$modTabModCPdist, "; ",
-                                input$modTabModCPl, "; NULL", sep = ""
-                               )
-        } else{
-          rv$modTabModCPdls <- paste("dist: ", input$modTabModCPdist, "; ",
-                                input$modTabModCPl, "; ", input$modTabModCPs, 
-                                sep = ""
-                               )
-        }
-
-
-        if (length(rv$sizeclasses) == 1){
-               rv$modTabCP <- rv$modsCP[[rv$modTabModCPdls]]$cellwiseTable_ls
-        }else{
-          rv$modTabCP <- 
-         rv$modsCP[[rv$sizeclassChosen]][[rv$modTabModCPdls]]$cellwiseTable_ls
-        }
-        colnames(rv$modTabCP) <- c("Cell", 
-                                   "Location Median", 
-               paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
-               paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
-                                   "Scale Median",
-               paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
-               paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
-                                   )
-        output$modTabCP <- DT::renderDataTable(rv$modTabCP)
-      })
-    }
-  })
-
-  observeEvent(input$figSizeClassCP, {
-    if (length(rv$modsCP) > 0){
-      if (length(rv$sizeclasses) == 1){
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
-        rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
-        rv$modNamesCP <- names(rv$modsCP)[rv$modOrderCP]
-        rv$modNamesCPdist <- rv$modNamesCP
-        rv$modNamesCPl <- rv$modNamesCP
-        rv$modNamesCPs <- rv$modNamesCP
-        for (modi in 1:length(rv$modNamesCP)){
-          rv$modNamesCPdist[modi] <- 
-            strsplit(rv$modNamesCP[modi], "; ")[[1]][1]
-          rv$modNamesCPl[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][2]
-          rv$modNamesCPs[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][3]
-          rv$modNamesCPdist[modi] <- 
-            gsub("dist: ", "", rv$modNamesCPdist[modi])
-          rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
-        }
         rv$modSetCP_spec <- rv$modsCP
-        rv$bestCP <- paste("dist: ", 
-                       (names(rv$modSetCP_spec)[rv$modOrderCP])[1], sep = ""
-                     )
-        output$figCP <- renderPlot({
-                          plot(rv$modSetCP_spec, specificModel = rv$bestCP)},
-                          height = rv$figCPht, width = rv$figCPwh
-                        )
+        rv$bestCP <- (names(rv$modSetCP_spec)[rv$modOrderCP])[1]
       }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$figSizeClassCP)
+        rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassCP)
         if (length(rv$sizeclassChosen) == 0){
           rv$sizeclassChosen <- 1
         }
@@ -768,85 +600,159 @@ function(input, output, session){
             gsub("dist: ", "", rv$modNamesCPdist[modi])
           rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
         }
+        rv$modTabCP <- 
+          rv$modsCP[[rv$sizeclassChosen]][[rv$modOrderCP[1]]]$cellwiseTable_ls
         rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-        rv$bestCP <- paste("dist: ",
-                       (names(rv$modSetCP_spec)[rv$modOrderCP])[1], sep = ""
-                     )
-        output$figCP <- renderPlot({ 
-                          plot(rv$modSetCP_spec, specificModel = rv$bestCP)},
-                          height = rv$figCPht, width = rv$figCPwh
-                        )
+        rv$bestCP <- (names(rv$modSetCP_spec)[rv$modOrderCP])[1]
       }
-
-      updateSelectizeInput(session, "figModCPdist", 
+      colnames(rv$modTabCP) <- c("Cell", 
+                                 "Location Median", 
+             paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+             paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                                 "Scale Median",
+             paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+             paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+             )
+      output$modTabCP <- DT::renderDataTable(rv$modTabCP)
+      output$figCP <- renderPlot({
+                        plot(rv$modSetCP_spec, specificModel = rv$bestCP)},
+                        height = rv$figCPht, width = rv$figCPwh
+                      )
+      updateSelectizeInput(session, "tabfigCPdist", 
         choices = rv$modNamesCPdist)
-      updateSelectizeInput(session, "figModCPl", choices = rv$modNamesCPl)
-      updateSelectizeInput(session, "figModCPs", choices = rv$modNamesCPs)
+      updateSelectizeInput(session, "tabfigCPl", choices = rv$modNamesCPl)
+      updateSelectizeInput(session, "tabfigCPs", choices = rv$modNamesCPs)
 
-
-      observeEvent(input$figModCPdist, {
-        rv$figModCPdls <- paste("dist: ", input$figModCPdist, "; ",
-                            input$figModCPl, "; ",input$figModCPs, sep = ""
+      observeEvent(input$tabfigCPdist, {
+        rv$tabfigCPdls_fig <- paste("dist: ", input$tabfigCPdist, "; ",
+                            input$tabfigCPl, "; ",input$tabfigCPs, sep = ""
                           )
-        if (length(rv$sizeclasses) == 1){
-          rv$modSetCP_spec <- rv$modsCP
-          output$figCP <- renderPlot({
-                             plot(rv$modSetCP_spec, 
-                               specificModel = rv$figModCPdls
-                             )}, height = rv$figCPht, width = rv$figCPwh
-                          )
-        }else{
-          rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-          output$figCP <- renderPlot({
-                             plot(rv$modSetCP_spec, 
-                               specificModel = rv$figModCPdls
-                             )}, height = rv$figCPht, width = rv$figCPwh
-                          )
+        if (input$tabfigCPdist == "exponential"){
+          rv$tabfigCPdls_tab <- paste("dist: ", input$tabfigCPdist, "; ",
+                              input$tabfigCPl, "; NULL", sep = ""
+                            )
+        } else{
+          rv$tabfigCPdls_tab <- paste("dist: ", input$tabfigCPdist, "; ",
+                              input$tabfigCPl, "; ", input$tabfigCPs, sep = ""
+                            )
         }
 
-      })
-      observeEvent(input$figModCPl, {
-        rv$figModCPdls <- paste("dist: ", input$figModCPdist, "; ",
-                            input$figModCPl, "; ",input$figModCPs, sep = ""
-                          )
         if (length(rv$sizeclasses) == 1){
           rv$modSetCP_spec <- rv$modsCP
-          output$figCP <- renderPlot({
-                             plot(rv$modSetCP_spec, 
-                               specificModel = rv$figModCPdls
-                             )}, height = rv$figCPht, width = rv$figCPwh
-                          )
+          rv$modTabCP <- rv$modsCP[[rv$tabfigCPdls_tab]]$cellwiseTable_ls
         }else{
+          rv$modTabCP <- 
+       rv$modsCP[[rv$sizeclassChosen]][[rv$tabfigCPdls_tab]]$cellwiseTable_ls
           rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-          output$figCP <- renderPlot({
-                             plot(rv$modSetCP_spec, 
-                               specificModel = rv$figModCPdls
-                             )}, height = rv$figCPht, width = rv$figCPwh
-                          )
         }
+        colnames(rv$modTabCP) <- c("Cell", 
+                                   "Location Median", 
+               paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+               paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                                   "Scale Median",
+               paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+               paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+                )
+        output$modTabCP <- DT::renderDataTable(rv$modTabCP)
+        output$figCP <- renderPlot({
+                           plot(rv$modSetCP_spec, 
+                             specificModel = rv$tabfigCPdls_fig
+                           )}, height = rv$figCPht, width = rv$figCPwh
+                        )
 
       })
-      observeEvent(input$figModCPs, {
-        rv$figModCPdls <- paste("dist: ", input$figModCPdist, "; ",
-                            input$figModCPl, "; ",input$figModCPs, sep = ""
+      observeEvent(input$tabfigCPl, {
+        rv$tabfigCPdls_fig <- paste("dist: ", input$tabfigCPdist, "; ",
+                            input$tabfigCPl, "; ", input$tabfigCPs, sep = ""
                           )
+        if (input$tabfigCPdist == "exponential"){
+          rv$tabfigCPdls_tab <- paste("dist: ", input$tabfigCPdist, "; ",
+                              input$tabfigCPl, "; NULL", sep = ""
+                            )
+        } else{
+          rv$tabfigCPdls_tab <- paste("dist: ", input$tabfigCPdist, "; ",
+                              input$tabfigCPl, "; ", input$tabfigCPs, sep = ""
+                            )
+        }
+
         if (length(rv$sizeclasses) == 1){
           rv$modSetCP_spec <- rv$modsCP
-          output$figCP <- renderPlot({
-                             plot(rv$modSetCP_spec, 
-                               specificModel = rv$figModCPdls
-                             )}, height = rv$figCPht, width = rv$figCPwh
-                          )
+          rv$modTabCP <- rv$modsCP[[rv$tabfigCPdls_tab]]$cellwiseTable_ls
         }else{
           rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-          output$figCP <- renderPlot({
-                             plot(rv$modSetCP_spec, 
-                               specificModel = rv$figModCPdls
-                             )}, height = rv$figCPht, width = rv$figCPwh
-                          )
+          rv$modTabCP <- 
+       rv$modsCP[[rv$sizeclassChosen]][[rv$tabfigCPdls_tab]]$cellwiseTable_ls
         }
+        colnames(rv$modTabCP) <- c("Cell", 
+                                   "Location Median", 
+               paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+               paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                                   "Scale Median",
+               paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+               paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+               )
+        output$modTabCP <- DT::renderDataTable(rv$modTabCP)
+        output$figCP <- renderPlot({
+                           plot(rv$modSetCP_spec, 
+                             specificModel = rv$tabfigCPdls_fig
+                           )}, height = rv$figCPht, width = rv$figCPwh
+                        )
 
       })
+      observeEvent(input$tabfigCPs, {
+        rv$tabfigCPdls_fig <- paste("dist: ", input$tabfigCPdist, "; ",
+                            input$tabfigCPl, "; ",input$tabfigCPs, sep = ""
+                          )
+        if (input$tabfigCPdist == "exponential"){
+          rv$tabfigCPdls_tab <- paste("dist: ", input$tabfigCPdist, "; ",
+                              input$tabfigCPl, "; NULL", sep = ""
+                            )
+        } else{
+          rv$tabfigCPdls_tab <- paste("dist: ", input$tabfigCPdist, "; ",
+                              input$tabfigCPl, "; ", input$tabfigCPs, sep = ""
+                            )
+        }
+
+        if (length(rv$sizeclasses) == 1){
+          rv$modSetCP_spec <- rv$modsCP
+          rv$modTabCP <- rv$modsCP[[rv$tabfigCPdls_tab]]$cellwiseTable_ls
+        }else{
+          rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
+          rv$modTabCP <- 
+        rv$modsCP[[rv$sizeclassChosen]][[rv$tabfigCPdls_tab]]$cellwiseTable_ls
+        }
+        colnames(rv$modTabCP) <- c("Cell", 
+                                   "Location Median", 
+               paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
+               paste("Location ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
+                                   "Scale Median",
+               paste("Scale ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
+               paste("Scale ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
+                )
+        output$modTabCP <- DT::renderDataTable(rv$modTabCP)
+        output$figCP <- renderPlot({
+                           plot(rv$modSetCP_spec, 
+                             specificModel = rv$tabfigCPdls_fig
+                           )}, height = rv$figCPht, width = rv$figCPwh
+                        )
+
+      })
+      if (length(rv$sizeclasses) == 1){
+        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
+      }else{
+        rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassCP)
+        if (length(rv$sizeclassChosen) == 0){
+          rv$sizeclassChosen <- 1
+        }
+        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
+      }
+      rv$AICcTabCP[ , "s formula"] <- gsub("NULL", "", 
+                                        rv$AICcTabCP[ , "s formula"]
+                                      )
+      colnames(rv$AICcTabCP) <- c("Distribution", "Location Formula", 
+                                  "Scale Formula", "AICc", "Delta AICc"
+                                  )
+      output$AICcTabCP <- DT::renderDataTable({rv$AICcTabCP})
     }
   })
 

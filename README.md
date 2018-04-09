@@ -33,15 +33,22 @@ GenEst::runGenEst()
 
 ## Support
 
-The development of GenEst is being supported by [Bat Conservation
-International](http://www.batcon.org/), [The US Bureau of Land
+The development of GenEst is being supported by [The US Bureau of Land
 Management](https://www.blm.gov/), [The US Geological
-Survey](https://www.usgs.gov/), [WEST](http://www.westconsultants.com/), and 
-[Oregon State University](https://oregonstate.edu/). 
+Survey](https://www.usgs.gov/), the [National Renewable Energy 
+Laboratory](https://www.nrel.gov/),
+[WEST](http://www.westconsultants.com/), [Bat Conservation
+International](http://www.batcon.org/), [American 
+Wind Wildlife Institute](https://awwi.org/), [Avangrid 
+Renewables](http://www.avangridrenewables.us/), and [Oregon State
+University](https://oregonstate.edu/). 
 
 ## Authors
 
 Daniel Dalthorp ([USGS](https://www.usgs.gov/)), Juniper Simonis ([DAPPER
 Stats](www.dapperstats.com)), Lisa Madsen ([OSU](https://oregonstate.edu/)),
-Paul Rabie ([WEST](http://www.westconsultants.com/)), and Manuela Huso 
+Paul Rabie ([WEST](http://www.westconsultants.com/)), Jared Studyvin
+([WEST](http://www.westconsultants.com/)), Robert Wolpert 
+([Duke](http://www2.stat.duke.edu/~rlw/)), Franzi Korner-Nievergelt 
+([oikostat](http://www.oikostat.ch/)) and Manuela Huso 
 ([USGS](https://www.usgs.gov/)).
