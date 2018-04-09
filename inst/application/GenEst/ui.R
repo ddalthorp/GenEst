@@ -36,17 +36,20 @@ tabPanel("Analyses",
           step = 0.001
         ),
         selectizeInput("sizeclassCol", "Size Class Column (optional):", 
-          c("No data input yet"), multiple = T, options = list(maxItems = 1)
+          c("No data input yet"), multiple = TRUE, 
+          options = list(maxItems = 1)
         )
       )
     ),
     tabPanel("Searcher Efficiency", br(), br(),
       sidebarPanel(width = 3,
+        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+        br(), br(),
         selectizeInput("obsColsSE", "Observations:", c("No data input yet"), 
-          multiple = T
+          multiple = TRUE
         ),
         selectizeInput("predsSE", "Predictor Variables:", 
-          c("No data input yet"), multiple = T
+          c("No data input yet"), multiple = TRUE
         ),
         radioButtons("kFixedChoice", "Fix k?",
           choices = list("No" = 0, "Yes" = 1), selected = 0
@@ -57,64 +60,98 @@ tabPanel("Analyses",
           )
         ),
         conditionalPanel(condition = "input.obsColsSE != null",
-          actionButton("runModSE", "Run Searcher Efficiency Model"))
+          br(), 
+          actionButton("runModSE", "Run Searcher Efficiency Model")          
         ),
+        conditionalPanel(condition = "input.runModSE > 0", 
+          br(), br(),
+          HTML("<big><strong><u> Table & Figure Selection:
+          </u></strong></big>"), 
+          br(), br(), 
+          selectizeInput("tabfigSizeClassSE", width = "400px", 
+            "Size Class:", " ", multiple = FALSE
+          ),  
+          selectizeInput("tabfigSEp", width = "400px", "p Model:",
+            " ", multiple = FALSE
+          ), 
+          selectizeInput("tabfigSEk", width = "400px", "k Model:",
+            " ", multiple = FALSE
+          )
+        )
+      ),
       mainPanel(
         tabsetPanel(id = "analysesSE",
           tabPanel("Selected Data", br(), br(), 
             DT::dataTableOutput("selectedSE")
           ),
-          tabPanel("Figures", br(),
-            selectizeInput("figSizeClassSE", width = "400px", 
-              "Size Class:", "Model not yet run", multiple = F
-            ),  
-            selectizeInput("figModSE", width = "400px", "Model:",
-              "Model not yet run", multiple = F
-            ), 
-            br(), plotOutput("figSE")
+          tabPanel("Figures", plotOutput("figSE")
           ),
           tabPanel("Model Tables", br(),
-            selectizeInput("modTabSizeClassSE", width = "400px", 
-              "Size Class:", "Model not yet run", multiple = F
-            ),  
-            selectizeInput("modTabModSE", width = "400px", "Model:",
-              "Model not yet run", multiple = F
-            ), 
             br(),  DT::dataTableOutput("modTabSE")
           ),
           tabPanel("Model Comparison Tables", br(),
-            selectizeInput("aicTabSizeClassSE", width = "400px", 
-              "Size Class:", "Model not yet run", multiple = F), br(),  
-              DT::dataTableOutput("AICcTabSE")
-            ),
-          tabPanel("Model Selection", br(), htmlOutput("modelMenuSE"))
+            br(), DT::dataTableOutput("AICcTabSE")
+          ),
+          tabPanel("Model Selection", br(), br(), htmlOutput("modelMenuSE"))
         )
       )
     ),
     tabPanel("Carcass Persistence", br(), br(),
       sidebarPanel(width = 3,
+        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+        br(), br(),
         selectizeInput("ltp", "Last Time Present:", c("No data input yet"), 
-          multiple = T, options = list(maxItems = 1)
+          multiple = TRUE, options = list(maxItems = 1)
         ),
         selectizeInput("fta", "First Time Absent:", c("No data input yet"),
-          multiple = T, options = list(maxItems = 1)
+          multiple = TRUE, options = list(maxItems = 1)
         ),
         selectizeInput("predsCP", "Predictor Variables:", 
-          c("No data input yet"), multiple = T
+          c("No data input yet"), multiple = TRUE
+        ),
+        checkboxGroupInput("dists", label = "Distributions to Include",
+          choices = list("exponential" = "exponential", "weibull" = "weibull",
+                      "lognormal" = "lognormal", "loglogistic" = "loglogistic"
+                    ), 
+          selected = c("exponential", "weibull", "lognormal", "loglogistic")
         ),
         conditionalPanel(
           condition = "input.ltp != null & input.fta != null",
+          br(),
           actionButton("runModCP", "Run Carcass Persistence Model")
+        ),
+        conditionalPanel(condition = "input.runModCP > 0", 
+          br(), br(), 
+          HTML("<big><strong><u> Table & Figure Selection: 
+            </u></strong></big>"), 
+          br(), br(),
+          selectizeInput("tabfigSizeClassCP", width = "400px", 
+            "Size Class:", " ", multiple = FALSE
+          ),
+          selectizeInput("tabfigCPdist", width = "400px", "Distribution:",
+            " ", multiple = FALSE
+          ), 
+          selectizeInput("tabfigCPl", width = "400px", "Location Model:",
+            " ", multiple = FALSE
+          ), 
+          selectizeInput("tabfigCPs", width = "400px", "Scale Model:",
+            " ", multiple = FALSE
+          )
         )
       ),
       mainPanel(
         tabsetPanel(id = "analysesCP",
           tabPanel("Selected Data", br(), br(),
             DT::dataTableOutput("selectedCP")),
-          tabPanel("Figures", br()),
-          tabPanel("Model Tables", br()),
-          tabPanel("Model Comparison Tables", br()),
-          tabPanel("Model Selection", br())
+          tabPanel("Figures", plotOutput("figCP")
+          ),
+          tabPanel("Model Tables", br(),
+            br(), DT::dataTableOutput("modTabCP")
+          ),
+          tabPanel("Model Comparison Tables", br(),
+            br(), DT::dataTableOutput("AICcTabCP")
+          ),
+          tabPanel("Model Selection", br(), htmlOutput("modelMenuCP"))
         )
       )
     ),
@@ -155,42 +192,63 @@ tabPanel("Analyses",
 ),
 tabPanel("About",
   fluidRow(
-    column(6, offset = 3,
-      HTML('<img src = "Logo.jpg" height = "400">'),
-      br(), br(),
-      HTML('<b>Authors:</b>  
+    column(5, offset = 2,
+      br(), br(), 
+      HTML("<b>Authors:</b>  
         Juniper Simonis 
-          <a href = "http://www.dapperstats.com">(DAPPER Stats)</a>,
+          <a href = 'http://www.dapperstats.com'>(DAPPER Stats)</a>,
         Daniel Dalthorp
-          <a href = "http://www.USGS.gov">(USGS)</a>,
+          <a href = 'http://www.USGS.gov'>(USGS)</a>,
         Lisa Madsen
-          <a href = "http://www.OSU.edu">(OSU)</a>,
+          <a href = 'http://www.oregonstate.edu'>(OSU)</a>,
         Paul Rabie 
-          <a href = "http://www.west-inc.com">(WEST)</a>, 
+          <a href = 'http://www.west-inc.com'>(WEST)</a>, 
         Jared Studyvin
-          <a href = "http://www.west-inc.com">(WEST)</a>, 
+          <a href = 'http://www.west-inc.com'>(WEST)</a>, 
         Robert Wolpert
-          <a href = "http://http://www2.stat.duke.edu/~rlw/">(Duke)</a>, 
+          <a href = 'http://http://www2.stat.duke.edu/~rlw/'>(Duke)</a>, 
         Franzi Korner-Nievergelt
-          <a href = "http://http://www.oikostat.ch/">(oikostat)</a>, 
+          <a href = 'http://http://www.oikostat.ch/'>(oikostat)</a>, 
         and Manuela Huso
-          <a href = "http://www.USGS.gov">(USGS)</a>'),
+          <a href = 'http://www.USGS.gov'>(USGS)</a>"),
       br(), br(),
-      HTML('GenEst is a tool for estimating bird and bat fatalities at 
-        renewable power facilities.'
+      HTML("GenEst is a tool for estimating fatalities from efficiency, 
+        persistence, and carcass data."
       ),
       br(), br(),
-      HTML('GenEst is currently in development and should be considered
-        provisional.'
+      HTML("GenEst is currently in development and should be considered
+        provisional."
       ),
       br(), br(),
       textOutput("versionInfo"),
       br(), 
-      HTML('The development of GenEst is being supported by Bat Conservation 
-        International, The US Bureau of Land Management, The US Geological 
-        Survey, WEST, and Oregon State University.'),
+      HTML("The development of GenEst is being supported by 
+        <a href = 'https://www.blm.gov/'>(The US Bureau of Land 
+          Management)</a>,
+        <a href = 'https://www.usgs.gov/'>(The US Geological Survey)</a>,
+        <a href = 'https://www.nrel.gov/'>(National Renewable Energy 
+          Laboratory)</a>, 
+        <a href = 'http://www.westconsultants.com/'>(WEST)</a>, 
+        <a href = 'http://www.batcon.org/'>(Bat Conservation
+          International)</a>,
+        <a href = 'https://awwi.org/'>(American Wind Wildlife Institute)</a>, 
+        <a href = 'http://www.avangridrenewables.us/'>(Avangrid 
+           Renewables)</a>, and 
+        <a href = 'https://oregonstate.edu/'>(Oregon State University)</a>."),
       br(), br(),
-      HTML('GenEst is provided under GNU GPL v3 (and later versions).')
+      HTML("GenEst is provided under GNU GPL v3 (and later versions)."),
+      br(), br(), br(), br(),
+      HTML("<img src = 'blm.jpg' height = '60'>"),
+      HTML("<img src = 'usgs.png' height = '60'>"),
+      HTML("<img src = 'nrel.jpg' height = '60'>"),
+      HTML("<img src = 'west.png' height = '60'>"),
+      HTML("<img src = 'bci.jpg' height = '60'>"),
+      HTML("<img src = 'awwi.png' height = '60'>"),
+      HTML("<img src = 'avangrid.png' height = '60'>"),
+      HTML("<img src = 'dapper.png' height = '60'>"),
+      HTML("<img src = 'oikostat.jpg' height = '60'>"),
+      HTML("<img src = 'osu.jpg' height = '60'>"),
+      HTML("<img src = 'duke.png' height = '60'>")
     )
   )
 )

@@ -51,16 +51,19 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
   form <- formula("survobj ~ 1")
   survfit <- survival::survfit(form, data = observations)
 
-  plot(survfit, ylim = c(0, 1), xlim = c(0, max_x), main = specificCell, 
+  plot(survfit, ylim = c(0, 1), xlim = c(0, max_x),  
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
   )
-  axis(1, las = 1, cex.axis = 1., at = seq(0, max_x, by = 10), label = axis_x)
-  axis(2, las = 1, cex.axis = 1., at = seq(0, 1, 0.2), labels = axis_y)
+  axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), 
+    label = axis_x
+  )
+  axis(2, las = 1, cex.axis = 0.9, at = seq(0, 1, 0.2), labels = axis_y)
   points(pts, pred_y, type = "l", col = col, lwd = lwd)
   points(pts, pred_yl, type = "l", col = col, lwd = lwd, lty = 3)
   points(pts, pred_yu, type = "l", col = col, lwd = lwd, lty = 3)
   countText <- paste("N = ", ncarc, sep = "")
-  text(x = 1, y = 1.07, countText, cex = 1, xpd = TRUE, adj = 0)
+  text(x = max_x, y = 0.95, countText, cex = 0.75, xpd = TRUE, adj = 1)
+  text(max_x, 1.02, specificCell, adj = 1, cex = 0.75, font = 2)
 }
 
 #' Plot results of a single cp model
@@ -100,8 +103,8 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
   plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
     ylab = ""
   )
-  mtext(side = 1, "Time", line = -0.5, cex = 1.75)
-  mtext(side = 2, "Carcass Persistence", line = -0.5, cex = 1.75)
+  mtext(side = 1, "Time", line = 0, cex = 1.5)
+  mtext(side = 2, "Carcass Persistence", line = -0.25, cex = 1.5)
 
   ncell <- model$ncell
   cellNames <- model$cells[ , "CellNames"]
@@ -118,7 +121,7 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
   leftCells <- which(1:ncell %% nmatrix_col == 1)
 
   for (celli in 1:ncell){
-    par(mar = c(2.5, 1.25, 1, 1))
+    par(mar = c(2, 1, 0, 1))
     par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
     specificCell <- cellNames[celli]
     axis_x <- FALSE
@@ -167,7 +170,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     if (length(uniqueForm_s) > 1){
       uniqueForm_s <- uniqueForm_s[-which(uniqueForm_s == "s ~ 1")]
       nuniqueForm_s <- length(uniqueForm_s)
-      for (uniqueForm_si in nuniqueForm_s){
+      for (uniqueForm_si in 1:nuniqueForm_s){
         replacement <- uniqueForm_s[uniqueForm_si]
         newEntries <- modelSetNames_matrix[whichExp, ]
         newEntries[ , "form_s"] <- replacement
@@ -187,14 +190,17 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
   if (length(specificModel) == 0){
     devAskNewPage(TRUE)
     nmod <- nmodelsInSet
+    modNames_spec <- modelSetNames
     modNames <- modelSetNames
   }else{
+    specificModel <- gsub("NULL", "s ~ 1", specificModel )
     if ((specificModel %in% modelSetNames) == FALSE){
       stop("Selected model not in set. To see options use names(modelSet).")
     }
     devAskNewPage(FALSE)
     nmod <- 1
-    modNames <- specificModel 
+    modNames_spec <- specificModel
+    modNames <- modelSetNames 
   }
 
   modelMatches <- vector("list", length = nmodelsInSet)
@@ -220,7 +226,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
 
   for (modi in 1:nmod){
 
-    specificModel <- modNames[modi]
+    specificModel <- modNames_spec[modi]
     whichSpecificModel <- which(names(modelSet) == specificModel)
     model_spec <- modelSet[[whichSpecificModel]]
     dist_spec <- model_spec$dist
@@ -247,8 +253,8 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = ""
     )
-    mtext(side = 1, "Time", line = -0.5, cex = 1.75)
-    mtext(side = 2, "Carcass Persistence", line = -0.5, cex = 1.75)
+    mtext(side = 1, "Time", line = 0, cex = 1.5)
+    mtext(side = 2, "Carcass Persistence", line = -0.25, cex = 1.5)
 
     par(fig = c(0, 1, 0.95, 1), mar = c(0, 0, 0, 0), new = TRUE)
     plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
@@ -258,7 +264,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
       rect(0.0, 0.15, 0.04, 0.35, col = col["exponential"], border = NA)
       text(x = 0.05, y = 0.3, "= Exponential", adj = 0)
     }
-    if ("exponential" %in% distsIncluded){
+    if ("weibull" %in% distsIncluded){
       rect(0.16, 0.15, 0.2, 0.35, col = col["weibull"], border = NA)
       text(x = 0.21, y = 0.3, "= Weibull", adj = 0)
     }
@@ -270,7 +276,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
       rect(0.45, 0.15, 0.49, 0.35, col = col["lognormal"], border = NA)
       text(x = 0.5, y = 0.3, "= Log-Normal", adj = 0) 
     }
-    labelsText <- paste(model_spec$predictors, collapse = ".")
+    labelsText <- paste(model_full$predictors, collapse = ".")
     text_label <- paste("Labels: ", labelsText, sep = "")
     forms <- modelSetNames_matrix[whichSpecificModel, c("form_l", "form_s")]
     modelsText <- paste(forms, collapse = "; ")
@@ -293,7 +299,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     leftCells <- which(1:ncell %% nmatrix_col == 1)
 
     for (celli in 1:ncell){
-      par(mar = c(2.5, 1.25, 1, 1))
+      par(mar = c(2, 1, 0, 1))
       par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
       specificCell <- cellNames[celli]
       axis_x <- FALSE
@@ -362,13 +368,16 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, fullModel,
   form <- formula("survobj ~ 1")
   survfit <- survival::survfit(form, data = observations)
 
-  plot(survfit, ylim = c(0, 1), xlim = c(0, max_x), main = specificCell, 
+  plot(survfit, ylim = c(0, 1), xlim = c(0, max_x),  
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
   )
-  axis(1, las = 1, cex.axis = 1., at = seq(0, max_x, by = 10), label = axis_x)
-  axis(2, las = 1, cex.axis = 1., at = seq(0, 1, 0.2), labels = axis_y)
+  axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), 
+    label = axis_x
+  )
+  axis(2, las = 1, cex.axis = 0.9, at = seq(0, 1, 0.2), labels = axis_y)
   countText <- paste("N = ", ncarc, sep = "")
-  text(x = 1, y = 1.07, countText, cex = 0.9, xpd = TRUE, adj = 0)
+  text(x = max_x, y = 0.95, countText, cex = 0.75, xpd = TRUE, adj = 1)
+  text(max_x, 1.02, specificCell, adj = 1, cex = 0.75, font = 2)
 
   whichSpecificModel <- which(names(modelSet) == specificModel)
   modsToPlot <- modelMatches[[whichSpecificModel]]

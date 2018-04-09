@@ -1,10 +1,10 @@
 Package: GenEst
 Title: Generalised Fatality Estimator
-Version: 0.0.3.6
-Date: 2018-04-02
+Version: 0.0.3.7
+Date: 2018-04-08
 Authors@R: c(
-    person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
 	person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
+    person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
     person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
 	person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
 	person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
