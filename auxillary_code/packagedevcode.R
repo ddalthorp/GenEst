@@ -1,4 +1,4 @@
 devtools::load_all()
 devtools::document()
-#devtools::build(binary = TRUE)
+devtools::build(binary = TRUE)
 GenEst::runGenEst()
