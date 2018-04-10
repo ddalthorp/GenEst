@@ -1,3 +1,6 @@
+library(shiny)
+library(GenEst)
+
 function(input, output, session){
 
   vnumber <- packageDescription("GenEst", field = "Version")
