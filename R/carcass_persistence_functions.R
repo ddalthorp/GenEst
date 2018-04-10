@@ -684,6 +684,8 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'   within the set of \code{cpm} models fit for the given size class), that
 #'   is of length equal to the total number of size classes
 #'
+#' @export 
+#'
 cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
                        right = NULL, dists = c("exponential", "weibull", 
                        "lognormal", "loglogistic"), sizeclassCol = NULL, 
