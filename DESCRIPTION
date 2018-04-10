@@ -24,7 +24,7 @@ Imports:
     httr,
     matrixStats,
     mvtnorm,
-    numDeriv
+    numDeriv,
     rhandsontable,
     shiny,
     shinythemes,
