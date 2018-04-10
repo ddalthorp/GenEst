@@ -9,7 +9,7 @@ rcp(n = 1, model, seed = NULL, type = "survreg")
 \arguments{
 \item{n}{the number of simulation draws}
 
-\item{model}{A \code{\link{ckm}} object (which is returned from 
+\item{model}{A \code{\link{cpm}} object (which is returned from 
 \code{cpm()})}
 
 \item{seed}{optional input to set the seed of the RNG}
