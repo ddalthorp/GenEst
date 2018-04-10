@@ -17,17 +17,18 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports:
-    shiny,
-    rhandsontable,
-    httr,
-    survival,
-    mvtnorm,
-    matrixStats,
-    gsl,
+    cbinom,
     DT,
+    EnvStats,
+    gsl,
+    httr,
+    matrixStats,
+    mvtnorm,
+    numDeriv
+    rhandsontable,
+    shiny,
     shinythemes,
-    numDeriv,
-    EnvStats
+    survival
 RoxygenNote: 6.0.1
 Suggests:
     knitr,
