@@ -640,6 +640,8 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'   within the set of \code{pkm} models fit for the given size class), that
 #'   is of length equal to the total number of size classes
 #'
+#' @export
+#'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL, 
                        sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, 
                        CL = 0.9){
