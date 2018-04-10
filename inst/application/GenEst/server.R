@@ -146,7 +146,7 @@ function(input, output, session){
     rv$formula_p <- formula(paste("p~", rv$predictors_p, sep = ""))
     rv$formula_k <- formula(paste("k~", rv$predictors_p, sep = "")) 
 
-    rv$modsSE <- pkmSetSize(formula_p = rv$formula_p,
+    rv$modsSE <- GenEst::pkmSetSize(formula_p = rv$formula_p,
                    formula_k = rv$formula_k, data = rv$dataSE, 
                    obsCols = rv$obsColsSE, sizeclassCol = rv$sizeclassCol,
                    kFixed = rv$kFixed, kInit = 0.7, CL = rv$CL
