@@ -401,7 +401,7 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
 #'
 #' @param n the number of simulation draws
 #'
-#' @param model A \code{\link{ckm}} object (which is returned from 
+#' @param model A \code{\link{cpm}} object (which is returned from 
 #'   \code{cpm()})
 #'
 #' @param type The type of parameters requested. \code{"survreg"} or 
