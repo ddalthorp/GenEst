@@ -476,6 +476,8 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #'   "\code{pkm}", which each then a list whose components characterize the 
 #'   fit of the specific model.
 #'
+#' @export 
+#'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
              kFixed = NULL, kInit = 0.7, CL = 0.9){
 
