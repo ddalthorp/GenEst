@@ -119,6 +119,9 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
   y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.04
   bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
   leftCells <- which(1:ncell %% nmatrix_col == 1)
+  if (length(leftCells) == 0){
+    leftCells <- 1
+  }
 
   for (celli in 1:ncell){
     par(mar = c(2, 1, 0, 1))
@@ -297,6 +300,9 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.04
     bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
     leftCells <- which(1:ncell %% nmatrix_col == 1)
+    if (length(leftCells) == 0){
+      leftCells <- 1
+    }
 
     for (celli in 1:ncell){
       par(mar = c(2, 1, 0, 1))
