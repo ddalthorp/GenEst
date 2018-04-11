@@ -166,12 +166,12 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     message("Both formula and fixed value provided for k, fixed value used.")
   }
   if (length(formula_k) == 0 & length(kFixed) == 0){
-    message("No formula or fixed value provided for k, fixed at 1.")
-    kFixed <- 1
+    message("No formula or fixed value provided for k, fixed at 0.")
+    kFixed <- 0
   }
   if (length(obsCol) == 1 & length(kFixed) == 0){
-    message("Only one observation, k cannot be estimated, fixed at 1")
-    kFixed <- 1
+    message("Only one observation, k cannot be estimated.")
+    kFixed <- 0
   }
 
   nsearch <- length(obsCol)
@@ -510,7 +510,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   if (length(obsCol) == 1 & length(kFixed) == 0){
     message("Only one observation, k cannot be estimated.")
-    kFixed <- 1
+    kFixed <- 0
   }
   if (length(formula_k) == 0){
     formula_k <- k ~ 1

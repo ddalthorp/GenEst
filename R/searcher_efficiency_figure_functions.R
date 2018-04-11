@@ -189,6 +189,9 @@ plot.pkm <- function(model, n = 1000, seed = 1, col = "black"){
   y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.04
   bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
   leftCells <- which(1:ncell %% nmatrix_col == 1)
+  if (length(leftCells) == 0){
+    leftCells <- 1
+  }
 
   for (celli in 1:ncell){
     par(mar = c(2.5, 2, 0, 0))
@@ -465,7 +468,9 @@ plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000,
     y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.04
     bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
     leftCells <- which(1:ncell %% nmatrix_col == 1)
-
+    if (length(leftCells) == 0){
+      leftCells <- 1
+    }
     for (celli in 1:ncell){
       par(mar = c(2.5, 2, 0, 0))
       par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
