@@ -188,14 +188,15 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     message("Observations appear to not be in order, attempting to sort.")
 
     tots_misses <- data.frame(tots, misses)
-    tots_misses <- tots_misses[do.call(order, c(tots_misses, decreasing = TRUE)), ]
+    ordering <- do.call(order, c(tots_misses, decreasing = TRUE))
+    tots_misses <- tots_misses[ordering, ]
     obsCol <- rownames(tots_misses)
     obsData <- data[ , obsCol]
     obsData <- as.matrix(obsData, ncol = nsearch)
     tots <- apply(obsData, 2, GenEst::trueLength)
 
     if (isNeverIncreasing(tots) == FALSE){
-      stop("Observations appear out of order and can't be sorted. Check data.")
+      stop("Observations are out of order and can't be sorted. Check data.")
     }
   }
 
@@ -665,13 +666,13 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 #' @export
 #'
-pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL, 
+pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
                        sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, 
                        CL = 0.9){
 
   if (length(sizeclassCol) == 0){
     message("No size class provided, function run as if pkmSet")
-    output <- pkmSet(formula_p, formula_k, data, obsCols, kFixed, kInit, CL)
+    output <- pkmSet(formula_p, formula_k, data, obsCol, kFixed, kInit, CL)
     return(output)
   }
 
@@ -684,7 +685,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCols = NULL,
   for (sci in 1:nsizeclasses){
     sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
     data_i <- data[sizeclassMatch, ]
-    out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCols, kFixed, 
+    out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCol, kFixed, 
                     kInit, CL
                   )
   }
