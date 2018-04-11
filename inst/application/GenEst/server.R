@@ -169,7 +169,7 @@ function(input, output, session){
       rv$modTabSE <- rv$modsSE[[rv$modOrderSE[1]]]$cellwiseTable
       rv$modSetSE_spec <- rv$modsSE
       rv$figSEnrow <- ceiling((rv$modSetSE_spec[[1]])$ncell / 2 )
-      rv$figSEht <- rv$figSEnrow * 200 + 200
+      rv$figSEht <- rv$figSEnrow * 200 + 400
       if (rv$modSetSE_spec[[1]]$ncell > 6){
         rv$figSEwh <- 1200
       }
@@ -195,7 +195,7 @@ function(input, output, session){
       rv$modTabSE <- rv$modsSE[[1]][[rv$modOrderSE[1]]]$cellwiseTable
       rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
       rv$figSEnrow <- ceiling(rv$modSetSE_spec[[1]]$ncell / 2 )
-      rv$figSEht <- rv$figSEnrow * 200 + 200
+      rv$figSEht <- rv$figSEnrow * 200 + 400
       if (rv$modSetSE_spec[[1]]$ncell > 6){
         rv$figSEwh <- 1200
       }
@@ -459,7 +459,7 @@ function(input, output, session){
       rv$modTabCP <- rv$modsCP[[rv$modOrderCP[1]]]$cellwiseTable_ls
       rv$modSetCP_spec <- rv$modsCP
       rv$figCPnrow <- ceiling((rv$modSetCP_spec[[1]])$ncell / 2 )
-      rv$figCPht <- rv$figCPnrow * 200 + 200
+      rv$figCPht <- rv$figCPnrow * 200 + 400
       if (rv$modSetCP_spec[[1]]$ncell > 6){
         rv$figCPwh <- 1200
       }
@@ -489,7 +489,7 @@ function(input, output, session){
       rv$modTabCP <- rv$modsCP[[1]][[rv$modOrderCP[1]]]$cellwiseTable_ls
       rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
       rv$figCPnrow <- ceiling(rv$modSetCP_spec[[1]]$ncell / 2 )
-      rv$figCPht <- rv$figCPnrow * 200 + 200
+      rv$figCPht <- rv$figCPnrow * 200 + 400
       if (rv$modSetCP_spec[[1]]$ncell > 6){
         rv$figCPwh <- 1200
       }
