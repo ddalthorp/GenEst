@@ -151,7 +151,7 @@ function(input, output, session){
 
     rv$modsSE <- pkmSetSize(formula_p = rv$formula_p,
                    formula_k = rv$formula_k, data = rv$dataSE, 
-                   obsCols = rv$obsColsSE, sizeclassCol = rv$sizeclassCol,
+                   obsCol = rv$obsColsSE, sizeclassCol = rv$sizeclassCol,
                    kFixed = rv$kFixed, kInit = 0.7, CL = rv$CL
                  )
     rv$modsCheckSE <- pkmCheck(rv$modsSE)
