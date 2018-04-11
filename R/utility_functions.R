@@ -169,3 +169,34 @@ matchCells <- function(model_spec, model_full){
   return(out)
 }
 
+#' Length of non-missing values in a vector
+#'
+#' @param x vector of values
+#' @return integer of how many non-NA values in x
+#'
+#' @export
+#'
+trueLength <- function(x){
+ length(which(!is.na(x)))
+}
+
+#' Check if a vector is never increasing
+#'
+#' @param x vector of values
+#' @param tiesOK logical if ties are ok or not
+#' @return logical value
+#'
+#' @export
+#'
+isNeverIncreasing <- function(x, tiesOK = TRUE){
+  diffs <- diff(x)
+  if (tiesOK == TRUE){
+    out <- all(diffs <= 0)
+  }
+  if (tiesOK == FALSE){
+    out <- all(diffs < 0)
+  }
+  return(out)
+}
+
+
