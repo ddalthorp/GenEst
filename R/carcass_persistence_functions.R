@@ -529,6 +529,8 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #'   of class "\code{cpm}", which each then a list whose components 
 #'   characterize the fit of the specific model.
 #'
+#' @export
+#'
 cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL, 
                    right = NULL, dists = c("exponential", "weibull",
                    "lognormal", "loglogistic"), CL = 0.9){
