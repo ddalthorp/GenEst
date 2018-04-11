@@ -315,7 +315,11 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   cellNames_full <- model_full$cells[ , "CellNames"]
 
   whichCarcs <- which(model_full$carcCell == specificCell)
-  observations <- model_full$observations[whichCarcs, ]
+
+  observations <- as.matrix(model_full$observations[whichCarcs, ], 
+                    nrow = length(whichCarcs), 
+                    ncol = ncol(model_full$observations)
+                  )
   nobs <- ncol(observations)
   ncarc <- nrow(observations)
   carcFound <- apply(observations, 2, sum, na.rm = TRUE)
