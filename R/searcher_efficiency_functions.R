@@ -175,9 +175,30 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 
   nsearch <- length(obsCol)
   ncarc <- nrow(data)
-
   obsData <- data[ , obsCol]
   obsData <- as.matrix(obsData, ncol = nsearch)
+
+  if (any(rowSums(obsData, na.rm = TRUE) > 1)){
+    stop("Carcasses observed more than once. Check data.")
+  }
+  tots <- apply(obsData, 2, GenEst::trueLength)
+  hits <- apply(obsData, 2, sum, na.rm = TRUE) 
+  misses <- tots - hits 
+  if (isNeverIncreasing(tots) == FALSE){
+    message("Observations appear to not be in order, attempting to sort.")
+
+    tots_misses <- data.frame(tots, misses)
+    tots_misses <- tots_misses[do.call(order, c(tots_misses, decreasing = TRUE)), ]
+    obsCol <- rownames(tots_misses)
+    obsData <- data[ , obsCol]
+    obsData <- as.matrix(obsData, ncol = nsearch)
+    tots <- apply(obsData, 2, GenEst::trueLength)
+
+    if (isNeverIncreasing(tots) == FALSE){
+      stop("Observations appear out of order and can't be sorted. Check data.")
+    }
+  }
+
   firstObs <- obsData[ , 1]
   missData <- apply(obsData, 2, match, 0)
 
@@ -473,12 +494,12 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formula_k <- k ~ 1
   }
   if (length(formula_k) == 0 & length(kFixed) == 0){
-    message("No formula or fixed value provided for k, fixed at 1.")
+    message("No formula or fixed value provided for k, fixed at 0.")
     formula_k <- k ~ 1
-    kFixed <- 1
+    kFixed <- 0
   }
   if (length(obsCol) == 1 & length(kFixed) == 0){
-    message("Only one observation, k cannot be estimated, fixed at 1")
+    message("Only one observation, k cannot be estimated.")
     kFixed <- 1
   }
   if (length(formula_k) == 0){

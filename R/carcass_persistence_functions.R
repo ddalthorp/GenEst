@@ -692,7 +692,7 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
                        CL = 0.9){
 
   if (length(sizeclassCol) == 0){
-    message("No size class provided, function run as if pkmSet")
+    message("No size class provided, function run as if cpmSet")
     output <- cpmSet(formula_l, formula_s, data, left, right, dists, CL)
     return(output)
   }
@@ -876,7 +876,7 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     tob <- outer(pdb, t0, "yox")
     part0 <- t0 / t(1 + tob^pda) *
         t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
-    prob <- (part0 - part1)/(t_arrive1 - t_arrive0)
+    probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
   }
   return(probs)
 }
