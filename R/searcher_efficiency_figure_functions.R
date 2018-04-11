@@ -408,6 +408,15 @@ plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000,
     specificModel <- modNames[modi]
     model_spec <- modelSet[[specificModel]]
     model_full <- modelSet[[1]]
+
+    if (model_spec[[1]] == "Failed model fit"){
+      plot(1, 1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
+        ylab = "", ylim = c(0, 1), xlim = c(0, 1)
+      )
+      failText <- paste("Model fit for ", specificModel, " failed", sep = "")
+      text(0, 1, failText, adj = 0)
+      next()
+    }
     
     par(mar = c(0, 0, 0, 0))
     par(fig = c(0, 1, 0.95, 1))
