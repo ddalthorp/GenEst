@@ -74,7 +74,9 @@ pkmSECellPlot <- function(model, specificCell, col, n, seed,
   cellNames <- model$cells[ , "CellNames"]
 
   whichCarcs <- which(model$carcCell == specificCell)
-  observations <- model$observations[whichCarcs, ]
+  observations <- as.matrix(model$observations[whichCarcs, ], 
+                    nrow = length(whichCarcs), ncol = ncol(model$observations)
+                  )
   nobs <- ncol(observations)
   ncarc <- nrow(observations)
   carcFound <- apply(observations, 2, sum, na.rm = TRUE)
@@ -131,7 +133,7 @@ pkmSECellPlot <- function(model, specificCell, col, n, seed,
 #'
 #' @export
 #'
-plot.pkm <- function(model,  n = 1000, seed = 1, col = "black"){
+plot.pkm <- function(model, n = 1000, seed = 1, col = "black"){
 
   name_p <- format(model$formula_p)
   name_k <- model$formula_k
