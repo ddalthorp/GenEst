@@ -179,8 +179,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   obsData <- as.matrix(obsData, ncol = nsearch)
   obsNA <- is.na(obsData)
   onlyNA <- which(apply(obsNA, 1, sum) == apply(obsNA, 1, length))
-  obsData <- as.matrix(obsData[-onlyNA, ], ncol = nsearch) 
-  data <- data[-onlyNA, ]
+  if (length(onlyNA) > 0){
+    obsData <- as.matrix(obsData[-onlyNA, ], ncol = nsearch) 
+    data <- data[-onlyNA, ]
+  }
   ncarc <- nrow(obsData)
 
   if (any(rowSums(obsData, na.rm = TRUE) > 1)){
