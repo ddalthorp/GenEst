@@ -508,7 +508,32 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (length(formula_k) == 0){
     formula_k <- k ~ 1
   }
+  nsearch <- length(obsCol)
+  ncarc <- nrow(data)
+  obsData <- data[ , obsCol]
+  obsData <- as.matrix(obsData, ncol = nsearch)
 
+  if (any(rowSums(obsData, na.rm = TRUE) > 1)){
+    stop("Carcasses observed more than once. Check data.")
+  }
+  tots <- apply(obsData, 2, GenEst::trueLength)
+  hits <- apply(obsData, 2, sum, na.rm = TRUE) 
+  misses <- tots - hits 
+  if (isNeverIncreasing(tots) == FALSE){
+    message("Observations appear to not be in order, attempting to sort.")
+
+    tots_misses <- data.frame(tots, misses)
+    ordering <- do.call(order, c(tots_misses, decreasing = TRUE))
+    tots_misses <- tots_misses[ordering, ]
+    obsCol <- rownames(tots_misses)
+    obsData <- data[ , obsCol]
+    obsData <- as.matrix(obsData, ncol = nsearch)
+    tots <- apply(obsData, 2, GenEst::trueLength)
+
+    if (isNeverIncreasing(tots) == FALSE){
+      stop("Observations are out of order and can't be sorted. Check data.")
+    }
+  }
   # create the set of models to explore, based on the input parameters
   
   terms_p <- attr(terms(formula_p), "term.labels")
@@ -674,6 +699,32 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     message("No size class provided, function run as if pkmSet")
     output <- pkmSet(formula_p, formula_k, data, obsCol, kFixed, kInit, CL)
     return(output)
+  }
+  nsearch <- length(obsCol)
+  ncarc <- nrow(data)
+  obsData <- data[ , obsCol]
+  obsData <- as.matrix(obsData, ncol = nsearch)
+
+  if (any(rowSums(obsData, na.rm = TRUE) > 1)){
+    stop("Carcasses observed more than once. Check data.")
+  }
+  tots <- apply(obsData, 2, GenEst::trueLength)
+  hits <- apply(obsData, 2, sum, na.rm = TRUE) 
+  misses <- tots - hits 
+  if (isNeverIncreasing(tots) == FALSE){
+    message("Observations appear to not be in order, attempting to sort.")
+
+    tots_misses <- data.frame(tots, misses)
+    ordering <- do.call(order, c(tots_misses, decreasing = TRUE))
+    tots_misses <- tots_misses[ordering, ]
+    obsCol <- rownames(tots_misses)
+    obsData <- data[ , obsCol]
+    obsData <- as.matrix(obsData, ncol = nsearch)
+    tots <- apply(obsData, 2, GenEst::trueLength)
+
+    if (isNeverIncreasing(tots) == FALSE){
+      stop("Observations are out of order and can't be sorted. Check data.")
+    }
   }
 
   sizeclassData <- as.character(data[ , sizeclassCol])
