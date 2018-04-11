@@ -132,10 +132,11 @@
 #' pkm(p ~ visibility, k ~ 1, data = pkmdat)
 #' pkm(p ~ visibility * season, k ~ site, data = pkmdat)
 #' pkm(p ~ visibility, kFixed = 0.7, data = pkmdat)
+#'
 #' @export
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-         kFixed = NULL, kInit = 0.7, CL = 0.9){
+                kFixed = NULL, kInit = 0.7, CL = 0.9){
 
   if(sum(obsCol %in% colnames(data)) != length(obsCol)){
     stop("Observation column provided not in data.")
@@ -174,9 +175,13 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   nsearch <- length(obsCol)
-  ncarc <- nrow(data)
   obsData <- data[ , obsCol]
   obsData <- as.matrix(obsData, ncol = nsearch)
+  obsNA <- is.na(obsData)
+  onlyNA <- which(apply(obsNA, 1, sum) == apply(obsNA, 1, length))
+  obsData <- as.matrix(obsData[-onlyNA, ], ncol = nsearch) 
+  data <- data[-onlyNA, ]
+  ncarc <- nrow(obsData)
 
   if (any(rowSums(obsData, na.rm = TRUE) > 1)){
     stop("Carcasses observed more than once. Check data.")
@@ -391,7 +396,7 @@ print.pkm <- function(model){
 #' @export 
 #'
 pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, 
-              cellMM, kFixed = NULL){
+                     cellMM, kFixed = NULL){
 
   if (length(kFixed) == 1){
     beta <- c(beta, logit(kFixed))
@@ -480,7 +485,7 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #' @export 
 #'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-             kFixed = NULL, kInit = 0.7, CL = 0.9){
+                   kFixed = NULL, kInit = 0.7, CL = 0.9){
 
   if (length(kFixed) == 1){
     if (kFixed < 0){

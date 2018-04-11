@@ -4,7 +4,7 @@
 \alias{pkmSetSize}
 \title{Fit all possible searcher efficiency models across all size classes.}
 \usage{
-pkmSetSize(formula_p, formula_k = NULL, data, obsCols = NULL,
+pkmSetSize(formula_p, formula_k = NULL, data, obsCol = NULL,
   sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, CL = 0.9)
 }
 \arguments{
@@ -21,16 +21,6 @@ model to be fitted. Details of model specification are given under
 \item{data}{Dataframe with results from searcher efficiency trials and any
 covariates included in \code{formula_p} or {formula_k} (required).}
 
-\item{sizeclassCol}{Name of colum in \code{data} where the size classes
-are recorded}
-
-\item{kFixed}{Parameter for user-specified \code{k} value (optional). If a
-value is provided, \code{formula_k} is ignored and the model is fit under 
-the assumption that the \code{k} parameter is fixed and known to be
-\code{fix_k}.}
-
-\item{CL}{confidence level}
-
 \item{obsCol}{Vector of names of columns in \code{data} where results 
 for each search occasion are stored (optional). If no \code{obsCol} are 
 provided, \code{pkm} uses as \code{obsCol} all columns with names that 
@@ -41,6 +31,16 @@ names matching that pattern. Alternatively, \code{obsCol} may be
 entered as a vector of names, like \code{c("s1", "s2", "s3")}, 
 \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch", 
 "lastSearch")}.}
+
+\item{sizeclassCol}{Name of colum in \code{data} where the size classes
+are recorded}
+
+\item{kFixed}{Parameter for user-specified \code{k} value (optional). If a
+value is provided, \code{formula_k} is ignored and the model is fit under 
+the assumption that the \code{k} parameter is fixed and known to be
+\code{fix_k}.}
+
+\item{CL}{confidence level}
 
 \item{init_k}{Initial value used for \code{k} in the optimization.}
 }
