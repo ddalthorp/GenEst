@@ -180,21 +180,25 @@ trueLength <- function(x){
  length(which(!is.na(x)))
 }
 
-#' Check if a vector is never increasing
+#' Check if a vector is never decreasing
 #'
 #' @param x vector of values
 #' @param tiesOK logical if ties are ok or not
+#' @param na.rm logical if NAs are to be removed or not
 #' @return logical value
 #'
 #' @export
 #'
-isNeverIncreasing <- function(x, tiesOK = TRUE){
+isNeverDecreasing <- function(x, tiesOK = TRUE, na.rm = TRUE){
+  if (na.rm == TRUE){
+    x <- na.omit(x)
+  }
   diffs <- diff(x)
   if (tiesOK == TRUE){
-    out <- all(diffs <= 0)
+    out <- all(diffs >= 0)
   }
   if (tiesOK == FALSE){
-    out <- all(diffs < 0)
+    out <- all(diffs > 0)
   }
   return(out)
 }
