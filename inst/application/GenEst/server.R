@@ -24,6 +24,8 @@ function(input, output, session){
 
   msgRunModSE <- NULL
   msgModFitSE <- NULL
+  msgRunModCP <- NULL
+  msgModFitCP <- NULL
 
   rv <- reactiveValues(
           dataSE = NULL, colNamesSE = NULL, obsColsSE = NULL, predsSE = NULL, 
@@ -50,38 +52,52 @@ function(input, output, session){
 
           dataCO = NULL, colNamesCO = NULL,
 
-          sizeclassChosen = NULL, sizeclasses = NULL, sizeclassCol = NULL, 
-          sizeclasses = NULL, nsizeclasses = NULL, 
+          sizeclassChosen = NULL, colNamesAll = NULL,  
+          sizeclassCol = NULL, sizeclasses = NULL, nsizeclasses = NULL, 
 
           CL = 0.9, niterations = 1000)
 
   observeEvent(input$fileSE, {
     rv$dataSE <- read.csv(input$fileSE$datapath, header = T)
     rv$colNamesSE <- colnames(rv$dataSE)
-    if (length(rv$sizeclasses) == 0){
-      rv$sizeclasses <- rv$colNamesSE 
+    if (length(rv$colNamesAll) == 0){
+      rv$colNamesAll <- rv$colNamesSE 
     }else{
-      rv$sizeclasses <- rv$colNamesSE[rv$colNamesSE %in% rv$sizeclasses]
+      rv$colNamesAll <- rv$colNamesSE[rv$colNamesSE %in% rv$colNamesAll]
+    }
+    if(length(rv$sizeclassCol) > 0){
+      if ((rv$sizeclassCol %in% rv$colNamesAll) == FALSE){
+        rv$sizeclassCol <- NULL
+      }
     }
     output$dataSE <- DT::renderDataTable({
                             DT::datatable(data.frame(rv$dataSE))
                      })
     updateSelectizeInput(session, "predsSE", choices = rv$colNamesSE)
     updateSelectizeInput(session, "obsColsSE", choices = rv$colNamesSE)
-    updateSelectizeInput(session, "sizeclassCol", choices = rv$sizeclasses)
+    updateSelectizeInput(session, "sizeclassCol", choices = rv$colNamesAll,
+      selected = rv$sizeclassCol
+    )
     updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
   })
   observeEvent(input$fileCP, {
     rv$dataCP <- read.csv(input$fileCP$datapath, header = T)
     rv$colNamesCP <- colnames(rv$dataCP)
-    if (length(rv$sizeclasses) == 0){
-      rv$sizeclasses <- rv$colNamesCP 
+    if (length(rv$colNamesAll) == 0){
+      rv$colNamesAll <- rv$colNamesCP 
     }else{
-      rv$sizeclasses <- rv$colNamesCP[rv$colNamesCP %in% rv$sizeclasses]
+      rv$colNamesAll <- rv$colNamesCP[rv$colNamesCP %in% rv$colNamesAll]
+    }
+    if(length(rv$sizeclassCol) > 0){
+      if ((rv$sizeclassCol %in% rv$colNamesAll) == FALSE){
+        rv$sizeclassCol <- NULL
+      }
     }
     output$dataCP <- DT::renderDataTable(rv$dataCP)
     updateSelectizeInput(session, "predsCP", choices = rv$colNamesCP)
-    updateSelectizeInput(session, "sizeclassCol", choices = rv$sizeclasses)
+    updateSelectizeInput(session, "sizeclassCol", choices = rv$colNamesAll,
+      selected = rv$sizeclassCol
+    )
     updateSelectizeInput(session, "ltp", choices = rv$colNamesCP)
     updateSelectizeInput(session, "fta", choices = rv$colNamesCP)
     updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
@@ -94,14 +110,21 @@ function(input, output, session){
   observeEvent(input$fileCO, {
     rv$dataCO <- read.csv(input$fileCO$datapath, header = T)
     rv$colNamesCO <- colnames(rv$dataCO)
-    if(length(rv$sizeclasses) == 0){
-      rv$sizeclasses <- rv$colNamesCO 
+    if (length(rv$colNamesAll) == 0){
+      rv$colNamesAll <- rv$colNamesCO 
     }else{
-      rv$sizeclasses <- rv$colNamesCO[rv$colNamesCO %in% rv$sizeclasses]
+      rv$colNamesAll <- rv$colNamesCO[rv$colNamesCO %in% rv$colNamesAll]
+    }
+    if(length(rv$sizeclassCol) > 0){
+      if ((rv$sizeclassCol %in% rv$colNamesAll) == FALSE){
+        rv$sizeclassCol <- NULL
+      }
     }
     output$dataCO <- DT::renderDataTable(rv$dataCO)
     updateSelectizeInput(session, "splitColCO", choices = rv$colNamesCO)
-    updateSelectizeInput(session, "sizeclassCol", choices = rv$sizeclasses)
+    updateSelectizeInput(session, "sizeclassCol", choices = rv$colNamesAll,
+      selected = rv$sizeclassCol
+    )
     updateSelectizeInput(session, "unitColCO", choices = rv$colNamesCO)
     updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
   })
@@ -131,6 +154,8 @@ function(input, output, session){
     rv$predsSE <- input$predsSE
     if (input$kFixedChoice == 1 & is.numeric(input$kFixed)){
       rv$kFixed <- input$kFixed
+    }else{
+      rv$kFixed <- NULL
     }
     rv$niterations <- input$niterations
     rv$CL <- input$CL

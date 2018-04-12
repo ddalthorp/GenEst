@@ -1,4 +1,4 @@
-SE_data <- read.csv("inst/extdata/ExampleSearcherEfficiency.csv")
+SE_data <- read.csv("inst/extdata/mockData/SearcherEfficiencyData.csv")
 
 SE_data <- SE_data[SE_data$Size == "S", ]
 mod <- pkm(formula_p = p~Visibility*Season, kFix = 0.5, data = SE_data)

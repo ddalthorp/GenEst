@@ -27,6 +27,7 @@ pkmParamPlot <- function(model, pk = "p", n, seed, col){
       maxy <- max(maxy, maxcell)
     }
   }
+  maxy[is.na(maxy)] <- 1
 
   plot(1, type = "n", xlab = "", ylab = "", bty = "L", xaxt = 'n', yaxt = 'n',
     ylim = c(0, maxy), xlim = c(0.5, ncell + 0.5)
@@ -34,7 +35,7 @@ pkmParamPlot <- function(model, pk = "p", n, seed, col){
 
   for (celli in 1:ncell){
     x <- celli
-    y <- quantile(pks[[celli]][ , pk], probs)
+    y <- quantile(pks[[celli]][ , pk], probs, na.rm = TRUE)
 
     med <- c(-0.1, 0.1)
     tb <- c(-0.07, 0.07)
@@ -139,7 +140,9 @@ plot.pkm <- function(model, n = 1000, seed = 1, col = "black"){
   name_k <- model$formula_k
   if (class(name_k) == "numeric"){
     name_k <- paste("k fixed at ", name_k, sep = "")
-  } else{
+  }else if(class(name_k) == "character"){
+    name_k <- "k not estimated"
+  }else{
     name_k <- format(model$formula_k)
   }
   modelName <- paste(name_p, "; ", name_k, sep = "")
@@ -252,6 +255,7 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n,
       maxy <- max(maxy, maxcell)
     }
   }
+  maxy[is.na(maxy)] <- 1
 
   par(mar = c(2,4,2,1))
   plot(1, type = "n", xlab = "", ylab = "", bty = "L", xaxt = 'n', yaxt = 'n',
@@ -261,9 +265,9 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n,
   for (celli in 1:ncell_full){
     cMi <- cellMatch[celli]
     x_s <- celli - 0.2
-    y_s <- quantile(pks_spec[[cMi]][ , pk], probs)
+    y_s <- quantile(pks_spec[[cMi]][ , pk], probs, na.rm = TRUE)
     x_f <- celli + 0.2
-    y_f <- quantile(pks_full[[celli]][ , pk], probs)
+    y_f <- quantile(pks_full[[celli]][ , pk], probs, na.rm = TRUE)
     
     med <- c(-0.1, 0.1)
     tb <- c(-0.07, 0.07)
@@ -389,7 +393,7 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 #'
 #' @export
 #'
-plot.pkmSet <- function(modelSet, specificModel = NULL,  n = 1000, 
+plot.pkmSet <- function(modelSet, specificModel = NULL, n = 1000, 
                         seed_spec = 1, seed_full = 1, col_spec = "black", 
                         col_full = "grey"){
 
