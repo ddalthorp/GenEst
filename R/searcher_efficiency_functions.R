@@ -153,25 +153,26 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     stop("Predictor(s) in formula(e) not found in data.")
   }
   if (length(kFixed) == 1){
-    if (kFixed < 0){
-      message("Provided k is negative. Using k = 0")
-      kFixed <- 0.0
+    if (kFixed < 0 | kFixed > 1){
+      stop("Provided k is outside the supported range [0 - 1].")
    }
-    if (kFixed > 1){
-      message("Provided k too large. Using k = 1.0")
-      kFixed <- 1.0
+    if (length(formula_k) > 0){
+      message("Formula and fixed value provided for k, fixed value used.")
+      formula_k <- NULL
     }
   }
-  if (length(formula_k) > 0 & length(kFixed) == 1){
-    message("Both formula and fixed value provided for k, fixed value used.")
+  if (length(obsCol) == 1){
+    if (length(formula_k) > 0){
+      message("Only one observation, k not estimated.")
+    }
+    if (length(kFixed) == 1){
+      message("Only one observation, kFixed input ignored.")
+    }
+    kFixed <- 0.5
+    formula_k <- NULL
   }
   if (length(formula_k) == 0 & length(kFixed) == 0){
-    message("No formula or fixed value provided for k, fixed at 0.")
-    kFixed <- 0
-  }
-  if (length(obsCol) == 1 & length(kFixed) == 0){
-    message("Only one observation, k cannot be estimated.")
-    kFixed <- 0
+    stop("No formula or fixed value provided for k. Provide one.")
   }
 
   nsearch <- length(obsCol)
@@ -183,39 +184,36 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     obsData <- as.matrix(obsData[-onlyNA, ], ncol = nsearch) 
     data <- data[-onlyNA, ]
   }
-  ncarc <- nrow(obsData)
-
+  if (nrow(data) == 0){
+    stop("No non-missing data present in provided data.")
+  }
   if (any(rowSums(obsData, na.rm = TRUE) > 1)){
     stop("Carcasses observed more than once. Check data.")
   }
-  tots <- apply(obsData, 2, GenEst::trueLength)
-  hits <- apply(obsData, 2, sum, na.rm = TRUE) 
-  misses <- tots - hits 
-  if (isNeverIncreasing(tots) == FALSE){
-    message("Observations appear to not be in order, attempting to sort.")
-
-    tots_misses <- data.frame(tots, misses)
-    ordering <- do.call(order, c(tots_misses, decreasing = TRUE))
-    tots_misses <- tots_misses[ordering, ]
-    obsCol <- rownames(tots_misses)
-    obsData <- data[ , obsCol]
-    obsData <- as.matrix(obsData, ncol = nsearch)
-    tots <- apply(obsData, 2, GenEst::trueLength)
-
-    if (isNeverIncreasing(tots) == FALSE){
-      stop("Observations are out of order and can't be sorted. Check data.")
-    }
+  if (any(apply(obsData, 1, isNeverDecreasing) == FALSE)){
+    stop("Carcasses have observations after being found. Check data.")
   }
 
+  ncarc <- nrow(obsData)
   firstObs <- obsData[ , 1]
   missData <- apply(obsData, 2, match, 0)
-
   misses <- apply(missData, 1, sum, na.rm = TRUE)
   maxmisses <- max(misses)
   found <- apply(obsData, 1, sum, na.rm = TRUE)
   carcassesFound <- which(found == 1)
   foundOn <- numeric(ncarc)
   foundOn[carcassesFound] <- misses[carcassesFound] + 1
+
+  if (length(kFixed) > 0){
+    if (kFixed == 0 & any(foundOn > 1)){
+      suggestion <- kSuggest(obsData)
+      msg <- paste("k is fixed at 0, but carcasses were found after first ", 
+               "search, indicating k > 0.\n  Suggest estimating k or setting",
+               " k to ",  suggestion, sep = ""
+             )
+      stop(msg)
+    }
+  }
 
   preds_p <- all.vars(formula_p[[3]])
   formulaRHS_p <- formula(delete.response(terms(formula_p)))
@@ -268,13 +266,11 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   pInit[which(pInit < 0.1)] <- 0.1
   pInit[which(pInit > 0.9)] <- 0.9 
-
   cellMatrix_p <- solve(t(dataMM_p) %*% dataMM_p)
   cellImpact_p <- t(dataMM_p) %*% logit(pInit)
   betaInit_p <- cellMatrix_p %*% cellImpact_p
   betaInit_k <- logit(rep(kInit, nbeta_k))
   betaInit <- c(betaInit_p, betaInit_k)
-
   if (length(kFixed) == 1){
     betaInit <- betaInit[-length(betaInit)]
   }
@@ -334,6 +330,15 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   cellTable_k <- matrix(cellTable_k, nrow = ncell, ncol = 3)
   cellTable_k <- round(alogit(cellTable_k), 5)
   colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
+  if (nsearch == 1){
+    for (rowi in 1:nrow(cellTable_k)){
+      cellTable_k[rowi, 1:3] <- rep(NA, 3)
+    }
+    formula_k <- ""
+    nbeta_k <- 0
+    cellMM_k <- NULL
+    kFixed <- NULL
+  }
   cellTable <- data.frame(cell = cellNames, cellTable_p, cellTable_k)
 
   output <- list()
@@ -489,62 +494,35 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
                    kFixed = NULL, kInit = 0.7, CL = 0.9){
 
-  if (length(kFixed) == 1){
-    if (kFixed < 0){
-      message("Provided k is negative. Using k = 0")
-      kFixed <- 0.0
-   }
-    if (kFixed > 1){
-      message("Provided k too large. Using k = 1.0")
-      kFixed <- 1.0
+  if (length(kFixed) == 1 & length(formula_k) > 0){
+    message("Formula and fixed value provided for k, fixed value used.")
+    formula_k <- NULL
+  }
+  if (length(which(obsCol %in% colnames(data))) == 1){
+    if (length(formula_k) > 0){
+      message("Only one observation, k not estimated.")
     }
+    if (length(kFixed) == 1){
+      message("Only one observation, kFixed input ignored.")
+    }
+    formula_k <- NULL
+    kFixed <- NULL
   }
-  if (length(formula_k) > 0 & length(kFixed) == 1){
-    message("Both formula and fixed value provided for k, fixed value used.")
-    formula_k <- k ~ 1
-  }
-  if (length(formula_k) == 0 & length(kFixed) == 0){
-    message("No formula or fixed value provided for k, fixed at 0.")
-    formula_k <- k ~ 1
-    kFixed <- 0
-  }
-  if (length(obsCol) == 1 & length(kFixed) == 0){
-    message("Only one observation, k cannot be estimated.")
-    kFixed <- 0
-  }
+  unfixk <- FALSE
   if (length(formula_k) == 0){
-    formula_k <- k ~ 1
-  }
-  nsearch <- length(obsCol)
-  ncarc <- nrow(data)
-  obsData <- data[ , obsCol]
-  obsData <- as.matrix(obsData, ncol = nsearch)
-
-  if (any(rowSums(obsData, na.rm = TRUE) > 1)){
-    stop("Carcasses observed more than once. Check data.")
-  }
-  tots <- apply(obsData, 2, GenEst::trueLength)
-  hits <- apply(obsData, 2, sum, na.rm = TRUE) 
-  misses <- tots - hits 
-  if (isNeverIncreasing(tots) == FALSE){
-    message("Observations appear to not be in order, attempting to sort.")
-
-    tots_misses <- data.frame(tots, misses)
-    ordering <- do.call(order, c(tots_misses, decreasing = TRUE))
-    tots_misses <- tots_misses[ordering, ]
-    obsCol <- rownames(tots_misses)
-    obsData <- data[ , obsCol]
-    obsData <- as.matrix(obsData, ncol = nsearch)
-    tots <- apply(obsData, 2, GenEst::trueLength)
-
-    if (isNeverIncreasing(tots) == FALSE){
-      stop("Observations are out of order and can't be sorted. Check data.")
+    if (length(kFixed) == 0){
+      kFixed <- 0.5
+      unfixk <- TRUE
     }
   }
+
   # create the set of models to explore, based on the input parameters
-  
   terms_p <- attr(terms(formula_p), "term.labels")
-  terms_k <- attr(terms(formula_k), "term.labels")
+  if (length(formula_k) == 0){
+    terms_k <- NULL
+  }else{
+    terms_k <- attr(terms(formula_k), "term.labels")
+  }
   nterms_p <- length(terms_p)
   nterms_k <- length(terms_k)
   nformula_p <- 2^(nterms_p)
@@ -621,6 +599,9 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (length(kFixed) == 1){
     keptFormula_k <- NULL
   }
+  if (unfixk == TRUE){
+    kFixed <- NULL
+  }
   nmod <- nrow(expandedKeptFormulae) 
   output <- vector("list", nmod)
   for (modi in 1:nmod){
@@ -639,7 +620,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
       name_k <- paste("k fixed at ", kFixed, sep = "")
     }
     modName <- paste(name_p, "; ", name_k, sep = "")
-
+    modName <- gsub("NULL", "k not estimated", modName)
     output[[modi]] <- pkm_i
     names(output)[modi] <- modName
   }
@@ -707,32 +688,13 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     output <- pkmSet(formula_p, formula_k, data, obsCol, kFixed, kInit, CL)
     return(output)
   }
+  if ((sizeclassCol %in% colnames(data)) == FALSE){
+    stop("Size class column provided not in data set.")
+  }
   nsearch <- length(obsCol)
   ncarc <- nrow(data)
   obsData <- data[ , obsCol]
   obsData <- as.matrix(obsData, ncol = nsearch)
-
-  if (any(rowSums(obsData, na.rm = TRUE) > 1)){
-    stop("Carcasses observed more than once. Check data.")
-  }
-  tots <- apply(obsData, 2, GenEst::trueLength)
-  hits <- apply(obsData, 2, sum, na.rm = TRUE) 
-  misses <- tots - hits 
-  if (isNeverIncreasing(tots) == FALSE){
-    message("Observations appear to not be in order, attempting to sort.")
-
-    tots_misses <- data.frame(tots, misses)
-    ordering <- do.call(order, c(tots_misses, decreasing = TRUE))
-    tots_misses <- tots_misses[ordering, ]
-    obsCol <- rownames(tots_misses)
-    obsData <- data[ , obsCol]
-    obsData <- as.matrix(obsData, ncol = nsearch)
-    tots <- apply(obsData, 2, GenEst::trueLength)
-
-    if (isNeverIncreasing(tots) == FALSE){
-      stop("Observations are out of order and can't be sorted. Check data.")
-    }
-  }
 
   sizeclassData <- as.character(data[ , sizeclassCol])
   sizeclasses <- unique(sizeclassData)
@@ -862,6 +824,8 @@ pkmSetAICcTab <- function(pkmset){
 #'
 #' @param seed optional input to set the seed of the RNG
 #'
+#' @param kFill what value to fill k with if k was not estimated
+#'
 #' @return list of two matrices of \code{n} simulated \code{p} and \code{k} 
 #'   for cells defined by the \code{model} object. 
 #'
@@ -875,7 +839,7 @@ pkmSetAICcTab <- function(pkmset){
 #' rpk(n = 10, model = pkmod_2)
 #' @export
 #'
-rpk <- function(n = 1, model, seed = NULL){
+rpk <- function(n = 1, model, seed = NULL, kFill = NA){
 
   if (!"pkm" %in% class(model)){
     stop("model not of class pkm.")
@@ -885,6 +849,7 @@ rpk <- function(n = 1, model, seed = NULL){
   nbeta_k <- model$nbeta_k
   which_beta_k <- (nbeta_p + 1):(nbeta_p + nbeta_k)
   kFixed <- model$kFixed
+  formula_k <- model$formula_k
   cellMM_p <- model$cellMM_p
   cellMM_k <- model$cellMM_k
   ncell <- model$ncell
@@ -900,9 +865,14 @@ rpk <- function(n = 1, model, seed = NULL){
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
 
+ 
   if (length(kFixed) == 0){
-    sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
-  } else{
+    if (formula_k == ""){
+      sim_k <- matrix(kFill, ncol = ncell, nrow = n)
+    }else{
+      sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
+    }
+  }else{
     sim_k <- matrix(kFixed, ncol = ncell, nrow = n)
   }
   colnames(sim_k) <- cellNames
@@ -917,3 +887,27 @@ rpk <- function(n = 1, model, seed = NULL){
   return(output)
 }
 
+
+#' Suggest a value for k based on a weighted mean of the observed decay
+#'
+#' @param obsData a matrix of carcasses (rows) x searched (columns)
+#' @return the weighted mean of the observed proportional decay in p
+#'
+#' @export
+#'
+kSuggest <- function(obsData){
+  nsearch <- ncol(obsData)
+  if (nsearch == 1){
+    message("only one observation, k not informed by data")
+    return(numeric(0))
+  }
+  navail <- apply(obsData, 2, trueLength)
+  nfound <- apply(obsData, 2, sum, na.rm = TRUE) 
+  pfound <- nfound / navail
+  pfoundRatios <- rep(NA, nsearch - 1)
+  for (searchi in 1:(nsearch - 1)){
+    pfoundRatios[searchi] <- pfound[searchi + 1]/pfound[searchi]
+  }
+  suggestion <- round(weighted.mean(pfoundRatios, navail[2:nsearch]), 3)
+  return(suggestion)
+}
