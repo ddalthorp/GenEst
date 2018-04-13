@@ -7,19 +7,29 @@ tabPanel("Data Input",
   sidebarLayout(
     sidebarPanel(width = 3,
       fileInput("fileSE", "Search Efficiency Data File",
-        accept = c("text/csv", "text/comma-separated-values", ".csv")), 
+        accept = c("text/csv", "text/comma-separated-values", ".csv")
+      ), 
       fileInput("fileCP", "Carcass Persistence Data File",
-        accept = c("text/csv", "text/comma-separated-values", ".csv")), 
+        accept = c("text/csv", "text/comma-separated-values", ".csv")
+      ), 
       fileInput("fileSS", "Search Schedule Data File",
-        accept = c("text/csv", "text/comma-separated-values", ".csv")), 
+        accept = c("text/csv", "text/comma-separated-values", ".csv")
+      ), 
+      fileInput("fileDWP", "Density Weighted Proportion Data File",
+        accept = c("text/csv", "text/comma-separated-values", ".csv")
+      ), 
       fileInput("fileCO", "Carcass Observation Data File",
-        accept = c("text/csv", "text/comma-separated-values", ".csv"))
+        accept = c("text/csv", "text/comma-separated-values", ".csv")
+      )
     ), 
     mainPanel(
       tabsetPanel(id = "LoadedDataViz",
         tabPanel("Search Efficiency", br(), DT::dataTableOutput("dataSE")),
         tabPanel("Carcass Persistence", br(), DT::dataTableOutput("dataCP")),
         tabPanel("Search Schedule", br(), DT::dataTableOutput("dataSS")),
+        tabPanel("Density Weighted Proportion", br(), 
+          DT::dataTableOutput("dataDWP")
+        ),
         tabPanel("Carcass Observations", br(), DT::dataTableOutput("dataCO"))
       )
     )
