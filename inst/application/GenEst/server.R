@@ -50,6 +50,8 @@ function(input, output, session){
 
           dataSS = NULL,  
 
+          dataDWP = NULL,
+
           dataCO = NULL, colNamesCO = NULL,
 
           sizeclassChosen = NULL, colNamesAll = NULL,  
@@ -107,6 +109,11 @@ function(input, output, session){
     output$dataSS <- DT::renderDataTable(rv$dataSS)
     updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
   })
+  observeEvent(input$fileDWP, {
+    rv$dataDWP <- read.csv(input$fileDWP$datapath, header = T)
+    output$dataDWP<- DT::renderDataTable(rv$dataDWP)
+    updateTabsetPanel(session, "LoadedDataViz", "Density Weighted Proportion")
+  })
   observeEvent(input$fileCO, {
     rv$dataCO <- read.csv(input$fileCO$datapath, header = T)
     rv$colNamesCO <- colnames(rv$dataCO)
@@ -148,6 +155,7 @@ function(input, output, session){
     output$selectedSE <- DT::renderDataTable(selectedDF)
   })
   observeEvent(input$runModSE, {
+
     msgRunModSE <- showNotification("Running Searcher Efficiency Model",
                      duration = NULL)
     rv$obsColsSE <- input$obsColsSE
@@ -358,9 +366,12 @@ function(input, output, session){
                                    )
         output$modTabSE <- DT::renderDataTable(rv$modTabSE)
         output$figSE <- renderPlot({
-                           plot(rv$modSetSE_spec, 
-                             specificModel = rv$tabfigSEpk
-                           )}, height = rv$figSEht, width = rv$figSEwh
+                          tryCatch(
+                            plot(rv$modSetSE_spec, 
+                              specificModel = rv$tabfigSEpk), 
+                            error = function(x){plot(1,1)}
+                          )
+                        }, height = rv$figSEht, width = rv$figSEwh
                         )
       })
       observeEvent(input$tabfigSEk, {
@@ -385,9 +396,12 @@ function(input, output, session){
                                    )
         output$modTabSE <- DT::renderDataTable(rv$modTabSE)
         output$figSE <- renderPlot({
-                           plot(rv$modSetSE_spec, 
-                             specificModel = rv$tabfigSEpk
-                           )}, height = rv$figSEht, width = rv$figSEwh
+                          tryCatch(
+                            plot(rv$modSetSE_spec, 
+                              specificModel = rv$tabfigSEpk), 
+                            error = function(x){plot(1,1)}
+                          )
+                        }, height = rv$figSEht, width = rv$figSEwh
                         )
       })
       if (length(rv$sizeclasses) == 1){
@@ -721,11 +735,13 @@ function(input, output, session){
                )
         output$modTabCP <- DT::renderDataTable(rv$modTabCP)
         output$figCP <- renderPlot({
-                           plot(rv$modSetCP_spec, 
-                             specificModel = rv$tabfigCPdls_fig
-                           )}, height = rv$figCPht, width = rv$figCPwh
+                          tryCatch(
+                            plot(rv$modSetCP_spec, 
+                              specificModel = rv$tabfigCPdls_fig), 
+                            error = function(x){plot(1,1)}
+                          )
+                        }, height = rv$figCPht, width = rv$figCPwh
                         )
-
       })
       observeEvent(input$tabfigCPs, {
         rv$tabfigCPdls_fig <- paste("dist: ", input$tabfigCPdist, "; ",
@@ -759,11 +775,13 @@ function(input, output, session){
                 )
         output$modTabCP <- DT::renderDataTable(rv$modTabCP)
         output$figCP <- renderPlot({
-                           plot(rv$modSetCP_spec, 
-                             specificModel = rv$tabfigCPdls_fig
-                           )}, height = rv$figCPht, width = rv$figCPwh
+                          tryCatch(
+                            plot(rv$modSetCP_spec, 
+                              specificModel = rv$tabfigCPdls_fig), 
+                            error = function(x){plot(1,1)}
+                          )
+                        }, height = rv$figCPht, width = rv$figCPwh
                         )
-
       })
       if (length(rv$sizeclasses) == 1){
         rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
