@@ -24,6 +24,7 @@ function(input, output, session){
 
   msgRunModSE <- NULL
   msgModFitSE <- NULL
+  msgModFailSE <- NULL
   msgRunModCP <- NULL
   msgModFitCP <- NULL
 
@@ -188,113 +189,124 @@ function(input, output, session){
                    kFixed = rv$kFixed, kInit = 0.7, CL = rv$CL
                  )
     rv$modsCheckSE <- pkmCheck(rv$modsSE)
-
-    if (length(rv$sizeclasses) == 1){
-      rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE) 
-      rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
-      rv$modNamesSE <- names(rv$modsSE)[rv$modOrderSE]
-      rv$modNamesSEp <- rv$modNamesSE
-      rv$modNamesSEk <- rv$modNamesSE
-      for (modi in 1:length(rv$modNamesSE)){
-        rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
-        rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
-      }
-      rv$modTabSE <- rv$modsSE[[rv$modOrderSE[1]]]$cellwiseTable
-      rv$modSetSE_spec <- rv$modsSE
-      rv$figSEnrow <- ceiling((rv$modSetSE_spec[[1]])$ncell / 2 )
-      rv$figSEht <- rv$figSEnrow * 200 + 400
-      if (rv$modSetSE_spec[[1]]$ncell > 6){
-        rv$figSEwh <- 1200
-      }
-      rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
-      output$figSE <- renderPlot({
-                        plot(rv$modSetSE_spec, specificModel = rv$bestSE)},
-                        height = rv$figSEht, width = rv$figSEwh
-                      )
-    }else{
-      rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
-      if (length(rv$sizeclassChosen) == 0){
-        rv$sizeclassChosen <- 1
-      }
-      rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]])
-      rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
-      rv$modNamesSE <- names(rv$modsSE[[rv$sizeclassChosen]])[rv$modOrderSE]
-      rv$modNamesSEp <- rv$modNamesSE
-      rv$modNamesSEk <- rv$modNamesSE
-      for (modi in 1:length(rv$modNamesSE)){
-        rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
-        rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
-      }
-      rv$modTabSE <- rv$modsSE[[1]][[rv$modOrderSE[1]]]$cellwiseTable
-      rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
-      rv$figSEnrow <- ceiling(rv$modSetSE_spec[[1]]$ncell / 2 )
-      rv$figSEht <- rv$figSEnrow * 200 + 400
-      if (rv$modSetSE_spec[[1]]$ncell > 6){
-        rv$figSEwh <- 1200
-      }
-      rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
-      output$figSE <- renderPlot({
-                        plot(rv$modSetSE_spec, specificModel = rv$bestSE)},
-                        height = rv$figSEht, width = rv$figSEwh
-                      )
-    }
-
-    colnames(rv$modTabSE) <- c("Cell", 
-                               "p Median", 
+    if(pkmAllFail(rv$modsSE)) {
+      removeNotification(msgRunModSE)
+      msg <- paste(
+               "No models were successfully fit.", 
+               gsub("Failed model fit: ", "", unique(unlist(rv$modsSE))),
+               sep = " "
+             )
+      msgModFailSE <- showNotification(msg, type = "error", duration = NULL)
+    } else{
+      if (length(rv$sizeclasses) == 1){
+        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE) 
+        rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
+        rv$modNamesSE <- names(rv$modsSE)[rv$modOrderSE]
+        rv$modNamesSEp <- rv$modNamesSE
+        rv$modNamesSEk <- rv$modNamesSE
+        for (modi in 1:length(rv$modNamesSE)){
+          rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
+          rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
+        }
+        rv$modTabSE <- rv$modsSE[[rv$modOrderSE[1]]]$cellwiseTable
+        rv$modSetSE_spec <- rv$modsSE
+        rv$figSEnrow <- ceiling((rv$modSetSE_spec[[1]])$ncell / 2 )
+        rv$figSEht <- rv$figSEnrow * 200 + 400
+        if (rv$modSetSE_spec[[1]]$ncell > 6){
+          rv$figSEwh <- 1200
+        }
+        rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
+        output$figSE <- renderPlot({
+                          plot(rv$modSetSE_spec, specificModel = rv$bestSE)},
+                          height = rv$figSEht, width = rv$figSEwh
+                        )
+      }else{
+        rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
+        if (length(rv$sizeclassChosen) == 0){
+          rv$sizeclassChosen <- 1
+        }
+        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]])
+        rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
+        rv$modNamesSE <- names(rv$modsSE[[rv$sizeclassChosen]])[rv$modOrderSE]
+        rv$modNamesSEp <- rv$modNamesSE
+        rv$modNamesSEk <- rv$modNamesSE
+        for (modi in 1:length(rv$modNamesSE)){
+          rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
+          rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
+        }
+        rv$modTabSE <- rv$modsSE[[1]][[rv$modOrderSE[1]]]$cellwiseTable
+        rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
+        rv$figSEnrow <- ceiling(rv$modSetSE_spec[[1]]$ncell / 2 )
+        rv$figSEht <- rv$figSEnrow * 200 + 400
+        if (rv$modSetSE_spec[[1]]$ncell > 6){
+          rv$figSEwh <- 1200
+        }
+        rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
+        output$figSE <- renderPlot({
+                          plot(rv$modSetSE_spec, specificModel = rv$bestSE)},
+                          height = rv$figSEht, width = rv$figSEwh
+                        )
+      } 
+  
+      colnames(rv$modTabSE) <- c("Cell", 
+                                 "p Median", 
                       paste("p ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
                       paste("p ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = ""),
-                               "k Median",
+                                 "k Median",
                       paste("k ", 100 * (1 - rv$CL) / 2, "%", sep = ""),
                       paste("k ", 100 - 100 * (1 - rv$CL) / 2, "%", sep = "")
-                             )
-    colnames(rv$AICcTabSE) <- c("p Formula", "k Formula", "AICc", 
-                                "Delta AICc"
-                              )
-    output$AICcTabSE <- DT::renderDataTable({rv$AICcTabSE})    
-    output$modTabSE <- DT::renderDataTable({rv$modTabSE})
+                               )
+      colnames(rv$AICcTabSE) <- c("p Formula", "k Formula", "AICc", 
+                                  "Delta AICc"
+                                )
+      output$AICcTabSE <- DT::renderDataTable({rv$AICcTabSE})    
+      output$modTabSE <- DT::renderDataTable({rv$modTabSE})
 
-    updateSelectizeInput(session, "tabfigSizeClassSE", 
-      choices = rv$sizeclasses
-    )
-    updateSelectizeInput(session, "tabfigSEp", choices = rv$modNamesSEp)
-    updateSelectizeInput(session, "tabfigSEk", choices = rv$modNamesSEk)
-    updateTabsetPanel(session, "analysesSE", "Model Comparison Tables")
+      updateSelectizeInput(session, "tabfigSizeClassSE", 
+        choices = rv$sizeclasses
+      )
+      updateSelectizeInput(session, "tabfigSEp", choices = rv$modNamesSEp)
+      updateSelectizeInput(session, "tabfigSEk", choices = rv$modNamesSEk)
+      updateTabsetPanel(session, "analysesSE", "Model Comparison Tables")
 
-    removeNotification(msgRunModSE)
-    if (rv$modsCheckSE == FALSE){
-      msgModFitSE <- showNotification("Not all models were fit properly.",
-                       type = "warning", duration = NULL)
-    }
-    isolate({
+      removeNotification(msgRunModSE)
+      if (rv$modsCheckSE == FALSE){
+        msgModFitSE <- showNotification("Not all models were fit properly.",
+                         type = "warning", duration = NULL)
+      }  
+      isolate({
 
-      output$modelMenuSE <- renderUI({
-        
-        modelMenuSE <- ""
-        nsizeclasses <- length(rv$sizeclasses)
-        if (nsizeclasses > 0){
-          if (nsizeclasses == 1){
-            AICcTab <- pkmSetAICcTab(rv$modsSE) 
-            modOrder <- as.numeric(row.names(AICcTab))
-            modNames <- names(rv$modsSE)[modOrder]
-            mtuText <- "modelChoicesSE"
-            scText <- "Model choice"
-            modSelect <- selectizeInput(mtuText, scText, modNames)
-            modelMenuSE <- paste(modelMenuSE, modSelect)  
-          }else{
-            for(sci in 1:nsizeclasses){
-              AICcTab <- pkmSetAICcTab(rv$modsSE[[sci]])
+        output$modelMenuSE <- renderUI({
+          
+          modelMenuSE <- ""
+          nsizeclasses <- length(rv$sizeclasses)
+          if (nsizeclasses > 0){
+            if (nsizeclasses == 1){
+              AICcTab <- pkmSetAICcTab(rv$modsSE) 
               modOrder <- as.numeric(row.names(AICcTab))
-              modNames <- names(rv$modsSE[[sci]])[modOrder]
-              mtuText <- paste("modelChoicesSE", sci, sep = "") 
-              scText <- paste("Model choice, ", rv$sizeclasses[sci], sep = "")
+              modNames <- names(rv$modsSE)[modOrder]
+              mtuText <- "modelChoicesSE"
+              scText <- "Model choice"
               modSelect <- selectizeInput(mtuText, scText, modNames)
               modelMenuSE <- paste(modelMenuSE, modSelect)  
+            }else{
+              for(sci in 1:nsizeclasses){
+                AICcTab <- pkmSetAICcTab(rv$modsSE[[sci]])
+                modOrder <- as.numeric(row.names(AICcTab))
+                modNames <- names(rv$modsSE[[sci]])[modOrder]
+                mtuText <- paste("modelChoicesSE", sci, sep = "") 
+                scText <- paste("Model choice, ", rv$sizeclasses[sci], 
+                            sep = ""
+                          )
+                modSelect <- selectizeInput(mtuText, scText, modNames)
+                modelMenuSE <- paste(modelMenuSE, modSelect)  
+              }
             }
-          }
-        }  
-        HTML(modelMenuSE)
+          }  
+          HTML(modelMenuSE)
+        })
       })
-    })
+    }
   })
   observeEvent(input$tabfigSizeClassSE, {
     if (length(rv$modsSE) > 0){

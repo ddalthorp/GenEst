@@ -609,7 +609,9 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formi_k <- keptFormula_k[modi][[1]]
     pkm_i <- tryCatch(
                pkm(formi_p, formi_k, data, obsCol, kFixed, kInit, CL), 
-               error = function(x) {"Failed model fit"}
+               error = function(x) {
+                 paste("Failed model fit: ", geterrmessage(), sep = "")
+               }
              )
 
     name_p <- paste(format(formi_p), collapse = "")
@@ -910,4 +912,23 @@ kSuggest <- function(obsData){
   }
   suggestion <- round(weighted.mean(pfoundRatios, navail[2:nsearch]), 3)
   return(suggestion)
+}
+
+#' Check if all of the pkm models fail
+#'
+#' @param pkmToCheck A \code{pkm} model or a set of them or a suite of sets
+#'   associated with multiple sizes
+#'
+#' @return A single logical value indicating if all of the models failed
+#'
+#' @export
+#'
+pkmAllFail <- function(pkmToCheck){
+
+  unlisted <- unlist(pkmToCheck)
+  modsFail <- grepl("Failed model fit", unlisted)
+  nmods <- length(unlisted)
+  nmodsFail <- sum(modsFail)
+  out <- nmods == nmodsFail
+  return(out)
 }
