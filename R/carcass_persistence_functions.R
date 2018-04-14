@@ -125,6 +125,12 @@
 cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
                 right = NULL, dist = "weibull", CL = 0.9){
 
+  if (any(data[ , left] > data[ , right], na.rm = TRUE)){
+    stop("Last time observed data are greater than first time absent data.") 
+  }
+  if (all(data[ , left] == data[ , right], na.rm = TRUE)){
+    stop("Last time observed data are identical to first time absent data.") 
+  }
   if (length(formula_s) != 0 & dist == "exponential"){
     msg <- paste("Formula given for scale, but exponential distribution ",
              "chosen, which does have a scale parameter. Formula ignored.", 
@@ -623,7 +629,9 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
     }
     cpm_i <- tryCatch(
                cpm(formi_l, formi_s, data, left, right, disti, CL), 
-               error = function(x) {"Failed model fit"}
+               error = function(x) {
+                 paste("Failed model fit: ", geterrmessage(), sep = "")
+               }
              )
     name_d <- disti
     name_l <- paste(format(formi_l), collapse = "")
@@ -908,3 +916,21 @@ ppersist_loglogistic <- function(t_arrive0, t_arrive1, t_search, pda, pdb){
   return(out)
 }
 
+#' Check if all of the cpm models fail
+#'
+#' @param cpmToCheck A \code{cpm} model or a set of them or a suite of sets
+#'   associated with multiple sizes
+#'
+#' @return A single logical value indicating if all of the models failed
+#'
+#' @export
+#'
+cpmAllFail <- function(cpmToCheck){
+
+  unlisted <- unlist(cpmToCheck)
+  modsFail <- grepl("Failed model fit", unlisted)
+  nmods <- length(unlisted)
+  nmodsFail <- sum(modsFail)
+  out <- nmods == nmodsFail
+  return(out)
+}
