@@ -1,4 +1,6 @@
-## GenEst: Generalized Fatality Estimator
+<img src = 'inst/application/GenEst/www/GenEst.png' height = '100' align="right" />
+
+## GenEst: Generalized Fatality Estimator     
 
 **GenEst** is a tool for estimating fatalities from efficiency, persistence,
 and carcass data.
