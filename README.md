@@ -55,15 +55,5 @@ Paul Rabie ([WEST](http://www.westconsultants.com/)), Jared Studyvin
 ([oikostat](http://www.oikostat.ch/)) and Manuela Huso 
 ([USGS](https://www.usgs.gov/)).
 
-
-<img src = 'inst/application/GenEst/www/blm.jpg' height = '60'>, 
-<img src = 'inst/application/GenEst/www/usgs.png' height = '60'>, 
-<img src = 'inst/application/GenEst/www/nrel.jpg' height = '60'>,
-<img src = 'inst/application/GenEst/www/west.png' height = '60'>,
-<img src = 'inst/application/GenEst/www/bci.jpg' height = '60'>,
-<img src = 'inst/application/GenEst/www/awwi.png' height = '60'>,
-<img src = 'inst/application/GenEst/www/avangrid.png' height = '60'>,
-<img src = 'inst/application/GenEst/www/dapper.png' height = '60'>,
-<img src = 'inst/application/GenEst/www/oikostat.jpg' height = '60'>,
-<img src = 'inst/application/GenEst/www/osu.jpg' height = '60'>,
-<img src = 'inst/application/GenEst/www/duke.png' height = '60'>
+<br><br>
+<img src = 'inst/application/GenEst/www/blm.jpg' height = '60'> <img src = 'inst/application/GenEst/www/usgs.png' height = '60'> <img src = 'inst/application/GenEst/www/nrel.jpg' height = '60'> <img src = 'inst/application/GenEst/www/west.png' height = '60'> <img src = 'inst/application/GenEst/www/bci.jpg' height = '60'> <img src = 'inst/application/GenEst/www/awwi.png' height = '60'> <img src = 'inst/application/GenEst/www/avangrid.png' height = '60'> <img src = 'inst/application/GenEst/www/dapper.png' height = '60'> <img src = 'inst/application/GenEst/www/oikostat.jpg' height = '60'> <img src = 'inst/application/GenEst/www/osu.jpg' height = '60'> <img src = 'inst/application/GenEst/www/duke.png' height = '60'>
