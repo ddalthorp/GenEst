@@ -1,4 +1,4 @@
-<img src = 'inst/application/GenEst/www/GenEst.png' height = '100' align="right" />
+<img src = 'inst/application/GenEst/www/GenEst.png' height = '80' align="right" />
 
 ## GenEst: Generalized Fatality Estimator     
 
