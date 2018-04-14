@@ -25,9 +25,11 @@ function(input, output, session){
   msgRunModSE <- NULL
   msgModFitSE <- NULL
   msgModFailSE <- NULL
+  msgSampleSizeSE <- NULL
   msgRunModCP <- NULL
   msgModFitCP <- NULL
   msgModFailCP <- NULL
+  msgSampleSizeCP <- NULL
 
   rv <- reactiveValues(
           dataSE = NULL, colNamesSE = NULL, obsColsSE = NULL, predsSE = NULL, 
@@ -39,6 +41,7 @@ function(input, output, session){
           bestSE = NULL, specSE = NULL, figSEnrow = NULL, 
           figSEht = 600, figSEwh = 800,
           modNamesSEp = NULL, modNamesSEk = NULL, tabfigSEpk = NULL, 
+          minCellCountSE = NULL,
           
           dataCP = NULL, colNamesCP = NULL, ftp = NULL, lta = NULL, 
           predsCP = NULL, predictors_l = NULL, predictors_s = NULL, 
@@ -49,6 +52,7 @@ function(input, output, session){
           figCPwh = 800, bestCP = NULL,
           modNamesCPdist = NULL, modNamesCPl = NULL, modNamesCPs = NULL,
           tabfigCPdls_fig = NULL, tabfigCPdls_tab = NULL, 
+          minCellCountCP = NULL, 
 
           dataSS = NULL,  
 
@@ -203,24 +207,21 @@ function(input, output, session){
         rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE) 
         rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
         rv$modNamesSE <- names(rv$modsSE)[rv$modOrderSE]
-        rv$modNamesSEp <- rv$modNamesSE
-        rv$modNamesSEk <- rv$modNamesSE
-        for (modi in 1:length(rv$modNamesSE)){
-          rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
-          rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
-        }
         rv$modTabSE <- rv$modsSE[[rv$modOrderSE[1]]]$cellwiseTable
         rv$modSetSE_spec <- rv$modsSE
-        rv$figSEnrow <- ceiling((rv$modSetSE_spec[[1]])$ncell / 2 )
-        rv$figSEht <- rv$figSEnrow * 200 + 400
-        if (rv$modSetSE_spec[[1]]$ncell > 6){
-          rv$figSEwh <- 1200
+        for (modi in 1:length(rv$modSetSE_spec)){
+          rv$minCellCountSE[modi] <- 
+                              min(table(rv$modSetSE_spec[[modi]]$carcCell))
         }
-        rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
-        output$figSE <- renderPlot({
-                          plot(rv$modSetSE_spec, specificModel = rv$bestSE)},
-                          height = rv$figSEht, width = rv$figSEwh
-                        )
+        if (any(rv$minCellCountSE < 10)){
+          msg <- paste("Small (< 10) sample sizes per cell. Consider a",
+                   "simpler model. Parameter estimates may be unstable.",
+                   sep = ""
+                 ) 
+          msgSampleSizeSE <- showNotification(msg, type = "warning",
+                               duration = NULL
+                             )
+        }
       }else{
         rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
         if (length(rv$sizeclassChosen) == 0){
@@ -229,25 +230,45 @@ function(input, output, session){
         rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]])
         rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
         rv$modNamesSE <- names(rv$modsSE[[rv$sizeclassChosen]])[rv$modOrderSE]
-        rv$modNamesSEp <- rv$modNamesSE
-        rv$modNamesSEk <- rv$modNamesSE
-        for (modi in 1:length(rv$modNamesSE)){
-          rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
-          rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
-        }
         rv$modTabSE <- rv$modsSE[[1]][[rv$modOrderSE[1]]]$cellwiseTable
         rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
-        rv$figSEnrow <- ceiling(rv$modSetSE_spec[[1]]$ncell / 2 )
-        rv$figSEht <- rv$figSEnrow * 200 + 400
-        if (rv$modSetSE_spec[[1]]$ncell > 6){
-          rv$figSEwh <- 1200
+
+        rv$minCellCountSE <- NULL
+        for (sci in 1:length(rv$sizeclasses)){
+          for (modi in 1:length(rv$modSetSE_spec)){
+            rv$minCellCountSE <- c(rv$minCellCountSE, 
+                 min(table(rv$modsSE[[sci]][[modi]]$carcCell)))
+          }
         }
-        rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
-        output$figSE <- renderPlot({
-                          plot(rv$modSetSE_spec, specificModel = rv$bestSE)},
-                          height = rv$figSEht, width = rv$figSEwh
-                        )
+        if (any(rv$minCellCountSE < 10)){
+          msg <- paste("Small (< 10) sample sizes per cell. Consider a",
+                   "simpler model. Parameter estimates may be unstable.",
+                   sep = ""
+                 ) 
+          msgSampleSizeSE <- showNotification(msg, type = "warning",
+                               duration = NULL
+                             )
+        }
+
       } 
+
+      rv$modNamesSEp <- rv$modNamesSE
+      rv$modNamesSEk <- rv$modNamesSE
+      for (modi in 1:length(rv$modNamesSE)){
+        rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
+        rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
+      }
+
+      rv$figSEnrow <- ceiling(rv$modSetSE_spec[[1]]$ncell / 2 )
+      rv$figSEht <- rv$figSEnrow * 200 + 400
+      if (rv$modSetSE_spec[[1]]$ncell > 6){
+        rv$figSEwh <- 1200
+      }
+      rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
+      output$figSE <- renderPlot({
+                        plot(rv$modSetSE_spec, specificModel = rv$bestSE)},
+                        height = rv$figSEht, width = rv$figSEwh
+                      )
   
       colnames(rv$modTabSE) <- c("Cell", 
                                  "p Median", 
@@ -503,36 +524,28 @@ function(input, output, session){
              )
       msgModFailCP <- showNotification(msg, type = "error", duration = NULL)
     } else{
- 
 
       if (length(rv$sizeclasses) == 1){
         rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
         rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
         rv$modNamesCP <- names(rv$modsCP)[rv$modOrderCP]
-        rv$modNamesCPdist <- rv$modNamesCP
-        rv$modNamesCPl <- rv$modNamesCP
-        rv$modNamesCPs <- rv$modNamesCP
-        for (modi in 1:length(rv$modNamesCP)){
-          rv$modNamesCPdist[modi] <- strsplit(rv$modNamesCP[modi],
-                                       "; ")[[1]][1]
-          rv$modNamesCPl[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][2]
-          rv$modNamesCPs[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][3]
-          rv$modNamesCPdist[modi] <- gsub("dist: ", "",
-                                       rv$modNamesCPdist[modi])
-          rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
-        }
         rv$modTabCP <- rv$modsCP[[rv$modOrderCP[1]]]$cellwiseTable_ls
         rv$modSetCP_spec <- rv$modsCP
-        rv$figCPnrow <- ceiling((rv$modSetCP_spec[[1]])$ncell / 2 )
-        rv$figCPht <- rv$figCPnrow * 200 + 400
-        if (rv$modSetCP_spec[[1]]$ncell > 6){
-          rv$figCPwh <- 1200
+
+        for (modi in 1:length(rv$modSetCP_spec)){
+          rv$minCellCountCP[modi] <- 
+                              min(table(rv$modSetCP_spec[[modi]]$carcCells))
         }
-        rv$bestCP <- (names(rv$modSetCP_spec)[rv$modOrderCP])[1]
-        output$figCP <- renderPlot({
-                          plot(rv$modSetCP_spec, specificModel = rv$bestCP)},
-                          height = rv$figCPht, width = rv$figCPwh
-                        )
+        if (any(rv$minCellCountCP < 10)){
+          msg <- paste("Small (< 10) sample sizes per cell. Consider a",
+                   "simpler model. Parameter estimates may be unstable.",
+                   sep = ""
+                 )  
+          msgSampleSizeCP <- showNotification(msg, type = "warning",
+                               duration = NULL
+                             )
+        }
+
       }else{
         rv$sizeclassChosen <- which(rv$sizeclasses == input$aicTabSizeClassCP)
         if (length(rv$sizeclassChosen) == 0){
@@ -541,31 +554,51 @@ function(input, output, session){
         rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
         rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
         rv$modNamesCP <- names(rv$modsCP[[rv$sizeclassChosen]])[rv$modOrderCP]
-        rv$modNamesCPdist <- rv$modNamesCP
-        rv$modNamesCPl <- rv$modNamesCP
-        rv$modNamesCPs <- rv$modNamesCP
-        for (modi in 1:length(rv$modNamesCP)){
-          rv$modNamesCPdist[modi] <- strsplit(rv$modNamesCP[modi], 
-                                       "; ")[[1]][1]
-          rv$modNamesCPl[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][2]
-          rv$modNamesCPs[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][3]
-          rv$modNamesCPdist[modi] <- gsub("dist: ", "",
-                                       rv$modNamesCPdist[modi])
-          rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
-        }
         rv$modTabCP <- rv$modsCP[[1]][[rv$modOrderCP[1]]]$cellwiseTable_ls
         rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-        rv$figCPnrow <- ceiling(rv$modSetCP_spec[[1]]$ncell / 2 )
-        rv$figCPht <- rv$figCPnrow * 200 + 400
-        if (rv$modSetCP_spec[[1]]$ncell > 6){
-          rv$figCPwh <- 1200
+
+        rv$minCellCountCP <- NULL
+        for (sci in 1:length(rv$sizeclasses)){
+          for (modi in 1:length(rv$modSetCP_spec)){
+            rv$minCellCountCP <- c(rv$minCellCountCP, 
+                 min(table(rv$modsCP[[sci]][[modi]]$carcCells)))
+          }
         }
-        rv$bestCP <- (names(rv$modSetCP_spec)[rv$modOrderCP])[1]
-        output$figCP <- renderPlot({
-                          plot(rv$modSetCP_spec, specificModel = rv$bestCP)},
-                          height = rv$figCPht, width = rv$figCPwh
-                        )
+        if (any(rv$minCellCountCP < 10)){
+          msg <- paste("Small (< 10) sample sizes per cell. Consider a",
+                   "simpler model. Parameter estimates may be unstable.",
+                   sep = ""
+                 ) 
+          msgSampleSizeCP <- showNotification(msg, type = "warning",
+                               duration = NULL
+                             )
+        }
+
       }
+
+      rv$modNamesCPdist <- rv$modNamesCP
+      rv$modNamesCPl <- rv$modNamesCP
+      rv$modNamesCPs <- rv$modNamesCP
+      for (modi in 1:length(rv$modNamesCP)){
+        rv$modNamesCPdist[modi] <- strsplit(rv$modNamesCP[modi], 
+                                     "; ")[[1]][1]
+        rv$modNamesCPl[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][2]
+        rv$modNamesCPs[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][3]
+        rv$modNamesCPdist[modi] <- gsub("dist: ", "",
+                                     rv$modNamesCPdist[modi])
+        rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
+      }
+      rv$figCPnrow <- ceiling(rv$modSetCP_spec[[1]]$ncell / 2 )
+      rv$figCPht <- rv$figCPnrow * 200 + 400
+      if (rv$modSetCP_spec[[1]]$ncell > 6){
+        rv$figCPwh <- 1200
+      }
+      rv$bestCP <- (names(rv$modSetCP_spec)[rv$modOrderCP])[1]
+      output$figCP <- renderPlot({
+                        plot(rv$modSetCP_spec, specificModel = rv$bestCP)},
+                        height = rv$figCPht, width = rv$figCPwh
+                      )
+
       rv$AICcTabCP[ , "s formula"] <- gsub("NULL", "", 
                                           rv$AICcTabCP[ , "s formula"]
                                         )

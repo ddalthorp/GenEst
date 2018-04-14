@@ -5,7 +5,7 @@ mod <- pkm(formula_p = p~Visibility*Season, kFix = 0.5, data = SE_data)
 rpk(10, mod)
 
 
-mo<-pkmSet(data = SE_data, formula_p = p ~ HabitatType*Visibility, kFix = 0.5)
+mo<-pkmSet(data = SE_data, formula_p = p ~ 1, kFix = 0.5)
 pkmSetAICcTab(mo)
 SE_data <- read.csv("inst/extdata/ExampleSearcherEfficiency.csv")
 
