@@ -1,4 +1,4 @@
-data_CP <- read.csv("inst/extdata/ExampleCarcassPersistence.csv")
+data_CP <- read.csv("inst/extdata/mockData/CarcassPersistenceData.csv")
 
 head(data_CP)
 
