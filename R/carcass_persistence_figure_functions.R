@@ -89,8 +89,8 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
     ylab = "", ylim = c(0, 1), xlim = c(0, 1)
   )
 
-  points(c(0.05, 0.1), c(0.25, 0.25), type = 'l', lwd = 2, col = col)
-  text(x = 0.11, y = 0.3, "= Median", adj = 0)
+  points(c(0.01, 0.06), c(0.25, 0.25), type = 'l', lwd = 2, col = col)
+  text(x = 0.07, y = 0.3, "= Median", adj = 0, cex = 0.9)
   points(c(0.2, 0.25), c(0.25, 0.25), type = 'l', lwd = 2, lty = 3, col = col)
   text(x = 0.26, y = 0.3, "= Confidence Bounds", adj = 0)
 
@@ -103,7 +103,7 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
   plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
     ylab = ""
   )
-  mtext(side = 1, "Time", line = 0, cex = 1.5)
+  mtext(side = 1, "Time", line = -0.25, cex = 1.5)
   mtext(side = 2, "Carcass Persistence", line = -0.25, cex = 1.5)
 
   ncell <- model$ncell
@@ -124,7 +124,7 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
   }
 
   for (celli in 1:ncell){
-    par(mar = c(2, 1, 0, 1))
+    par(mar = c(2.5, 2, 0, 0))
     par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
     specificCell <- cellNames[celli]
     axis_x <- FALSE
@@ -142,7 +142,7 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
 #' Plot results of a cp model set
 #'
 #' @param modelSet pk model set of class pkmSet
-#' @param specificModel the name of a specific model to restrict the plot
+#' @param specificModel the name of specific model(s) to restrict the plot
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use for the models
 #' @param col color to use for the specific model
@@ -196,14 +196,17 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     modNames_spec <- modelSetNames
     modNames <- modelSetNames
   }else{
-    specificModel <- gsub("NULL", "s ~ 1", specificModel )
-    if ((specificModel %in% modelSetNames) == FALSE){
+    if (any(specificModel %in% names(modelSet)) == FALSE){
       stop("Selected model not in set. To see options use names(modelSet).")
     }
-    devAskNewPage(FALSE)
-    nmod <- 1
+    nmod <- length(specificModel)
     modNames_spec <- specificModel
-    modNames <- modelSetNames 
+    modNames <- modelSetNames
+    if (nmod == 1){
+      devAskNewPage(FALSE)
+    }else{
+      devAskNewPage(TRUE)
+    }
   }
 
   modelMatches <- vector("list", length = nmodelsInSet)
@@ -249,6 +252,10 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
       maxorder_s <- max(order_s)
       whichFull <- whichFull[order_l == maxorder_l & order_s == maxorder_s]
     }
+    if (length(whichFull) == 0){
+      whichFull <- which(ncellsInModel == maxcells)[1] 
+    }
+
     model_full <- modelSet[[whichFull]]
     fullModel <- modNames[whichFull]
 
@@ -256,29 +263,37 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = ""
     )
-    mtext(side = 1, "Time", line = 0, cex = 1.5)
+    mtext(side = 1, "Time", line = -0.25, cex = 1.5)
     mtext(side = 2, "Carcass Persistence", line = -0.25, cex = 1.5)
 
     par(fig = c(0, 1, 0.95, 1), mar = c(0, 0, 0, 0), new = TRUE)
     plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = "", ylim = c(0, 1), xlim = c(0, 1))
 
-    if ("exponential" %in% distsIncluded){
-      rect(0.0, 0.15, 0.04, 0.35, col = col["exponential"], border = NA)
-      text(x = 0.05, y = 0.3, "= Exponential", adj = 0)
+    x1 <- c(0, 0.29, 0, 0.29)
+    y1 <- c(0.6, 0.6, 0.1, 0.1)
+    x2 <- c(0.04, 0.33, 0.04, 0.33)
+    y2 <- c(0.8, 0.8, 0.3, 0.3)
+    xt <- c(0.05, 0.34, 0.05, 0.34)
+    yt <- c(0.75, 0.75, 0.25, 0.25)
+    ndists <- length(distsIncluded)
+ 
+    for (disti in 1:ndists){
+      rect(x1[disti], y1[disti], x2[disti], y2[disti], border = NA,
+        col = col[distsIncluded[disti]]
+      )
+      distName <- distsIncluded[disti]
+      distName <- paste(
+                    toupper(substring(distName, 1, 1)),
+                    substring(distName, 2), sep = "", collapse = " "
+                  )
+      distName <- gsub("Log", "Log-", distName)
+        
+      text(x = xt[disti], y = yt[disti], adj = 0, cex = 0.9,
+        paste("= ", distName, sep = "")
+      )
     }
-    if ("weibull" %in% distsIncluded){
-      rect(0.16, 0.15, 0.2, 0.35, col = col["weibull"], border = NA)
-      text(x = 0.21, y = 0.3, "= Weibull", adj = 0)
-    }
-    if ("loglogistic" %in% distsIncluded){
-      rect(0.29, 0.15, 0.33, 0.35, col = col["loglogistic"], border = NA)
-      text(x = 0.34, y = 0.3, "= Log-Logistic", adj = 0)
-    }
-    if ("lognormal" %in% distsIncluded){
-      rect(0.45, 0.15, 0.49, 0.35, col = col["lognormal"], border = NA)
-      text(x = 0.5, y = 0.3, "= Log-Normal", adj = 0) 
-    }
+
     labelsText <- paste(model_full$predictors, collapse = ".")
     text_label <- paste("Labels: ", labelsText, sep = "")
     forms <- modelSetNames_matrix[whichSpecificModel, c("form_l", "form_s")]
@@ -305,7 +320,7 @@ plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
     }
 
     for (celli in 1:ncell){
-      par(mar = c(2, 1, 0, 1))
+      par(mar = c(2.5, 2, 0, 0))
       par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
       specificCell <- cellNames[celli]
       axis_x <- FALSE

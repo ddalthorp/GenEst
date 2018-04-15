@@ -50,8 +50,9 @@ pkmParamPlot <- function(model, pk = "p", n, seed, col){
   }
 
   axis(1, at = 1:ncell, cellNames, las = 1, cex.axis = 0.75)
-  axis(2, at = round(seq(0, maxy, 0.2), 2), las = 1, cex.axis = 0.75)
-  mtext(side = 2, pk, line = 2.75, cex = 1.25)
+  axis(2, at = seq(0, 1, 0.5), las = 1, cex.axis = 0.75)
+  axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.05)
+  mtext(side = 2, pk, line = 2.75, cex = 1.1)
 
 }
 
@@ -109,14 +110,14 @@ pkmSECellPlot <- function(model, specificCell, col, n, seed,
   points(x_pts, y_u, type = 'l', lwd = 2, lty = 3, col = col)
 
   for (obi in 1:nobs){
-    x1 <- x_pts[obi] - 0.15
+    x1 <- x_pts[obi] - 0.25
     y1 <- y_pts[obi] + 0.06
-    x2 <- x_pts[obi] + 0.25
+    x2 <- x_pts[obi] + 0.35
     y2 <- y_pts[obi] + 0.15
     rect(x1, y1, x2, y2, border = NA, col = "white")
   }
   obsLabels <- paste(carcFound, carcAvail, sep = "/") 
-  text(x_pts + 0.05, y_pts + 0.1, obsLabels, cex = 0.75)
+  text(x_pts + 0.05, y_pts + 0.1, obsLabels, cex = 0.65)
 
   axis(1, at = x_pts, las = 1, cex.axis = 0.75, labels = axis_x)
   axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axis_y)
@@ -153,10 +154,10 @@ plot.pkm <- function(model, n = 1000, seed = 1, col = "black"){
     ylab = "", ylim = c(0, 1), xlim = c(0, 1)
   )
 
-  points(c(0.05, 0.1), c(0.25, 0.25), type = 'l', lwd = 2, col = col)
-  text(x = 0.11, y = 0.3, "= Median", adj = 0)
+  points(c(0.01, 0.06), c(0.25, 0.25), type = 'l', lwd = 2, col = col)
+  text(x = 0.07, y = 0.3, "= Median", adj = 0, cex = 0.9)
   points(c(0.2, 0.25), c(0.25, 0.25), type = 'l', lwd = 2, lty = 3, col = col)
-  text(x = 0.26, y = 0.3, "= Confidence Bounds", adj = 0)
+  text(x = 0.26, y = 0.3, "= Confidence Bounds", adj = 0, cex = 0.9)
 
   labelsText <- paste(model$predictors, collapse = ".")
   text_label <- paste("Labels: ", labelsText, sep = "")
@@ -176,8 +177,8 @@ plot.pkm <- function(model, n = 1000, seed = 1, col = "black"){
   plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
     ylab = ""
   )
-  mtext(side = 1, "Search", line = -0.5, cex = 1.75)
-  mtext(side = 2, "Searcher Efficiency", line = -0.5, cex = 1.75)
+  mtext(side = 1, "Search", line = -0.25, cex = 1.5)
+  mtext(side = 2, "Searcher Efficiency", line = -0.25, cex = 1.5)
 
   ncell <- model$ncell
   cellNames <- model$cells[ , "CellNames"]
@@ -288,7 +289,8 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n,
   }
 
   axis(1, at = 1:ncell_full, cellNames_full, las = 1, cex.axis = 0.75)
-  axis(2, at = round(seq(0, maxy, 0.2), 2), las = 1, cex.axis = 0.75)
+  axis(2, at = seq(0, 1, 0.5), las = 1, cex.axis = 0.75)
+  axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.05)
   mtext(side = 2, pk, line = 2.75, cex = 1.25)
 
 }
@@ -366,14 +368,14 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   points(x_pts, y_spec, type = 'l', lwd = 3, col = col_spec)
 
   for (obi in 1:nobs){
-    x1 <- x_pts[obi] - 0.15
+    x1 <- x_pts[obi] - 0.25
     y1 <- y_pts[obi] + 0.06
-    x2 <- x_pts[obi] + 0.25
+    x2 <- x_pts[obi] + 0.35
     y2 <- y_pts[obi] + 0.15
     rect(x1, y1, x2, y2, border = NA, col = "white")
   }
   obsLabels <- paste(carcFound, carcAvail, sep = "/") 
-  text(x_pts + 0.05, y_pts + 0.1, obsLabels, cex = 0.75)
+  text(x_pts + 0.05, y_pts + 0.1, obsLabels, cex = 0.65)
 
   axis(1, at = x_pts, las = 1, cex.axis = 0.75, labels = axis_x)
   axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axis_y)
@@ -384,7 +386,7 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 #' Plot results of a pk model set
 #'
 #' @param modelSet pk model set of class pkmSet
-#' @param specificModel the name of a specific model to restrict the plot
+#' @param specificModel the name(s) of specific model(s) to restrict the plot
 #' @param n number of draws to use to characterize the distributions
 #' @param seed_spec random number seed to use for the specific model
 #' @param seed_full random number seed to use for the full model
@@ -402,12 +404,16 @@ plot.pkmSet <- function(modelSet, specificModel = NULL, n = 1000,
     nmod <- length(modelSet)
     modNames <- names(modelSet)
   }else{
-    if ((specificModel %in% names(modelSet)) == FALSE){
+    if (any(specificModel %in% names(modelSet)) == FALSE){
       stop("Selected model not in set. To see options use names(modelSet).")
     }
-    devAskNewPage(FALSE)
-    nmod <- 1
-    modNames <- specificModel 
+    nmod <- length(specificModel)
+    modNames <- specificModel
+    if (nmod == 1){
+      devAskNewPage(FALSE)
+    }else{
+      devAskNewPage(TRUE)
+    }
   }
 
   for (modi in 1:nmod){
@@ -431,10 +437,10 @@ plot.pkmSet <- function(modelSet, specificModel = NULL, n = 1000,
       ylab = "", ylim = c(0, 1), xlim = c(0, 1)
     )
 
-    rect(0.05, 0.2, 0.1, 0.5, lwd = 2, col = col_spec, border = NA)
-    text(x = 0.11, y = 0.4, "= Selected Model", adj = 0)
+    rect(0.01, 0.2, 0.06, 0.5, lwd = 2, col = col_spec, border = NA)
+    text(x = 0.07, y = 0.4, "= Selected Model", adj = 0, cex = 0.9)
     rect(0.3, 0.2, 0.35, 0.5, lwd = 2, col = col_full, border = NA)
-    text(x = 0.36, y = 0.4, "= Full Model", adj = 0)
+    text(x = 0.36, y = 0.4, "= Full Model", adj = 0, cex = 0.9)
 
     labelsText <- paste(model_full$predictors, collapse = ".")
     text_label <- paste("Labels: ", labelsText, sep = "")
@@ -456,8 +462,8 @@ plot.pkmSet <- function(modelSet, specificModel = NULL, n = 1000,
     plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
       ylab = ""
     )
-    mtext(side = 1, "Search", line = -0.5, cex = 1.75)
-    mtext(side = 2, "Searcher Efficiency", line = -0.5, cex = 1.75)
+    mtext(side = 1, "Search", line = -0.25, cex = 1.5)
+    mtext(side = 2, "Searcher Efficiency", line = -0.25, cex = 1.5)
 
     ncell <- model_full$ncell
     cellNames <- model_full$cells[ , "CellNames"]

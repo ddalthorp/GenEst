@@ -1,4 +1,7 @@
-navbarPage("GenEst",
+navbarPage(title = div(img(src = "GenEst.png", style = "margin-top: -8px;", 
+                         height = 40
+                      )    
+                   ),
 
 tabPanel("Home", br(),
   HTML('<center><img src = "Logo.jpg" height = "500"></center>'), br()

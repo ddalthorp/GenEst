@@ -11,7 +11,7 @@
 \arguments{
 \item{modelSet}{pk model set of class pkmSet}
 
-\item{specificModel}{the name of a specific model to restrict the plot}
+\item{specificModel}{the name of specific model(s) to restrict the plot}
 
 \item{n}{number of draws to use to characterize the distributions}
 

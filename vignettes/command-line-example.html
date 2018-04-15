@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Juniper L. Simonis" />
+
+
+<title>GenEst Command Line Example</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; min-height: 1.25em; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; }
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+@media screen {
+a.sourceLine::before { text-decoration: underline; color: initial; }
+}
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.bn { color: #40a070; } /* BaseN */
+code span.fl { color: #40a070; } /* Float */
+code span.ch { color: #4070a0; } /* Char */
+code span.st { color: #4070a0; } /* String */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.ot { color: #007020; } /* Other */
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.fu { color: #06287e; } /* Function */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code span.cn { color: #880000; } /* Constant */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.im { } /* Import */
+code span.va { color: #19177c; } /* Variable */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.op { color: #666666; } /* Operator */
+code span.bu { } /* BuiltIn */
+code span.ex { } /* Extension */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.at { color: #7d9029; } /* Attribute */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">GenEst Command Line Example</h1>
+<h4 class="author"><em>Juniper L. Simonis</em></h4>
+
+
+
+<p>This vignette walks through an example of <strong>GenEst</strong> at the command line and was constructed using <strong>GenEst</strong> version 0.0.3.12 on 2018-04-14.</p>
+<section id="installation" class="level2">
+<h2>Installation</h2>
+<p>To obtain the most recent version of <strong>GenEst</strong>, use the <strong>devtools</strong> package to download it from GitHub:</p>
+<pre class="sourceCode r" id="cb1"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&quot;ddalthorp/GenEst&quot;</span>)</a></code></pre>
+</section>
+<section id="data" class="level2">
+<h2>Data</h2>
+<p>For this vignette, we will be using a completely mock dataset provided with the <strong>GenEst</strong> package, which contains Searcher Efficiency, Carcass Persistence, Search Schedule, Density Weighted Proportion, and Carcass Observation Data.</p>
+<pre class="sourceCode r" id="cb2"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">data</span>(mockData)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">names</span>(mockData)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="co">#&gt; [1] &quot;SearcherEfficiencyData&quot;        &quot;CarcassPersistenceData&quot;       </span></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co">#&gt; [3] &quot;SearchScheduleData&quot;            &quot;DensityWeightedProportionData&quot;</span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="co">#&gt; [5] &quot;CarcassObservationData&quot;</span></a></code></pre>
+<p>To see the raw <code>.csv</code> versions of the data files, find the <strong>GenEst</strong> package folder on your computer (it should be located with all of your other R packages) and then browse to the <code>inst/extdata/mockData</code> subfolder.</p>
+</section>
+<section id="searcher-efficiency" class="level2">
+<h2>Searcher Efficiency</h2>
+<section id="single-searcher-efficiency-model" class="level3">
+<h3>Single Searcher Efficiency Model</h3>
+<p>The central function for searcher efficiency analyses is <code>pkm</code>, which conducts a singular searcher efficiency analysis (<em>i.e.</em>, a singular set of <code>p</code> and <code>k</code> formulae and a singular size classification of carcasses). As a first example, we will ignore the size category and use intercept-only models for both <code>p</code> and <code>k</code>:</p>
+<pre class="sourceCode r" id="cb3"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">dataSE &lt;-<span class="st"> </span>mockData<span class="op">$</span>SearcherEfficiencyData</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">pkModel &lt;-<span class="st"> </span><span class="kw">pkm</span>(<span class="dt">formula_p =</span> p <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">formula_k =</span> k <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> dataSE)</a></code></pre>
+<p>Here, we have taken advantage of <code>pkm</code>’s default behavior of selecting observation columns (see <code>?pkm</code> for details).</p>
+<pre class="sourceCode r" id="cb4"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">head</span>(dataSE)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="co">#&gt;   ID Visibility HabitatType Season Size Search1 Search2 Search3 Search4</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co">#&gt; 1  1          L         HT1     SF    S       1      NA      NA      NA</span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="co">#&gt; 2  2          L         HT1     SF    S       1      NA      NA      NA</span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="co">#&gt; 3  3          L         HT1     WS    S       0       0       0       0</span></a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"><span class="co">#&gt; 4  4          L         HT1     WS    S       1      NA      NA      NA</span></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"><span class="co">#&gt; 5  5          L         HT1     WS    S       0       1      NA      NA</span></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8"><span class="co">#&gt; 6  6          L         HT1     SF    S       1      NA      NA      NA</span></a></code></pre>
+<p>If we wanted to explicitly control the observations, we would use the <code>obsCol</code> argument:</p>
+<pre class="sourceCode r" id="cb5"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">pkModel &lt;-<span class="st"> </span><span class="kw">pkm</span>(<span class="dt">formula_p =</span> p <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">formula_k =</span> k <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> dataSE, </a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">             <span class="dt">obsCol =</span> <span class="kw">c</span>(<span class="st">&quot;Search1&quot;</span>, <span class="st">&quot;Search2&quot;</span>, <span class="st">&quot;Search3&quot;</span>, <span class="st">&quot;Search4&quot;</span>)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">           )</a></code></pre>
+<p>Note that the search observations must be entered in order such that no carcasses have non-detected observations (<em>i.e.</em>, <code>0</code>) after detected observations (<em>i.e.</em>, <code>1</code>). Further, no carcasses can be detected more than once.</p>
+<p>If successfully fit, a <code>pkm</code> model output contains a number of elements, some printed automatically:</p>
+<pre class="sourceCode r" id="cb6"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">pkModel</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="co">#&gt; $call</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co">#&gt; pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = dataSE, obsCol = c(&quot;Search1&quot;, </span></a>
+<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="co">#&gt;     &quot;Search2&quot;, &quot;Search3&quot;, &quot;Search4&quot;))</span></a>
+<a class="sourceLine" id="cb6-5" data-line-number="5"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-6" data-line-number="6"><span class="co">#&gt; $formula_p</span></a>
+<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="co">#&gt; p ~ 1</span></a>
+<a class="sourceLine" id="cb6-8" data-line-number="8"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="co">#&gt; $formula_k</span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="co">#&gt; k ~ 1</span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="co">#&gt; $predictors</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="co">#&gt; character(0)</span></a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="co">#&gt; $AICc</span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="co">#&gt; [1] 1144.998</span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-18" data-line-number="18"><span class="co">#&gt; $convergence</span></a>
+<a class="sourceLine" id="cb6-19" data-line-number="19"><span class="co">#&gt; [1] 0</span></a>
+<a class="sourceLine" id="cb6-20" data-line-number="20"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-21" data-line-number="21"><span class="co">#&gt; $cellwiseTable</span></a>
+<a class="sourceLine" id="cb6-22" data-line-number="22"><span class="co">#&gt;   cell p_median p_lower p_upper k_median k_lower k_upper</span></a>
+<a class="sourceLine" id="cb6-23" data-line-number="23"><span class="co">#&gt; 1  all  0.56845 0.53166  0.6045  0.59906 0.54296 0.65268</span></a></code></pre>
+<p>and others available upon request (using <code>$</code> as <code>pkm</code> is an S3 class):</p>
+<pre class="sourceCode r" id="cb7"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">names</span>(pkModel)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="co">#&gt;  [1] &quot;call&quot;          &quot;formula_p&quot;     &quot;formula_k&quot;     &quot;predictors&quot;   </span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="co">#&gt;  [5] &quot;predictors_p&quot;  &quot;predictors_k&quot;  &quot;AIC&quot;           &quot;AICc&quot;         </span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4"><span class="co">#&gt;  [9] &quot;convergence&quot;   &quot;varbeta&quot;       &quot;cellMM_p&quot;      &quot;cellMM_k&quot;     </span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="co">#&gt; [13] &quot;nbeta_p&quot;       &quot;nbeta_k&quot;       &quot;betahat_p&quot;     &quot;betahat_k&quot;    </span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6"><span class="co">#&gt; [17] &quot;cells&quot;         &quot;ncell&quot;         &quot;cellwiseTable&quot; &quot;observations&quot; </span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="co">#&gt; [21] &quot;carcCells&quot;     &quot;CL&quot;</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">pkModel<span class="op">$</span>cells</a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="co">#&gt;   group CellNames</span></a>
+<a class="sourceLine" id="cb7-10" data-line-number="10"><span class="co">#&gt; 1   all       all</span></a></code></pre>
+<p>The <code>plot</code> function has been defined for <code>pkm</code> objects, such that one can simply run</p>
+<pre class="sourceCode r" id="cb8"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">plot</span>(pkModel)</a></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>to visualize the model’s output.</p>
+<p>You can generate random draws of the <code>p</code> and <code>k</code> parameters for each cell grouping (in <code>pkModel</code> there are no predictors, so there is one cell grouping called “all”) using the <code>rpk</code> function which, like other <code>r*</code> functions in <strong>R</strong> (<em>i.e.</em>, <code>rnorm</code>) takes the number of random draws (<code>n</code>) as the first argument:</p>
+<pre class="sourceCode r" id="cb9"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="kw">rpk</span>(<span class="dt">n =</span> <span class="dv">10</span>, pkModel)</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#&gt; $all</span></a>
+<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="co">#&gt;               p         k</span></a>
+<a class="sourceLine" id="cb9-4" data-line-number="4"><span class="co">#&gt;  [1,] 0.5601628 0.5392728</span></a>
+<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="co">#&gt;  [2,] 0.5999821 0.6073095</span></a>
+<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="co">#&gt;  [3,] 0.5633458 0.6221270</span></a>
+<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="co">#&gt;  [4,] 0.5769051 0.5548144</span></a>
+<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="co">#&gt;  [5,] 0.5236103 0.6038052</span></a>
+<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="co">#&gt;  [6,] 0.5676538 0.5654118</span></a>
+<a class="sourceLine" id="cb9-10" data-line-number="10"><span class="co">#&gt;  [7,] 0.5791335 0.5862906</span></a>
+<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="co">#&gt;  [8,] 0.5789107 0.6365192</span></a>
+<a class="sourceLine" id="cb9-12" data-line-number="12"><span class="co">#&gt;  [9,] 0.5599069 0.5733311</span></a>
+<a class="sourceLine" id="cb9-13" data-line-number="13"><span class="co">#&gt; [10,] 0.5635451 0.6443420</span></a></code></pre>
+<p>You can complicate the <code>p</code> and <code>k</code> formulae independently</p>
+<pre class="sourceCode r" id="cb10"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">pkm</span>(<span class="dt">formula_p =</span> p <span class="op">~</span><span class="st"> </span>Visibility, <span class="dt">formula_k =</span> k <span class="op">~</span><span class="st"> </span>HabitatType, <span class="dt">data =</span> dataSE,</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">  <span class="dt">obsCol =</span> <span class="kw">c</span>(<span class="st">&quot;Search1&quot;</span>, <span class="st">&quot;Search2&quot;</span>, <span class="st">&quot;Search3&quot;</span>, <span class="st">&quot;Search4&quot;</span>)</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">)</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4"><span class="co">#&gt; $call</span></a>
+<a class="sourceLine" id="cb10-5" data-line-number="5"><span class="co">#&gt; pkm(formula_p = p ~ Visibility, formula_k = k ~ HabitatType, </span></a>
+<a class="sourceLine" id="cb10-6" data-line-number="6"><span class="co">#&gt;     data = dataSE, obsCol = c(&quot;Search1&quot;, &quot;Search2&quot;, &quot;Search3&quot;, </span></a>
+<a class="sourceLine" id="cb10-7" data-line-number="7"><span class="co">#&gt;         &quot;Search4&quot;))</span></a>
+<a class="sourceLine" id="cb10-8" data-line-number="8"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="co">#&gt; $formula_p</span></a>
+<a class="sourceLine" id="cb10-10" data-line-number="10"><span class="co">#&gt; p ~ Visibility</span></a>
+<a class="sourceLine" id="cb10-11" data-line-number="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="co">#&gt; $formula_k</span></a>
+<a class="sourceLine" id="cb10-13" data-line-number="13"><span class="co">#&gt; k ~ HabitatType</span></a>
+<a class="sourceLine" id="cb10-14" data-line-number="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-15" data-line-number="15"><span class="co">#&gt; $predictors</span></a>
+<a class="sourceLine" id="cb10-16" data-line-number="16"><span class="co">#&gt; [1] &quot;Visibility&quot;  &quot;HabitatType&quot;</span></a>
+<a class="sourceLine" id="cb10-17" data-line-number="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-18" data-line-number="18"><span class="co">#&gt; $AICc</span></a>
+<a class="sourceLine" id="cb10-19" data-line-number="19"><span class="co">#&gt; [1] 1149.666</span></a>
+<a class="sourceLine" id="cb10-20" data-line-number="20"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-21" data-line-number="21"><span class="co">#&gt; $convergence</span></a>
+<a class="sourceLine" id="cb10-22" data-line-number="22"><span class="co">#&gt; [1] 0</span></a>
+<a class="sourceLine" id="cb10-23" data-line-number="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb10-24" data-line-number="24"><span class="co">#&gt; $cellwiseTable</span></a>
+<a class="sourceLine" id="cb10-25" data-line-number="25"><span class="co">#&gt;    cell p_median p_lower p_upper k_median k_lower k_upper</span></a>
+<a class="sourceLine" id="cb10-26" data-line-number="26"><span class="co">#&gt; 1 H.HT1  0.56403 0.50325 0.62295  0.56018 0.48176 0.63570</span></a>
+<a class="sourceLine" id="cb10-27" data-line-number="27"><span class="co">#&gt; 2 L.HT1  0.57788 0.51633 0.63710  0.56018 0.48176 0.63570</span></a>
+<a class="sourceLine" id="cb10-28" data-line-number="28"><span class="co">#&gt; 3 M.HT1  0.56348 0.50479 0.62044  0.56018 0.48176 0.63570</span></a>
+<a class="sourceLine" id="cb10-29" data-line-number="29"><span class="co">#&gt; 4 H.HT2  0.56403 0.50325 0.62295  0.63125 0.55665 0.70007</span></a>
+<a class="sourceLine" id="cb10-30" data-line-number="30"><span class="co">#&gt; 5 L.HT2  0.57788 0.51633 0.63710  0.63125 0.55665 0.70007</span></a>
+<a class="sourceLine" id="cb10-31" data-line-number="31"><span class="co">#&gt; 6 M.HT2  0.56348 0.50479 0.62044  0.63125 0.55665 0.70007</span></a></code></pre>
+<p>And you can fix <code>k</code> at a nominal value between 0 and 1 (inclusive) using the <code>kFixed</code> argument</p>
+<pre class="sourceCode r" id="cb11"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="kw">pkm</span>(<span class="dt">formula_p =</span> p <span class="op">~</span><span class="st"> </span>Visibility, <span class="dt">kFixed =</span> <span class="fl">0.7</span>, <span class="dt">data =</span> dataSE,</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">  <span class="dt">obsCol =</span> <span class="kw">c</span>(<span class="st">&quot;Search1&quot;</span>, <span class="st">&quot;Search2&quot;</span>, <span class="st">&quot;Search3&quot;</span>, <span class="st">&quot;Search4&quot;</span>)</a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">)</a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"><span class="co">#&gt; $call</span></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="co">#&gt; pkm(formula_p = p ~ Visibility, data = dataSE, obsCol = c(&quot;Search1&quot;, </span></a>
+<a class="sourceLine" id="cb11-6" data-line-number="6"><span class="co">#&gt;     &quot;Search2&quot;, &quot;Search3&quot;, &quot;Search4&quot;), kFixed = 0.7)</span></a>
+<a class="sourceLine" id="cb11-7" data-line-number="7"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8"><span class="co">#&gt; $formula_p</span></a>
+<a class="sourceLine" id="cb11-9" data-line-number="9"><span class="co">#&gt; p ~ Visibility</span></a>
+<a class="sourceLine" id="cb11-10" data-line-number="10"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-11" data-line-number="11"><span class="co">#&gt; $formula_k</span></a>
+<a class="sourceLine" id="cb11-12" data-line-number="12"><span class="co">#&gt; fixedk </span></a>
+<a class="sourceLine" id="cb11-13" data-line-number="13"><span class="co">#&gt;    0.7 </span></a>
+<a class="sourceLine" id="cb11-14" data-line-number="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-15" data-line-number="15"><span class="co">#&gt; $predictors</span></a>
+<a class="sourceLine" id="cb11-16" data-line-number="16"><span class="co">#&gt; [1] &quot;Visibility&quot;</span></a>
+<a class="sourceLine" id="cb11-17" data-line-number="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-18" data-line-number="18"><span class="co">#&gt; $AICc</span></a>
+<a class="sourceLine" id="cb11-19" data-line-number="19"><span class="co">#&gt; [1] 1155.634</span></a>
+<a class="sourceLine" id="cb11-20" data-line-number="20"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-21" data-line-number="21"><span class="co">#&gt; $convergence</span></a>
+<a class="sourceLine" id="cb11-22" data-line-number="22"><span class="co">#&gt; [1] 0</span></a>
+<a class="sourceLine" id="cb11-23" data-line-number="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb11-24" data-line-number="24"><span class="co">#&gt; $cellwiseTable</span></a>
+<a class="sourceLine" id="cb11-25" data-line-number="25"><span class="co">#&gt;   cell p_median p_lower p_upper k_median k_lower k_upper</span></a>
+<a class="sourceLine" id="cb11-26" data-line-number="26"><span class="co">#&gt; 1    H  0.53136 0.47433 0.58758  0.66819 0.66819 0.66819</span></a>
+<a class="sourceLine" id="cb11-27" data-line-number="27"><span class="co">#&gt; 2    L  0.54482 0.48703 0.60142  0.66819 0.66819 0.66819</span></a>
+<a class="sourceLine" id="cb11-28" data-line-number="28"><span class="co">#&gt; 3    M  0.53788 0.48204 0.59279  0.66819 0.66819 0.66819</span></a></code></pre>
+</section>
+<section id="set-of-searcher-efficiency-models" class="level3">
+<h3>Set of Searcher Efficiency Models</h3>
+<p>The function <code>pkmSet</code> provides a simple wrapper on <code>pkm</code> that facilitates analyzing a set of <code>pkm</code> models defined as all allowable models simpler than, and including, the provided model formulae (where “allowable” means that any interaction terms have all component terms included in the model).</p>
+<p>Consider the following model set analysis, where visibility and habitat type are included in the <code>p</code> formula but only habitat type is in the <code>k</code> formula, which generates a set of 10 models:</p>
+<pre class="sourceCode r" id="cb12"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">pkmModSet &lt;-<span class="st"> </span><span class="kw">pkmSet</span>(<span class="dt">formula_p =</span> p <span class="op">~</span><span class="st"> </span>Visibility<span class="op">*</span>HabitatType, </a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">               <span class="dt">formula_k =</span> k <span class="op">~</span><span class="st"> </span>HabitatType, <span class="dt">data =</span> dataSE,</a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">               <span class="dt">obsCol =</span> <span class="kw">c</span>(<span class="st">&quot;Search1&quot;</span>, <span class="st">&quot;Search2&quot;</span>, <span class="st">&quot;Search3&quot;</span>, <span class="st">&quot;Search4&quot;</span>)</a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">             )</a>
+<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="kw">names</span>(pkmModSet)</a>
+<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="co">#&gt;  [1] &quot;p ~ Visibility * HabitatType; k ~ HabitatType&quot;</span></a>
+<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="co">#&gt;  [2] &quot;p ~ Visibility + HabitatType; k ~ HabitatType&quot;</span></a>
+<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="co">#&gt;  [3] &quot;p ~ HabitatType; k ~ HabitatType&quot;             </span></a>
+<a class="sourceLine" id="cb12-9" data-line-number="9"><span class="co">#&gt;  [4] &quot;p ~ Visibility; k ~ HabitatType&quot;              </span></a>
+<a class="sourceLine" id="cb12-10" data-line-number="10"><span class="co">#&gt;  [5] &quot;p ~ 1; k ~ HabitatType&quot;                       </span></a>
+<a class="sourceLine" id="cb12-11" data-line-number="11"><span class="co">#&gt;  [6] &quot;p ~ Visibility * HabitatType; k ~ 1&quot;          </span></a>
+<a class="sourceLine" id="cb12-12" data-line-number="12"><span class="co">#&gt;  [7] &quot;p ~ Visibility + HabitatType; k ~ 1&quot;          </span></a>
+<a class="sourceLine" id="cb12-13" data-line-number="13"><span class="co">#&gt;  [8] &quot;p ~ HabitatType; k ~ 1&quot;                       </span></a>
+<a class="sourceLine" id="cb12-14" data-line-number="14"><span class="co">#&gt;  [9] &quot;p ~ Visibility; k ~ 1&quot;                        </span></a>
+<a class="sourceLine" id="cb12-15" data-line-number="15"><span class="co">#&gt; [10] &quot;p ~ 1; k ~ 1&quot;</span></a></code></pre>
+<p>The <code>plot</code> function is defined for the <code>pkmSet</code> class, and by default, creates a new plot window on command for each sub-model. If we want to only plot a specific single (or subset) of models from the full set, we can utilize the <code>specificModel</code> argument:</p>
+<pre class="sourceCode r" id="cb13"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">plot</span>(pkmModSet, <span class="dt">specificModel =</span> <span class="st">&quot;p ~ Visibility + HabitatType; k ~ 1&quot;</span>)</a></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>The resulting model outputs can be compared in an AICc table</p>
+<pre class="sourceCode r" id="cb14"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">pkmSetAICcTab</span>(pkmModSet)</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2"><span class="co">#&gt;                       p formula       k formula     AICc Delta AICc</span></a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="co">#&gt; 10                        p ~ 1           k ~ 1 1144.998      0.000</span></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="co">#&gt; 5                         p ~ 1 k ~ HabitatType 1145.697      0.699</span></a>
+<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="co">#&gt; 3               p ~ HabitatType k ~ HabitatType 1146.570      1.572</span></a>
+<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="co">#&gt; 8               p ~ HabitatType           k ~ 1 1146.756      1.758</span></a>
+<a class="sourceLine" id="cb14-7" data-line-number="7"><span class="co">#&gt; 9                p ~ Visibility           k ~ 1 1148.959      3.961</span></a>
+<a class="sourceLine" id="cb14-8" data-line-number="8"><span class="co">#&gt; 4                p ~ Visibility k ~ HabitatType 1149.666      4.668</span></a>
+<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="co">#&gt; 2  p ~ Visibility + HabitatType k ~ HabitatType 1150.546      5.548</span></a>
+<a class="sourceLine" id="cb14-10" data-line-number="10"><span class="co">#&gt; 7  p ~ Visibility + HabitatType           k ~ 1 1150.731      5.733</span></a>
+<a class="sourceLine" id="cb14-11" data-line-number="11"><span class="co">#&gt; 1  p ~ Visibility * HabitatType k ~ HabitatType 1153.449      8.451</span></a>
+<a class="sourceLine" id="cb14-12" data-line-number="12"><span class="co">#&gt; 6  p ~ Visibility * HabitatType           k ~ 1 1153.490      8.492</span></a></code></pre>
+</section>
+<section id="multiple-sizes-of-animals-and-sets-of-searcher-efficiency-models" class="level3">
+<h3>Multiple Sizes of Animals and Sets of Searcher Efficiency Models</h3>
+<p>Often, carcasses are grouped in multiple size classes, and we are interested in analyzing a set of models separately for each size class. To do so, we use the <code>pkmSetSize</code> function, which is a wrapper on <code>pkmSet</code> that runs the subfunction for each unique size class in the column identified by the <code>sizeclassCol</code> argument:</p>
+<pre class="sourceCode r" id="cb15"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">pkmModSetSize &lt;-<span class="st"> </span><span class="kw">pkmSetSize</span>(<span class="dt">formula_p =</span> p <span class="op">~</span><span class="st"> </span>Visibility<span class="op">*</span>HabitatType, </a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">                   <span class="dt">formula_k =</span> k <span class="op">~</span><span class="st"> </span>HabitatType, <span class="dt">data =</span> dataSE,</a>
+<a class="sourceLine" id="cb15-3" data-line-number="3">                   <span class="dt">obsCol =</span> <span class="kw">c</span>(<span class="st">&quot;Search1&quot;</span>, <span class="st">&quot;Search2&quot;</span>, <span class="st">&quot;Search3&quot;</span>, <span class="st">&quot;Search4&quot;</span>),</a>
+<a class="sourceLine" id="cb15-4" data-line-number="4">                   <span class="dt">sizeclassCol =</span> <span class="st">&quot;Size&quot;</span></a>
+<a class="sourceLine" id="cb15-5" data-line-number="5">                 )</a></code></pre>
+<p>The output from <code>pkmSetSize</code> is a list where each element corresponds to a different unique size class, and contains the associated <code>pkmSet</code>object, which itself is a list of <code>pkm</code> outputs:</p>
+<pre class="sourceCode r" id="cb16"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="kw">names</span>(pkmModSetSize)</a>
+<a class="sourceLine" id="cb16-2" data-line-number="2"><span class="co">#&gt; [1] &quot;S&quot;  &quot;L&quot;  &quot;M&quot;  &quot;XL&quot;</span></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3"><span class="kw">names</span>(pkmModSetSize[[<span class="dv">1</span>]])</a>
+<a class="sourceLine" id="cb16-4" data-line-number="4"><span class="co">#&gt;  [1] &quot;p ~ Visibility * HabitatType; k ~ HabitatType&quot;</span></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5"><span class="co">#&gt;  [2] &quot;p ~ Visibility + HabitatType; k ~ HabitatType&quot;</span></a>
+<a class="sourceLine" id="cb16-6" data-line-number="6"><span class="co">#&gt;  [3] &quot;p ~ HabitatType; k ~ HabitatType&quot;             </span></a>
+<a class="sourceLine" id="cb16-7" data-line-number="7"><span class="co">#&gt;  [4] &quot;p ~ Visibility; k ~ HabitatType&quot;              </span></a>
+<a class="sourceLine" id="cb16-8" data-line-number="8"><span class="co">#&gt;  [5] &quot;p ~ 1; k ~ HabitatType&quot;                       </span></a>
+<a class="sourceLine" id="cb16-9" data-line-number="9"><span class="co">#&gt;  [6] &quot;p ~ Visibility * HabitatType; k ~ 1&quot;          </span></a>
+<a class="sourceLine" id="cb16-10" data-line-number="10"><span class="co">#&gt;  [7] &quot;p ~ Visibility + HabitatType; k ~ 1&quot;          </span></a>
+<a class="sourceLine" id="cb16-11" data-line-number="11"><span class="co">#&gt;  [8] &quot;p ~ HabitatType; k ~ 1&quot;                       </span></a>
+<a class="sourceLine" id="cb16-12" data-line-number="12"><span class="co">#&gt;  [9] &quot;p ~ Visibility; k ~ 1&quot;                        </span></a>
+<a class="sourceLine" id="cb16-13" data-line-number="13"><span class="co">#&gt; [10] &quot;p ~ 1; k ~ 1&quot;</span></a></code></pre>
+</section>
+</section>
+<section id="carcass-persistence" class="level2">
+<h2>Carcass Persistence</h2>
+<section id="single-carcass-persistence-model" class="level3">
+<h3>Single Carcass Persistence Model</h3>
+<p>The central function for carcass persistence analyses is <code>cpm</code>, which conducts a singular carcass persistence analysis (<em>i.e.</em>, a singular set of <code>l</code> and <code>s</code> formulae and a singular size classification of carcasses). Note that we use <code>l</code> and <code>s</code> to reference <code>location</code> and <code>scale</code> as the parameters for survival models, following <code>survreg</code>, however we also provide an alternative parameterization (“<code>ab</code>”). As a first example, we will ignore the size category, use intercept-only models for both <code>l</code> and <code>s</code>, and use the Weibull distribution:</p>
+<pre class="sourceCode r" id="cb17"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">dataCP &lt;-<span class="st"> </span>mockData<span class="op">$</span>CarcassPersistenceData</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">cpModel &lt;-<span class="st"> </span><span class="kw">cpm</span>(<span class="dt">formula_l =</span> l <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">formula_s =</span> s <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> dataCP,</a>
+<a class="sourceLine" id="cb17-3" data-line-number="3">             <span class="dt">left =</span> <span class="st">&quot;LastPresentDecimalDays&quot;</span>, </a>
+<a class="sourceLine" id="cb17-4" data-line-number="4">             <span class="dt">right =</span> <span class="st">&quot;FirstAbsentDecimalDays&quot;</span>, <span class="dt">dist =</span> <span class="st">&quot;weibull&quot;</span></a>
+<a class="sourceLine" id="cb17-5" data-line-number="5">           )</a></code></pre>
+<p>If successfully fit, a <code>cpm</code> model output contains a number of elements, some printed automatically:</p>
+<pre class="sourceCode r" id="cb18"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">cpModel</a>
+<a class="sourceLine" id="cb18-2" data-line-number="2"><span class="co">#&gt; $call</span></a>
+<a class="sourceLine" id="cb18-3" data-line-number="3"><span class="co">#&gt; cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = dataCP, left = &quot;LastPresentDecimalDays&quot;, </span></a>
+<a class="sourceLine" id="cb18-4" data-line-number="4"><span class="co">#&gt;     right = &quot;FirstAbsentDecimalDays&quot;, dist = &quot;weibull&quot;)</span></a>
+<a class="sourceLine" id="cb18-5" data-line-number="5"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-6" data-line-number="6"><span class="co">#&gt; $formula_l</span></a>
+<a class="sourceLine" id="cb18-7" data-line-number="7"><span class="co">#&gt; l ~ 1</span></a>
+<a class="sourceLine" id="cb18-8" data-line-number="8"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-9" data-line-number="9"><span class="co">#&gt; $formula_s</span></a>
+<a class="sourceLine" id="cb18-10" data-line-number="10"><span class="co">#&gt; s ~ 1</span></a>
+<a class="sourceLine" id="cb18-11" data-line-number="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-12" data-line-number="12"><span class="co">#&gt; $distribution</span></a>
+<a class="sourceLine" id="cb18-13" data-line-number="13"><span class="co">#&gt; [1] &quot;weibull&quot;</span></a>
+<a class="sourceLine" id="cb18-14" data-line-number="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-15" data-line-number="15"><span class="co">#&gt; $predictors</span></a>
+<a class="sourceLine" id="cb18-16" data-line-number="16"><span class="co">#&gt; character(0)</span></a>
+<a class="sourceLine" id="cb18-17" data-line-number="17"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-18" data-line-number="18"><span class="co">#&gt; $AICc</span></a>
+<a class="sourceLine" id="cb18-19" data-line-number="19"><span class="co">#&gt; [1] 2099.81</span></a>
+<a class="sourceLine" id="cb18-20" data-line-number="20"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-21" data-line-number="21"><span class="co">#&gt; $convergence</span></a>
+<a class="sourceLine" id="cb18-22" data-line-number="22"><span class="co">#&gt; [1] 0</span></a>
+<a class="sourceLine" id="cb18-23" data-line-number="23"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-24" data-line-number="24"><span class="co">#&gt; $cellwiseTable_ls</span></a>
+<a class="sourceLine" id="cb18-25" data-line-number="25"><span class="co">#&gt;   cell l_median l_lower l_upper s_median s_lower s_upper</span></a>
+<a class="sourceLine" id="cb18-26" data-line-number="26"><span class="co">#&gt; 1  all  2.66996 2.59106 2.74887   0.9705 0.90172 1.03927</span></a>
+<a class="sourceLine" id="cb18-27" data-line-number="27"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb18-28" data-line-number="28"><span class="co">#&gt; $cellwiseTable_ab</span></a>
+<a class="sourceLine" id="cb18-29" data-line-number="29"><span class="co">#&gt;   cell pda_median pda_lower pda_upper pdb_median pdb_lower pdb_upper</span></a>
+<a class="sourceLine" id="cb18-30" data-line-number="30"><span class="co">#&gt; 1  all     1.0304   1.10899   0.96221   14.43939  13.34391  15.62497</span></a></code></pre>
+<p>and others available upon request (using <code>$</code> as <code>cpm</code> is an S3 class):</p>
+<pre class="sourceCode r" id="cb19"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="kw">names</span>(cpModel)</a>
+<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="co">#&gt;  [1] &quot;call&quot;             &quot;formula_l&quot;        &quot;formula_s&quot;       </span></a>
+<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="co">#&gt;  [4] &quot;distribution&quot;     &quot;predictors&quot;       &quot;predictors_l&quot;    </span></a>
+<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="co">#&gt;  [7] &quot;predictors_s&quot;     &quot;AIC&quot;              &quot;AICc&quot;            </span></a>
+<a class="sourceLine" id="cb19-5" data-line-number="5"><span class="co">#&gt; [10] &quot;convergence&quot;      &quot;varbeta&quot;          &quot;cellMM_l&quot;        </span></a>
+<a class="sourceLine" id="cb19-6" data-line-number="6"><span class="co">#&gt; [13] &quot;cellMM_s&quot;         &quot;nbeta_l&quot;          &quot;nbeta_s&quot;         </span></a>
+<a class="sourceLine" id="cb19-7" data-line-number="7"><span class="co">#&gt; [16] &quot;betahat_l&quot;        &quot;betahat_s&quot;        &quot;cells&quot;           </span></a>
+<a class="sourceLine" id="cb19-8" data-line-number="8"><span class="co">#&gt; [19] &quot;ncell&quot;            &quot;cellwiseTable_ls&quot; &quot;cellwiseTable_ab&quot;</span></a>
+<a class="sourceLine" id="cb19-9" data-line-number="9"><span class="co">#&gt; [22] &quot;observations&quot;     &quot;carcCells&quot;        &quot;CL&quot;</span></a>
+<a class="sourceLine" id="cb19-10" data-line-number="10">cpModel<span class="op">$</span>cells</a>
+<a class="sourceLine" id="cb19-11" data-line-number="11"><span class="co">#&gt;   group CellNames</span></a>
+<a class="sourceLine" id="cb19-12" data-line-number="12"><span class="co">#&gt; 1   all       all</span></a></code></pre>
+<p>The <code>plot</code> function has been defined for <code>cpm</code> objects, such that one can simply run</p>
+<pre class="sourceCode r" id="cb20"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="kw">plot</span>(cpModel)</a></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>to visualize the model’s output.</p>
+<p>You can generate random draws of the <code>l</code> and <code>s</code> (or <code>a</code> and <code>b</code>) parameters for each cell grouping (in <code>cpModel</code> there are no predictors, so there is one cell grouping called “all”) using the <code>cpk</code> function which, like other <code>r*</code> functions in <strong>R</strong> (<em>i.e.</em>, <code>rnorm</code>) takes the number of random draws (<code>n</code>) as the first argument:</p>
+<pre class="sourceCode r" id="cb21"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="kw">rcp</span>(<span class="dt">n =</span> <span class="dv">10</span>, cpModel)</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="co">#&gt; $all</span></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="co">#&gt;              l         s</span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"><span class="co">#&gt;  [1,] 2.719931 1.0124029</span></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5"><span class="co">#&gt;  [2,] 2.627515 0.9826370</span></a>
+<a class="sourceLine" id="cb21-6" data-line-number="6"><span class="co">#&gt;  [3,] 2.679710 0.9010054</span></a>
+<a class="sourceLine" id="cb21-7" data-line-number="7"><span class="co">#&gt;  [4,] 2.716126 0.8877428</span></a>
+<a class="sourceLine" id="cb21-8" data-line-number="8"><span class="co">#&gt;  [5,] 2.606494 1.0168743</span></a>
+<a class="sourceLine" id="cb21-9" data-line-number="9"><span class="co">#&gt;  [6,] 2.644940 0.9635792</span></a>
+<a class="sourceLine" id="cb21-10" data-line-number="10"><span class="co">#&gt;  [7,] 2.598025 0.9163579</span></a>
+<a class="sourceLine" id="cb21-11" data-line-number="11"><span class="co">#&gt;  [8,] 2.687417 0.9618728</span></a>
+<a class="sourceLine" id="cb21-12" data-line-number="12"><span class="co">#&gt;  [9,] 2.646844 0.9172422</span></a>
+<a class="sourceLine" id="cb21-13" data-line-number="13"><span class="co">#&gt; [10,] 2.609627 1.0595105</span></a>
+<a class="sourceLine" id="cb21-14" data-line-number="14"><span class="kw">rcp</span>(<span class="dt">n =</span> <span class="dv">10</span>, cpModel, <span class="dt">type =</span> <span class="st">&quot;ppersist&quot;</span>)</a>
+<a class="sourceLine" id="cb21-15" data-line-number="15"><span class="co">#&gt; $all</span></a>
+<a class="sourceLine" id="cb21-16" data-line-number="16"><span class="co">#&gt;             pda      pdb</span></a>
+<a class="sourceLine" id="cb21-17" data-line-number="17"><span class="co">#&gt;  [1,] 0.9960318 14.17332</span></a>
+<a class="sourceLine" id="cb21-18" data-line-number="18"><span class="co">#&gt;  [2,] 1.0007619 14.94753</span></a>
+<a class="sourceLine" id="cb21-19" data-line-number="19"><span class="co">#&gt;  [3,] 1.0902556 14.71550</span></a>
+<a class="sourceLine" id="cb21-20" data-line-number="20"><span class="co">#&gt;  [4,] 0.9943489 13.71914</span></a>
+<a class="sourceLine" id="cb21-21" data-line-number="21"><span class="co">#&gt;  [5,] 1.0024874 13.53621</span></a>
+<a class="sourceLine" id="cb21-22" data-line-number="22"><span class="co">#&gt;  [6,] 1.0460542 14.09745</span></a>
+<a class="sourceLine" id="cb21-23" data-line-number="23"><span class="co">#&gt;  [7,] 1.0373792 13.91688</span></a>
+<a class="sourceLine" id="cb21-24" data-line-number="24"><span class="co">#&gt;  [8,] 1.0142029 15.03153</span></a>
+<a class="sourceLine" id="cb21-25" data-line-number="25"><span class="co">#&gt;  [9,] 0.9924402 14.23189</span></a>
+<a class="sourceLine" id="cb21-26" data-line-number="26"><span class="co">#&gt; [10,] 1.0375286 15.62960</span></a></code></pre>
+<p>You can complicate the <code>l</code> and <code>s</code> formulae independently</p>
+<pre class="sourceCode r" id="cb22"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="kw">cpm</span>(<span class="dt">formula_l =</span> l <span class="op">~</span><span class="st"> </span>Visibility<span class="op">*</span>GroundCover, <span class="dt">formula_s =</span> s <span class="op">~</span><span class="st"> </span><span class="dv">1</span>, <span class="dt">data =</span> dataCP,</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">  <span class="dt">left =</span> <span class="st">&quot;LastPresentDecimalDays&quot;</span>, <span class="dt">right =</span> <span class="st">&quot;FirstAbsentDecimalDays&quot;</span>, </a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">  <span class="dt">dist =</span> <span class="st">&quot;weibull&quot;</span></a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">)</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="co">#&gt; $call</span></a>
+<a class="sourceLine" id="cb22-6" data-line-number="6"><span class="co">#&gt; cpm(formula_l = l ~ Visibility * GroundCover, formula_s = s ~ </span></a>
+<a class="sourceLine" id="cb22-7" data-line-number="7"><span class="co">#&gt;     1, data = dataCP, left = &quot;LastPresentDecimalDays&quot;, right = &quot;FirstAbsentDecimalDays&quot;, </span></a>
+<a class="sourceLine" id="cb22-8" data-line-number="8"><span class="co">#&gt;     dist = &quot;weibull&quot;)</span></a>
+<a class="sourceLine" id="cb22-9" data-line-number="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-10" data-line-number="10"><span class="co">#&gt; $formula_l</span></a>
+<a class="sourceLine" id="cb22-11" data-line-number="11"><span class="co">#&gt; l ~ Visibility * GroundCover</span></a>
+<a class="sourceLine" id="cb22-12" data-line-number="12"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-13" data-line-number="13"><span class="co">#&gt; $formula_s</span></a>
+<a class="sourceLine" id="cb22-14" data-line-number="14"><span class="co">#&gt; s ~ 1</span></a>
+<a class="sourceLine" id="cb22-15" data-line-number="15"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-16" data-line-number="16"><span class="co">#&gt; $distribution</span></a>
+<a class="sourceLine" id="cb22-17" data-line-number="17"><span class="co">#&gt; [1] &quot;weibull&quot;</span></a>
+<a class="sourceLine" id="cb22-18" data-line-number="18"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-19" data-line-number="19"><span class="co">#&gt; $predictors</span></a>
+<a class="sourceLine" id="cb22-20" data-line-number="20"><span class="co">#&gt; [1] &quot;Visibility&quot;  &quot;GroundCover&quot;</span></a>
+<a class="sourceLine" id="cb22-21" data-line-number="21"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-22" data-line-number="22"><span class="co">#&gt; $AICc</span></a>
+<a class="sourceLine" id="cb22-23" data-line-number="23"><span class="co">#&gt; [1] 2107.064</span></a>
+<a class="sourceLine" id="cb22-24" data-line-number="24"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-25" data-line-number="25"><span class="co">#&gt; $convergence</span></a>
+<a class="sourceLine" id="cb22-26" data-line-number="26"><span class="co">#&gt; [1] 0</span></a>
+<a class="sourceLine" id="cb22-27" data-line-number="27"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-28" data-line-number="28"><span class="co">#&gt; $cellwiseTable_ls</span></a>
+<a class="sourceLine" id="cb22-29" data-line-number="29"><span class="co">#&gt;   cell l_median l_lower l_upper s_median s_lower s_upper</span></a>
+<a class="sourceLine" id="cb22-30" data-line-number="30"><span class="co">#&gt; 1  H.A  2.64624 2.45578 2.83669  0.96768 0.89912 1.03624</span></a>
+<a class="sourceLine" id="cb22-31" data-line-number="31"><span class="co">#&gt; 2  L.A  2.61629 2.42451 2.80808  0.96768 0.89912 1.03624</span></a>
+<a class="sourceLine" id="cb22-32" data-line-number="32"><span class="co">#&gt; 3  M.A  2.53458 2.34753 2.72164  0.96768 0.89912 1.03624</span></a>
+<a class="sourceLine" id="cb22-33" data-line-number="33"><span class="co">#&gt; 4  H.B  2.78824 2.59550 2.98099  0.96768 0.89912 1.03624</span></a>
+<a class="sourceLine" id="cb22-34" data-line-number="34"><span class="co">#&gt; 5  L.B  2.71035 2.52022 2.90048  0.96768 0.89912 1.03624</span></a>
+<a class="sourceLine" id="cb22-35" data-line-number="35"><span class="co">#&gt; 6  M.B  2.71520 2.52514 2.90525  0.96768 0.89912 1.03624</span></a>
+<a class="sourceLine" id="cb22-36" data-line-number="36"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb22-37" data-line-number="37"><span class="co">#&gt; $cellwiseTable_ab</span></a>
+<a class="sourceLine" id="cb22-38" data-line-number="38"><span class="co">#&gt;   cell pda_median pda_lower pda_upper pdb_median pdb_lower pdb_upper</span></a>
+<a class="sourceLine" id="cb22-39" data-line-number="39"><span class="co">#&gt; 1  H.A     1.0334    1.1122   0.96503   14.10092  11.65552  17.05921</span></a>
+<a class="sourceLine" id="cb22-40" data-line-number="40"><span class="co">#&gt; 2  L.A     1.0334    1.1122   0.96503   13.68486  11.29669  16.57806</span></a>
+<a class="sourceLine" id="cb22-41" data-line-number="41"><span class="co">#&gt; 3  M.A     1.0334    1.1122   0.96503   12.61113  10.45970  15.20524</span></a>
+<a class="sourceLine" id="cb22-42" data-line-number="42"><span class="co">#&gt; 4  H.B     1.0334    1.1122   0.96503   16.25239  13.40329  19.70732</span></a>
+<a class="sourceLine" id="cb22-43" data-line-number="43"><span class="co">#&gt; 5  L.B     1.0334    1.1122   0.96503   15.03454  12.43133  18.18287</span></a>
+<a class="sourceLine" id="cb22-44" data-line-number="44"><span class="co">#&gt; 6  M.B     1.0334    1.1122   0.96503   15.10763  12.49264  18.26981</span></a></code></pre>
+<p>Given that the exponential only has one parameter (<code>l</code>, location), a model for scale (<code>formula_s</code>) is not required:</p>
+<pre class="sourceCode r" id="cb23"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" data-line-number="1">cpModExp &lt;-<span class="st"> </span><span class="kw">cpm</span>(<span class="dt">formula_l =</span> l <span class="op">~</span><span class="st"> </span>Visibility<span class="op">*</span>GroundCover, <span class="dt">data =</span> dataCP,</a>
+<a class="sourceLine" id="cb23-2" data-line-number="2">              <span class="dt">left =</span> <span class="st">&quot;LastPresentDecimalDays&quot;</span>, </a>
+<a class="sourceLine" id="cb23-3" data-line-number="3">              <span class="dt">right =</span> <span class="st">&quot;FirstAbsentDecimalDays&quot;</span>, <span class="dt">dist =</span> <span class="st">&quot;exponential&quot;</span></a>
+<a class="sourceLine" id="cb23-4" data-line-number="4">            )</a></code></pre>
+</section>
+<section id="set-of-carcass-persistence-models" class="level3">
+<h3>Set of Carcass Persistence Models</h3>
+<p>The function <code>cpmSet</code> provides a simple wrapper on <code>cpm</code> that facilitates analyzing a set of <code>cpm</code> models defined as all allowable models simpler than, and including, the provided model formulae (where “allowable” means that any interaction terms have all component terms included in the model).</p>
+<p>In addition, <code>cpmSet</code> includes the four base distributions (exponential, weibull, lognormal, loglogistic) and crosses them with the predictor models, but this can be restricted using the <code>dist</code> argument.</p>
+<p>Consider the following model set analysis, where visibility and season are included in the <code>l</code> formula but only visibility is in the <code>s</code> formula, and all only the exponential and lognormal distributions are included, which generates a set of 15 models:</p>
+<pre class="sourceCode r" id="cb24"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">cpmModSet &lt;-<span class="st"> </span><span class="kw">cpmSet</span>(<span class="dt">formula_l =</span> l <span class="op">~</span><span class="st"> </span>Visibility<span class="op">*</span>Season, </a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">               <span class="dt">formula_s =</span> s <span class="op">~</span><span class="st"> </span>Visibility, <span class="dt">data =</span> dataCP,</a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">               <span class="dt">left =</span> <span class="st">&quot;LastPresentDecimalDays&quot;</span>, </a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">               <span class="dt">right =</span> <span class="st">&quot;FirstAbsentDecimalDays&quot;</span>, </a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">               <span class="dt">dist =</span> <span class="kw">c</span>(<span class="st">&quot;exponential&quot;</span>, <span class="st">&quot;lognormal&quot;</span>)</a>
+<a class="sourceLine" id="cb24-6" data-line-number="6">             )</a>
+<a class="sourceLine" id="cb24-7" data-line-number="7"><span class="kw">names</span>(cpmModSet)</a>
+<a class="sourceLine" id="cb24-8" data-line-number="8"><span class="co">#&gt;  [1] &quot;dist: exponential; l ~ Visibility * Season; NULL&quot;        </span></a>
+<a class="sourceLine" id="cb24-9" data-line-number="9"><span class="co">#&gt;  [2] &quot;dist: exponential; l ~ Visibility + Season; NULL&quot;        </span></a>
+<a class="sourceLine" id="cb24-10" data-line-number="10"><span class="co">#&gt;  [3] &quot;dist: exponential; l ~ Season; NULL&quot;                     </span></a>
+<a class="sourceLine" id="cb24-11" data-line-number="11"><span class="co">#&gt;  [4] &quot;dist: exponential; l ~ Visibility; NULL&quot;                 </span></a>
+<a class="sourceLine" id="cb24-12" data-line-number="12"><span class="co">#&gt;  [5] &quot;dist: exponential; l ~ 1; NULL&quot;                          </span></a>
+<a class="sourceLine" id="cb24-13" data-line-number="13"><span class="co">#&gt;  [6] &quot;dist: lognormal; l ~ Visibility * Season; s ~ Visibility&quot;</span></a>
+<a class="sourceLine" id="cb24-14" data-line-number="14"><span class="co">#&gt;  [7] &quot;dist: lognormal; l ~ Visibility + Season; s ~ Visibility&quot;</span></a>
+<a class="sourceLine" id="cb24-15" data-line-number="15"><span class="co">#&gt;  [8] &quot;dist: lognormal; l ~ Season; s ~ Visibility&quot;             </span></a>
+<a class="sourceLine" id="cb24-16" data-line-number="16"><span class="co">#&gt;  [9] &quot;dist: lognormal; l ~ Visibility; s ~ Visibility&quot;         </span></a>
+<a class="sourceLine" id="cb24-17" data-line-number="17"><span class="co">#&gt; [10] &quot;dist: lognormal; l ~ 1; s ~ Visibility&quot;                  </span></a>
+<a class="sourceLine" id="cb24-18" data-line-number="18"><span class="co">#&gt; [11] &quot;dist: lognormal; l ~ Visibility * Season; s ~ 1&quot;         </span></a>
+<a class="sourceLine" id="cb24-19" data-line-number="19"><span class="co">#&gt; [12] &quot;dist: lognormal; l ~ Visibility + Season; s ~ 1&quot;         </span></a>
+<a class="sourceLine" id="cb24-20" data-line-number="20"><span class="co">#&gt; [13] &quot;dist: lognormal; l ~ Season; s ~ 1&quot;                      </span></a>
+<a class="sourceLine" id="cb24-21" data-line-number="21"><span class="co">#&gt; [14] &quot;dist: lognormal; l ~ Visibility; s ~ 1&quot;                  </span></a>
+<a class="sourceLine" id="cb24-22" data-line-number="22"><span class="co">#&gt; [15] &quot;dist: lognormal; l ~ 1; s ~ 1&quot;</span></a></code></pre>
+<p>The resulting model outputs can be compared in an AICc table</p>
+<pre class="sourceCode r" id="cb25"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="kw">cpmSetAICcTab</span>(cpmModSet)</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2"><span class="co">#&gt;           dist               l formula      s formula     AICc Delta AICc</span></a>
+<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="co">#&gt; 5  exponential                   l ~ 1           NULL 2098.271      0.000</span></a>
+<a class="sourceLine" id="cb25-4" data-line-number="4"><span class="co">#&gt; 3  exponential              l ~ Season           NULL 2098.625      0.354</span></a>
+<a class="sourceLine" id="cb25-5" data-line-number="5"><span class="co">#&gt; 4  exponential          l ~ Visibility           NULL 2101.705      3.434</span></a>
+<a class="sourceLine" id="cb25-6" data-line-number="6"><span class="co">#&gt; 2  exponential l ~ Visibility + Season           NULL 2102.021      3.750</span></a>
+<a class="sourceLine" id="cb25-7" data-line-number="7"><span class="co">#&gt; 1  exponential l ~ Visibility * Season           NULL 2105.719      7.448</span></a>
+<a class="sourceLine" id="cb25-8" data-line-number="8"><span class="co">#&gt; 15   lognormal                   l ~ 1          s ~ 1 2158.031     59.760</span></a>
+<a class="sourceLine" id="cb25-9" data-line-number="9"><span class="co">#&gt; 13   lognormal              l ~ Season          s ~ 1 2159.588     61.317</span></a>
+<a class="sourceLine" id="cb25-10" data-line-number="10"><span class="co">#&gt; 10   lognormal                   l ~ 1 s ~ Visibility 2160.863     62.592</span></a>
+<a class="sourceLine" id="cb25-11" data-line-number="11"><span class="co">#&gt; 14   lognormal          l ~ Visibility          s ~ 1 2161.984     63.713</span></a>
+<a class="sourceLine" id="cb25-12" data-line-number="12"><span class="co">#&gt; 8    lognormal              l ~ Season s ~ Visibility 2162.396     64.125</span></a>
+<a class="sourceLine" id="cb25-13" data-line-number="13"><span class="co">#&gt; 12   lognormal l ~ Visibility + Season          s ~ 1 2163.556     65.285</span></a>
+<a class="sourceLine" id="cb25-14" data-line-number="14"><span class="co">#&gt; 9    lognormal          l ~ Visibility s ~ Visibility 2164.840     66.569</span></a>
+<a class="sourceLine" id="cb25-15" data-line-number="15"><span class="co">#&gt; 11   lognormal l ~ Visibility * Season          s ~ 1 2165.754     67.483</span></a>
+<a class="sourceLine" id="cb25-16" data-line-number="16"><span class="co">#&gt; 7    lognormal l ~ Visibility + Season s ~ Visibility 2166.388     68.117</span></a>
+<a class="sourceLine" id="cb25-17" data-line-number="17"><span class="co">#&gt; 6    lognormal l ~ Visibility * Season s ~ Visibility 2168.541     70.270</span></a></code></pre>
+<p>The <code>plot</code> function is defined for the <code>cpmSet</code> class, and by default, creates a new plot window on command for each sub-model. If we want to only plot a specific single (or subset) of models from the full set, we can utilize the <code>specificModel</code> argument:</p>
+<pre class="sourceCode r" id="cb26"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">plot</span>(cpmModSet, </a>
+<a class="sourceLine" id="cb26-2" data-line-number="2">  <span class="dt">specificModel =</span> <span class="st">&quot;dist: lognormal; l ~ Visibility * Season; s ~ Visibility&quot;</span>)</a></code></pre>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</section>
+<section id="multiple-sizes-of-animals-and-sets-of-carcass-persistence-models" class="level3">
+<h3>Multiple Sizes of Animals and Sets of Carcass Persistence Models</h3>
+<p>Often, carcasses are grouped in multiple size classes, and we are interested in analyzing a set of models separately for each size class. To do so, we use the <code>cpmSetSize</code> function, which is a wrapper on <code>cpmSet</code> that runs the subfunction for each unique size class in the column identified by the <code>sizeclassCol</code> argument:</p>
+<pre class="sourceCode r" id="cb27"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">cpmModSetSize &lt;-<span class="st"> </span><span class="kw">cpmSetSize</span>(<span class="dt">formula_l =</span> l <span class="op">~</span><span class="st"> </span>Visibility<span class="op">*</span>Season, </a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">                   <span class="dt">formula_s =</span> s <span class="op">~</span><span class="st"> </span>Visibility, <span class="dt">data =</span> dataCP,</a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">                   <span class="dt">left =</span> <span class="st">&quot;LastPresentDecimalDays&quot;</span>, </a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">                   <span class="dt">right =</span> <span class="st">&quot;FirstAbsentDecimalDays&quot;</span>, </a>
+<a class="sourceLine" id="cb27-5" data-line-number="5">                   <span class="dt">dist =</span> <span class="kw">c</span>(<span class="st">&quot;exponential&quot;</span>, <span class="st">&quot;lognormal&quot;</span>),</a>
+<a class="sourceLine" id="cb27-6" data-line-number="6">                   <span class="dt">sizeclassCol =</span> <span class="st">&quot;Size&quot;</span></a>
+<a class="sourceLine" id="cb27-7" data-line-number="7">                 )</a></code></pre>
+<p>The output from <code>cpmSetSize</code> is a list where each element corresponds to a different unique size class, and contains the associated <code>cpmSet</code>object, which itself is a list of <code>cpm</code> outputs:</p>
+<pre class="sourceCode r" id="cb28"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="kw">names</span>(cpmModSetSize)</a>
+<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="co">#&gt; [1] &quot;S&quot;  &quot;L&quot;  &quot;M&quot;  &quot;XL&quot;</span></a>
+<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="kw">names</span>(cpmModSetSize[[<span class="dv">1</span>]])</a>
+<a class="sourceLine" id="cb28-4" data-line-number="4"><span class="co">#&gt;  [1] &quot;dist: exponential; l ~ Visibility * Season; NULL&quot;        </span></a>
+<a class="sourceLine" id="cb28-5" data-line-number="5"><span class="co">#&gt;  [2] &quot;dist: exponential; l ~ Visibility + Season; NULL&quot;        </span></a>
+<a class="sourceLine" id="cb28-6" data-line-number="6"><span class="co">#&gt;  [3] &quot;dist: exponential; l ~ Season; NULL&quot;                     </span></a>
+<a class="sourceLine" id="cb28-7" data-line-number="7"><span class="co">#&gt;  [4] &quot;dist: exponential; l ~ Visibility; NULL&quot;                 </span></a>
+<a class="sourceLine" id="cb28-8" data-line-number="8"><span class="co">#&gt;  [5] &quot;dist: exponential; l ~ 1; NULL&quot;                          </span></a>
+<a class="sourceLine" id="cb28-9" data-line-number="9"><span class="co">#&gt;  [6] &quot;dist: lognormal; l ~ Visibility * Season; s ~ Visibility&quot;</span></a>
+<a class="sourceLine" id="cb28-10" data-line-number="10"><span class="co">#&gt;  [7] &quot;dist: lognormal; l ~ Visibility + Season; s ~ Visibility&quot;</span></a>
+<a class="sourceLine" id="cb28-11" data-line-number="11"><span class="co">#&gt;  [8] &quot;dist: lognormal; l ~ Season; s ~ Visibility&quot;             </span></a>
+<a class="sourceLine" id="cb28-12" data-line-number="12"><span class="co">#&gt;  [9] &quot;dist: lognormal; l ~ Visibility; s ~ Visibility&quot;         </span></a>
+<a class="sourceLine" id="cb28-13" data-line-number="13"><span class="co">#&gt; [10] &quot;dist: lognormal; l ~ 1; s ~ Visibility&quot;                  </span></a>
+<a class="sourceLine" id="cb28-14" data-line-number="14"><span class="co">#&gt; [11] &quot;dist: lognormal; l ~ Visibility * Season; s ~ 1&quot;         </span></a>
+<a class="sourceLine" id="cb28-15" data-line-number="15"><span class="co">#&gt; [12] &quot;dist: lognormal; l ~ Visibility + Season; s ~ 1&quot;         </span></a>
+<a class="sourceLine" id="cb28-16" data-line-number="16"><span class="co">#&gt; [13] &quot;dist: lognormal; l ~ Season; s ~ 1&quot;                      </span></a>
+<a class="sourceLine" id="cb28-17" data-line-number="17"><span class="co">#&gt; [14] &quot;dist: lognormal; l ~ Visibility; s ~ 1&quot;                  </span></a>
+<a class="sourceLine" id="cb28-18" data-line-number="18"><span class="co">#&gt; [15] &quot;dist: lognormal; l ~ 1; s ~ 1&quot;</span></a></code></pre>
+</section>
+</section>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
