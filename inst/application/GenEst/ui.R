@@ -264,8 +264,9 @@ tabPanel("About",
       HTML("<img src = 'duke.png' height = '60'>")
     )
   )
-)
-
+),
+collapsible = TRUE,
+windowTitle = "GenEst"
 )
 
 
