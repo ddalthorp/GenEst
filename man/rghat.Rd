@@ -6,7 +6,8 @@
   models and search data}
 \usage{
 rghat(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
-  seed_CP = 1, kFill = NULL, unitColName = "Unit")
+  seed_CP = 1, kFill = NULL, unitCol = "Unit",
+  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched")
 }
 \arguments{
 \item{n}{the number of simulation draws}
@@ -25,7 +26,11 @@ rghat(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
 
 \item{kFill}{value to fill in for missing k when not existing in the model}
 
-\item{unitColName}{Column name for the unit indicator}
+\item{unitCol}{Column name for the unit indicator}
+
+\item{dateFoundCol}{Column name for the date found data}
+
+\item{dateSearchedCol}{Column name for the date searched data}
 }
 \value{
 matrix of n ghat estimates for each carcass

@@ -6,7 +6,7 @@
   and search data}
 \usage{
 rghatCarcass(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP, pkSim,
-  cpSim, preds_static, preds_dynamic, unitColName)
+  cpSim, preds_static, preds_dynamic, unitCol, dateFoundCol, dateSearchedCol)
 }
 \arguments{
 \item{n}{the number of simulation draws}
@@ -29,7 +29,11 @@ rghatCarcass(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP, pkSim,
 
 \item{preds_dynamic}{Names of predictors that change over time}
 
-\item{unitColName}{Column name for the unit indicator}
+\item{unitCol}{Column name for the unit indicator}
+
+\item{dateFoundCol}{Column name for the date found data}
+
+\item{dateSearchedCol}{Column name for the date searched data}
 }
 \value{
 n ghat estimates for a carcass
