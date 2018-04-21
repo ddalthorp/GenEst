@@ -88,6 +88,7 @@
 #' The following components are not printed automatically but can be accessed
 #' via the \code{$} operator:
 #' \describe{
+#'  \item{\code{data}}{the data used to fit the model}
 #'   \item{\code{betahat_l}}{parameter estimates for the terms in the 
 #'     regression model for for \code{l}}
 #'   \item{\code{betahat_s}}{parameter estimates for the terms in the 
@@ -317,6 +318,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   }
   output <- list()
   output$call <- match.call()
+  output$data <- data
   output$formula_l <- formula_l
   output$formula_s <- formula_s
   output$distribution <- dist
@@ -343,7 +345,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   output$carcCells <- carcCells
   output$CL <- CL
   class(output) <- c("cpm", "list")
-  attr(output, "hidden") <- c("predictors_l", "predictors_s", 
+  attr(output, "hidden") <- c("data", "predictors_l", "predictors_s", 
                               "betahat_l", "betahat_s", "cellMM_l", 
                               "cellMM_s", "nbeta_l", "nbeta_s", "varbeta",
                               "levels_l", "levels_s", "carcCells", "CL", 

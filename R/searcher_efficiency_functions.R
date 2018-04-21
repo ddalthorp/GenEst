@@ -94,6 +94,7 @@
 #' The following components are not printed automatically but can be accessed
 #' via the \code{$} operator:
 #' \describe{
+#'  \item{\code{data}}{the data used to fit the model}
 #'   \item{\code{betahat_p}}{parameter estimates for the terms in the 
 #'     regression model for for \code{p} (logit scale)}
 #'   \item{\code{betahat_k}}{parameter estimates for the terms in the 
@@ -343,6 +344,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 
   output <- list()
   output$call <- match.call()
+  output$data <- data
   output$formula_p <- formula_p
   output$formula_k <- formula_k
   output$predictors <- preds
@@ -368,8 +370,8 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output$carcCells <- carcCells
   output$CL <- CL
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("predictors_p", "predictors_k", "kFixed",
-                              "betahat_p", "betahat_k", "cellMM_p", 
+  attr(output, "hidden") <- c("data", "predictors_p", "predictors_k", 
+                              "kFixed", "betahat_p", "betahat_k", "cellMM_p", 
                               "cellMM_k", "nbeta_p", "nbeta_k", "varbeta",
                               "levels_p", "levels_k", "carcCells", "CL",   
                               "AIC", "cells", "ncell", "observations"
@@ -931,4 +933,72 @@ pkmAllFail <- function(pkmToCheck){
   nmodsFail <- sum(modsFail)
   out <- nmods == nmodsFail
   return(out)
+}
+
+
+#' Calculate searcher efficiency after some searches
+#'
+#' @param days search days
+#' @param pk pk
+#' @return searcher efficiency that matches the output of ppersist
+#' @examples NA
+#' @export 
+#'
+SEsi <- function(days, pk){ 
+  if (is.null(dim(pk)) || nrow(pk) == 1) return (SEsi0(days, pk))
+  npk <- nrow(pk)
+  nsearch <- length(days) - 1
+  ind1 <- rep(1:nsearch, times = nsearch:1)
+  ind2 <- ind1 + 1
+  ind3 <- unlist(lapply(1:nsearch, function(x) x:nsearch)) + 1
+  schedule <- cbind(days[ind1], days[ind2], days[ind3])
+  schedule.index <- cbind(ind1, ind2, ind3)
+  nmiss <- schedule.index[, 3] - schedule.index[, 2]
+  maxmiss <- max(nmiss)
+  if (maxmiss == 0) {
+      pfind.si <- pk[, 1]
+  } else if (maxmiss == 1) {
+      pfind.si <- cbind(pk[, 1], (1 - pk[, 1]) * pk[, 2] * pk[, 1])
+  } else {
+      powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
+      powk[ , 1] <- 1
+      powk <- matrixStats::rowCumprods(powk)
+      pfind.si <- pk[, 1] * powk * cbind(
+        rep(1, npk), 
+        matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+      )
+  }
+  return(t(pfind.si)) 
+}
+
+
+#' Calculate searcher efficiency after some searches for a single pk 
+#'   combination
+#'
+#' @param days search days
+#' @param pk pk
+#' @return searcher efficiency that matches the output of ppersist
+#' @examples NA
+#' @export 
+#'
+SEsi0 <- function(days, pk){ 
+  nsearch <- length(days) - 1
+  ind1 <- rep(1:nsearch, times = nsearch:1)
+  ind2 <- ind1 + 1
+  ind3 <- unlist(lapply(1:nsearch, function(x) x:nsearch)) + 1
+  schedule <- cbind(days[ind1], days[ind2], days[ind3])
+  schedule.index <- cbind(ind1, ind2, ind3)
+  nmiss <- schedule.index[, 3] - schedule.index[, 2]
+  maxmiss <- max(nmiss)
+  if (maxmiss == 0) {
+    pfind.si <- pk[1]
+  } else if (maxmiss == 1) {
+    pfind.si <- c(pk[1], (1 - pk[1]) * pk[2] * pk[1])
+  } else {
+    powk <- rep(pk[2], maxmiss + 1)
+    powk[1] <- 1
+    powk <- cumprod(powk)
+    pfind.si <- pk[1] * powk * c(1, cumprod(1 - (pk[1] * powk[1:maxmiss])))
+  }
+  return(pfind.si)
 }

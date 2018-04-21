@@ -203,4 +203,18 @@ isNeverDecreasing <- function(x, tiesOK = TRUE, na.rm = TRUE){
   return(out)
 }
 
-
+#' Convert calendar date to day from reference
+#'
+#' @param date date to convert
+#' @param ref reference date
+#' @return converted days from reference
+#' @examples NA
+#' @export 
+#'
+dateToDay <- function(date, ref = NULL){
+  if (is.null(ref)){
+    ref <- date
+  }
+  day <- as.numeric(difftime(date, ref, unit = "days") + 1)
+  return(day)
+}
