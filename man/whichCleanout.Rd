@@ -4,14 +4,18 @@
 \alias{whichCleanout}
 \title{Determine which carcasses were from cleanout searches}
 \usage{
-whichCleanout(data_carc, data_ss, unitColName = "Unit")
+whichCleanout(data_carc, data_ss, unitCol, dateFoundCol, dateSearchedCol)
 }
 \arguments{
 \item{data_carc}{Carcass observation data}
 
 \item{data_ss}{Search schedule data}
 
-\item{unitColName}{Column name for the unit indicator}
+\item{unitCol}{Column name for the unit indicator}
+
+\item{dateFoundCol}{Column name for the date found data}
+
+\item{dateSearchedCol}{Column name for the date searched data}
 }
 \value{
 index values of which carcasses were taken on the first search

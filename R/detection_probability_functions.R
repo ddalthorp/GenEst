@@ -9,13 +9,17 @@
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param kFill value to fill in for missing k when not existing in the model
-#' @param unitColName Column name for the unit indicator
+#' @param unitCol Column name for the unit indicator
+#' @param dateFoundCol Column name for the date found data
+#' @param dateSearchedCol Column name for the date searched data
 #' @return matrix of n ghat estimates for each carcass
 #' @examples NA
 #' @export
 #'
 rghat <- function(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1, 
-                  seed_CP = 1, kFill = NULL, unitColName = "Unit"){
+                  seed_CP = 1, kFill = NULL, unitCol = "Unit",
+                  dateFoundCol = "DateFound", 
+                  dateSearchedCol = "DateSearched"){
 
   if (is.na(model_SE$cellwiseTable[1, "k_median"])){
     if (is.null(kFill)){
@@ -49,11 +53,13 @@ rghat <- function(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
   pkSim <- rpk(n, model_SE, seed_SE, kFill)
   cpSim <- rcp(n, model_CP, seed_CP, type = "ppersist") 
 
-  first_date <- min(data_ss$DateSearched)
-  data_carc$DateFound <- dateToDay(data_carc$DateFound, first_date)
-  data_ss$DateSearched <- dateToDay(data_ss$DateSearched, first_date)
+  date1 <- min(data_ss[ , dateSearchedCol])
+  data_carc[ , dateFoundCol] <- dateToDay(data_carc[ , dateFoundCol], date1)
+  data_ss[ , dateSearchedCol] <- dateToDay(data_ss[ , dateSearchedCol], date1)
 
-  cleanout <- whichCleanout(data_carc, data_ss, unitColName)  
+  cleanout <- whichCleanout(data_carc, data_ss, unitCol, dateFoundCol,
+                dateSearchedCol
+              )  
   if (length(cleanout) > 0){
     data_carc <- data_carc[-cleanout, ]
   }
@@ -63,7 +69,8 @@ rghat <- function(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
   for (carci in 1:ncarc){
     ghat[carci, ] <- rghatCarcass(n, data_carc = data_carc[carci, ], dist,  
                        data_ss, preds_SE, preds_CP, pkSim, cpSim,
-                       preds_static, preds_dynamic, unitColName
+                       preds_static, preds_dynamic, unitCol, dateFoundCol, 
+                       dateSearchedCol
                      )
   }
   return(ghat)
@@ -82,22 +89,24 @@ rghat <- function(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
 #' @param cpSim simulated cp parameters
 #' @param preds_static Names of predictors that don't change over time
 #' @param preds_dynamic Names of predictors that change over time
-#' @param unitColName Column name for the unit indicator
+#' @param unitCol Column name for the unit indicator
+#' @param dateFoundCol Column name for the date found data
+#' @param dateSearchedCol Column name for the date searched data
 #' @return n ghat estimates for a carcass
 #' @examples NA
 #' @export
 #'
 rghatCarcass <- function(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP,
                          pkSim, cpSim, preds_static, preds_dynamic,
-                         unitColName){
+                         unitCol, dateFoundCol, dateSearchedCol){
 
-  Unit <- data_carc[, unitColName]
+  Unit <- data_carc[, unitCol]
   Carc <- data_carc[, preds_static]
-  DateFound <- data_carc$DateFound
-  SS <- data_ss[, c("DateSearched", preds_dynamic, Unit)]
+  DateFound <- data_carc[ , dateFoundCol]
+  SS <- data_ss[, c(dateSearchedCol, preds_dynamic, Unit)]
   SS <- SS[which(SS[ , Unit] == 1), ]
   Data <- data.frame(SS, Carc)
-  Data <- Data[Data$DateSearched <= DateFound, ]
+  Data <- Data[Data[ , dateSearchedCol] <= DateFound, ]
   SE <- data.frame(Data[ , preds_SE])
   CP <- data.frame(Data[ , preds_CP])
   names(SE) <- preds_SE
@@ -108,9 +117,9 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP,
   SEParams <- pkSim[SEcell] 
   CPParams <- cpSim[CPcell] 
 
-  Date0 <- Data$DateSearched[-nrow(Data)]
-  Date1 <- Data$DateSearched[-1]
-  DateS <- Data$DateSearched[-1]
+  Date0 <- Data[-nrow(Data), dateSearchedCol]
+  Date1 <- Data[-1, dateSearchedCol]
+  DateS <- Data[-1, dateSearchedCol]
 
   A <- matrix(NA, nrow = length(DateS), ncol = n)
 
@@ -165,19 +174,22 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP,
 #'
 #' @param data_carc Carcass observation data
 #' @param data_ss Search schedule data
-#' @param unitColName Column name for the unit indicator
+#' @param unitCol Column name for the unit indicator
+#' @param dateFoundCol Column name for the date found data
+#' @param dateSearchedCol Column name for the date searched data
 #' @return index values of which carcasses were taken on the first search
 #' @examples NA
 #' @export 
 #'
-whichCleanout <- function(data_carc, data_ss, unitColName = "Unit"){
+whichCleanout <- function(data_carc, data_ss, unitCol, dateFoundCol,
+                          dateSearchedCol){
 
   ncarc <- nrow(data_carc)
   cleanoutTF <- rep(NA, ncarc)
   for (carci in 1:ncarc){
-    specificUnit <- data_carc[carci, unitColName]
-    cleanoutDay <- min(data_ss$DateSearched[data_ss[ , specificUnit] == 1])
-    cleanoutTF[carci] <- data_carc$DateFound[carci] == cleanoutDay
+    specificUnit <- data_carc[carci, unitCol]
+    cleanoutDay <- min(data_ss[data_ss[, specificUnit] == 1, dateSearchedCol])
+    cleanoutTF[carci] <- data_carc[carci, dateFoundCol] == cleanoutDay
   }
   return(which(cleanoutTF))
 }

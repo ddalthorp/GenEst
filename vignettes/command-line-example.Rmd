@@ -367,7 +367,9 @@ cpModel <- GenEst::cpm(formula_l = l ~ Season, formula_s = s ~ 1,
 dataCO <- mockData$CarcassObservationData
 dataSS <- mockData$SearchScheduleData
 ghatMat <- rghat(n = 1000, dataCO, dataSS, model_SE = pkModel, 
-             model_CP = cpModel, seed_SE = 1, seed_CP = 1
+             model_CP = cpModel, seed_SE = 1, seed_CP = 1,
+             unitCol = "Unit", dateFoundCol = "DateFound", 
+             dateSearchedCol = "DateSearched"
            )
 ```
 
