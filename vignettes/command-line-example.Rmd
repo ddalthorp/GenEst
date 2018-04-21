@@ -347,3 +347,31 @@ itself is a list of `cpm` outputs:
 names(cpmModSetSize)
 names(cpmModSetSize[[1]])
 ```
+
+## Detection Probability
+
+Detection probability is determined for individual carcasses based on the 
+dates when they are observed, associated covarites, the searcher efficiency 
+and carcass persistence model, and the search schedule. 
+
+The `rghat` function produces `n` random draws of detection probability 
+estimates for each carcass.
+
+```{r}
+pkModel <- GenEst::pkm(formula_p = p ~ Visibility * HabitatType, 
+                       formula_k = k ~ 1, data = dataSE)
+cpModel <- GenEst::cpm(formula_l = l ~ Season, formula_s = s ~ 1, 
+             data = dataCP,
+             left = "LastPresentDecimalDays", 
+             right = "FirstAbsentDecimalDays", dist = "weibull")
+dataCO <- mockData$CarcassObservationData
+dataSS <- mockData$SearchScheduleData
+ghatMat <- rghat(n = 1000, dataCO, dataSS, model_SE = pkModel, 
+             model_CP = cpModel, seed_SE = 1, seed_CP = 1,
+             unitCol = "Unit", dateFoundCol = "DateFound", 
+             dateSearchedCol = "DateSearched"
+           )
+```
+
+
+
