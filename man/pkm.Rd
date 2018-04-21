@@ -69,6 +69,7 @@ The following components are displayed automatically:
 The following components are not printed automatically but can be accessed
 via the \code{$} operator:
 \describe{
+ \item{\code{data}}{the data used to fit the model}
   \item{\code{betahat_p}}{parameter estimates for the terms in the 
     regression model for for \code{p} (logit scale)}
   \item{\code{betahat_k}}{parameter estimates for the terms in the 
