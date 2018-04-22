@@ -31,6 +31,7 @@ function(input, output, session){
   msgModFailCP <- NULL
   msgSampleSizeCP <- NULL
   msgRunModg <- NULL
+  msgModFailg <- NULL
 
   rv <- reactiveValues(
           dataSE = NULL, colNamesSE = NULL, obsColsSE = NULL, predsSE = NULL, 
@@ -326,7 +327,7 @@ function(input, output, session){
               modOrder <- as.numeric(row.names(AICcTab))
               modNames <- names(rv$modsSE)[modOrder]
               mtuText <- "modelChoicesSE"
-              scText <- "Model choice"
+              scText <- "Model for all"
               modSelect <- selectizeInput(mtuText, scText, modNames)
               modelMenuSE <- paste(modelMenuSE, modSelect)  
             }else{
@@ -335,7 +336,7 @@ function(input, output, session){
                 modOrder <- as.numeric(row.names(AICcTab))
                 modNames <- names(rv$modsSE[[sci]])[modOrder]
                 mtuText <- paste("modelChoicesSE", sci, sep = "") 
-                scText <- paste("Model choice, ", rv$sizeclasses[sci], 
+                scText <- paste("Model for size class ", rv$sizeclasses[sci], 
                             sep = ""
                           )
                 modSelect <- selectizeInput(mtuText, scText, modNames)
@@ -659,8 +660,9 @@ function(input, output, session){
               AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
               modOrderCP <- as.numeric(row.names(AICcTabCP))
               modNamesCP <- names(rv$modsCP)[modOrderCP]
+              modNamesCP <- gsub("; NULL", "", modNamesCP)
               mtuTextCP <- "modelChoicesCP"
-              scTextCP <- "Model choice"
+              scTextCP <- "Model for all"
               modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP)
               modelMenuCP <- paste(modelMenuCP, modSelectCP)  
             }else{
@@ -668,9 +670,10 @@ function(input, output, session){
                 AICcTabCP <- cpmSetAICcTab(rv$modsCP[[sci]])
                 modOrderCP <- as.numeric(row.names(AICcTabCP))
                 modNamesCP <- names(rv$modsCP[[sci]])[modOrderCP]
+                modNamesCP <- gsub("; NULL", "", modNamesCP)
                 mtuTextCP <- paste("modelChoicesCP", sci, sep = "") 
-                scTextCP <- paste("Model choice, ", rv$sizeclasses[sci], 
-                              sep = ""
+                scTextCP <- paste("Model for size class ",  
+                              rv$sizeclasses[sci], sep = ""
                             )
                 modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP)
                 modelMenuCP <- paste(modelMenuCP, modSelectCP)  
@@ -903,17 +906,22 @@ function(input, output, session){
       rv$niterations <- input$niterations
       rv$SEmodToUse <- input[["modelChoicesSE"]]
       rv$CPmodToUse <- input[["modelChoicesCP"]]
+      if (!grepl("s ~", rv$CPmodToUse)){
+        rv$CPmodToUse <- paste(rv$CPmodToUse, "; NULL", sep = "")
+      }
       output$gtext1 <- renderText(rv$modNamesSE)
       output$gtext2 <- renderText(rv$SEmodToUse)
       output$gtext3 <- renderText(rv$modNamesCP)
       output$gtext4 <- renderText(rv$CPmodToUse)
 
-      rv$rghat <- rghat(rv$niterations, rv$dataCO, rv$dataSS, 
-                    rv$modsSE[[rv$SEmodToUse]], 
-                    rv$modsCP[[rv$CPmodToUse]], 
-                    kFill = rv$kFill, unitCol = rv$unitCol, 
-                    dateFoundCol = rv$dateFoundCol, 
-                    dateSearchedCol = rv$dateSearchedCol
+      rv$rghat <- tryCatch(
+                    rghat(rv$niterations, rv$dataCO, rv$dataSS, 
+                      rv$modsSE[[rv$SEmodToUse]], 
+                      rv$modsCP[[rv$CPmodToUse]], 
+                      kFill = rv$kFill, unitCol = rv$unitCol, 
+                      dateFoundCol = rv$dateFoundCol, 
+                      dateSearchedCol = rv$dateSearchedCol
+                    ), error = function(x){NA}
                   )
 output$gtext5 <- renderText((rv$dataSS[,rv$dateSearchedCol]))
 
@@ -925,7 +933,17 @@ output$gtext5 <- renderText((rv$dataSS[,rv$dateSearchedCol]))
     }
 
     removeNotification(msgRunModg)
-   
+    if (any(is.na(rv$rghat))){
+      if (all(is.na(rv$rghat))){
+        msg <- "All ghat estimations failed, check input"
+        msgModFailg <- showNotification(msg, type = "error", duration = NULL)
+      } else{
+        msg <- "Some ghat estimations failed, check input"
+        msgModFailg <- showNotification(msg, type = "warning", 
+                         duration = NULL
+                       )
+      }
+    }
   })
 
 # not sure about these with the new estimation set up
