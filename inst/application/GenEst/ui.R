@@ -42,7 +42,7 @@ tabPanel("Analyses",
   tabsetPanel(
     tabPanel("General Inputs", br(), br(),
       sidebarPanel(width = 3,
-        numericInput("n_iterations", "Number of Iterations:", value = 1000, 
+        numericInput("niterations", "Number of Iterations:", value = 1000, 
           min = 1, max = 10000, step = 1
         ),
         numericInput("CL", "Confidence Level:", value = 0.9, min = 0, max = 1,
@@ -170,12 +170,25 @@ tabPanel("Analyses",
     ),
     tabPanel("Detection Probability", br(), br(),
       sidebarPanel(width = 3, 
+        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+        br(), br(),
+        selectizeInput("unitCol", "Units:", c("No data input yet"), 
+          multiple = FALSE
+        ),
+        selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
+          multiple = FALSE
+        ),
+        selectizeInput("dateSearchedCol", "Date Searched:",  
+          c("No data input yet"), multiple = FALSE
+        ),
         conditionalPanel(
           condition = "input.runModSE > 0 & input.runModCP > 0",
           actionButton("runModg", "Estimate Detection Probability")
         )
       ),
-      mainPanel(br())
+      mainPanel(br(), textOutput("gtext1"), br(), textOutput("gtext2"), br(), 
+        textOutput("gtext3"), br(), textOutput("gtext4"), br(),
+        textOutput("gtext5"), br())
     ),
     tabPanel("Fatality Estimation", br(), br(),
       sidebarPanel(width = 3,
