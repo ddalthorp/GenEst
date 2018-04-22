@@ -105,7 +105,7 @@ tabPanel("Analyses",
           tabPanel("Model Comparison Tables", br(),
             br(), DT::dataTableOutput("AICcTabSE")
           ),
-          tabPanel("Model Selection", br(), br(), htmlOutput("modelMenuSE"))
+          tabPanel("Model Selection", br(), htmlOutput("modelMenuSE"))
         )
       )
     ),
@@ -182,7 +182,9 @@ tabPanel("Analyses",
           c("No data input yet"), multiple = FALSE
         ),
         conditionalPanel(
-          condition = "input.runModSE > 0 & input.runModCP > 0",
+          condition = 
+            "input.modelChoicesSE != null & input.modelChoicesCP != null",
+          br(), 
           actionButton("runModg", "Estimate Detection Probability")
         )
       ),
