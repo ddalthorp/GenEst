@@ -106,6 +106,7 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP,
   SS <- data_ss[, c(dateSearchedCol, preds_dynamic, Unit)]
   SS <- SS[which(SS[ , Unit] == 1), ]
   Data <- data.frame(SS, Carc)
+  colnames(Data) <- c(colnames(SS), preds_static)
   Data <- Data[Data[ , dateSearchedCol] <= DateFound, ]
   SE <- data.frame(Data[ , preds_SE])
   CP <- data.frame(Data[ , preds_CP])
@@ -114,6 +115,12 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP,
 
   SEcell <- apply(SE, 1, paste, collapse = ".")
   CPcell <- apply(CP, 1, paste, collapse = ".")
+  if (all(SEcell == "")){
+    SEcell <- rep("all", length(SEcell))
+  }
+  if (all(CPcell == "")){
+    CPcell <- rep("all", length(CPcell))
+  }
   SEParams <- pkSim[SEcell] 
   CPParams <- cpSim[CPcell] 
 

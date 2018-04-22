@@ -3,7 +3,7 @@ devtools::load_all()
 data(mockData)
 
 dataSE <- mockData$SearcherEfficiencyData
-pkModel <- GenEst::pkm(formula_p = p ~ Visibility * HabitatType, 
+pkModel <- GenEst::pkm(formula_p = p ~ Visibility,
                        formula_k = k ~ 1, data = dataSE)
 
 dataCP <- mockData$CarcassPersistenceData
@@ -18,12 +18,7 @@ SEmod <- pkModel
 CPmod <- cpModel
 
 
-rghat(n = 10, data_carc, data_ss, model_SE = pkModel, model_CP = cpModel, 
+rghat(n = 1000, data_carc, data_ss, model_SE = pkModel, model_CP = cpModel, 
 seed_SE = 1, seed_CP = 1, kFill = NULL, unitCol = "Unit",
                   dateFoundCol = "DateFound", 
-                  dateSearchedCol = "DateSearched")
-
-
-
-
-
+dateSearchedCol = "DateSearched")
