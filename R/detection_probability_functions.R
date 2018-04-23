@@ -53,6 +53,10 @@ rghat <- function(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
   pkSim <- rpk(n, model_SE, seed_SE, kFill)
   cpSim <- rcp(n, model_CP, seed_CP, type = "ppersist") 
 
+  data_ss[ , dateSearchedCol] <- yyyymmdd(data_ss[ , dateSearchedCol])
+  data_carc[ , dateFoundCol] <- yyyymmdd(data_carc[ , dateFoundCol])
+
+
   date1 <- min(data_ss[ , dateSearchedCol])
   data_carc[ , dateFoundCol] <- dateToDay(data_carc[ , dateFoundCol], date1)
   data_ss[ , dateSearchedCol] <- dateToDay(data_ss[ , dateSearchedCol], date1)

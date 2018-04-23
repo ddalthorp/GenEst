@@ -42,7 +42,7 @@ tabPanel("Analyses",
   tabsetPanel(
     tabPanel("General Inputs", br(), br(),
       sidebarPanel(width = 3,
-        numericInput("n_iterations", "Number of Iterations:", value = 1000, 
+        numericInput("niterations", "Number of Iterations:", value = 1000, 
           min = 1, max = 10000, step = 1
         ),
         numericInput("CL", "Confidence Level:", value = 0.9, min = 0, max = 1,
@@ -81,13 +81,13 @@ tabPanel("Analyses",
           HTML("<big><strong><u> Table & Figure Selection:
           </u></strong></big>"), 
           br(), br(), 
-          selectizeInput("tabfigSizeClassSE", width = "400px", 
+          selectizeInput("tabfigSizeClassSE",  
             "Size Class:", " ", multiple = FALSE
           ),  
-          selectizeInput("tabfigSEp", width = "400px", "p Model:",
+          selectizeInput("tabfigSEp", "p Model:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigSEk", width = "400px", "k Model:",
+          selectizeInput("tabfigSEk", "k Model:",
             " ", multiple = FALSE
           )
         )
@@ -105,7 +105,7 @@ tabPanel("Analyses",
           tabPanel("Model Comparison Tables", br(),
             br(), DT::dataTableOutput("AICcTabSE")
           ),
-          tabPanel("Model Selection", br(), br(), htmlOutput("modelMenuSE"))
+          tabPanel("Model Selection", br(), htmlOutput("modelMenuSE"))
         )
       )
     ),
@@ -126,7 +126,8 @@ tabPanel("Analyses",
           choices = list("exponential" = "exponential", "weibull" = "weibull",
                       "lognormal" = "lognormal", "loglogistic" = "loglogistic"
                     ), 
-          selected = c("exponential", "weibull", "lognormal", "loglogistic")
+          selected = c("exponential", "weibull", "lognormal", "loglogistic"),
+          inline = TRUE
         ),
         conditionalPanel(
           condition = "input.ltp != null & input.fta != null",
@@ -138,18 +139,17 @@ tabPanel("Analyses",
           HTML("<big><strong><u> Table & Figure Selection: 
             </u></strong></big>"), 
           br(), br(),
-          selectizeInput("tabfigSizeClassCP", width = "400px", 
-            "Size Class:", " ", multiple = FALSE
+          selectizeInput("tabfigSizeClassCP", "Size Class:", 
+            " ", multiple = FALSE
           ),
-          selectizeInput("tabfigCPdist", width = "400px", "Distribution:",
+          selectizeInput("tabfigCPdist", "Distribution:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigCPl", width = "400px", "Location Model:",
+          selectizeInput("tabfigCPl", "Location Model:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigCPs", width = "400px", "Scale Model:",
-            " ", multiple = FALSE
-          )
+          selectizeInput("tabfigCPs", "Scale Model:", " ", multiple = FALSE)
+          
         )
       ),
       mainPanel(
@@ -170,12 +170,25 @@ tabPanel("Analyses",
     ),
     tabPanel("Detection Probability", br(), br(),
       sidebarPanel(width = 3, 
+        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+        br(), br(),
+        selectizeInput("unitCol", "Units:", c("No data input yet"), 
+          multiple = FALSE
+        ),
+        selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
+          multiple = FALSE
+        ),
+        selectizeInput("dateSearchedCol", "Date Searched:",  
+          c("No data input yet"), multiple = FALSE
+        ),
         conditionalPanel(
-          condition = "input.runModSE > 0 & input.runModCP > 0",
+          condition = 
+            "input.modelChoicesSE1 != null & input.modelChoicesCP1 != null",
+          br(), 
           actionButton("runModg", "Estimate Detection Probability")
         )
       ),
-      mainPanel(br())
+      mainPanel(br(), textOutput("gtext"))
     ),
     tabPanel("Fatality Estimation", br(), br(),
       sidebarPanel(width = 3,

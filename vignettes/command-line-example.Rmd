@@ -30,7 +30,7 @@ was constructed using **GenEst** version `r vers` on `r today`.
 To obtain the most recent version of **GenEst**, use the **devtools** package 
 to download it from GitHub:
 
-```{r, results = "hide", message = FALSE, warning = FALSE}
+```{r, eval = FALSE}
 install.packages("devtools")
 devtools::install_github("ddalthorp/GenEst")
 ```
