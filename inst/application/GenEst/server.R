@@ -60,7 +60,7 @@ function(input, output, session){
 
           kFill = NULL, unitCol = NULL, 
           dateFoundCol = NULL, dateSearchedCol = NULL,
-          SEmodToUse = NULL, CPmodToUse = NULL,
+          SEmodToUse = NULL, CPmodToUse = NULL, scis = NULL, 
 
           dataDWP = NULL,
 
@@ -199,6 +199,7 @@ function(input, output, session){
     if (length(rv$sizeclassCol) == 0){
       rv$sizeclasses <- "all"
     }
+    rv$sizeclassesSE <- rv$sizeclasses
 
     rv$predictors_p <- paste(rv$predsSE, collapse = "*")
     if (length(rv$predsSE) == 0){
@@ -320,15 +321,17 @@ function(input, output, session){
         output$modelMenuSE <- renderUI({
           
           modelMenuSE <- ""
-          nsizeclasses <- length(rv$sizeclasses)
+          nsizeclasses <- length(rv$sizeclassesSE)
           if (nsizeclasses > 0){
             if (nsizeclasses == 1){
               AICcTab <- pkmSetAICcTab(rv$modsSE) 
               modOrder <- as.numeric(row.names(AICcTab))
               modNames <- names(rv$modsSE)[modOrder]
-              mtuText <- "modelChoicesSE"
+              mtuText <- "modelChoicesSE1"
               scText <- "Model for all"
-              modSelect <- selectizeInput(mtuText, scText, modNames)
+              modSelect <- selectizeInput(mtuText, scText, modNames,
+                               width = "400px"
+                             )
               modelMenuSE <- paste(modelMenuSE, modSelect)  
             }else{
               for(sci in 1:nsizeclasses){
@@ -339,7 +342,9 @@ function(input, output, session){
                 scText <- paste("Model for size class ", rv$sizeclasses[sci], 
                             sep = ""
                           )
-                modSelect <- selectizeInput(mtuText, scText, modNames)
+                modSelect <- selectizeInput(mtuText, scText, modNames,
+                               width = "400px"
+                             )
                 modelMenuSE <- paste(modelMenuSE, modSelect)  
               }
             }
@@ -519,6 +524,7 @@ function(input, output, session){
     if (length(rv$sizeclassCol) == 0){
       rv$sizeclasses <- "all"
     }
+    rv$sizeclassesCP <- rv$sizeclasses
 
     rv$predictors_l <- paste(rv$predsCP, collapse = "*")
     if (length(rv$predsCP) == 0){
@@ -654,19 +660,21 @@ function(input, output, session){
         output$modelMenuCP <- renderUI({
         
           modelMenuCP <- ""
-          nsizeclasses <- length(rv$sizeclasses)
-          if (nsizeclasses > 0){
-            if (nsizeclasses == 1){
+          nsizeclassesCP <- length(rv$sizeclassesCP)
+          if (nsizeclassesCP > 0){
+            if (nsizeclassesCP == 1){
               AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
               modOrderCP <- as.numeric(row.names(AICcTabCP))
               modNamesCP <- names(rv$modsCP)[modOrderCP]
               modNamesCP <- gsub("; NULL", "", modNamesCP)
-              mtuTextCP <- "modelChoicesCP"
+              mtuTextCP <- "modelChoicesCP1"
               scTextCP <- "Model for all"
-              modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP)
+              modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP,
+                               width = "400px"
+                             )
               modelMenuCP <- paste(modelMenuCP, modSelectCP)  
             }else{
-              for(sci in 1:nsizeclasses){
+              for(sci in 1:nsizeclassesCP){
                 AICcTabCP <- cpmSetAICcTab(rv$modsCP[[sci]])
                 modOrderCP <- as.numeric(row.names(AICcTabCP))
                 modNamesCP <- names(rv$modsCP[[sci]])[modOrderCP]
@@ -675,7 +683,9 @@ function(input, output, session){
                 scTextCP <- paste("Model for size class ",  
                               rv$sizeclasses[sci], sep = ""
                             )
-                modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP)
+                modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP,
+                               width = "400px"
+                             )
                 modelMenuCP <- paste(modelMenuCP, modSelectCP)  
               }
             }
@@ -895,25 +905,21 @@ function(input, output, session){
       }
     }
 
+    rv$unitCol <- input$unitCol
+    rv$dateFoundCol <- input$dateFoundCol
+    rv$dateSearchedCol <- input$dateSearchedCol
+    rv$niterations <- input$niterations
+
     msg <- "Estimating detection probabilities"
     msgRunModg <- showNotification(msg, duration = NULL)
+    rv$nsizeclasses <- length(rv$sizeclasses)
 
-    if (length(rv$sizeclasses == 1)){
-
-      rv$unitCol <- input$unitCol
-      rv$dateFoundCol <- input$dateFoundCol
-      rv$dateSearchedCol <- input$dateSearchedCol
-      rv$niterations <- input$niterations
-      rv$SEmodToUse <- input[["modelChoicesSE"]]
-      rv$CPmodToUse <- input[["modelChoicesCP"]]
+    if (rv$nsizeclasses == 1){
+      rv$SEmodToUse <- input[["modelChoicesSE1"]]
+      rv$CPmodToUse <- input[["modelChoicesCP1"]]
       if (!grepl("s ~", rv$CPmodToUse)){
         rv$CPmodToUse <- paste(rv$CPmodToUse, "; NULL", sep = "")
       }
-      output$gtext1 <- renderText(rv$modNamesSE)
-      output$gtext2 <- renderText(rv$SEmodToUse)
-      output$gtext3 <- renderText(rv$modNamesCP)
-      output$gtext4 <- renderText(rv$CPmodToUse)
-
       rv$rghat <- tryCatch(
                     rghat(rv$niterations, rv$dataCO, rv$dataSS, 
                       rv$modsSE[[rv$SEmodToUse]], 
@@ -923,13 +929,37 @@ function(input, output, session){
                       dateSearchedCol = rv$dateSearchedCol
                     ), error = function(x){NA}
                   )
-output$gtext5 <- renderText((rv$dataSS[,rv$dateSearchedCol]))
 
+    } else{
+      
+      rv$rghat <- vector("list", length = rv$nsizeclasses)
+      for (sci in 1:rv$nsizeclasses){
+        rv$SEmodToUse <- input[[sprintf("modelChoicesSE%d", sci)]]
+        rv$CPmodToUse <- input[[sprintf("modelChoicesCP%d", sci)]]
+        if (!grepl("s ~", rv$CPmodToUse)){
+          rv$CPmodToUse <- paste(rv$CPmodToUse, "; NULL", sep = "")
+        }
+        rv$scis <- which(rv$dataCO[ , rv$sizeclassCol] == rv$sizeclasses[sci])
+        rv$rghat[[sci]] <- tryCatch(
+                             rghat(rv$niterations, 
+                               rv$dataCO[rv$scis, ], 
+                               rv$dataSS, 
+                               rv$modsSE[[sci]][[rv$SEmodToUse]], 
+                               rv$modsCP[[sci]][[rv$CPmodToUse]], 
+                               kFill = rv$kFill, unitCol = rv$unitCol, 
+                               dateFoundCol = rv$dateFoundCol, 
+                               dateSearchedCol = rv$dateSearchedCol
+                             ), error = function(x){NA}
+                           )
 
-      if (is.matrix(rv$rghat)){
-        output$gtext5 <- renderText("HI HOW ARE YOU?")
       }
+    }
 
+    if (is.matrix(rv$rghat)){
+      output$gtext <- renderText("ghat estimation done.")
+    }
+    if (is.list(rv$rghat) & is.matrix(rv$rghat[[1]])){
+      output$gtext <- renderText("Multi-size class ghat estimation done.")
     }
 
     removeNotification(msgRunModg)

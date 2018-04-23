@@ -81,13 +81,13 @@ tabPanel("Analyses",
           HTML("<big><strong><u> Table & Figure Selection:
           </u></strong></big>"), 
           br(), br(), 
-          selectizeInput("tabfigSizeClassSE", width = "400px", 
+          selectizeInput("tabfigSizeClassSE",  
             "Size Class:", " ", multiple = FALSE
           ),  
-          selectizeInput("tabfigSEp", width = "400px", "p Model:",
+          selectizeInput("tabfigSEp", "p Model:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigSEk", width = "400px", "k Model:",
+          selectizeInput("tabfigSEk", "k Model:",
             " ", multiple = FALSE
           )
         )
@@ -126,7 +126,8 @@ tabPanel("Analyses",
           choices = list("exponential" = "exponential", "weibull" = "weibull",
                       "lognormal" = "lognormal", "loglogistic" = "loglogistic"
                     ), 
-          selected = c("exponential", "weibull", "lognormal", "loglogistic")
+          selected = c("exponential", "weibull", "lognormal", "loglogistic"),
+          inline = TRUE
         ),
         conditionalPanel(
           condition = "input.ltp != null & input.fta != null",
@@ -138,18 +139,17 @@ tabPanel("Analyses",
           HTML("<big><strong><u> Table & Figure Selection: 
             </u></strong></big>"), 
           br(), br(),
-          selectizeInput("tabfigSizeClassCP", width = "400px", 
-            "Size Class:", " ", multiple = FALSE
+          selectizeInput("tabfigSizeClassCP", "Size Class:", 
+            " ", multiple = FALSE
           ),
-          selectizeInput("tabfigCPdist", width = "400px", "Distribution:",
+          selectizeInput("tabfigCPdist", "Distribution:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigCPl", width = "400px", "Location Model:",
+          selectizeInput("tabfigCPl", "Location Model:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigCPs", width = "400px", "Scale Model:",
-            " ", multiple = FALSE
-          )
+          selectizeInput("tabfigCPs", "Scale Model:", " ", multiple = FALSE)
+          
         )
       ),
       mainPanel(
@@ -183,14 +183,12 @@ tabPanel("Analyses",
         ),
         conditionalPanel(
           condition = 
-            "input.modelChoicesSE != null & input.modelChoicesCP != null",
+            "input.modelChoicesSE1 != null & input.modelChoicesCP1 != null",
           br(), 
           actionButton("runModg", "Estimate Detection Probability")
         )
       ),
-      mainPanel(br(), textOutput("gtext1"), br(), textOutput("gtext2"), br(), 
-        textOutput("gtext3"), br(), textOutput("gtext4"), br(),
-        textOutput("gtext5"), br())
+      mainPanel(br(), textOutput("gtext"))
     ),
     tabPanel("Fatality Estimation", br(), br(),
       sidebarPanel(width = 3,
