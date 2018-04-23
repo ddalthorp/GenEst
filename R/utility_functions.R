@@ -218,3 +218,26 @@ dateToDay <- function(date, ref = NULL){
   day <- as.numeric(difftime(date, ref, unit = "days") + 1)
   return(day)
 }
+
+#' Converts the standard Excel date format (m/d/YYYY) to YYYY-mm-dd
+#'
+#' @description only transforms m/d/Y dates, returns untransformed dates that
+#'   were already YYYY-mm-dd
+#'
+#' @param date date(s) to convert
+#' @return converted dates
+#' @examples NA
+#' @export 
+#'
+yyyymmdd <- function(x){
+ 
+  slashCheck <- all(grepl("\\/", x))
+  numerals <- strsplit(as.character(x), "/")[[1]]
+  numeralsCheck <- nchar(numerals[1]) %in% 1:2 & nchar(numerals[2]) %in% 1:2 & 
+                     nchar(numerals[3]) == 4  
+  if (slashCheck & numeralsCheck ){
+    x <- as.Date(as.character(x), format = "%m/%d/%Y")
+  }
+  return(x)
+}
+
