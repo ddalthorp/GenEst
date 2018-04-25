@@ -219,12 +219,22 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   preds_p <- all.vars(formula_p[[3]])
+  if (length(preds_p) > 0){
+    for (predi in 1:length(preds_p)){
+      data[ , preds_p[predi]] <- as.character(data[ , preds_p[predi]])
+    }
+  }
   formulaRHS_p <- formula(delete.response(terms(formula_p)))
   levels_p <- .getXlevels(terms(formulaRHS_p), data)
 
   preds_k <- character(0)
   if (length(formula_k) > 0){
     preds_k <- all.vars(formula_k[[3]])
+    if (length(preds_k) > 0){
+      for (predi in 1:length(preds_k)){
+        data[ , preds_k[predi]] <- as.character(data[ , preds_k[predi]])
+      }
+    }
     formulaRHS_k <- formula(delete.response(terms(formula_k)))
     levels_k <- .getXlevels(terms(formulaRHS_k), data)
   }
