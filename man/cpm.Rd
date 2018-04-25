@@ -5,7 +5,7 @@
 \title{Fit a single carcass persistence model.}
 \usage{
 cpm(formula_l, formula_s = NULL, data = NULL, left = NULL, right = NULL,
-  dist = "weibull", CL = 0.9)
+  dist = "weibull", CL = 0.9, quiet = FALSE)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 
@@ -31,6 +31,8 @@ observation is stored.}
 "lognormal")}
 
 \item{CL}{confidence level}
+
+\item{quiet}{Logical indicator of whether or not to print messsages}
 }
 \value{
 \code{cpm} returns an object of class "\code{cpm}", which is a list

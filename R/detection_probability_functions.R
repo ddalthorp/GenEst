@@ -1,5 +1,5 @@
-#' @title Simulate ghat values for a set of carcasses from fitted pk and cp 
-#'   models and search data
+#' @title Simulate ghat values and arrival intervals for a set of carcasses 
+#'   from fitted pk and cp models and search data
 #'
 #' @param n the number of simulation draws
 #' @param data_carc Carcass Observation data
@@ -12,7 +12,8 @@
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
 #' @param dateSearchedCol Column name for the date searched data
-#' @return matrix of n ghat estimates for each carcass
+#' @return list of [1] matrix of n ghat estimates for each carcass and [2]
+#'   matrix of n arrival intervals (A) for each carcass
 #' @examples NA
 #' @export
 #'
@@ -70,18 +71,22 @@ rghat <- function(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
 
   ncarc <- nrow(data_carc)
   ghat <- matrix(NA, nrow = ncarc, ncol = n)
+  A <- matrix(NA, nrow = ncarc, ncol = n)
   for (carci in 1:ncarc){
-    ghat[carci, ] <- rghatCarcass(n, data_carc = data_carc[carci, ], dist,  
-                       data_ss, preds_SE, preds_CP, pkSim, cpSim,
-                       preds_static, preds_dynamic, unitCol, dateFoundCol, 
-                       dateSearchedCol
-                     )
+    carciEst <- rghatCarcass(n, data_carc = data_carc[carci, ], dist,  
+                  data_ss, preds_SE, preds_CP, pkSim, cpSim,
+                  preds_static, preds_dynamic, unitCol, dateFoundCol, 
+                  dateSearchedCol
+                )
+    ghat[carci, ] <- carciEst$ghat
+    A[carci, ] <- carciEst$A
   }
-  return(ghat)
+  out <- list("ghat" = ghat, "A" = A)
+  return(out)
 }
 
-#' Simulate ghat values for a carcasses from fitted pk and cp models 
-#'   and search data
+#' Simulate ghat values and arrival intervals for a carcasses from fitted pk 
+#'   and cp models and search data
 #'
 #' @param n the number of simulation draws
 #' @param data_carc Carcass Observation data for the carcass
@@ -96,7 +101,8 @@ rghat <- function(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
 #' @param dateSearchedCol Column name for the date searched data
-#' @return n ghat estimates for a carcass
+#' @return list of [1] n ghat estimates for a carcass and [2] n arrival 
+#'   interval (A) estimates for a carcass
 #' @examples NA
 #' @export
 #'
@@ -178,7 +184,9 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP,
       ghat[simInd] <- as.vector(se) * as.vector(persist)
     }
   }  
-  return(ghat)
+  A <- A[nrow(A), ]
+  out <- list("ghat" = ghat, "A" = A)
+  return(out)
 }
 
 #' Determine which carcasses were from cleanout searches

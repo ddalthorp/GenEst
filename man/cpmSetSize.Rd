@@ -6,7 +6,7 @@
 \usage{
 cpmSetSize(formula_l, formula_s = NULL, data, left = NULL, right = NULL,
   dists = c("exponential", "weibull", "lognormal", "loglogistic"),
-  sizeclassCol = NULL, CL = 0.9)
+  sizeclassCol = NULL, CL = 0.9, quiet = FALSE)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 
@@ -35,6 +35,8 @@ observation is stored.}
 are recorded}
 
 \item{CL}{confidence level}
+
+\item{quiet}{Logical indicator of whether or not to print messsages}
 }
 \value{
 \code{cpmSetSize} returns a class-\code{cpmSetSize} list of 

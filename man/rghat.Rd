@@ -2,8 +2,8 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{rghat}
 \alias{rghat}
-\title{Simulate ghat values for a set of carcasses from fitted pk and cp 
-  models and search data}
+\title{Simulate ghat values and arrival intervals for a set of carcasses 
+  from fitted pk and cp models and search data}
 \usage{
 rghat(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
   seed_CP = 1, kFill = NULL, unitCol = "Unit",
@@ -33,7 +33,8 @@ rghat(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
 \item{dateSearchedCol}{Column name for the date searched data}
 }
 \value{
-matrix of n ghat estimates for each carcass
+list of [1] matrix of n ghat estimates for each carcass and [2]
+  matrix of n arrival intervals (A) for each carcass
 }
 \examples{
 NA
