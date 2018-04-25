@@ -56,6 +56,8 @@
 #'
 #' @param CL confidence level
 #'
+#' @param quiet Logical indicator of whether or not to print messsages
+#'
 #' @return \code{cpm} returns an object of class "\code{cpm}", which is a list
 #'   whose components characterize the fit of the model. Due to the large 
 #'   number and complexity of components, only a subset of them is printed 
@@ -124,7 +126,7 @@
 #' @export
 #'
 cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
-                right = NULL, dist = "weibull", CL = 0.9){
+                right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE){
 
   if (any(data[ , left] > data[ , right], na.rm = TRUE)){
     stop("Last time observed data are greater than first time absent data.") 
@@ -132,7 +134,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   if (all(data[ , left] == data[ , right], na.rm = TRUE)){
     stop("Last time observed data are identical to first time absent data.") 
   }
-  if (length(formula_s) != 0 & dist == "exponential"){
+  if (length(formula_s) != 0 & dist == "exponential" & quiet == FALSE){
     msg <- paste("Formula given for scale, but exponential distribution ",
              "chosen, which does have a scale parameter. Formula ignored.", 
              sep = "")
@@ -140,7 +142,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     formula_s <- formula(s ~ 1)
   } 
   if (length(formula_s) == 0){
-    if (dist != "exponential"){
+    if (dist != "exponential" & quiet == FALSE){
       message("No formula given for scale, intercept-only model used.")
     }
     formula_s <- formula(s ~ 1)
@@ -533,6 +535,8 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #'
 #' @param CL confidence level
 #'
+#' @param quiet Logical indicator of whether or not to print messsages
+#'
 #' @return \code{cpmSet} returns a class-\code{cpmSet} list of objects, each
 #'   of class "\code{cpm}", which each then a list whose components 
 #'   characterize the fit of the specific model.
@@ -541,7 +545,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #'
 cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL, 
                    right = NULL, dists = c("exponential", "weibull",
-                   "lognormal", "loglogistic"), CL = 0.9){
+                   "lognormal", "loglogistic"), CL = 0.9, quiet = FALSE){
 
   if (length(formula_s) == 0){
     formula_s <- formula(s ~ 1)
@@ -630,7 +634,7 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
       formi_s <- NULL
     }
     cpm_i <- tryCatch(
-               cpm(formi_l, formi_s, data, left, right, disti, CL), 
+               cpm(formi_l, formi_s, data, left, right, disti, CL, quiet), 
                error = function(x) {
                  paste("Failed model fit: ", geterrmessage(), sep = "")
                }
@@ -687,6 +691,8 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'
 #' @param CL confidence level
 #'
+#' @param quiet Logical indicator of whether or not to print messsages
+#'
 #' @param sizeclassCol Name of colum in \code{data} where the size classes
 #'  are recorded
 #'
@@ -701,12 +707,15 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
                        right = NULL, dists = c("exponential", "weibull", 
                        "lognormal", "loglogistic"), sizeclassCol = NULL, 
-                       CL = 0.9){
+                       CL = 0.9, quiet = FALSE){
 
   if (length(sizeclassCol) == 0){
-    message("No size class provided, function run as if cpmSet")
-    output <- cpmSet(formula_l, formula_s, data, left, right, dists, CL)
-    return(output)
+    out <- vector("list", length = 1)
+    names(out) <- "all"
+    out[[1]] <- cpmSet(formula_l, formula_s, data, left, right, dists, 
+                  CL, quiet
+                )
+    return(out)
   }
 
   sizeclassData <- as.character(data[ , sizeclassCol])
@@ -718,70 +727,25 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
   for (sci in 1:nsizeclasses){
     sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
     data_i <- data[sizeclassMatch, ]
-    out[[sci]] <- cpmSet(formula_l, formula_s, data_i, left, right, dists, CL) 
+    out[[sci]] <- cpmSet(formula_l, formula_s, data_i, left, right, dists, 
+                    CL, quiet
+                  ) 
   }
 
   return(out)
 }
 
-#' Verify that a suite of carcass persistence models all fit successfully.
-#'
-#' @param cpmToCheck A \code{cpm} model or a set of them or a suite of sets
-#'   associated with multiple sizes
-#'
-#' @return A single (total) logcal 
-#'
-#' @export
-#'
-cpmCheck <- function(cpmToCheck){
-
-  status <- 0
-  classSingle <- class(cpmToCheck)
-  classSet <- class(cpmToCheck[[1]])
-  classSize <- class(cpmToCheck[[1]][[1]]) 
-  if ("cpm" %in% classSingle){
-    status <- 1
-  }
-  if ("cpm" %in% classSet){
-    ninSet <- length(cpmToCheck)
-    checks <- rep(0, ninSet)
-    for (modi in 1:ninSet){
-      checkClass <- class(cpmToCheck[[modi]])
-      if ("cpm" %in% checkClass){
-        checks[modi] <- 1
-      }
-    }
-    status <- floor(mean(checks))
-  }
-  if ("cpm" %in% classSize){
-    nsizeclasses <- length(cpmToCheck)
-    ninSet <- length(cpmToCheck[[1]])
-    checks <- matrix(0, nsizeclasses, ninSet)
-    for (sci in 1:nsizeclasses){
-      for (modi in 1:ninSet){
-        checkClass <- class(cpmToCheck[[sci]][[modi]])
-        if ("cpm" %in% checkClass){
-          checks[sci, modi] <- 1
-        }
-      }
-    }
-    status <- floor(mean(checks))
-  }
-  output <- as.logical(status)
-  return(output)
-}
-
-
 #' Create the  AICc tables for a set of carcass persistence models
 #' 
 #' @param cpmset Set of carcass persistence models fit to the same
 #'   observations
+#' @param quiet Logical indicating if messages should be printed
 #' @return AICc table
 #' @examples
 #' NA
 #' @export 
 #'
-cpmSetAICcTab <- function(cpmset){
+cpmSetAICcTab <- function(cpmset, quiet = FALSE){
 
   nmod <- length(cpmset)
   formulas <- names(cpmset)
@@ -820,11 +784,11 @@ cpmSetAICcTab <- function(cpmset){
                         "Delta AICc")
   whichAICcNA <- which(is.na(output$AICc))
   whichAICcMax <- which(output$AICc == 1e7)
-  if (length(whichAICcNA) > 0){
+  if (length(whichAICcNA) > 0 & quiet == FALSE){
     message("Models with incorrect specification were removed from output.")
     output <- output[-whichAICcNA, ]
   }
-  if (length(whichAICcMax) > 0){
+  if (length(whichAICcMax) > 0 & quiet == FALSE){
     message("Models that failed during fit were removed from output.")
     output <- output[-whichAICcMax, ]
   }
@@ -918,21 +882,85 @@ ppersist_loglogistic <- function(t_arrive0, t_arrive1, t_search, pda, pdb){
   return(out)
 }
 
+
 #' Check if all of the cpm models fail
 #'
-#' @param cpmToCheck A \code{cpm} model or a set of them or a suite of sets
-#'   associated with multiple sizes
+#' @param ckmToCheck A \code{cpmSet} object to test
 #'
-#' @return A single logical value indicating if all of the models failed
+#' @return A vector of logical values indicating if each of the models failed
 #'
 #' @export
 #'
-cpmAllFail <- function(cpmToCheck){
+cpmSetFail <- function(cpmSetToCheck){
 
-  unlisted <- unlist(cpmToCheck)
-  modsFail <- grepl("Failed model fit", unlisted)
-  nmods <- length(unlisted)
-  nmodsFail <- sum(modsFail)
-  out <- nmods == nmodsFail
+  nmodsInSet <- length(cpmSetToCheck)
+  out <- logical(nmodsInSet)
+  for (modi in 1:nmodsInSet){
+    out[modi] <- length(cpmSetToCheck[[modi]]) == 1
+  }
   return(out)
 }
+
+#' Check if all of the cpm models fail
+#'
+#' @param ckmToCheck A \code{cpmSetSize} object to test
+#'
+#' @return A list of vectors of logical values indicating if each of the 
+#'   models failed
+#'
+#' @export
+#'
+cpmSetSizeFail <- function(cpmSetSizeToCheck){
+
+  nsizes <- length(cpmSetSizeToCheck)
+  out <- vector("list", length = nsizes)
+  for (sci in 1:nsizes){
+    out[[sci]] <- cpmSetFail(cpmSetSizeToCheck[[sci]])
+  }
+  return(out)
+}
+
+
+#' Remove failed pkm models
+#'
+#' @param cpmSetToTidy A \code{cpmSet} object to tidy
+#'
+#' @return A \code{cpmSet} object with failed models removed
+#'
+#' @export
+#'
+cpmSetFailRemove <- function(cpmSetToTidy){
+
+  nmodsInSet <- length(cpmSetToTidy)
+  fails <- pkmSetFail(cpmSetToTidy)
+  pass <- fails == FALSE
+  npasses <- sum(pass)
+  passes <- which(pass)
+  out <- vector("list", length = npasses)
+  names(out) <- names(cpmSetToTidy[passes])
+  for (passi in 1:npasses){
+    out[[passi]] <- cpmSetToTidy[[passes[passi]]]
+  }
+  class(out) <- c("cpmSet", "list")
+  return(out)
+}
+
+#' Remove failed cpm models
+#'
+#' @param cpmSetSizeToTidy A list of \code{cpmSetSize} objects to tidy
+#'
+#' @return A list of \code{cpmSet} objects with failed models removed
+#'
+#' @export
+#'
+cpmSetSizeFailRemove <- function(cpmSetSizeToTidy){
+
+  nsizes <- length(cpmSetSizeToTidy)
+  out <- vector("list", length = nsizes)
+  names(out) <- names(cpmSetSizeToTidy)
+  for (sci in 1:nsizes){
+    out[[sci]] <- cpmSetFailRemove(cpmSetSizeToTidy[[sci]])
+  }
+  return(out)
+}
+

@@ -2,8 +2,8 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{rghatCarcass}
 \alias{rghatCarcass}
-\title{Simulate ghat values for a carcasses from fitted pk and cp models 
-  and search data}
+\title{Simulate ghat values and arrival intervals for a carcasses from fitted pk 
+  and cp models and search data}
 \usage{
 rghatCarcass(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP, pkSim,
   cpSim, preds_static, preds_dynamic, unitCol, dateFoundCol, dateSearchedCol)
@@ -36,11 +36,12 @@ rghatCarcass(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP, pkSim,
 \item{dateSearchedCol}{Column name for the date searched data}
 }
 \value{
-n ghat estimates for a carcass
+list of [1] n ghat estimates for a carcass and [2] n arrival 
+  interval (A) estimates for a carcass
 }
 \description{
-Simulate ghat values for a carcasses from fitted pk and cp models 
-  and search data
+Simulate ghat values and arrival intervals for a carcasses from fitted pk 
+  and cp models and search data
 }
 \examples{
 NA
