@@ -42,7 +42,7 @@ function(input, output, session){
           bestSE = NULL, specSE = NULL, figSEnrow = NULL, 
           figSEht = 600, figSEwh = 800,
           modNamesSEp = NULL, modNamesSEk = NULL, tabfigSEpk = NULL, 
-          minCellCountSE = NULL,
+          minCellCountSE = NULL, sizeclassesSE = NULL, 
           
           dataCP = NULL, colNamesCP = NULL, ftp = NULL, lta = NULL, 
           predsCP = NULL, predictors_l = NULL, predictors_s = NULL, 
@@ -53,7 +53,7 @@ function(input, output, session){
           figCPwh = 800, bestCP = NULL,
           modNamesCPdist = NULL, modNamesCPl = NULL, modNamesCPs = NULL,
           tabfigCPdls_fig = NULL, tabfigCPdls_tab = NULL, 
-          minCellCountCP = NULL, 
+          minCellCountCP = NULL, sizeclassesCP = NULL, 
 
           dataSS = NULL, colNamesSS = NULL, 
 
@@ -61,7 +61,9 @@ function(input, output, session){
           dateFoundCol = NULL, dateSearchedCol = NULL,
           SEmodToUse = NULL, CPmodToUse = NULL, scis = NULL, 
 
-          dataDWP = NULL,
+          rghat = NULL,
+
+          dataDWP = NULL, colNamesDWP = NULL,
 
           dataCO = NULL, colNamesCO = NULL,
 
@@ -127,6 +129,8 @@ function(input, output, session){
     output$dataSS <- DT::renderDataTable(rv$dataSS)
     updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
     updateSelectizeInput(session, "dateSearchedCol", choices = rv$colNamesSS)
+
+
   })
   observeEvent(input$fileDWP, {
     rv$dataDWP <- read.csv(input$fileDWP$datapath, header = TRUE, 
@@ -330,7 +334,10 @@ function(input, output, session){
       removeNotification(msgRunModSE)
  
       isolate({
-
+        output$sizeclassesSE <- renderText(
+                                  paste(rv$sizeclassesSE, collapse = " ")
+                                )
+        outputOptions(output, "sizeclassesSE", suspendWhenHidden = FALSE)
         output$modelMenuSE <- renderUI({
           
           modelMenuSE <- ""
@@ -618,6 +625,11 @@ function(input, output, session){
 
       isolate({
 
+        output$sizeclassesCP <- renderText(
+                                  paste(rv$sizeclassesCP, collapse = " ") 
+                                )
+        outputOptions(output, "sizeclassesCP", suspendWhenHidden = FALSE)
+
         output$modelMenuCP <- renderUI({
         
           modelMenuCP <- ""
@@ -807,7 +819,7 @@ function(input, output, session){
     }
   })
 
-  observeEvent(input$runModg, {
+  observeEvent(input$runModM, {
 
     rv$kFill <- NA
 
