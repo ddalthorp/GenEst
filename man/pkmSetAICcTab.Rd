@@ -4,11 +4,13 @@
 \alias{pkmSetAICcTab}
 \title{Create the  AICc tables for the searcher efficiency models}
 \usage{
-pkmSetAICcTab(pkmset)
+pkmSetAICcTab(pkmset, quiet = FALSE)
 }
 \arguments{
 \item{pkmset}{Set of searcher efficiency models fit to the same
 observations}
+
+\item{quiet}{Logical indicating if messages should be printed}
 }
 \value{
 AICc table

@@ -182,13 +182,19 @@ tabPanel("Analyses",
           c("No data input yet"), multiple = FALSE
         ),
         conditionalPanel(
+          condition = "output.kFillNeed == 'yes'",
+          numericInput("kFill", "Assumed k:", value = 0.5, 
+            min = 0, max = 1, step = 0.001
+          )
+        ),
+        conditionalPanel(
           condition = 
             "input.modelChoicesSE1 != null & input.modelChoicesCP1 != null",
           br(), 
           actionButton("runModg", "Estimate Detection Probability")
         )
       ),
-      mainPanel(br(), textOutput("gtext"))
+      mainPanel(br())
     ),
     tabPanel("Fatality Estimation", br(), br(),
       sidebarPanel(width = 3,
