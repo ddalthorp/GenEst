@@ -148,8 +148,7 @@ tabPanel("Analyses",
           selectizeInput("tabfigCPl", "Location Model:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigCPs", "Scale Model:", " ", multiple = FALSE)
-          
+          selectizeInput("tabfigCPs", "Scale Model:", " ", multiple = FALSE)        
         )
       ),
       mainPanel(
@@ -172,6 +171,28 @@ tabPanel("Analyses",
       sidebarPanel(width = 3, 
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
         br(), br(),
+        numericInput("gSearchInterval", "Standard Search Interval (days):", 
+          value = 7, min = 1, max = 400, step = 1),
+        conditionalPanel(
+          condition = "output.kFillNeed == 'yes'",
+          numericInput("kFill", "Assumed k:", value = 0.5, 
+            min = 0, max = 1, step = 0.001
+          )
+        ),
+        conditionalPanel(
+          condition = 
+            "input.modelChoicesSE1 != null & input.modelChoicesCP1 != null & 
+             output.sizeclassesSE == output.sizeclassesCP",
+          br(), 
+          actionButton("runModg", "Estimate Detection Probability")
+        )
+      ),
+      mainPanel(br())
+    ),
+    tabPanel("Fatality Estimation", br(), br(),
+      sidebarPanel(width = 3, 
+        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+        br(), br(),
         selectizeInput("unitCol", "Units:", c("No data input yet"), 
           multiple = FALSE
         ),
@@ -189,36 +210,13 @@ tabPanel("Analyses",
         ),
         conditionalPanel(
           condition = 
-            "input.modelChoicesSE1 != null & input.modelChoicesCP1 != null",
+            "input.modelChoicesSE1 != null & input.modelChoicesCP1 != null & 
+             output.sizeclassesSE == output.sizeclassesCP",
           br(), 
-          actionButton("runModg", "Estimate Detection Probability")
+          actionButton("runModM", "Estimate Fatalities")
         )
       ),
       mainPanel(br())
-    ),
-    tabPanel("Fatality Estimation", br(), br(),
-      sidebarPanel(width = 3,
-        selectizeInput("unitColCO", "Search Unit:", c("No data input yet"),
-          multiple = T, options = list(maxItems = 1)
-        ),
-        selectizeInput("splitColCO", "Data Splits:", c("No data input yet"), 
-          multiple = T, options = list(maxItems = 2)
-        ),
-        numericInput("fracSurveyedCO", "Fraction of Area or Units Surveyed:", 
-          value = 1.0, min = 0, max = 1, step = 0.001
-        ),
-        conditionalPanel(
-          condition = "input.runModg > 0 & input.unitColCO != null",
-          actionButton("runMmod", "Estimate Total Carcasses"))
-        ),
-      mainPanel(
-        tabsetPanel(id = "analysesM",
-          tabPanel("Selected Data", br(), br(),
-            DT::dataTableOutput("selectedCO")),
-          tabPanel("Figures", br()),
-          tabPanel("Model Tables", br())
-        )
-      )
     )
   )
 ),
