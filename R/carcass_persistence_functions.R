@@ -150,9 +150,19 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
   formulaRHS_l <- formula(delete.response(terms(formula_l)))
   preds_l <- all.vars(formulaRHS_l)
+  if (length(preds_l) > 0){
+    for (predi in 1:length(preds_l)){
+      data[ , preds_l[predi]] <- as.character(data[ , preds_l[predi]])
+    }
+  }
   levels_l <- .getXlevels(terms(formulaRHS_l), data)
   formulaRHS_s <- formula(delete.response(terms(formula_s)))
   preds_s <- all.vars(formulaRHS_s)
+  if (length(preds_s) > 0){
+    for (predi in 1:length(preds_s)){
+      data[ , preds_s[predi]] <- as.character(data[ , preds_s[predi]])
+    }
+  }
   predCheck <- c(preds_l, preds_s)
   levels_s <- .getXlevels(terms(formulaRHS_s), data)
 
