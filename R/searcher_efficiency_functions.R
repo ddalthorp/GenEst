@@ -67,6 +67,8 @@
 #'
 #' @param CL confidence level
 #'
+#' @param quiet Logical indicator of whether or not to print messsages
+#'
 #' @return \code{pkm} returns an object of class "\code{pkm}", which is a list
 #'   whose components characterize the fit of the model. Due to the large
 #'   number and complexity of components, only a subset of them is printed 
@@ -137,7 +139,7 @@
 #' @export
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-                kFixed = NULL, kInit = 0.7, CL = 0.9){
+                kFixed = NULL, kInit = 0.7, CL = 0.9, quiet = FALSE){
 
   if(sum(obsCol %in% colnames(data)) != length(obsCol)){
     stop("Observation column provided not in data.")
@@ -157,16 +159,16 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     if (kFixed < 0 | kFixed > 1){
       stop("Provided k is outside the supported range [0 - 1].")
    }
-    if (length(formula_k) > 0){
+    if (length(formula_k) > 0 & quiet == FALSE){
       message("Formula and fixed value provided for k, fixed value used.")
       formula_k <- NULL
     }
   }
   if (length(obsCol) == 1){
-    if (length(formula_k) > 0){
+    if (length(formula_k) > 0 & quiet == FALSE){
       message("Only one observation, k not estimated.")
     }
-    if (length(kFixed) == 1){
+    if (length(kFixed) == 1 & quiet == FALSE){
       message("Only one observation, kFixed input ignored.")
     }
     kFixed <- 0.5
@@ -487,6 +489,8 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #'
 #' @param CL confidence level
 #'
+#' @param quiet Logical indicator of whether or not to print messsages
+#'
 #' @return \code{pkmSet} returns a list of objects, each of class 
 #'   "\code{pkm}", which each then a list whose components characterize the 
 #'   fit of the specific model.
@@ -494,17 +498,17 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #' @export 
 #'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-                   kFixed = NULL, kInit = 0.7, CL = 0.9){
+                   kFixed = NULL, kInit = 0.7, CL = 0.9, quiet = FALSE){
 
-  if (length(kFixed) == 1 & length(formula_k) > 0){
+  if (length(kFixed) == 1 & length(formula_k) > 0 & quiet == FALSE){
     message("Formula and fixed value provided for k, fixed value used.")
     formula_k <- NULL
   }
   if (length(which(obsCol %in% colnames(data))) == 1){
-    if (length(formula_k) > 0){
+    if (length(formula_k) > 0 & quiet == FALSE){
       message("Only one observation, k not estimated.")
     }
-    if (length(kFixed) == 1){
+    if (length(kFixed) == 1 & quiet == FALSE){
       message("Only one observation, kFixed input ignored.")
     }
     formula_k <- NULL
@@ -610,7 +614,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formi_p <- keptFormula_p[modi][[1]]
     formi_k <- keptFormula_k[modi][[1]]
     pkm_i <- tryCatch(
-               pkm(formi_p, formi_k, data, obsCol, kFixed, kInit, CL), 
+               pkm(formi_p, formi_k, data, obsCol, kFixed, kInit, CL, quiet), 
                error = function(x) {
                  paste("Failed model fit: ", geterrmessage(), sep = "")
                }
@@ -672,6 +676,8 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 #' @param CL confidence level
 #'
+#' @param quiet Logical indicator of whether or not to print messsages
+#'
 #' @param sizeclassCol Name of colum in \code{data} where the size classes
 #'  are recorded
 #'
@@ -685,12 +691,15 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
                        sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, 
-                       CL = 0.9){
+                       CL = 0.9, quiet = FALSE){
 
   if (length(sizeclassCol) == 0){
-    message("No size class provided, function run as if pkmSet")
-    output <- pkmSet(formula_p, formula_k, data, obsCol, kFixed, kInit, CL)
-    return(output)
+    out <- vector("list", length = 1)
+    names(out) <- "all"
+    out[[1]] <- pkmSet(formula_p, formula_k, data, obsCol, kFixed, kInit, 
+                  CL, quiet = TRUE
+                )
+    return(out)
   }
   if ((sizeclassCol %in% colnames(data)) == FALSE){
     stop("Size class column provided not in data set.")
@@ -710,70 +719,24 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
     data_i <- data[sizeclassMatch, ]
     out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCol, kFixed, 
-                    kInit, CL
+                    kInit, CL, quiet
                   )
   }
 
   return(out)
 }
 
-#' Verify that a suite of searcher efficiency models all fit successfully.
-#'
-#' @param pkmToCheck A \code{pkm} model or a set of them or a suite of sets
-#'   associated with multiple sizes
-#'
-#' @return A single (total) logcal 
-#'
-#' @export
-#'
-pkmCheck <- function(pkmToCheck){
-
-  status <- 0
-  classSingle <- class(pkmToCheck)
-  classSet <- class(pkmToCheck[[1]])
-  classSize <- class(pkmToCheck[[1]][[1]]) 
-  if ("pkm" %in% classSingle){
-    status <- 1
-  }
-  if ("pkm" %in% classSet){
-    ninSet <- length(pkmToCheck)
-    checks <- rep(0, ninSet)
-    for (modi in 1:ninSet){
-      checkClass <- class(pkmToCheck[[modi]])
-      if ("pkm" %in% checkClass){
-        checks[modi] <- 1
-      }
-    }
-    status <- floor(mean(checks))
-  }
-  if ("pkm" %in% classSize){
-    nsizeclasses <- length(pkmToCheck)
-    ninSet <- length(pkmToCheck[[1]])
-    checks <- matrix(0, nsizeclasses, ninSet)
-    for (sci in 1:nsizeclasses){
-      for (modi in 1:ninSet){
-        checkClass <- class(pkmToCheck[[sci]][[modi]])
-        if ("pkm" %in% checkClass){
-          checks[sci, modi] <- 1
-        }
-      }
-    }
-    status <- floor(mean(checks))
-  }
-  output <- as.logical(status)
-  return(output)
-}
-
 #' Create the  AICc tables for the searcher efficiency models
 #' 
 #' @param pkmset Set of searcher efficiency models fit to the same
 #'   observations
+#' @param quiet Logical indicating if messages should be printed
 #' @return AICc table
 #' @examples
 #' NA
 #' @export 
 #'
-pkmSetAICcTab <- function(pkmset){
+pkmSetAICcTab <- function(pkmset, quiet = FALSE){
 
   nmod <- length(pkmset)
   formulas <- names(pkmset)
@@ -808,11 +771,11 @@ pkmSetAICcTab <- function(pkmset){
   colnames(output) <- c("p formula", "k formula", "AICc", "Delta AICc")
   whichAICcNA <- which(is.na(output$AICc))
   whichAICcMax <- which(output$AICc == 1e7)
-  if (length(whichAICcNA) > 0){
+  if (length(whichAICcNA) > 0 & quiet == FALSE){
     message("Models with incorrect specification were removed from output.")
     output <- output[-whichAICcNA, ]
   }
-  if (length(whichAICcMax) > 0){
+  if (length(whichAICcMax) > 0 & quiet == FALSE){
     message("Models that failed during fit were removed from output.")
     output <- output[-whichAICcMax, ]
   }
@@ -918,23 +881,83 @@ kSuggest <- function(obsData){
 
 #' Check if all of the pkm models fail
 #'
-#' @param pkmToCheck A \code{pkm} model or a set of them or a suite of sets
-#'   associated with multiple sizes
+#' @param pkmToCheck A \code{pkmSet} object to test
 #'
-#' @return A single logical value indicating if all of the models failed
+#' @return A vector of logical values indicating if each of the models failed
 #'
 #' @export
 #'
-pkmAllFail <- function(pkmToCheck){
+pkmSetFail <- function(pkmSetToCheck){
 
-  unlisted <- unlist(pkmToCheck)
-  modsFail <- grepl("Failed model fit", unlisted)
-  nmods <- length(unlisted)
-  nmodsFail <- sum(modsFail)
-  out <- nmods == nmodsFail
+  nmodsInSet <- length(pkmSetToCheck)
+  out <- logical(nmodsInSet)
+  for (modi in 1:nmodsInSet){
+    out[modi] <- length(pkmSetToCheck[[modi]]) == 1
+  }
   return(out)
 }
 
+#' Check if all of the pkm models fail
+#'
+#' @param pkmToCheck A \code{pkmSetSize} object to test
+#'
+#' @return A list of vectors of logical values indicating if each of the 
+#'   models failed
+#'
+#' @export
+#'
+pkmSetSizeFail <- function(pkmSetSizeToCheck){
+
+  nsizes <- length(pkmSetSizeToCheck)
+  out <- vector("list", length = nsizes)
+  for (sci in 1:nsizes){
+    out[[sci]] <- pkmSetFail(pkmSetSizeToCheck[[sci]])
+  }
+  return(out)
+}
+
+#' Remove failed pkm models
+#'
+#' @param pkmSetToTidy A \code{pkmSet} object to tidy
+#'
+#' @return A \code{pkmSet} object with failed models removed
+#'
+#' @export
+#'
+pkmSetFailRemove <- function(pkmSetToTidy){
+
+  nmodsInSet <- length(pkmSetToTidy)
+  fails <- pkmSetFail(pkmSetToTidy)
+  pass <- fails == FALSE
+  npasses <- sum(pass)
+  passes <- which(pass)
+  out <- vector("list", length = npasses)
+  names(out) <- names(pkmSetToTidy[passes])
+  for (passi in 1:npasses){
+    out[[passi]] <- pkmSetToTidy[[passes[passi]]]
+  }
+  class(out) <- c("pkmSet", "list")
+  return(out)
+}
+
+#' Remove failed pkm models
+#'
+#' @param pkmSetSizeToTidy A list of \code{pkmSetSize} objects to tidy
+#'
+#' @return A list of \code{pkmSet} objects with failed models removed
+#'
+#' @export
+#'
+pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
+
+  nsizes <- length(pkmSetSizeToTidy)
+  out <- vector("list", length = nsizes)
+  names(out) <- names(pkmSetSizeToTidy)
+  for (sci in 1:nsizes){
+    out[[sci]] <- pkmSetFailRemove(pkmSetSizeToTidy[[sci]])
+  }
+  return(out)
+}
 
 #' Calculate searcher efficiency after some searches
 #'

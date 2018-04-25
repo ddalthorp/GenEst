@@ -23,11 +23,10 @@ function(input, output, session){
   )
 
   msgRunModSE <- NULL
-  msgModFitSE <- NULL
+  msgModSizeSE <- NULL
   msgModFailSE <- NULL
   msgSampleSizeSE <- NULL
   msgRunModCP <- NULL
-  msgModFitCP <- NULL
   msgModFailCP <- NULL
   msgSampleSizeCP <- NULL
   msgRunModg <- NULL
@@ -37,24 +36,24 @@ function(input, output, session){
           dataSE = NULL, colNamesSE = NULL, obsColsSE = NULL, predsSE = NULL, 
           kFixedChoice = 0, kFixed = NULL,  predictors_p = NULL, 
           predictors_k = NULL, formula_p = NULL, formula_k = NULL,
-          modsSE = NULL, modsCheckSE = NULL, modNamesSE = NULL, 
+          modsSE = NULL, modNamesSE = NULL, 
           modTabSE = NULL, AICcTabSE = NULL, modOrderSE = NULL,
           modelChoicesSE = NULL, modSetSE_spec = NULL, 
           bestSE = NULL, specSE = NULL, figSEnrow = NULL, 
           figSEht = 600, figSEwh = 800,
           modNamesSEp = NULL, modNamesSEk = NULL, tabfigSEpk = NULL, 
-          minCellCountSE = NULL,
+          minCellCountSE = NULL, sizeclassesSE = NULL, 
           
           dataCP = NULL, colNamesCP = NULL, ftp = NULL, lta = NULL, 
           predsCP = NULL, predictors_l = NULL, predictors_s = NULL, 
           formula_l = NULL, formula_s = NULL, dists = NULL,
-          modsCP = NULL, modsCheckCP = NULL, AICcTabCP = NULL, 
+          modsCP = NULL, AICcTabCP = NULL, 
           modOrderCP = NULL, modNamesCP = NULL, modTabCP = NULL, 
           modSetCP_spec = NULL, figCPnrow = NULL, figCPht = 600, 
           figCPwh = 800, bestCP = NULL,
           modNamesCPdist = NULL, modNamesCPl = NULL, modNamesCPs = NULL,
           tabfigCPdls_fig = NULL, tabfigCPdls_tab = NULL, 
-          minCellCountCP = NULL, 
+          minCellCountCP = NULL, sizeclassesCP = NULL, 
 
           dataSS = NULL, colNamesSS = NULL, 
 
@@ -62,7 +61,9 @@ function(input, output, session){
           dateFoundCol = NULL, dateSearchedCol = NULL,
           SEmodToUse = NULL, CPmodToUse = NULL, scis = NULL, 
 
-          dataDWP = NULL,
+          rghat = NULL,
+
+          dataDWP = NULL, colNamesDWP = NULL,
 
           dataCO = NULL, colNamesCO = NULL,
 
@@ -128,6 +129,8 @@ function(input, output, session){
     output$dataSS <- DT::renderDataTable(rv$dataSS)
     updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
     updateSelectizeInput(session, "dateSearchedCol", choices = rv$colNamesSS)
+
+
   })
   observeEvent(input$fileDWP, {
     rv$dataDWP <- read.csv(input$fileDWP$datapath, header = TRUE, 
@@ -208,13 +211,35 @@ function(input, output, session){
     rv$formula_p <- formula(paste("p~", rv$predictors_p, sep = ""))
     rv$formula_k <- formula(paste("k~", rv$predictors_p, sep = "")) 
 
-    rv$modsSE <- pkmSetSize(formula_p = rv$formula_p,
-                   formula_k = rv$formula_k, data = rv$dataSE, 
-                   obsCol = rv$obsColsSE, sizeclassCol = rv$sizeclassCol,
-                   kFixed = rv$kFixed, kInit = 0.7, CL = rv$CL
+    if (length(rv$obsColsSE) == 1){
+      if(length(rv$formula_k) > 0 & length(rv$kFixed) == 0){
+        msg <- "Only one observation, k not estimated."
+        msgModSizeSE <- showNotification(msg, type = "warning", 
+                          duration = NULL
+                        )
+      }
+    
+      if (length(rv$kFixed) == 1){
+        msg <- "Only one observation, fix k input ignored."
+        msgModSizeSE <- showNotification(msg, type = "warning", 
+                          duration = NULL
+                        )
+      }
+      output$kFillNeed <- renderText("yes")
+    } else{
+      output$kFillNeed <- renderText("no")
+    }
+    outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
+
+    rv$modsSE <- suppressWarnings(
+                   pkmSetSize(formula_p = rv$formula_p,
+                     formula_k = rv$formula_k, data = rv$dataSE, 
+                     obsCol = rv$obsColsSE, sizeclassCol = rv$sizeclassCol,
+                     kFixed = rv$kFixed, kInit = 0.7, CL = rv$CL, 
+                     quiet = TRUE
+                   )
                  )
-    rv$modsCheckSE <- pkmCheck(rv$modsSE)
-    if(pkmAllFail(rv$modsSE)) {
+    if (all(unlist(pkmSetSizeFail(rv$modsSE)))) {
       removeNotification(msgRunModSE)
       msg <- paste(
                "No models were successfully fit.", 
@@ -223,54 +248,49 @@ function(input, output, session){
              )
       msgModFailSE <- showNotification(msg, type = "error", duration = NULL)
     } else{
-      if (length(rv$sizeclasses) == 1){
-        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE) 
-        rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
-        rv$modNamesSE <- names(rv$modsSE)[rv$modOrderSE]
-        rv$modTabSE <- rv$modsSE[[rv$modOrderSE[1]]]$cellwiseTable
-        rv$modSetSE_spec <- rv$modsSE
+      if (any(unlist(pkmSetSizeFail(rv$modsSE)))) {
+        removeNotification(msgRunModSE)
+        msg <- paste(
+                 "Some models were not successfully fit. Failed models were ", 
+                 "removed. Check inputs.", sep = " "
+               )
+        msgModFailSE <- showNotification(msg, type = "warning", 
+                          duration = NULL
+                        )
+        rv$modsSE <- pkmSetSizeFailRemove(rv$modsSE)
+      }
+
+      rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
+      if (length(rv$sizeclassChosen) == 0){
+        rv$sizeclassChosen <- 1
+      }
+      rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]], TRUE)
+                      
+      rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
+      rv$modNamesSE <- names(rv$modsSE[[rv$sizeclassChosen]])[rv$modOrderSE]
+      rv$modTabSE <- rv$modsSE[[1]][[rv$modOrderSE[1]]]$cellwiseTable
+      rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
+
+      rv$minCellCountSE <- NULL
+      for (sci in 1:length(rv$sizeclasses)){
         for (modi in 1:length(rv$modSetSE_spec)){
-          rv$minCellCountSE[modi] <- 
-                              min(table(rv$modSetSE_spec[[modi]]$carcCell))
+          rv$minCellCountSE <- c(rv$minCellCountSE, 
+                                min(table(rv$modsSE[[sci]][[modi]]$carcCell)))
         }
-        if (any(rv$minCellCountSE < 10)){
-          msg <- paste("Small (< 10) sample sizes per cell. Consider a",
-                   "simpler model. Parameter estimates may be unstable.",
-                   sep = ""
-                 ) 
-          msgSampleSizeSE <- showNotification(msg, type = "warning",
-                               duration = NULL
-                             )
-        }
-      }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
-        if (length(rv$sizeclassChosen) == 0){
-          rv$sizeclassChosen <- 1
-        }
-        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]])
-        rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
-        rv$modNamesSE <- names(rv$modsSE[[rv$sizeclassChosen]])[rv$modOrderSE]
-        rv$modTabSE <- rv$modsSE[[1]][[rv$modOrderSE[1]]]$cellwiseTable
-        rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
+      }
+      if (any(rv$minCellCountSE < 10)){
+        msg <- paste("Small (< 10) sample sizes per cell. Consider a",
+                 "simpler model. Parameter estimates may be unstable.",
+                 sep = ""
+               ) 
+        msgSampleSizeSE <- showNotification(msg, type = "warning",
+                             duration = NULL
+                           )
+      }
 
-        rv$minCellCountSE <- NULL
-        for (sci in 1:length(rv$sizeclasses)){
-          for (modi in 1:length(rv$modSetSE_spec)){
-            rv$minCellCountSE <- c(rv$minCellCountSE, 
-                 min(table(rv$modsSE[[sci]][[modi]]$carcCell)))
-          }
-        }
-        if (any(rv$minCellCountSE < 10)){
-          msg <- paste("Small (< 10) sample sizes per cell. Consider a",
-                   "simpler model. Parameter estimates may be unstable.",
-                   sep = ""
-                 ) 
-          msgSampleSizeSE <- showNotification(msg, type = "warning",
-                               duration = NULL
-                             )
-        }
-
-      } 
+      if (rv$kFixedChoice == 1){
+        updateNumericInput(session, "kFill", value = rv$kFixed)
+      }
 
       rv$modNamesSEp <- rv$modNamesSE
       rv$modNamesSEk <- rv$modNamesSE
@@ -312,43 +332,29 @@ function(input, output, session){
       updateTabsetPanel(session, "analysesSE", "Model Comparison Tables")
 
       removeNotification(msgRunModSE)
-      if (rv$modsCheckSE == FALSE){
-        msgModFitSE <- showNotification("Not all models were fit properly.",
-                         type = "warning", duration = NULL)
-      }  
+ 
       isolate({
-
+        output$sizeclassesSE <- renderText(
+                                  paste(rv$sizeclassesSE, collapse = " ")
+                                )
+        outputOptions(output, "sizeclassesSE", suspendWhenHidden = FALSE)
         output$modelMenuSE <- renderUI({
           
           modelMenuSE <- ""
           nsizeclasses <- length(rv$sizeclassesSE)
           if (nsizeclasses > 0){
-            if (nsizeclasses == 1){
-              AICcTab <- pkmSetAICcTab(rv$modsSE) 
+            for(sci in 1:nsizeclasses){
+              AICcTab <- pkmSetAICcTab(rv$modsSE[[sci]], quiet = TRUE)
               modOrder <- as.numeric(row.names(AICcTab))
-              modNames <- names(rv$modsSE)[modOrder]
-              mtuText <- "modelChoicesSE1"
-              scText <- "Model for all"
+              modNames <- names(rv$modsSE[[sci]])[modOrder]
+              mtuText <- paste("modelChoicesSE", sci, sep = "") 
+              scText <- paste("Model for ", rv$sizeclasses[sci], sep = "")
               modSelect <- selectizeInput(mtuText, scText, modNames,
-                               width = "400px"
-                             )
+                             width = "400px"
+                           )
               modelMenuSE <- paste(modelMenuSE, modSelect)  
-            }else{
-              for(sci in 1:nsizeclasses){
-                AICcTab <- pkmSetAICcTab(rv$modsSE[[sci]])
-                modOrder <- as.numeric(row.names(AICcTab))
-                modNames <- names(rv$modsSE[[sci]])[modOrder]
-                mtuText <- paste("modelChoicesSE", sci, sep = "") 
-                scText <- paste("Model for size class ", rv$sizeclasses[sci], 
-                            sep = ""
-                          )
-                modSelect <- selectizeInput(mtuText, scText, modNames,
-                               width = "400px"
-                             )
-                modelMenuSE <- paste(modelMenuSE, modSelect)  
-              }
             }
-          }  
+          }
           HTML(modelMenuSE)
         })
       })
@@ -356,38 +362,25 @@ function(input, output, session){
   })
   observeEvent(input$tabfigSizeClassSE, {
     if (length(rv$modsSE) > 0){
-      if (length(rv$sizeclasses) == 1){
-        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE) 
-        rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
-        rv$modNamesSE <- names(rv$modsSE)[rv$modOrderSE]
-        rv$modNamesSEp <- rv$modNamesSE
-        rv$modNamesSEk <- rv$modNamesSE
-        for (modi in 1:length(rv$modNamesSE)){
-          rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
-          rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
-        }
-        rv$modTabSE <- rv$modsSE[[rv$modOrderSE[1]]]$cellwiseTable
-        rv$modSetSE_spec <- rv$modsSE
-        rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
-      }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
-        if (length(rv$sizeclassChosen) == 0){
-          rv$sizeclassChosen <- 1
-        }
-        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]])
-        rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
-        rv$modNamesSE <- names(rv$modsSE[[1]])[rv$modOrderSE]
-        rv$modNamesSEp <- rv$modNamesSE
-        rv$modNamesSEk <- rv$modNamesSE
-        for (modi in 1:length(rv$modNamesSE)){
-          rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
-          rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
-        }
-        rv$modTabSE <- 
-          rv$modsSE[[rv$sizeclassChosen]][[rv$modOrderSE[1]]]$cellwiseTable
-        rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
-        rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
+      rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
+      if (length(rv$sizeclassChosen) == 0){
+        rv$sizeclassChosen <- 1
       }
+      rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]], TRUE)
+                      
+      rv$modOrderSE <- as.numeric(row.names(rv$AICcTabSE))
+      rv$modNamesSE <- names(rv$modsSE[[1]])[rv$modOrderSE]
+      rv$modNamesSEp <- rv$modNamesSE
+      rv$modNamesSEk <- rv$modNamesSE
+      for (modi in 1:length(rv$modNamesSE)){
+        rv$modNamesSEp[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][1]
+        rv$modNamesSEk[modi] <- strsplit(rv$modNamesSE[modi], "; ")[[1]][2]
+      }
+      rv$modTabSE <- 
+          rv$modsSE[[rv$sizeclassChosen]][[rv$modOrderSE[1]]]$cellwiseTable
+      rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
+      rv$bestSE <- (names(rv$modSetSE_spec)[rv$modOrderSE])[1]
+
       colnames(rv$modTabSE) <- c("Cell", 
                                  "p Median", 
                     paste("p ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
@@ -406,14 +399,9 @@ function(input, output, session){
 
       observeEvent(input$tabfigSEp, {
         rv$tabfigSEpk <- paste(input$tabfigSEp, input$tabfigSEk, sep = "; ")
-        if (length(rv$sizeclasses) == 1){
-          rv$modTabSE <- rv$modsSE[[rv$tabfigSEpk]]$cellwiseTable
-          rv$modSetSE_spec <- rv$modsSE
-        }else{
-          rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
-          rv$modTabSE <- 
-            rv$modsSE[[rv$sizeclassChosen]][[rv$tabfigSEpk]]$cellwiseTable
-        }
+        rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
+        rv$modTabSE <- 
+          rv$modsSE[[rv$sizeclassChosen]][[rv$tabfigSEpk]]$cellwiseTable
         colnames(rv$modTabSE) <- c("Cell", 
                                    "p Median", 
                       paste("p ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
@@ -436,14 +424,9 @@ function(input, output, session){
         rv$tabfigSEpk <- paste(input$tabfigSEp, input$tabfigSEk, 
                               sep = "; "
                             )
-        if (length(rv$sizeclasses) == 1){
-          rv$modSetSE_spec <- rv$modsSE
-          rv$modTabSE <- rv$modsSE[[rv$tabfigSEpk]]$cellwiseTable
-        }else{
-          rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
-          rv$modTabSE <- 
+        rv$modSetSE_spec <- rv$modsSE[[rv$sizeclassChosen]]
+        rv$modTabSE <- 
           rv$modsSE[[rv$sizeclassChosen]][[rv$tabfigSEpk ]]$cellwiseTable
-        }
         colnames(rv$modTabSE) <- c("Cell", 
                                    "p Median", 
                       paste("p ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
@@ -462,15 +445,13 @@ function(input, output, session){
                         }, height = rv$figSEht, width = rv$figSEwh
                         )
       })
-      if (length(rv$sizeclasses) == 1){
-        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE) 
-      }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
-        if (length(rv$sizeclassChosen) == 0){
-          rv$sizeclassChosen <- 1
-        }
-        rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]])
+      rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassSE)
+      if (length(rv$sizeclassChosen) == 0){
+        rv$sizeclassChosen <- 1
       }
+      rv$AICcTabSE <- pkmSetAICcTab(rv$modsSE[[rv$sizeclassChosen]], TRUE)
+                      
+
       colnames(rv$AICcTabSE) <- c("p Formula", "k Formula", "AICc", 
                                   "Delta AICc"
                                 )
@@ -533,14 +514,15 @@ function(input, output, session){
     rv$formula_l <- formula(paste("l~", rv$predictors_l, sep = ""))
     rv$formula_s <- formula(paste("s~", rv$predictors_l, sep = "")) 
 
-    rv$modsCP <- cpmSetSize(formula_l = rv$formula_l,
-                   formula_s = rv$formula_s, data = rv$dataCP, 
-                   left = rv$ltp, right = rv$fta, dists = rv$dists,
-                   sizeclassCol = rv$sizeclassCol, CL = rv$CL
+    rv$modsCP <- suppressWarnings(
+                   cpmSetSize(formula_l = rv$formula_l,
+                     formula_s = rv$formula_s, data = rv$dataCP, 
+                     left = rv$ltp, right = rv$fta, dists = rv$dists,
+                     sizeclassCol = rv$sizeclassCol, CL = rv$CL, quiet = TRUE
+                   )
                  )
-    rv$modsCheckCP <- cpmCheck(rv$modsCP)
 
-    if(cpmAllFail(rv$modsCP)) {
+    if (all(unlist(cpmSetSizeFail(rv$modsCP)))){
       removeNotification(msgRunModCP)
       msg <- paste(
                "No models were successfully fit.", 
@@ -549,57 +531,46 @@ function(input, output, session){
              )
       msgModFailCP <- showNotification(msg, type = "error", duration = NULL)
     } else{
-
-      if (length(rv$sizeclasses) == 1){
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
-        rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
-        rv$modNamesCP <- names(rv$modsCP)[rv$modOrderCP]
-        rv$modTabCP <- rv$modsCP[[rv$modOrderCP[1]]]$cellwiseTable_ls
-        rv$modSetCP_spec <- rv$modsCP
-
-        for (modi in 1:length(rv$modSetCP_spec)){
-          rv$minCellCountCP[modi] <- 
-                              min(table(rv$modSetCP_spec[[modi]]$carcCells))
-        }
-        if (any(rv$minCellCountCP < 10)){
-          msg <- paste("Small (< 10) sample sizes per cell. Consider a",
-                   "simpler model. Parameter estimates may be unstable.",
-                   sep = ""
-                 )  
-          msgSampleSizeCP <- showNotification(msg, type = "warning",
-                               duration = NULL
-                             )
-        }
-
-      }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$aicTabSizeClassCP)
-        if (length(rv$sizeclassChosen) == 0){
-          rv$sizeclassChosen <- 1
-        }
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
-        rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
-        rv$modNamesCP <- names(rv$modsCP[[rv$sizeclassChosen]])[rv$modOrderCP]
-        rv$modTabCP <- rv$modsCP[[1]][[rv$modOrderCP[1]]]$cellwiseTable_ls
-        rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-
-        rv$minCellCountCP <- NULL
-        for (sci in 1:length(rv$sizeclasses)){
-          for (modi in 1:length(rv$modSetCP_spec)){
-            rv$minCellCountCP <- c(rv$minCellCountCP, 
-                 min(table(rv$modsCP[[sci]][[modi]]$carcCells)))
-          }
-        }
-        if (any(rv$minCellCountCP < 10)){
-          msg <- paste("Small (< 10) sample sizes per cell. Consider a",
-                   "simpler model. Parameter estimates may be unstable.",
-                   sep = ""
-                 ) 
-          msgSampleSizeCP <- showNotification(msg, type = "warning",
-                               duration = NULL
-                             )
-        }
-
+      if (any(unlist(cpmSetSizeFail(rv$modsCP)))){
+        removeNotification(msgRunModCP)
+        msg <- paste(
+                 "Some models were not successfully fit. Failed models were ", 
+                 "removed. Check inputs.", sep = " "
+               )
+        msgModFailCP <- showNotification(msg, type = "warning", 
+                          duration = NULL
+                        )
+        rv$modsCP <- cpmSetSizeFailRemove(rv$modsCP)
       }
+
+
+      rv$sizeclassChosen <- which(rv$sizeclasses == input$aicTabSizeClassCP)
+      if (length(rv$sizeclassChosen) == 0){
+        rv$sizeclassChosen <- 1
+      }
+      rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]], TRUE)
+      rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
+      rv$modNamesCP <- names(rv$modsCP[[rv$sizeclassChosen]])[rv$modOrderCP]
+      rv$modTabCP <- rv$modsCP[[1]][[rv$modOrderCP[1]]]$cellwiseTable_ls
+      rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
+
+      rv$minCellCountCP <- NULL
+      for (sci in 1:length(rv$sizeclasses)){
+        for (modi in 1:length(rv$modSetCP_spec)){
+          rv$minCellCountCP <- c(rv$minCellCountCP, 
+                               min(table(rv$modsCP[[sci]][[modi]]$carcCells)))
+        }
+      }
+      if (any(rv$minCellCountCP < 10)){
+        msg <- paste("Small (< 10) sample sizes per cell. Consider a",
+                 "simpler model. Parameter estimates may be unstable.",
+                 sep = ""
+               ) 
+        msgSampleSizeCP <- showNotification(msg, type = "warning",
+                             duration = NULL
+                           )
+      }
+
 
       rv$modNamesCPdist <- rv$modNamesCP
       rv$modNamesCPl <- rv$modNamesCP
@@ -651,45 +622,32 @@ function(input, output, session){
       updateTabsetPanel(session, "analysesCP", "Model Comparison Tables")
 
       removeNotification(msgRunModCP)
-      if (rv$modsCheckCP == FALSE){
-        msgModFitCP <- showNotification("Not all models were fit properly.",
-                         type = "warning", duration = NULL)
-      }  
+
       isolate({
+
+        output$sizeclassesCP <- renderText(
+                                  paste(rv$sizeclassesCP, collapse = " ") 
+                                )
+        outputOptions(output, "sizeclassesCP", suspendWhenHidden = FALSE)
 
         output$modelMenuCP <- renderUI({
         
           modelMenuCP <- ""
           nsizeclassesCP <- length(rv$sizeclassesCP)
           if (nsizeclassesCP > 0){
-            if (nsizeclassesCP == 1){
-              AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
+            for(sci in 1:nsizeclassesCP){
+              AICcTabCP <- cpmSetAICcTab(rv$modsCP[[sci]], quiet = TRUE)
               modOrderCP <- as.numeric(row.names(AICcTabCP))
-              modNamesCP <- names(rv$modsCP)[modOrderCP]
+              modNamesCP <- names(rv$modsCP[[sci]])[modOrderCP]
               modNamesCP <- gsub("; NULL", "", modNamesCP)
-              mtuTextCP <- "modelChoicesCP1"
-              scTextCP <- "Model for all"
+              mtuTextCP <- paste("modelChoicesCP", sci, sep = "") 
+              scTextCP <- paste("Model for ", rv$sizeclassesCP[sci], sep = "")
               modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP,
                                width = "400px"
                              )
               modelMenuCP <- paste(modelMenuCP, modSelectCP)  
-            }else{
-              for(sci in 1:nsizeclassesCP){
-                AICcTabCP <- cpmSetAICcTab(rv$modsCP[[sci]])
-                modOrderCP <- as.numeric(row.names(AICcTabCP))
-                modNamesCP <- names(rv$modsCP[[sci]])[modOrderCP]
-                modNamesCP <- gsub("; NULL", "", modNamesCP)
-                mtuTextCP <- paste("modelChoicesCP", sci, sep = "") 
-                scTextCP <- paste("Model for size class ",  
-                              rv$sizeclasses[sci], sep = ""
-                            )
-                modSelectCP <- selectizeInput(mtuTextCP, scTextCP, modNamesCP,
-                               width = "400px"
-                             )
-                modelMenuCP <- paste(modelMenuCP, modSelectCP)  
-              }
             }
-          }  
+          }
           HTML(modelMenuCP)
         })
       })
@@ -697,50 +655,29 @@ function(input, output, session){
   })
   observeEvent(input$tabfigSizeClassCP, {
     if (length(rv$modsCP) > 0){
-      if (length(rv$sizeclasses) == 1){
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
-        rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
-        rv$modNamesCP <- names(rv$modsCP)[rv$modOrderCP]
-        rv$modNamesCPdist <- rv$modNamesCP
-        rv$modNamesCPl <- rv$modNamesCP
-        rv$modNamesCPs <- rv$modNamesCP
-        for (modi in 1:length(rv$modNamesCP)){
-          rv$modNamesCPdist[modi] <- 
-            strsplit(rv$modNamesCP[modi], "; ")[[1]][1]
-          rv$modNamesCPl[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][2]
-          rv$modNamesCPs[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][3]
-          rv$modNamesCPdist[modi] <- 
-            gsub("dist: ", "", rv$modNamesCPdist[modi])
-          rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
-        }
-        rv$modTabCP <- rv$modsCP[[rv$modOrderCP[1]]]$cellwiseTable_ls
-        rv$modSetCP_spec <- rv$modsCP
-        rv$bestCP <- (names(rv$modSetCP_spec)[rv$modOrderCP])[1]
-      }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassCP)
-        if (length(rv$sizeclassChosen) == 0){
-          rv$sizeclassChosen <- 1
-        }
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
-        rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
-        rv$modNamesCP <- names(rv$modsCP[[1]])[rv$modOrderCP]
-        rv$modNamesCPdist <- rv$modNamesCP
-        rv$modNamesCPl <- rv$modNamesCP
-        rv$modNamesCPs <- rv$modNamesCP
-        for (modi in 1:length(rv$modNamesCP)){
-          rv$modNamesCPdist[modi] <- 
-            strsplit(rv$modNamesCP[modi], "; ")[[1]][1]
-          rv$modNamesCPl[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][2]
-          rv$modNamesCPs[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][3]
-          rv$modNamesCPdist[modi] <- 
-            gsub("dist: ", "", rv$modNamesCPdist[modi])
-          rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
-        }
-        rv$modTabCP <- 
-          rv$modsCP[[rv$sizeclassChosen]][[rv$modOrderCP[1]]]$cellwiseTable_ls
-        rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-        rv$bestCP <- (names(rv$modSetCP_spec)[rv$modOrderCP])[1]
+      rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassCP)
+      if (length(rv$sizeclassChosen) == 0){
+        rv$sizeclassChosen <- 1
       }
+      rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]], TRUE)
+      rv$modOrderCP <- as.numeric(row.names(rv$AICcTabCP))
+      rv$modNamesCP <- names(rv$modsCP[[1]])[rv$modOrderCP]
+      rv$modNamesCPdist <- rv$modNamesCP
+      rv$modNamesCPl <- rv$modNamesCP
+      rv$modNamesCPs <- rv$modNamesCP
+      for (modi in 1:length(rv$modNamesCP)){
+        rv$modNamesCPdist[modi] <- 
+            strsplit(rv$modNamesCP[modi], "; ")[[1]][1]
+        rv$modNamesCPl[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][2]
+        rv$modNamesCPs[modi] <- strsplit(rv$modNamesCP[modi], "; ")[[1]][3]
+        rv$modNamesCPdist[modi] <- gsub("dist: ", "", rv$modNamesCPdist[modi])
+        rv$modNamesCPs[modi] <- gsub("NULL", "s ~ 1", rv$modNamesCPs[modi])
+      }
+      rv$modTabCP <- 
+          rv$modsCP[[rv$sizeclassChosen]][[rv$modOrderCP[1]]]$cellwiseTable_ls
+      rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
+      rv$bestCP <- (names(rv$modSetCP_spec)[rv$modOrderCP])[1]
+
       colnames(rv$modTabCP) <- c("Cell", 
                                  "Location Median", 
              paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
@@ -773,14 +710,10 @@ function(input, output, session){
                             )
         }
 
-        if (length(rv$sizeclasses) == 1){
-          rv$modSetCP_spec <- rv$modsCP
-          rv$modTabCP <- rv$modsCP[[rv$tabfigCPdls_tab]]$cellwiseTable_ls
-        }else{
-          rv$modTabCP <- 
+        rv$modTabCP <- 
        rv$modsCP[[rv$sizeclassChosen]][[rv$tabfigCPdls_tab]]$cellwiseTable_ls
-          rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-        }
+        rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
+
         colnames(rv$modTabCP) <- c("Cell", 
                                    "Location Median", 
                paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
@@ -811,14 +744,10 @@ function(input, output, session){
                             )
         }
 
-        if (length(rv$sizeclasses) == 1){
-          rv$modSetCP_spec <- rv$modsCP
-          rv$modTabCP <- rv$modsCP[[rv$tabfigCPdls_tab]]$cellwiseTable_ls
-        }else{
-          rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-          rv$modTabCP <- 
+        rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
+        rv$modTabCP <- 
        rv$modsCP[[rv$sizeclassChosen]][[rv$tabfigCPdls_tab]]$cellwiseTable_ls
-        }
+
         colnames(rv$modTabCP) <- c("Cell", 
                                    "Location Median", 
                paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
@@ -851,14 +780,10 @@ function(input, output, session){
                             )
         }
 
-        if (length(rv$sizeclasses) == 1){
-          rv$modSetCP_spec <- rv$modsCP
-          rv$modTabCP <- rv$modsCP[[rv$tabfigCPdls_tab]]$cellwiseTable_ls
-        }else{
-          rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
-          rv$modTabCP <- 
+        rv$modSetCP_spec <- rv$modsCP[[rv$sizeclassChosen]]
+        rv$modTabCP <- 
         rv$modsCP[[rv$sizeclassChosen]][[rv$tabfigCPdls_tab]]$cellwiseTable_ls
-        }
+
         colnames(rv$modTabCP) <- c("Cell", 
                                    "Location Median", 
                paste("Location ", 100 * (1 - rv$CL) / 2, "%", sep = ""), 
@@ -877,15 +802,13 @@ function(input, output, session){
                         }, height = rv$figCPht, width = rv$figCPwh
                         )
       })
-      if (length(rv$sizeclasses) == 1){
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP) 
-      }else{
-        rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassCP)
-        if (length(rv$sizeclassChosen) == 0){
-          rv$sizeclassChosen <- 1
-        }
-        rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]])
+      rv$sizeclassChosen <- which(rv$sizeclasses == input$tabfigSizeClassCP)
+      if (length(rv$sizeclassChosen) == 0){
+        rv$sizeclassChosen <- 1
       }
+      rv$AICcTabCP <- cpmSetAICcTab(rv$modsCP[[rv$sizeclassChosen]], TRUE)
+                      
+
       rv$AICcTabCP[ , "s formula"] <- gsub("NULL", "", 
                                         rv$AICcTabCP[ , "s formula"]
                                       )
@@ -896,12 +819,17 @@ function(input, output, session){
     }
   })
 
-  observeEvent(input$runModg, {
+  observeEvent(input$runModM, {
 
     rv$kFill <- NA
-    if (length(rv$kFixed) > 0 ){
-      if (rv$kFixed == TRUE){
-        rv$kFill <- rv$kFixedChoice 
+
+    if (length(rv$obsColsSE) == 1 | rv$kFixedChoice == 1){
+      rv$kFill <- input$kFill
+    }
+
+    if (length(rv$nsizeclasses) == 1){
+      if (is.null(rv$sizeclasses)){
+        rv$sizeclasses <- "all"
       }
     }
 
@@ -914,52 +842,35 @@ function(input, output, session){
     msgRunModg <- showNotification(msg, duration = NULL)
     rv$nsizeclasses <- length(rv$sizeclasses)
 
-    if (rv$nsizeclasses == 1){
-      rv$SEmodToUse <- input[["modelChoicesSE1"]]
-      rv$CPmodToUse <- input[["modelChoicesCP1"]]
+    rv$rghat <- vector("list", length = rv$nsizeclasses)
+    for (sci in 1:rv$nsizeclasses){
+      rv$SEmodToUse <- input[[sprintf("modelChoicesSE%d", sci)]]
+      rv$CPmodToUse <- input[[sprintf("modelChoicesCP%d", sci)]]
       if (!grepl("s ~", rv$CPmodToUse)){
         rv$CPmodToUse <- paste(rv$CPmodToUse, "; NULL", sep = "")
       }
-      rv$rghat <- tryCatch(
-                    rghat(rv$niterations, rv$dataCO, rv$dataSS, 
-                      rv$modsSE[[rv$SEmodToUse]], 
-                      rv$modsCP[[rv$CPmodToUse]], 
-                      kFill = rv$kFill, unitCol = rv$unitCol, 
-                      dateFoundCol = rv$dateFoundCol, 
-                      dateSearchedCol = rv$dateSearchedCol
-                    ), error = function(x){NA}
-                  )
-
-    } else{
-      
-      rv$rghat <- vector("list", length = rv$nsizeclasses)
-      for (sci in 1:rv$nsizeclasses){
-        rv$SEmodToUse <- input[[sprintf("modelChoicesSE%d", sci)]]
-        rv$CPmodToUse <- input[[sprintf("modelChoicesCP%d", sci)]]
-        if (!grepl("s ~", rv$CPmodToUse)){
-          rv$CPmodToUse <- paste(rv$CPmodToUse, "; NULL", sep = "")
-        }
+      if (rv$sizeclasses[1] == "all"){
+        rv$scis <- 1:nrow(rv$dataCO)
+      } else{
         rv$scis <- which(rv$dataCO[ , rv$sizeclassCol] == rv$sizeclasses[sci])
-        rv$rghat[[sci]] <- tryCatch(
-                             rghat(rv$niterations, 
-                               rv$dataCO[rv$scis, ], 
-                               rv$dataSS, 
-                               rv$modsSE[[sci]][[rv$SEmodToUse]], 
-                               rv$modsCP[[sci]][[rv$CPmodToUse]], 
-                               kFill = rv$kFill, unitCol = rv$unitCol, 
-                               dateFoundCol = rv$dateFoundCol, 
-                               dateSearchedCol = rv$dateSearchedCol
-                             ), error = function(x){NA}
-                           )
-
       }
+      rv$rghat[[sci]] <- tryCatch(
+                           rghat(rv$niterations, 
+                             rv$dataCO[rv$scis, ], 
+                             rv$dataSS, 
+                             rv$modsSE[[sci]][[rv$SEmodToUse]], 
+                             rv$modsCP[[sci]][[rv$CPmodToUse]], 
+                             kFill = rv$kFill, unitCol = rv$unitCol, 
+                             dateFoundCol = rv$dateFoundCol, 
+                             dateSearchedCol = rv$dateSearchedCol
+                           ), error = function(x){NA}
+                         )
+
     }
 
-    if (is.matrix(rv$rghat)){
-      output$gtext <- renderText("ghat estimation done.")
-    }
-    if (is.list(rv$rghat) & is.matrix(rv$rghat[[1]])){
-      output$gtext <- renderText("Multi-size class ghat estimation done.")
+    if (is.list(rv$rghat[[1]]) & is.matrix(rv$rghat[[1]][[1]])){
+      msg  <- "ghat estimation done."
+      msgModFailg <- showNotification(msg, type = "message", duration = NULL)
     }
 
     removeNotification(msgRunModg)

@@ -5,7 +5,7 @@
 \title{Fit a single searcher efficiency model.}
 \usage{
 pkm(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
-  kInit = 0.7, CL = 0.9)
+  kInit = 0.7, CL = 0.9, quiet = FALSE)
 }
 \arguments{
 \item{formula_p}{Formula for p; an object of class "\code{\link{formula}}"
@@ -40,6 +40,8 @@ the assumption that the \code{k} parameter is fixed and known to be
 \item{kInit}{Initial value used for \code{k} in the optimization.}
 
 \item{CL}{confidence level}
+
+\item{quiet}{Logical indicator of whether or not to print messsages}
 }
 \value{
 \code{pkm} returns an object of class "\code{pkm}", which is a list
