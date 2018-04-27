@@ -211,9 +211,11 @@ calcSplits <- function(Mest, Aj = NULL,
   class(splits) <- "splitFull"
   return(splits)
 }
+#' @export
 print.splitFull <- function(splits){
   print(unclass(splits))
 }
+#' @export
 summary.splitFull <- function(splits, CI_level = 0.95){
   alpha <- 1 - CI_level
   probs <- c(alpha/2, 0.25, 0.5, 0.75, 1 - alpha/2)
@@ -245,9 +247,11 @@ summary.splitFull <- function(splits, CI_level = 0.95){
   return(sumry)
 }
 
+#' @export
 plot.splitFull <- function(splits, CI_level = 0.95, rate = FALSE, ...){
   plot(summary(splits, CI_level), rate)
 }
+#' @export
 plot.splitSummary <- function(splits, rate = FALSE, ...){
   nvar <- length(attr(splits, "vars"))
   vartype <- attr(splits, "type")
@@ -290,7 +294,7 @@ plot.splitSummary <- function(splits, rate = FALSE, ...){
       qtls <- quantile(splits[[vi]][hi, ], prob = probs)/deno
       polygon(xx[hi] + hwid[hi] * c(1, 1, -1, -1), qtls[c(2, 4, 4, 2)])
       lines(xx[hi] + hwid[hi] * c(1, -1), rep(qtls[3], 2), lwd = 3)
-      if (alpha >= 0.5) yst <- c(3, 3) else yst <- c(2, 5)
+      if (alpha >= 0.5) yst <- c(3, 3) else yst <- c(2, 4)
       lines(rep(xx[hi], 2), qtls[c(1, yst[1])])
       lines(rep(xx[hi], 2), qtls[c(yst[2], 5)])
       lines(xx[hi] + hwid[hi]/2 * c(1, -1), rep(qtls[1], 2))
@@ -301,7 +305,7 @@ plot.splitSummary <- function(splits, rate = FALSE, ...){
     ymid <- mean(par('usr')[3:4])
     if (!rate | vartype[1] == "CO"){
       if (vartype[1] == "time"){
-        at <- 0.5 + 0:nlevel
+        at <- 0.5 + 0:nlevel_h
         lab <- c(0, rownames(splits[[vi]]))
       } else {
         at <- 1:nlevel_h
@@ -309,7 +313,7 @@ plot.splitSummary <- function(splits, rate = FALSE, ...){
       }
     } else {
       at <- times
-      lab <- TRUE
+      lab <- times
     }
     if (vi == nlevel_v){
       axis(1, at = at, lab = lab, cex.axis = cex.axis)
