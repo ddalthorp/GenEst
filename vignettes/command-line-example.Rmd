@@ -379,16 +379,41 @@ ghats <- ghatsAs$ghat
 ### Mortality Estimation
 
 We use the continuous binomial distribution to estimate the number of 
-fatalities (Mhat) associated with each estimate of detection probability for 
-each carcass and weight the estimate by the Density Weighted Proportion (DWP) 
-of the relevant area (e.g., around the turbine) where the carcass was found. 
-If DWP is not provided, the `rMhat` make a simple assumption that DWP is 1 for
-all carcasses (i.e., that all of the possibe area where the carcasses could 
-have landed was searched). 
+fatalities ($\hat{M}$) associated with each estimate of detection probability
+for each carcass and weight the estimate by the Density Weighted Proportion  
+(DWP) of the relevant area (e.g., around the turbine) where the carcass was 
+found. If DWP is not provided, `rMhat` makes a simple assumption that DWP is 
+1 for all carcasses (i.e., that all of the possibe area where the carcasses 
+could have landed was searched). 
 
 ```{r}
 Mhat <- rMhat(n = 1, ghat = ghats)
 ```
 
+If DWP data are available in the standard condensed-table, format, they can be
+incorporated into the ($\hat{M}$) calculation, but need to first be expanded 
+to be carcass-by-carcass:
 
+```{r}
+dataDWP <- mockData$DensityWeightedProportionData
+DWP <- DWPbyCarcass(dataDWP, dataCO, dataSS, unitCol = "Unit", 
+         sizeclassCol = "Size", dateFoundCol = "DateFound", 
+         dateSearchedCol = "DateSearched"
+       )
+Mhat <- rMhat(n = 1, ghat = ghats, DWP, seed = 12)
+```
 
+If one desires $\tilde{M}$ values, they can be obtained using `rMtilde`:
+
+```{r}
+Mtilde <- rMtilde(length(ghats), ghats, seed = 12)
+```
+
+which can then be used to calculate ($\hat{M}$):
+
+```{r}
+Mhat_viaMtilde <- calcMhat(Mtilde, DWP)
+```
+
+By setting the seed here, we can arrive at the same randomized values from 
+each procedure (`rMhat` or `rMtilde` and `calcMhat`).
