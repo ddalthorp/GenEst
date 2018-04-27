@@ -3,17 +3,17 @@ devtools::load_all()
 data(mockData)
 
 dataSE <- mockData$SearcherEfficiencyData
+dataCP <- mockData$CarcassPersistenceData
+data_carc <- mockData$CarcassObservationData
+data_ss <- mockData$SearchScheduleData
+data_dwp <- mockData$DensityWeightedProportionData
+
 pkModel <- GenEst::pkm(formula_p = p ~ Visibility,
                        formula_k = k ~ 1, data = dataSE)
 
-dataCP <- mockData$CarcassPersistenceData
 cpModel <- GenEst::cpm(formula_l = l ~ Season, formula_s = s ~ 1, 
              data = dataCP, left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays", dist = "weibull")
-
-data_carc <- mockData$CarcassObservationData
-data_ss <- mockData$SearchScheduleData
-
 
 gandA <- rghat(n = 1000, data_carc, data_ss, model_SE = pkModel, 
                model_CP = cpModel, seed_SE = 1, seed_CP = 1, 
@@ -22,16 +22,14 @@ gandA <- rghat(n = 1000, data_carc, data_ss, model_SE = pkModel,
                dateSearchedCol = "DateSearched")
 
 ghat <- gandA$ghat
-Eval <- mucbinom(ghat)
-
-seed_g <- 1
-set.seed(seed_g)
-xtilde <- cbinom::rcbinom(length(ghat), 1 / ghat, ghat)
-MtildeVec <- (xtilde - (Eval - 1)) / ghat
-Mtilde <- matrix(Mtilde, ncol = 1000)
 
 MT <- rMtilde(length(ghat), ghat, 1)
-MH <- calcMhat(MT)
+DWP <- DWPbyCarcass(data_DWP = data_dwp, data_carc, data_ss, unitCol = "Unit", 
+         sizeclassCol = "Size")
+MH <- calcMhat(MT, DWP)
+
+MH2 <- rMhat(n = 1, ghat, DWP, seed = 1)
+
 
 pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType, 
                    formula_k = k ~ HabitatType, data = dataSE,

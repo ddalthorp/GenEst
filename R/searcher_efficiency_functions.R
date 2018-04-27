@@ -689,7 +689,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' @param quiet Logical indicator of whether or not to print messsages
 #'
 #' @param sizeclassCol Name of colum in \code{data} where the size classes
-#'  are recorded
+#'   are recorded
 #'
 #' @return \code{pkmSetSize} returns a class-\code{pkmSetSize} list of 
 #'   objects, each of which is a class-\code{pkmSet} list of \code{pkm}" 
