@@ -50,4 +50,15 @@ rMhat <- function(n = 1, ghat, DWP = 1, seed = 1){
   return(Mhat)
 }
 
-
+#' Calculate Mhat for a given Mtilde and DWP
+#'
+#' @param Mtilde Mtilde value
+#' @param DWP Density weighted proportion associated with Mtilde
+#' @return Mhat 
+#' @examples NA
+#' @export 
+#'
+calcMhat <- function(Mtilde, DWP = 1){
+  Mhat <- Mtilde / DWP
+  return(Mhat)
+}
