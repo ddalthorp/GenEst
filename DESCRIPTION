@@ -1,16 +1,16 @@
 Package: GenEst
 Title: Generalised Fatality Estimator
-Version: 0.0.3.14
-Date: 2018-04-23
+Version: 0.0.4.0
+Date: 2018-04-27
 Authors@R: c(
-	person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
+    person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
     person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
-	person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
-	person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
-	person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"),
-	person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"),	
-	person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"))
+    person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"),
+    person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
+    person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
+    person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"),
+    person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"))
 Description: A tool for estimating fatalities from searcher efficiency, carcass
   persistence, and carcass observation data. 
 Depends: R (>= 3.4.1)
@@ -26,9 +26,11 @@ Imports:
     matrixStats,
     mvtnorm,
     numDeriv,
+    Rcpp,
     rhandsontable,
     shiny,
     shinythemes,
+    sticky,
     survival
 RoxygenNote: 6.0.1
 Suggests:
@@ -36,3 +38,4 @@ Suggests:
     rmarkdown
 VignetteBuilder:
     knitr
+LinkingTo: Rcpp
