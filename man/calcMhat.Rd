@@ -15,7 +15,8 @@ calcMhat(Mtilde, DWP = 1)
 Mhat
 }
 \description{
-Calculate Mhat for a given Mtilde and DWP
+If Mtilde is a matrix, DWP is expadanded by columns to match
+  to facilitate division
 }
 \examples{
 NA
