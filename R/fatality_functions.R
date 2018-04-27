@@ -30,15 +30,22 @@ rMtilde <- function(n = 1, ghat, seed = 1){
   return(Mtilde)
 }
 
-#' Calculate Mhat for a given Mtilde and DWP
+#' Draw values for Mhat given a ghat and DWP
 #'
-#' @param Mtilde Mtilde value
+#' @param n number of random draws per carcass
+#' @param ghat estimated detection probability
 #' @param DWP Density weighted proportion associated with Mtilde
+#' @param seed seed used to set the random number generator
 #' @return Mhat 
 #' @examples NA
 #' @export 
 #'
-calcMhat <- function(Mtilde, DWP = 1){
+rMhat <- function(n = 1, ghat, DWP = 1, seed = 1){
+  
+  if (n != 1){
+    stop("multiple draws per ghat is not currently available at this time.")
+  }
+  Mtilde <- rMtilde(n = length(ghat), ghat, seed)
   Mhat <- Mtilde / DWP
   return(Mhat)
 }
