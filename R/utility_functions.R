@@ -241,3 +241,18 @@ yyyymmdd <- function(x){
   return(x)
 }
 
+#' Calculates the mean of a continuous binomial
+#'
+#' @description uses internal-only data
+#'
+#' @param prob probability
+#' @return mean 
+#' @examples NA
+#' @export 
+#'
+mucbin <- function(prob){
+  x <- mucbinomxy$x
+  y <- mucbinomxy$y
+  interp <- approxfun(x = x, y = y)
+  interp(prob)
+}
