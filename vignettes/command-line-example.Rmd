@@ -396,8 +396,9 @@ to be carcass-by-carcass:
 
 ```{r}
 dataDWP <- mockData$DensityWeightedProportionData
-DWP <- DWPbyCarcass(dataDWP, dataCO, dataSS, unitCol = "Unit", 
-         sizeclassCol = "Size", dateFoundCol = "DateFound", 
+DWP <- DWPbyCarcass(dataDWP, dataCO, unitCol = "Unit", 
+         sizeclassCol = "Size", 
+         removeCleanout = TRUE, dataSS, dateFoundCol = "DateFound", 
          dateSearchedCol = "DateSearched"
        )
 Mhat <- rMhat(n = 1, ghat = ghats, DWP, seed = 12)
