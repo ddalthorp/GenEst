@@ -98,20 +98,25 @@ calcMhat <- function(Mtilde, DWP = 1){
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted 
 #'   proportion table 
 #' @param data_carc Carcass observation data
-#' @param data_ss Search Schedule data
+#' @param removeCleanout logical indicating if cleanout searches need to be
+#'   removed from \code{data_carc}
+#' @param data_ss Search Schedule data (if cleanout searches are to be 
+#'   removed)
 #' @param unitCol Column name for the unit indicator
 #' @param sizeclassCol Name of colum in \code{data_carc} where the size 
 #'   classes are recorded
-#' @param dateFoundCol Column name for the date found data
-#' @param dateSearchedCol Column name for the date searched data
+#' @param dateFoundCol Column name for the date found data (if cleanout 
+#'   searches are to be removed)
+#' @param dateSearchedCol Column name for the date searched data (if cleanout 
+#'   searches are to be removed)
 #' @return DWP value for each carcass 
 #' @examples NA
 #' @export 
 #'
-DWPbyCarcass <- function(data_DWP, data_carc, data_ss, unitCol = "Unit", 
-                         dateFoundCol = "DateFound",
-                         dateSearchedCol = "DateSearched",
-                         sizeclassCol = NULL){
+DWPbyCarcass <- function(data_DWP, data_carc, unitCol = "Unit",
+                         sizeclassCol = NULL, removeCleanout = FALSE,
+                         data_ss = NULL, dateFoundCol = "DateFound",
+                         dateSearchedCol = "DateSearched"){
 
   if (!(unitCol %in% colnames(data_DWP) & unitCol %in% colnames(data_carc))){
     stop("Unit column not in both DWP and carcass tables")
@@ -123,16 +128,20 @@ DWPbyCarcass <- function(data_DWP, data_carc, data_ss, unitCol = "Unit",
     stop("Units present in carcass table not in DWP table")
   }
 
-  data_ss[ , dateSearchedCol] <- yyyymmdd(data_ss[ , dateSearchedCol])
-  data_carc[ , dateFoundCol] <- yyyymmdd(data_carc[ , dateFoundCol])
-  date1 <- min(data_ss[ , dateSearchedCol])
-  data_carc[ , dateFoundCol] <- dateToDay(data_carc[ , dateFoundCol], date1)
-  data_ss[ , dateSearchedCol] <- dateToDay(data_ss[ , dateSearchedCol], date1)
-  cleanout <- whichCleanout(data_carc, data_ss, unitCol, dateFoundCol,
-                dateSearchedCol
-              )  
-  if (length(cleanout) > 0){
-    data_carc <- data_carc[-cleanout, ]
+  if (removeCleanout){
+    data_ss[ , dateSearchedCol] <- yyyymmdd(data_ss[ , dateSearchedCol])
+    data_carc[ , dateFoundCol] <- yyyymmdd(data_carc[ , dateFoundCol])
+    date1 <- min(data_ss[ , dateSearchedCol])
+    data_carc[ , dateFoundCol] <- dateToDay(data_carc[ , dateFoundCol], date1)
+    data_ss[ , dateSearchedCol] <- dateToDay(data_ss[ , dateSearchedCol], 
+                                     date1
+                                   )
+    cleanout <- whichCleanout(data_carc, data_ss, unitCol, dateFoundCol,
+                  dateSearchedCol
+                )  
+    if (length(cleanout) > 0){
+      data_carc <- data_carc[-cleanout, ]
+    }
   }
 
   DWPcols <- which(grepl("DWP", colnames(data_DWP)))
