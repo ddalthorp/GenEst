@@ -2,10 +2,10 @@
 % Please edit documentation in R/app_functions.R
 \name{runGenEst}
 \alias{runGenEst}
-\title{Launches GenEst app.}
+\title{Launch the app}
 \usage{
 runGenEst()
 }
 \description{
-Launches GenEst app.
+Launch the app
 }

@@ -1,6 +1,9 @@
-<img src = 'inst/application/GenEst/www/GenEst.png' height = '80' align="right" />
+<img src = 'inst/app/www/GenEst.png' height = '80' align="right" />
 
-## GenEst: Generalized Fatality Estimator     
+## GenEst: Generalized Fatality Estimator    
+
+[![Build Status](https://api.travis-ci.org/ddaltorp/GenEst.svg?branch=master)](https://travis-ci.org/ddaltorp/GenEst)
+[![License](https://img.shields.io/badge/license-GPL%20(%3E=%203)-blue.svg)](https://raw.githubusercontent.com/ddaltorp/GenEst/master/LICENSE)
 
 **GenEst** is a tool for estimating fatalities from efficiency, persistence,
 and carcass data.
@@ -56,4 +59,4 @@ Paul Rabie ([WEST](http://www.westconsultants.com/)), Jared Studyvin
 ([USGS](https://www.usgs.gov/)).
 
 <br><br>
-<img src = 'inst/application/GenEst/www/blm.jpg' height = '65'> <img src = 'inst/application/GenEst/www/usgs.png' height = '65'> <img src = 'inst/application/GenEst/www/nrel.jpg' height = '65'> <img src = 'inst/application/GenEst/www/west.png' height = '65'> <img src = 'inst/application/GenEst/www/bci.jpg' height = '65'> <img src = 'inst/application/GenEst/www/awwi.png' height = '65'> <img src = 'inst/application/GenEst/www/avangrid.png' height = '65'> <img src = 'inst/application/GenEst/www/dapper.png' height = '65'> <img src = 'inst/application/GenEst/www/oikostat.jpg' height = '65'> <img src = 'inst/application/GenEst/www/osu.jpg' height = '65'> <img src = 'inst/application/GenEst/www/duke.png' height = '65'>
+<img src = 'inst/app/www/blm.jpg' height = '65'> <img src = 'inst/app/www/usgs.png' height = '65'> <img src = 'inst/app/www/nrel.jpg' height = '65'> <img src = 'inst/app/www/west.png' height = '65'> <img src = 'inst/app/www/bci.jpg' height = '65'> <img src = 'inst/app/www/awwi.png' height = '65'> <img src = 'inst/app/www/avangrid.png' height = '65'> <img src = 'inst/app/www/dapper.png' height = '65'> <img src = 'inst/app/www/oikostat.jpg' height = '65'> <img src = 'inst/app/www/osu.jpg' height = '65'> <img src = 'inst/app/www/duke.png' height = '65'>

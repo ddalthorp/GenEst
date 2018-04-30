@@ -7,7 +7,7 @@
 yyyymmdd(x)
 }
 \arguments{
-\item{date}{date(s) to convert}
+\item{x}{date(s) to convert}
 }
 \value{
 converted dates

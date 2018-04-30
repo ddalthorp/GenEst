@@ -4,16 +4,18 @@
 \alias{plot.pkm}
 \title{Plot results of a single pk model}
 \usage{
-\method{plot}{pkm}(model, n = 1000, seed = 1, col = "black")
+\method{plot}{pkm}(x, n = 1000, seed = 1, col = "black", ...)
 }
 \arguments{
-\item{model}{model of class pkm}
+\item{x}{model of class pkm}
 
 \item{n}{number of draws to use to characterize the distributions}
 
 \item{seed}{random number seed to use}
 
 \item{col}{color to use}
+
+\item{...}{arguments to be passed to sub functions}
 }
 \description{
 Plot results of a single pk model

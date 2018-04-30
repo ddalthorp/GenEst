@@ -41,11 +41,11 @@ value is provided, \code{formula_k} is ignored and the model is fit under
 the assumption that the \code{k} parameter is fixed and known to be
 \code{fix_k}.}
 
+\item{kInit}{Initial value used for \code{k} in the optimization.}
+
 \item{CL}{confidence level}
 
 \item{quiet}{Logical indicator of whether or not to print messsages}
-
-\item{init_k}{Initial value used for \code{k} in the optimization.}
 }
 \value{
 \code{pkmSetSize} returns a class-\code{pkmSetSize} list of 

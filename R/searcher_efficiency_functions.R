@@ -130,11 +130,7 @@
 #'  \item{\code{CL}}{the input \code{CL}}
 #'}
 #'
-#' @examples
-#' data(pkmdat)
-#' pkm(p ~ visibility, k ~ 1, data = pkmdat)
-#' pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-#' pkm(p ~ visibility, kFixed = 0.7, data = pkmdat)
+#' @examples NA
 #'
 #' @export
 #'
@@ -394,10 +390,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 
 #' @export
 #'
-print.pkm <- function(model){
-  hid <- attr(model, "hidden")
-  notHid <- !names(model) %in% hid
-  print(model[notHid])
+print.pkm <- function(x, ...){
+  hid <- attr(x, "hidden")
+  notHid <- !names(x) %in% hid
+  print(x[notHid])
 }
  
 #' Calculate the negative log-likelihood of a searcher efficiency model.
@@ -682,7 +678,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'   the assumption that the \code{k} parameter is fixed and known to be
 #'   \code{fix_k}.
 #'
-#' @param init_k Initial value used for \code{k} in the optimization.
+#' @param kInit Initial value used for \code{k} in the optimization.
 #'
 #' @param CL confidence level
 #'
@@ -807,13 +803,7 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
 #'   for cells defined by the \code{model} object. 
 #'
 #' @examples
-#' data(pkmdat)
-#' pkmod_1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
-#' simulated_pk <- rpk(n = 10, model = pkmod_1)
-#' simulated_pk
-#'
-#' pkmod_2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-#' rpk(n = 10, model = pkmod_2)
+#'   NA
 #' @export
 #'
 rpk <- function(n = 1, model, seed = NULL, kFill = NA){
@@ -891,7 +881,7 @@ kSuggest <- function(obsData){
 
 #' Check if all of the pkm models fail
 #'
-#' @param pkmToCheck A \code{pkmSet} object to test
+#' @param pkmSetToCheck A \code{pkmSet} object to test
 #'
 #' @return A vector of logical values indicating if each of the models failed
 #'
@@ -909,7 +899,7 @@ pkmSetFail <- function(pkmSetToCheck){
 
 #' Check if all of the pkm models fail
 #'
-#' @param pkmToCheck A \code{pkmSetSize} object to test
+#' @param pkmSetSizeToCheck A \code{pkmSetSize} object to test
 #'
 #' @return A list of vectors of logical values indicating if each of the 
 #'   models failed

@@ -1,38 +1,39 @@
 Package: GenEst
 Title: Generalised Fatality Estimator
-Version: 0.0.3.18
-Date: 2018-04-27
+Version: 0.0.5.0
+Date: 2018-04-30
 Authors@R: c(
-	person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
+    person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
     person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
-	person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
-	person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
-	person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"),
-	person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"),	
-	person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"))
+    person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"),
+    person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
+    person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
+    person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"),
+    person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"))
 Description: A tool for estimating fatalities from searcher efficiency, carcass
   persistence, and carcass observation data. 
-Depends: R (>= 3.4.1)
-License: GPL (>= 3)
+Depends: R (>= 3.2.3)
+License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-    cbinom,
-    DT,
-    EnvStats,
-    gsl,
-    httr,
-    matrixStats,
-    mvtnorm,
-    numDeriv,
-    rhandsontable,
+    Rcpp,
+    htmltools,
     shiny,
-    shinythemes,
-    survival
+	cbinom,
+	devtools,
+	matrixStats,
+	mvtnorm,
+	survival,
+	gsl,
+	testthat,
+	digest,
+	DT
 RoxygenNote: 6.0.1
 Suggests:
     knitr,
     rmarkdown
 VignetteBuilder:
     knitr
+LinkingTo: Rcpp

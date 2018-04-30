@@ -7,7 +7,7 @@
 cpmSetFail(cpmSetToCheck)
 }
 \arguments{
-\item{ckmToCheck}{A \code{cpmSet} object to test}
+\item{cpmSetToCheck}{A \code{cpmSet} object to test}
 }
 \value{
 A vector of logical values indicating if each of the models failed

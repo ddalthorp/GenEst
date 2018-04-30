@@ -368,10 +368,10 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
 #' @export
 #'
-print.cpm <- function(model){
-  hid <- attr(model, "hidden")
-  notHid <- !names(model) %in% hid
-  print(model[notHid])
+print.cpm <- function(x, ...){
+  hid <- attr(x, "hidden")
+  notHid <- !names(x) %in% hid
+  print(x[notHid])
 }
  
 #' Calculate the negative log-likelihood of a carcass persistence model.
@@ -895,7 +895,7 @@ ppersist_loglogistic <- function(t_arrive0, t_arrive1, t_search, pda, pdb){
 
 #' Check if all of the cpm models fail
 #'
-#' @param ckmToCheck A \code{cpmSet} object to test
+#' @param cpmSetToCheck A \code{cpmSet} object to test
 #'
 #' @return A vector of logical values indicating if each of the models failed
 #'
@@ -913,7 +913,7 @@ cpmSetFail <- function(cpmSetToCheck){
 
 #' Check if all of the cpm models fail
 #'
-#' @param ckmToCheck A \code{cpmSetSize} object to test
+#' @param cpmSetSizeToCheck A \code{cpmSetSize} object to test
 #'
 #' @return A list of vectors of logical values indicating if each of the 
 #'   models failed

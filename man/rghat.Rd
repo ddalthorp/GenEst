@@ -5,16 +5,17 @@
 \title{Simulate ghat values and arrival intervals for a set of carcasses 
   from fitted pk and cp models and search data}
 \usage{
-rghat(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
-  seed_CP = 1, kFill = NULL, unitCol = "Unit",
-  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched")
+rghat(n = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
+  seed_CP = NULL, seed_ghat = NULL, kFill = NULL, unitCol = "Unit",
+  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
+  removeCleanout = FALSE)
 }
 \arguments{
 \item{n}{the number of simulation draws}
 
-\item{data_carc}{Carcass Observation data}
+\item{data_CO}{Carcass Observation data}
 
-\item{data_ss}{Search Schedule data}
+\item{data_SS}{Search Schedule data}
 
 \item{model_SE}{Searcher Efficiency model}
 
@@ -24,6 +25,8 @@ rghat(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
 
 \item{seed_CP}{seed for random draws of the CP model}
 
+\item{seed_ghat}{seed for random draws of the ghats}
+
 \item{kFill}{value to fill in for missing k when not existing in the model}
 
 \item{unitCol}{Column name for the unit indicator}
@@ -31,10 +34,17 @@ rghat(n = 1, data_carc, data_ss, model_SE, model_CP, seed_SE = 1,
 \item{dateFoundCol}{Column name for the date found data}
 
 \item{dateSearchedCol}{Column name for the date searched data}
+
+\item{removeCleanout}{logical indicating if cleanout searches need to be
+removed from \code{data_carc}}
 }
 \value{
 list of [1] matrix of n ghat estimates for each carcass and [2]
   matrix of n arrival intervals (A) for each carcass
+}
+\description{
+Simulate ghat values and arrival intervals for a set of carcasses 
+  from fitted pk and cp models and search data
 }
 \examples{
 NA
