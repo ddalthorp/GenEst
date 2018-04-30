@@ -7,7 +7,7 @@
 pkmSetSizeFail(pkmSetSizeToCheck)
 }
 \arguments{
-\item{pkmToCheck}{A \code{pkmSetSize} object to test}
+\item{pkmSetSizeToCheck}{A \code{pkmSetSize} object to test}
 }
 \value{
 A list of vectors of logical values indicating if each of the 

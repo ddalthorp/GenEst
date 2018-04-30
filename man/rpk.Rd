@@ -24,11 +24,5 @@ list of two matrices of \code{n} simulated \code{p} and \code{k}
 Simulate p and k parameters from a fitted pk model.
 }
 \examples{
-data(pkmdat)
-pkmod_1 <- pkm(p ~ 1, k ~ 1, data = pkmdat)
-simulated_pk <- rpk(n = 10, model = pkmod_1)
-simulated_pk
-
-pkmod_2 <- pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-rpk(n = 10, model = pkmod_2)
+  NA
 }

@@ -1,39 +1,47 @@
-navbarPage(title = div(img(src = "GenEst.png", style = "margin-top: -8px;", 
-                         height = 40
-                      )    
-                   ),
+#' Create the UI
+#' @param request request as required for bookmarking
+#' @return UI
+#' @export
+#'
+ui <- function(request) {
 
-tabPanel("Home", br(),
+navbarPage(
+  
+div(img(src = "GenEst.png", style = "margin-top: -8px;", height = 40)),
+            
+tabPanel("Home",
+  br(),
   HTML('<center><img src = "Logo.jpg" height = "500"></center>'), br()
 ),
+  
 tabPanel("Data Input",
   sidebarLayout(
     sidebarPanel(width = 3,
-      fileInput("fileSE", "Search Efficiency Data File",
+      fileInput("file_SE", "Search Efficiency Data File",
         accept = c("text/csv", "text/comma-separated-values", ".csv")
       ), 
-      fileInput("fileCP", "Carcass Persistence Data File",
+      fileInput("file_CP", "Carcass Persistence Data File",
         accept = c("text/csv", "text/comma-separated-values", ".csv")
       ), 
-      fileInput("fileSS", "Search Schedule Data File",
+      fileInput("file_SS", "Search Schedule Data File",
         accept = c("text/csv", "text/comma-separated-values", ".csv")
       ), 
-      fileInput("fileDWP", "Density Weighted Proportion Data File",
+      fileInput("file_DWP", "Density Weighted Proportion Data File",
         accept = c("text/csv", "text/comma-separated-values", ".csv")
       ), 
-      fileInput("fileCO", "Carcass Observation Data File",
+      fileInput("file_CO", "Carcass Observation Data File",
         accept = c("text/csv", "text/comma-separated-values", ".csv")
       )
     ), 
     mainPanel(
       tabsetPanel(id = "LoadedDataViz",
-        tabPanel("Search Efficiency", br(), DT::dataTableOutput("dataSE")),
-        tabPanel("Carcass Persistence", br(), DT::dataTableOutput("dataCP")),
-        tabPanel("Search Schedule", br(), DT::dataTableOutput("dataSS")),
+        tabPanel("Search Efficiency", br(), dataTableOutput("data_SE")),
+        tabPanel("Carcass Persistence", br(), dataTableOutput("data_CP")),
+        tabPanel("Search Schedule", br(), dataTableOutput("data_SS")),
         tabPanel("Density Weighted Proportion", br(), 
-          DT::dataTableOutput("dataDWP")
+          dataTableOutput("data_DWP")
         ),
-        tabPanel("Carcass Observations", br(), DT::dataTableOutput("dataCO"))
+        tabPanel("Carcass Observations", br(), dataTableOutput("data_CO"))
       )
     )
   )
@@ -42,7 +50,7 @@ tabPanel("Analyses",
   tabsetPanel(
     tabPanel("General Inputs", br(), br(),
       sidebarPanel(width = 3,
-        numericInput("niterations", "Number of Iterations:", value = 1000, 
+        numericInput("n", "Number of Iterations:", value = 1000, 
           min = 1, max = 10000, step = 1
         ),
         numericInput("CL", "Confidence Level:", value = 0.9, min = 0, max = 1,
@@ -58,10 +66,10 @@ tabPanel("Analyses",
       sidebarPanel(width = 3,
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
         br(), br(),
-        selectizeInput("obsColsSE", "Observations:", c("No data input yet"), 
+        selectizeInput("obsCols_SE", "Observations:", c("No data input yet"), 
           multiple = TRUE
         ),
-        selectizeInput("predsSE", "Predictor Variables:", 
+        selectizeInput("preds_SE", "Predictor Variables:", 
           c("No data input yet"), multiple = TRUE
         ),
         radioButtons("kFixedChoice", "Fix k?",
@@ -72,40 +80,33 @@ tabPanel("Analyses",
             min = 0, max = 1, step = 0.001
           )
         ),
-        conditionalPanel(condition = "input.obsColsSE != null",
+        conditionalPanel(condition = "input.obsCols_SE != null",
           br(), 
-          actionButton("runModSE", "Run Searcher Efficiency Model")          
+          actionButton("runMod_SE", "Run Searcher Efficiency Model")          
         ),
-        conditionalPanel(condition = "input.runModSE > 0", 
+        conditionalPanel(condition = "input.runMod_SE > 0", 
           br(), br(),
           HTML("<big><strong><u> Table & Figure Selection:
           </u></strong></big>"), 
           br(), br(), 
-          selectizeInput("tabfigSizeClassSE",  
+          selectizeInput("tabfig_sizeclassSE",  
             "Size Class:", " ", multiple = FALSE
           ),  
-          selectizeInput("tabfigSEp", "p Model:",
-            " ", multiple = FALSE
-          ), 
-          selectizeInput("tabfigSEk", "k Model:",
-            " ", multiple = FALSE
-          )
+          selectizeInput("tabfig_SEp", "p Model:", " ", multiple = FALSE), 
+          selectizeInput("tabfig_SEk", "k Model:", " ", multiple = FALSE)
         )
       ),
       mainPanel(
-        tabsetPanel(id = "analysesSE",
-          tabPanel("Selected Data", br(), br(), 
-            DT::dataTableOutput("selectedSE")
+        tabsetPanel(id = "analyses_SE",
+          tabPanel("Selected Data", br(), br(), dataTableOutput("selected_SE")
           ),
-          tabPanel("Figures", plotOutput("figSE")
+          tabPanel("Figures", plotOutput("fig_SE")),
+          tabPanel("Model Tables", br(), br(), dataTableOutput("modTab_SE")
           ),
-          tabPanel("Model Tables", br(),
-            br(),  DT::dataTableOutput("modTabSE")
+          tabPanel("Model Comparison", br(), br(), 
+            dataTableOutput("AICcTab_SE")
           ),
-          tabPanel("Model Comparison Tables", br(),
-            br(), DT::dataTableOutput("AICcTabSE")
-          ),
-          tabPanel("Model Selection", br(), htmlOutput("modelMenuSE"))
+          tabPanel("Model Selection", br(), htmlOutput("modelMenu_SE"))
         )
       )
     ),
@@ -119,51 +120,47 @@ tabPanel("Analyses",
         selectizeInput("fta", "First Time Absent:", c("No data input yet"),
           multiple = TRUE, options = list(maxItems = 1)
         ),
-        selectizeInput("predsCP", "Predictor Variables:", 
+        selectizeInput("preds_CP", "Predictor Variables:", 
           c("No data input yet"), multiple = TRUE
         ),
         checkboxGroupInput("dists", label = "Distributions to Include",
-          choices = list("exponential" = "exponential", "weibull" = "weibull",
-                      "lognormal" = "lognormal", "loglogistic" = "loglogistic"
-                    ), 
+          choices = CPdistOptions(), 
           selected = c("exponential", "weibull", "lognormal", "loglogistic"),
           inline = TRUE
         ),
         conditionalPanel(
           condition = "input.ltp != null & input.fta != null",
           br(),
-          actionButton("runModCP", "Run Carcass Persistence Model")
+          actionButton("runMod_CP", "Run Carcass Persistence Model")
         ),
-        conditionalPanel(condition = "input.runModCP > 0", 
+        conditionalPanel(condition = "input.runMod_CP > 0", 
           br(), br(), 
           HTML("<big><strong><u> Table & Figure Selection: 
-            </u></strong></big>"), 
-          br(), br(),
-          selectizeInput("tabfigSizeClassCP", "Size Class:", 
+            </u></strong></big>"
+          ), br(), br(),
+          selectizeInput("tabfig_sizeclassCP", "Size Class:", 
             " ", multiple = FALSE
           ),
-          selectizeInput("tabfigCPdist", "Distribution:",
+          selectizeInput("tabfig_CPd", "Distribution:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigCPl", "Location Model:",
+          selectizeInput("tabfig_CPl", "Location Model:",
             " ", multiple = FALSE
           ), 
-          selectizeInput("tabfigCPs", "Scale Model:", " ", multiple = FALSE)        
+          selectizeInput("tabfig_CPs", "Scale Model:", " ", multiple = FALSE)        
         )
       ),
       mainPanel(
-        tabsetPanel(id = "analysesCP",
+        tabsetPanel(id = "analyses_CP",
           tabPanel("Selected Data", br(), br(),
-            DT::dataTableOutput("selectedCP")),
-          tabPanel("Figures", plotOutput("figCP")
+            dataTableOutput("selected_CP")),
+          tabPanel("Figures", plotOutput("fig_CP")),
+          tabPanel("Model Tables", br(), br(), dataTableOutput("modTab_CP")
           ),
-          tabPanel("Model Tables", br(),
-            br(), DT::dataTableOutput("modTabCP")
+          tabPanel("Model Comparison", br(), br(), 
+            dataTableOutput("AICcTab_CP")
           ),
-          tabPanel("Model Comparison Tables", br(),
-            br(), DT::dataTableOutput("AICcTabCP")
-          ),
-          tabPanel("Model Selection", br(), htmlOutput("modelMenuCP"))
+          tabPanel("Model Selection", br(), htmlOutput("modelMenu_CP"))
         )
       )
     ),
@@ -181,7 +178,7 @@ tabPanel("Analyses",
         ),
         conditionalPanel(
           condition = 
-            "input.modelChoicesSE1 != null & input.modelChoicesCP1 != null & 
+            "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
              output.sizeclassesSE == output.sizeclassesCP",
           br(), 
           actionButton("runModg", "Estimate Detection Probability")
@@ -202,6 +199,9 @@ tabPanel("Analyses",
         selectizeInput("dateSearchedCol", "Date Searched:",  
           c("No data input yet"), multiple = FALSE
         ),
+        radioButtons("removeCleanout", "Remove Cleanout Searches?",
+          choices = list("No" = FALSE, "Yes" = TRUE), selected = TRUE
+        ),
         conditionalPanel(
           condition = "output.kFillNeed == 'yes'",
           numericInput("kFill", "Assumed k:", value = 0.5, 
@@ -210,7 +210,7 @@ tabPanel("Analyses",
         ),
         conditionalPanel(
           condition = 
-            "input.modelChoicesSE1 != null & input.modelChoicesCP1 != null & 
+            "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
              output.sizeclassesSE == output.sizeclassesCP",
           br(), 
           actionButton("runModM", "Estimate Fatalities")
@@ -231,16 +231,16 @@ tabPanel("About",
           <a href = 'http://www.USGS.gov'>(USGS)</a>,
         Lisa Madsen
           <a href = 'http://www.oregonstate.edu'>(OSU)</a>,
+        Manuela Huso
+          <a href = 'http://www.USGS.gov'>(USGS)</a>,
         Paul Rabie 
           <a href = 'http://www.west-inc.com'>(WEST)</a>, 
         Jared Studyvin
           <a href = 'http://www.west-inc.com'>(WEST)</a>, 
-        Robert Wolpert
-          <a href = 'http://http://www2.stat.duke.edu/~rlw/'>(Duke)</a>, 
         Franzi Korner-Nievergelt
           <a href = 'http://http://www.oikostat.ch/'>(oikostat)</a>, 
-        and Manuela Huso
-          <a href = 'http://www.USGS.gov'>(USGS)</a>"),
+        and Robert Wolpert
+          <a href = 'http://http://www2.stat.duke.edu/~rlw/'>(Duke)</a>"),
       br(), br(),
       HTML("GenEst is a tool for estimating fatalities from efficiency, 
         persistence, and carcass data."
@@ -284,6 +284,7 @@ tabPanel("About",
 ),
 collapsible = TRUE,
 windowTitle = "GenEst"
+
 )
 
-
+}

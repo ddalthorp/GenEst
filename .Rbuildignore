@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+.travis.yml
+auxillary_code
+data-raw
+user_guide

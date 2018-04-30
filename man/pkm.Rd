@@ -142,9 +142,6 @@ Search trial \code{data} must be entered in a data frame with data in
   (e.g., visibility = E, M, or D) may also be included.
 }
 \examples{
-data(pkmdat)
-pkm(p ~ visibility, k ~ 1, data = pkmdat)
-pkm(p ~ visibility * season, k ~ site, data = pkmdat)
-pkm(p ~ visibility, kFixed = 0.7, data = pkmdat)
+NA
 
 }

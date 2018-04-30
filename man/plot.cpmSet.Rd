@@ -4,12 +4,12 @@
 \alias{plot.cpmSet}
 \title{Plot results of a cp model set}
 \usage{
-\method{plot}{cpmSet}(modelSet, specificModel = NULL, n = 500, seed = 1,
+\method{plot}{cpmSet}(x, specificModel = NULL, n = 500, seed = 1,
   col = c(exponential = rgb(0.8, 0.38, 0.56), weibull = rgb(1, 0.76, 0.15),
-  loglogistic = rgb(0, 1, 1), lognormal = rgb(0, 0.41, 0.55)))
+  loglogistic = rgb(0, 1, 1), lognormal = rgb(0, 0.41, 0.55)), ...)
 }
 \arguments{
-\item{modelSet}{pk model set of class pkmSet}
+\item{x}{pk model set of class pkmSet}
 
 \item{specificModel}{the name of specific model(s) to restrict the plot}
 
@@ -18,6 +18,8 @@
 \item{seed}{random number seed to use for the models}
 
 \item{col}{color to use for the specific model}
+
+\item{...}{to be passed down}
 }
 \description{
 Plot results of a cp model set

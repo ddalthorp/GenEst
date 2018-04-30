@@ -64,22 +64,22 @@ example, we will ignore the size category and use intercept-only models for
 both `p` and `k`:
 
 ```{r}
-dataSE <- mockData$SearcherEfficiencyData
-pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = dataSE)
+data_SE <- mockData$SearcherEfficiencyData
+pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = data_SE)
 ```
 
 Here, we have taken advantage of `pkm`'s default behavior of selecting 
 observation columns (see `?pkm` for details). 
 
 ```{r}
-head(dataSE)
+head(data_SE)
 ```
 
 If we wanted to explicitly control the observations, we would use the `obsCol` 
 argument:
 
 ```{r}
-pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = dataSE, 
+pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = data_SE, 
              obsCol = c("Search1", "Search2", "Search3", "Search4")
            )
 ```
@@ -125,7 +125,7 @@ rpk(n = 10, pkModel)
 You can complicate the `p` and `k` formulae independently
 
 ```{r}
-pkm(formula_p = p ~ Visibility, formula_k = k ~ HabitatType, data = dataSE,
+pkm(formula_p = p ~ Visibility, formula_k = k ~ HabitatType, data = data_SE,
   obsCol = c("Search1", "Search2", "Search3", "Search4")
 )
 ```
@@ -134,7 +134,7 @@ And you can fix `k` at a nominal value between 0 and 1 (inclusive) using the
 `kFixed` argument
 
 ```{r}
-pkm(formula_p = p ~ Visibility, kFixed = 0.7, data = dataSE,
+pkm(formula_p = p ~ Visibility, kFixed = 0.7, data = data_SE,
   obsCol = c("Search1", "Search2", "Search3", "Search4")
 )
 ```
@@ -152,7 +152,7 @@ which generates a set of 10 models:
 
 ```{r}
 pkmModSet <- pkmSet(formula_p = p ~ Visibility*HabitatType, 
-               formula_k = k ~ HabitatType, data = dataSE,
+               formula_k = k ~ HabitatType, data = data_SE,
                obsCol = c("Search1", "Search2", "Search3", "Search4")
              )
 names(pkmModSet)
@@ -184,7 +184,7 @@ the subfunction for each unique size class in the column identified by the
 
 ```{r}
 pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType, 
-                   formula_k = k ~ HabitatType, data = dataSE,
+                   formula_k = k ~ HabitatType, data = data_SE,
                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
                    sizeclassCol = "Size"
                  )
@@ -214,8 +214,8 @@ category, use intercept-only models for both `l` and `s`, and use the
 Weibull distribution:
 
 ```{r}
-dataCP <- mockData$CarcassPersistenceData
-cpModel <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = dataCP,
+data_CP <- mockData$CarcassPersistenceData
+cpModel <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = data_CP,
              left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays", dist = "weibull"
            )
@@ -245,7 +245,6 @@ plot(cpModel)
 
 to visualize the model's output. 
 
-
 You can generate random draws of the `l` and `s` (or `a` and `b`) parameters
 for each cell grouping (in `cpModel` there are no predictors, so there is one
 cell grouping called "all") using the `cpk` function which, like other `r*` 
@@ -260,7 +259,7 @@ rcp(n = 10, cpModel, type = "ppersist")
 You can complicate the `l` and `s` formulae independently
 
 ```{r}
-cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = dataCP,
+cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = data_CP,
   left = "LastPresentDecimalDays", right = "FirstAbsentDecimalDays", 
   dist = "weibull"
 )
@@ -270,7 +269,7 @@ Given that the exponential only has one parameter (`l`, location), a model
 for scale (`formula_s`) is not required:
 
 ```{r}
-cpModExp <- cpm(formula_l = l ~ Visibility*GroundCover, data = dataCP,
+cpModExp <- cpm(formula_l = l ~ Visibility*GroundCover, data = data_CP,
               left = "LastPresentDecimalDays", 
               right = "FirstAbsentDecimalDays", dist = "exponential"
             )
@@ -295,7 +294,7 @@ generates a set of 15 models:
 
 ```{r}
 cpmModSet <- cpmSet(formula_l = l ~ Visibility*Season, 
-               formula_s = s ~ Visibility, data = dataCP,
+               formula_s = s ~ Visibility, data = data_CP,
                left = "LastPresentDecimalDays", 
                right = "FirstAbsentDecimalDays", 
                dist = c("exponential", "lognormal")
@@ -316,10 +315,9 @@ the `specificModel` argument:
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 plot(cpmModSet, 
-  specificModel = "dist: lognormal; l ~ Visibility * Season; s ~ Visibility")
+  specificModel = "dist: lognormal; l ~ Visibility * Season; s ~ Visibility"
+)
 ```
-
-
 
 ### Multiple Sizes of Animals and Sets of Carcass Persistence Models
 
@@ -331,7 +329,7 @@ the subfunction for each unique size class in the column identified by the
 
 ```{r}
 cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility*Season, 
-                   formula_s = s ~ Visibility, data = dataCP,
+                   formula_s = s ~ Visibility, data = data_CP,
                    left = "LastPresentDecimalDays", 
                    right = "FirstAbsentDecimalDays", 
                    dist = c("exponential", "lognormal"),
@@ -357,23 +355,23 @@ carcasses based on the dates when they are observed, associated covarites, the
 searcher efficiency and carcass persistence models, and the search schedule. 
 
 The `rghat` function produces `n` random draws of detection probabilities  
-(`ghat`) and arrival intervals (`As`) for each carcass.
+(`ghat`) and arrival intervals (`Aj`) for each carcass.
 
 ```{r}
-pkModel <- GenEst::pkm(formula_p = p ~ Visibility * HabitatType, 
-                       formula_k = k ~ 1, data = dataSE)
-cpModel <- GenEst::cpm(formula_l = l ~ Season, formula_s = s ~ 1, 
-             data = dataCP,
+model_SE <- pkm(formula_p = p ~ Visibility * HabitatType, 
+                       formula_k = k ~ 1, data = data_SE)
+model_CP <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, 
+             data = data_CP,
              left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays", dist = "weibull")
-dataCO <- mockData$CarcassObservationData
-dataSS <- mockData$SearchScheduleData
-ghatsAs <- rghat(n = 1000, dataCO, dataSS, model_SE = pkModel, 
-             model_CP = cpModel, seed_SE = 1, seed_CP = 1,
-             unitCol = "Unit", dateFoundCol = "DateFound", 
-             dateSearchedCol = "DateSearched"
+data_CO <- mockData$CarcassObservationData
+data_SS <- mockData$SearchScheduleData
+ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
+             seed_SE = 1, seed_CP = 1, unitCol = "Unit", 
+             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
+             removeCleanout = TRUE
            )
-ghats <- ghatsAs$ghat
+ghats <- ghatsAjs$ghat
 ```
 
 ### Mortality Estimation
@@ -396,9 +394,9 @@ to be carcass-by-carcass:
 
 ```{r}
 dataDWP <- mockData$DensityWeightedProportionData
-DWP <- DWPbyCarcass(dataDWP, dataCO, unitCol = "Unit", 
+DWP <- DWPbyCarcass(dataDWP, data_CO, unitCol = "Unit", 
          sizeclassCol = "Size", 
-         removeCleanout = TRUE, dataSS, dateFoundCol = "DateFound", 
+         removeCleanout = TRUE, data_SS, dateFoundCol = "DateFound", 
          dateSearchedCol = "DateSearched"
        )
 Mhat <- rMhat(n = 1, ghat = ghats, DWP, seed = 12)
