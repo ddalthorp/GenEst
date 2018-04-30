@@ -7,7 +7,7 @@
 pkmSetFail(pkmSetToCheck)
 }
 \arguments{
-\item{pkmToCheck}{A \code{pkmSet} object to test}
+\item{pkmSetToCheck}{A \code{pkmSet} object to test}
 }
 \value{
 A vector of logical values indicating if each of the models failed

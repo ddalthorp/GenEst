@@ -25,7 +25,7 @@ rXtilde <- function(n = 1, ghat, seed = 1){
 rMtilde <- function(n = 1, ghat, seed = 1){
   
   Xtilde <- rXtilde(n, ghat, seed)
-  MtildeVec <- (Xtilde - (mucbinom(ghat) - 1)) / ghat
+  MtildeVec <- (Xtilde - (Ecbinom(ghat) - 1)) / ghat
   Mtilde <- matrix(MtildeVec, ncol = ncol(ghat))
   return(Mtilde)
 }

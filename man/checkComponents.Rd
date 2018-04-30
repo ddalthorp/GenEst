@@ -7,7 +7,7 @@
 checkComponents(formula)
 }
 \arguments{
-\item{formula_in}{A formula object}
+\item{formula}{A formula object}
 }
 \value{
 a logical regarding complete set of terms and interactions
