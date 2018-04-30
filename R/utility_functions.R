@@ -67,12 +67,11 @@ combinePreds <- function(preds, data){
   return(output)
 }
 
-
 #' Check if all component terms and interactions are included in a formula
 #'
 #' Terms are automatically alphabatized within interactions.
 #'
-#' @param formula_in A formula object
+#' @param formula A formula object
 #'
 #' @return a logical regarding complete set of terms and interactions
 #' @export 
@@ -215,7 +214,7 @@ dateToDay <- function(date, ref = NULL){
   if (is.null(ref)){
     ref <- date
   }
-  day <- as.numeric(difftime(date, ref, unit = "days") + 1)
+  day <- as.numeric(difftime(date, ref, units = "days") + 1)
   return(day)
 }
 
@@ -224,7 +223,7 @@ dateToDay <- function(date, ref = NULL){
 #' @description only transforms m/d/Y dates, returns untransformed dates that
 #'   were already YYYY-mm-dd
 #'
-#' @param date date(s) to convert
+#' @param x date(s) to convert
 #' @return converted dates
 #' @examples NA
 #' @export 
@@ -241,7 +240,7 @@ yyyymmdd <- function(x){
   return(x)
 }
 
-#' Calculates the mean of a continuous binomial
+#' Calculates the expected value of a continuous binomial
 #'
 #' @description uses internal-only data
 #'
@@ -250,10 +249,10 @@ yyyymmdd <- function(x){
 #' @examples NA
 #' @export 
 #'
-mucbinom <- function(prob){
-  x <- mucbinomxy$x
-  y <- mucbinomxy$y
-  interp <- approxfun(x = x, y = y)
+Ecbinom <- function(prob){
+  X <- EcbinomXY$X
+  Y <- EcbinomXY$Y
+  interp <- approxfun(x = X, y = Y)
   interp(prob)
 }
 

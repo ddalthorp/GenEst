@@ -7,7 +7,7 @@
 cpmSetSizeFail(cpmSetSizeToCheck)
 }
 \arguments{
-\item{ckmToCheck}{A \code{cpmSetSize} object to test}
+\item{cpmSetSizeToCheck}{A \code{cpmSetSize} object to test}
 }
 \value{
 A list of vectors of logical values indicating if each of the 

@@ -2,11 +2,11 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{rghatCarcass}
 \alias{rghatCarcass}
-\title{Simulate ghat values and arrival intervals for a carcasses from fitted pk 
+\title{Simulate ghat values and arrival intervals for a carcass from fitted pk 
   and cp models and search data}
 \usage{
-rghatCarcass(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP, pkSim,
-  cpSim, preds_static, preds_dynamic, unitCol, dateFoundCol, dateSearchedCol)
+rghatCarcass(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP, sim_SE,
+  sim_CP, preds_static, preds_dynamic, unitCol, timeFoundCol, timeSearchedCol)
 }
 \arguments{
 \item{n}{the number of simulation draws}
@@ -15,15 +15,15 @@ rghatCarcass(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP, pkSim,
 
 \item{dist}{distribution for the CP model}
 
-\item{data_ss}{Search Schedule data}
+\item{data_SS}{Search Schedule data}
 
 \item{preds_SE}{Names of Searcher Efficiency predictors}
 
 \item{preds_CP}{Names of Carcass Persistence predictors}
 
-\item{pkSim}{simulated pk parameters}
+\item{sim_SE}{simulated Search Efficiency parameters}
 
-\item{cpSim}{simulated cp parameters}
+\item{sim_CP}{simulated Carcass Persistence parameters}
 
 \item{preds_static}{Names of predictors that don't change over time}
 
@@ -31,16 +31,16 @@ rghatCarcass(n = 1, data_carc, dist, data_ss, preds_SE, preds_CP, pkSim,
 
 \item{unitCol}{Column name for the unit indicator}
 
-\item{dateFoundCol}{Column name for the date found data}
+\item{timeFoundCol}{Column name for the time found data}
 
-\item{dateSearchedCol}{Column name for the date searched data}
+\item{timeSearchedCol}{Column name for the time searched data}
 }
 \value{
 list of [1] n ghat estimates for a carcass and [2] n arrival 
-  interval (A) estimates for a carcass
+  interval (Aj) estimates for a carcass
 }
 \description{
-Simulate ghat values and arrival intervals for a carcasses from fitted pk 
+Simulate ghat values and arrival intervals for a carcass from fitted pk 
   and cp models and search data
 }
 \examples{

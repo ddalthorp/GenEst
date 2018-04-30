@@ -4,11 +4,11 @@
 \alias{plot.pkmSet}
 \title{Plot results of a pk model set}
 \usage{
-\method{plot}{pkmSet}(modelSet, specificModel = NULL, n = 1000,
-  seed_spec = 1, seed_full = 1, col_spec = "black", col_full = "grey")
+\method{plot}{pkmSet}(x, specificModel = NULL, n = 1000, seed_spec = 1,
+  seed_full = 1, col_spec = "black", col_full = "grey", ...)
 }
 \arguments{
-\item{modelSet}{pk model set of class pkmSet}
+\item{x}{pk model set of class pkmSet}
 
 \item{specificModel}{the name(s) of specific model(s) to restrict the plot}
 
@@ -21,6 +21,8 @@
 \item{col_spec}{color to use for the specific model}
 
 \item{col_full}{color to use for the specific model}
+
+\item{...}{to be sent to subfunctions}
 }
 \description{
 Plot results of a pk model set

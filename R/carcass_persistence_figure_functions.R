@@ -55,7 +55,7 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
   )
   axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), 
-    label = axis_x
+    labels = axis_x
   )
   axis(2, las = 1, cex.axis = 0.9, at = seq(0, 1, 0.2), labels = axis_y)
   points(pts, pred_y, type = "l", col = col, lwd = lwd)
@@ -68,15 +68,17 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
 
 #' Plot results of a single cp model
 #'
-#' @param model model of class cpm
+#' @param x model of class cpm
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use
 #' @param col color to use
+#' @param ... to be passed down
 #'
 #' @export
 #'
-plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
+plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
 
+  model <- x
   name_l <- format(model$formula_l)
   name_s <- format(model$formula_s)
   modelName <- paste(name_l, "; ", name_s, sep = "")
@@ -141,20 +143,22 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black"){
 
 #' Plot results of a cp model set
 #'
-#' @param modelSet pk model set of class pkmSet
+#' @param x pk model set of class pkmSet
 #' @param specificModel the name of specific model(s) to restrict the plot
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use for the models
 #' @param col color to use for the specific model
+#' @param ... to be passed down
 #'
 #' @export
 #'
-plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
+plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
                         col = c(exponential = rgb(0.80, 0.38, 0.56), 
                                 weibull = rgb(1.00, 0.76, 0.15),
                                 loglogistic = rgb(0.00, 1.00, 1.00),
-                                lognormal = rgb(0.00, 0.41, 0.55))){
+                                lognormal = rgb(0.00, 0.41, 0.55)), ...){
 
+  modelSet <- x
   modelSetNames <- names(modelSet)
   nmodelsInSet <- length(modelSetNames)
 
@@ -393,7 +397,7 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, fullModel,
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
   )
   axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), 
-    label = axis_x
+    labels = axis_x
   )
   axis(2, las = 1, cex.axis = 0.9, at = seq(0, 1, 0.2), labels = axis_y)
   countText <- paste("N = ", ncarc, sep = "")
