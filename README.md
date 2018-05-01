@@ -2,8 +2,8 @@
 
 ## GenEst: Generalized Fatality Estimator    
 
-[![Build Status](https://api.travis-ci.org/ddaltorp/GenEst.svg?branch=master)](https://travis-ci.org/ddaltorp/GenEst)
-[![License](https://img.shields.io/badge/license-GPL%20(%3E=%203)-blue.svg)](https://raw.githubusercontent.com/ddaltorp/GenEst/master/LICENSE)
+[![Build Status](https://api.travis-ci.org/ddalthorp/GenEst.svg?branch=master)](https://travis-ci.org/ddalthorp/GenEst)
+[![License](https://img.shields.io/badge/license-GPL%20(%3E=%203)-blue.svg)](https://raw.githubusercontent.com/ddalthorp/GenEst/master/LICENSE)
 
 **GenEst** is a tool for estimating fatalities from efficiency, persistence,
 and carcass data.
