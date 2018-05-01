@@ -369,10 +369,11 @@ calcSplits <- function(M, Aj = NULL,
 #' and each simulation draw). summary(splits, CL = 0.95, ...) gives
 #' summary statistics of the estimates.
 #'
-#' @param splits A \code{splitFull} object (\code{\link{calcSplits}}) that gives
+#' @param object A \code{splitFull} object (\code{\link{calcSplits}}) that gives
 #'  simulated mortality estimates for all combinations of levels of 1 or 2
 #'  splitting covariates.
 #' @param CL desired confidence level for summary CIs (numeric scalar in (0, 1))
+#' @param ... to be passed down
 #' @return an object of class \code{splitSummary}, which gives 5-number summaries
 #'  for all combinations of levels among the splitting covariates in the
 #'  \code{splits}. The 5-number summaries include the mean and alpha/2, 0.25,
@@ -380,7 +381,8 @@ calcSplits <- function(M, Aj = NULL,
 #'  alpha = 1 - CL. A graphical representation of the results can be
 #'  produced using \code{plot(splits, CL, ...)}.
 #' @export
-summary.splitFull <- function(splits, CL = 0.95, ...){
+summary.splitFull <- function(object, CL = 0.95, ...){
+  split <- object
   alpha <- 1 - CL
   probs <- c(alpha/2, 0.25, 0.5, 0.75, 1 - alpha/2)
   if (is.null(attr(splits, "vars"))){
@@ -426,7 +428,7 @@ summary.splitFull <- function(splits, CL = 0.95, ...){
 #' horizontally and the levels of the second variable are are arranged
 #' vertically.
 #'
-#' @param splits A \code{splitSummary} object (result of \code{\link{calcSplits}})
+#' @param x A \code{splitSummary} object (result of \code{\link{calcSplits}})
 #'  that includes summary statistics for simulated mortality estimates for all
 #'  combinations of levels of 1 or 2 splitting covariates.
 #' @param rate \code{logical} scalar indicating whether the figures should be
@@ -434,9 +436,11 @@ summary.splitFull <- function(splits, CL = 0.95, ...){
 #'  fatality rates per unit time (\code{rate = TRUE}). If the splits do not
 #'  include either a \code{split_SS} or \code{split_time} variable, the
 #'  \code{rate} arg is ignored.
+#' @param ... to be passed down
 #'
 #' @export
-plot.splitSummary <- function(splits, rate = FALSE, ...){
+plot.splitSummary <- function(x, rate = FALSE, ...){
+  x <- splits
   nvar <- length(attr(splits, "vars"))
   vartype <- attr(splits, "type")
   if (vartype[1] == "CO") rate <- FALSE
@@ -536,7 +540,7 @@ plot.splitSummary <- function(splits, rate = FALSE, ...){
 #' \code{\link{summary.splitFull}} and plotting the result via
 #' \code{\link{plot.splitSummary}}.
 #'
-#' @param splits A \code{splitSummary} object (result of \code{\link{calcSplits}})
+#' @param x A \code{splitSummary} object (result of \code{\link{calcSplits}})
 #'  that includes summary statistics for simulated mortality estimates for all
 #'  combinations of levels of 1 or 2 splitting covariates.
 #' @param rate \code{logical} scalar indicating whether the figures should be
@@ -545,7 +549,8 @@ plot.splitSummary <- function(splits, rate = FALSE, ...){
 #'  include either a \code{split_SS} or \code{split_time} variable, the
 #'  \code{rate} arg is ignored.
 #' @param CL desired confidence level to show in box plots
+#' @param ... to be passed down
 #' @export
-plot.splitFull <- function(splits, rate = FALSE, CL = 0.95, ...){
-  plot(summary(splits, CL), rate)
+plot.splitFull <- function(x, rate = FALSE, CL = 0.95, ...){
+  plot(summary(x, CL), rate)
 }
