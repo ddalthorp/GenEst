@@ -2,10 +2,10 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 calcRateC <- function(Mtilde, Aj, days, searches) {
-    .Call('_GenEst_calcRateC', PACKAGE = 'GenEst', Mtilde, Aj, days, searches)
+    .Call(`_GenEst_calcRateC`, Mtilde, Aj, days, searches)
 }
 
 calcTsplitC <- function(rate, days, times) {
-    .Call('_GenEst_calcTsplitC', PACKAGE = 'GenEst', rate, days, times)
+    .Call(`_GenEst_calcTsplitC`, rate, days, times)
 }
 

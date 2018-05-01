@@ -1,4 +1,4 @@
-#' @useDynLib GenEst
+#' @useDynLib GenEst, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny shinyApp shinyAppDir navbarPage tabPanel tabsetPanel
 #'   selectizeInput renderUI showNotification renderText showModal modalDialog
