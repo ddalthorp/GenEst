@@ -4,10 +4,10 @@
 \alias{plot.pkm}
 \title{Plot results of a single pk model}
 \usage{
-\method{plot}{pkm}(x, n = 1000, seed = 1, col = "black", ...)
+\method{plot}{pkm}(model, n = 1000, seed = 1, col = "black", ...)
 }
 \arguments{
-\item{x}{model of class pkm}
+\item{model}{model of class pkm}
 
 \item{n}{number of draws to use to characterize the distributions}
 
