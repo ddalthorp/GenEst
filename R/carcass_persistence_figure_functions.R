@@ -159,7 +159,7 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
                                 loglogistic = rgb(0.00, 1.00, 1.00),
                                 lognormal = rgb(0.00, 0.41, 0.55)), ...){
 
-  x <- modelSet
+  modelSet <- x
   modelSetNames <- names(modelSet)
   nmodelsInSet <- length(modelSetNames)
 
