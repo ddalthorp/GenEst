@@ -380,7 +380,7 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, fullModel,
   cellMatch <- matchCells(model_spec, model_full)
   reducedCell <- cellMatch[cellNames_full == specificCell]
 
-  xVals <- model$observations[model$observations!= Inf]
+  xVals <- model_full$observations[model_full$observations!= Inf]
   max_x <- max(xVals, na.rm = TRUE)
   max_x <- ceiling(max_x / 10) * 10
 
