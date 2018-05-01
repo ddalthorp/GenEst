@@ -10,7 +10,7 @@
 #'   column fluidRow textOutput
 #' @importFrom htmltools div img br HTML
 #' @importFrom DT dataTableOutput renderDataTable datatable
-#' @importFrom graphics axis mtext par plot points rect text
+#' @importFrom graphics axis mtext par plot points rect text box lines polygon
 #' @importFrom grDevices rgb devAskNewPage
 #' @importFrom stats .getXlevels approxfun delete.response formula median
 #'   model.matrix na.omit optim pgamma pnorm qnorm quantile reformulate
