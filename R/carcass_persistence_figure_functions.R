@@ -30,7 +30,8 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
   as <- abs[[whichSpecificCell]][ , "pda"]
   bs <- abs[[whichSpecificCell]][ , "pdb"]
 
-  max_x <- max(model$observations, na.rm = TRUE)
+  xVals <- model$observations[model$observations!= Inf]
+  max_x <- max(xVals, na.rm = TRUE)
   max_x <- ceiling(max_x / 10) * 10
   pred_x <- seq(0, max_x, length.out = max_x * 10)
   pts <- pred_x[2:length(pred_x)]
@@ -379,7 +380,8 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, fullModel,
   cellMatch <- matchCells(model_spec, model_full)
   reducedCell <- cellMatch[cellNames_full == specificCell]
 
-  max_x <- max(model_full$observations, na.rm = TRUE)
+  xVals <- model$observations[model$observations!= Inf]
+  max_x <- max(xVals, na.rm = TRUE)
   max_x <- ceiling(max_x / 10) * 10
 
   t1 <- observations[ , 1]
