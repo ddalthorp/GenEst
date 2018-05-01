@@ -69,7 +69,7 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
 
 #' Plot results of a single cp model
 #'
-#' @param model model of class cpm
+#' @param x model of class cpm
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use
 #' @param col color to use
@@ -77,8 +77,9 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
 #'
 #' @export
 #'
-plot.cpm <- function(model, n = 500, seed = 1, col = "black", ...){
+plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
 
+  model <- x
   name_l <- format(model$formula_l)
   name_s <- format(model$formula_s)
   modelName <- paste(name_l, "; ", name_s, sep = "")
@@ -143,7 +144,7 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black", ...){
 
 #' Plot results of a cp model set
 #'
-#' @param modelSet pk model set of class pkmSet
+#' @param x pk model set of class pkmSet
 #' @param specificModel the name of specific model(s) to restrict the plot
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use for the models
@@ -152,13 +153,13 @@ plot.cpm <- function(model, n = 500, seed = 1, col = "black", ...){
 #'
 #' @export
 #'
-plot.cpmSet <- function(modelSet, specificModel = NULL, n = 500, seed = 1,
+plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
                         col = c(exponential = rgb(0.80, 0.38, 0.56), 
                                 weibull = rgb(1.00, 0.76, 0.15),
                                 loglogistic = rgb(0.00, 1.00, 1.00),
                                 lognormal = rgb(0.00, 0.41, 0.55)), ...){
 
-  
+  x <- modelSet
   modelSetNames <- names(modelSet)
   nmodelsInSet <- length(modelSetNames)
 
