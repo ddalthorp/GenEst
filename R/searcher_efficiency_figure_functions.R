@@ -1,6 +1,6 @@
 #' Plot results of a single pk model
 #'
-#' @param model model of class pkm
+#' @param x model of class pkm
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use
 #' @param col color to use
@@ -8,8 +8,9 @@
 #'
 #' @export
 #'
-plot.pkm <- function(model, n = 1000, seed = 1, col = "black", ...){
+plot.pkm <- function(x, n = 1000, seed = 1, col = "black", ...){
 
+  model <- x
   name_p <- format(model$formula_p)
   name_k <- model$formula_k
   if (class(name_k) == "numeric"){
@@ -89,7 +90,7 @@ plot.pkm <- function(model, n = 1000, seed = 1, col = "black", ...){
 
 #' Plot results of a pk model set
 #'
-#' @param modelSet pk model set of class pkmSet
+#' @param x pk model set of class pkmSet
 #' @param specificModel the name(s) of specific model(s) to restrict the plot
 #' @param n number of draws to use to characterize the distributions
 #' @param seed_spec random number seed to use for the specific model
@@ -100,10 +101,11 @@ plot.pkm <- function(model, n = 1000, seed = 1, col = "black", ...){
 #'
 #' @export
 #'
-plot.pkmSet <- function(modelSet, specificModel = NULL, n = 1000, 
+plot.pkmSet <- function(x, specificModel = NULL, n = 1000, 
                         seed_spec = 1, seed_full = 1, col_spec = "black", 
                         col_full = "grey", ...){
 
+  modelSet <- x
   if (length(specificModel) == 0){
     devAskNewPage(TRUE)
     nmod <- length(modelSet)

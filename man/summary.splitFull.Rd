@@ -4,14 +4,16 @@
 \alias{summary.splitFull}
 \title{Summarize results of mortality estimate splits}
 \usage{
-\method{summary}{splitFull}(splits, CL = 0.95, ...)
+\method{summary}{splitFull}(object, CL = 0.95, ...)
 }
 \arguments{
-\item{splits}{A \code{splitFull} object (\code{\link{calcSplits}}) that gives
+\item{object}{A \code{splitFull} object (\code{\link{calcSplits}}) that gives
 simulated mortality estimates for all combinations of levels of 1 or 2
 splitting covariates.}
 
 \item{CL}{desired confidence level for summary CIs (numeric scalar in (0, 1))}
+
+\item{...}{to be passed down}
 }
 \value{
 an object of class \code{splitSummary}, which gives 5-number summaries

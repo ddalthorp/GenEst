@@ -4,10 +4,10 @@
 \alias{plot.splitFull}
 \title{Plot summary statistics for splits of mortality estimates}
 \usage{
-\method{plot}{splitFull}(splits, rate = FALSE, CL = 0.95, ...)
+\method{plot}{splitFull}(x, rate = FALSE, CL = 0.95, ...)
 }
 \arguments{
-\item{splits}{A \code{splitSummary} object (result of \code{\link{calcSplits}})
+\item{x}{A \code{splitSummary} object (result of \code{\link{calcSplits}})
 that includes summary statistics for simulated mortality estimates for all
 combinations of levels of 1 or 2 splitting covariates.}
 
@@ -18,6 +18,8 @@ include either a \code{split_SS} or \code{split_time} variable, the
 \code{rate} arg is ignored.}
 
 \item{CL}{desired confidence level to show in box plots}
+
+\item{...}{to be passed down}
 }
 \description{
 The S3 \code{plot} method for \code{splitFull} objects constructs boxplots
