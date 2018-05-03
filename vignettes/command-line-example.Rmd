@@ -22,32 +22,33 @@ today <- Sys.Date()
 ```
 
 This vignette walks through an example of **GenEst** at the command line and
-was constructed using **GenEst** version `r vers` on `r today`.  
+was constructed using **GenEst** version `r vers` on `r today`.
 
 
 ## Installation
 
-To obtain the most recent version of **GenEst**, use the **devtools** package 
+To obtain the most recent version of **GenEst**, use the **devtools** package
 to download it from GitHub:
 
 ```{r, eval = FALSE}
 install.packages("devtools")
 devtools::install_github("ddalthorp/GenEst")
+library(GenEst)
 ```
 
 ## Data
 
-For this vignette, we will be using a completely mock dataset provided with 
+For this vignette, we will be using a completely mock dataset provided with
 the **GenEst** package, which contains Searcher Efficiency, Carcass
-Persistence, Search Schedule, Density Weighted Proportion, and Carcass 
-Observation Data. 
+Persistence, Search Schedule, Density Weighted Proportion, and Carcass
+Observation Data.
 
 ```{r}
 data(mockData)
 names(mockData)
 ```
 
-To see the raw `.csv` versions of the data files, find the **GenEst** 
+To see the raw `.csv` versions of the data files, find the **GenEst**
 package folder on your computer (it should be located with all of your other
 R packages) and then browse to the `inst/extdata/mockData` subfolder.
 
@@ -57,38 +58,38 @@ R packages) and then browse to the `inst/extdata/mockData` subfolder.
 ### Single Searcher Efficiency Model
 
 The central function for searcher efficiency analyses is `pkm`, which conducts
-a singular searcher efficiency analysis (*i.e.*, a singular set of `p` and 
-`k` formulae and a singular size classification of carcasses). As a first 
-example, we will ignore the size category and use intercept-only models for 
+a singular searcher efficiency analysis (*i.e.*, a singular set of `p` and
+`k` formulae and a singular size classification of carcasses). As a first
+example, we will ignore the size category and use intercept-only models for
 both `p` and `k`:
 
 ```{r}
-dataSE <- mockData$SearcherEfficiencyData
-pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = dataSE)
+data_SE <- mockData$SearcherEfficiencyData
+pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = data_SE)
 ```
 
-Here, we have taken advantage of `pkm`'s default behavior of selecting 
-observation columns (see `?pkm` for details). 
+Here, we have taken advantage of `pkm`'s default behavior of selecting
+observation columns (see `?pkm` for details).
 
 ```{r}
-head(dataSE)
+head(data_SE)
 ```
 
-If we wanted to explicitly control the observations, we would use the `obsCol` 
+If we wanted to explicitly control the observations, we would use the `obsCol`
 argument:
 
 ```{r}
-pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = dataSE, 
+pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = data_SE,
              obsCol = c("Search1", "Search2", "Search3", "Search4")
            )
 ```
 
-Note that the search observations must be entered in order such that no 
+Note that the search observations must be entered in order such that no
 carcasses have non-detected observations (*i.e.*, `0`) after detected
-observations (*i.e.*, `1`). Further, no carcasses can be detected more than 
+observations (*i.e.*, `1`). Further, no carcasses can be detected more than
 once.
 
-If successfully fit, a `pkm` model output contains a number of elements, 
+If successfully fit, a `pkm` model output contains a number of elements,
 some printed automatically:
 
 ```{r}
@@ -109,11 +110,11 @@ simply run
 plot(pkModel)
 ```
 
-to visualize the model's output. 
+to visualize the model's output.
 
-You can generate random draws of the `p` and `k` parameters for each cell 
+You can generate random draws of the `p` and `k` parameters for each cell
 grouping (in `pkModel` there are no predictors, so there is one cell grouping
-called "all") using the `rpk` function which, like other `r*` functions in 
+called "all") using the `rpk` function which, like other `r*` functions in
 **R** (*i.e.*, `rnorm`) takes the number of random draws (`n`) as the first
 argument:
 
@@ -124,7 +125,7 @@ rpk(n = 10, pkModel)
 You can complicate the `p` and `k` formulae independently
 
 ```{r}
-pkm(formula_p = p ~ Visibility, formula_k = k ~ HabitatType, data = dataSE,
+pkm(formula_p = p ~ Visibility, formula_k = k ~ HabitatType, data = data_SE,
   obsCol = c("Search1", "Search2", "Search3", "Search4")
 )
 ```
@@ -133,7 +134,7 @@ And you can fix `k` at a nominal value between 0 and 1 (inclusive) using the
 `kFixed` argument
 
 ```{r}
-pkm(formula_p = p ~ Visibility, kFixed = 0.7, data = dataSE,
+pkm(formula_p = p ~ Visibility, kFixed = 0.7, data = data_SE,
   obsCol = c("Search1", "Search2", "Search3", "Search4")
 )
 ```
@@ -141,23 +142,23 @@ pkm(formula_p = p ~ Visibility, kFixed = 0.7, data = dataSE,
 ### Set of Searcher Efficiency Models
 
 The function `pkmSet` provides a simple wrapper on `pkm` that facilitates
-analyzing a set of `pkm` models defined as all allowable models simpler than, 
-and including, the provided model formulae (where "allowable" means that 
-any interaction terms have all component terms included in the model). 
+analyzing a set of `pkm` models defined as all allowable models simpler than,
+and including, the provided model formulae (where "allowable" means that
+any interaction terms have all component terms included in the model).
 
 Consider the following model set analysis, where visibility and habitat type
 are included in the `p` formula but only habitat type is in the `k` formula,
 which generates a set of 10 models:
 
 ```{r}
-pkmModSet <- pkmSet(formula_p = p ~ Visibility*HabitatType, 
-               formula_k = k ~ HabitatType, data = dataSE,
+pkmModSet <- pkmSet(formula_p = p ~ Visibility*HabitatType,
+               formula_k = k ~ HabitatType, data = data_SE,
                obsCol = c("Search1", "Search2", "Search3", "Search4")
              )
 names(pkmModSet)
 ```
 
-The `plot` function is defined for the `pkmSet` class, and by default, 
+The `plot` function is defined for the `pkmSet` class, and by default,
 creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
@@ -166,7 +167,7 @@ the `specificModel` argument:
 plot(pkmModSet, specificModel = "p ~ Visibility + HabitatType; k ~ 1")
 ```
 
-The resulting model outputs can be compared in an AICc table 
+The resulting model outputs can be compared in an AICc table
 
 ```{r}
 pkmSetAICcTab(pkmModSet)
@@ -175,15 +176,15 @@ pkmSetAICcTab(pkmModSet)
 
 ### Multiple Sizes of Animals and Sets of Searcher Efficiency Models
 
-Often, carcasses are grouped in multiple size classes, and we are interested 
+Often, carcasses are grouped in multiple size classes, and we are interested
 in analyzing a set of models separately for each size class. To do so, we
 use the `pkmSetSize` function, which is a wrapper on `pkmSet` that runs
 the subfunction for each unique size class in the column identified by the
 `sizeclassCol` argument:
 
 ```{r}
-pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType, 
-                   formula_k = k ~ HabitatType, data = dataSE,
+pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType,
+                   formula_k = k ~ HabitatType, data = data_SE,
                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
                    sizeclassCol = "Size"
                  )
@@ -192,12 +193,11 @@ pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType,
 The output from `pkmSetSize` is a list where each element corresponds to a
 different unique size class, and contains the associated `pkmSet`object, which
 itself is a list of `pkm` outputs:
- 
+
 ```{r}
 names(pkmModSetSize)
 names(pkmModSetSize[[1]])
 ```
-
 
 
 ## Carcass Persistence
@@ -205,24 +205,24 @@ names(pkmModSetSize[[1]])
 ### Single Carcass Persistence Model
 
 The central function for carcass persistence analyses is `cpm`, which conducts
-a singular carcass persistence analysis (*i.e.*, a singular set of `l` and 
+a singular carcass persistence analysis (*i.e.*, a singular set of `l` and
 `s` formulae and a singular size classification of carcasses). Note that
 we use `l` and `s` to reference `location` and `scale` as the parameters for
 survival models, following `survreg`, however we also provide an alternative
-parameterization ("`ab`"). As a first example, we will ignore the size 
-category, use intercept-only models for both `l` and `s`, and use the 
+parameterization ("`ab`"). As a first example, we will ignore the size
+category, use intercept-only models for both `l` and `s`, and use the
 Weibull distribution:
 
 ```{r}
-dataCP <- mockData$CarcassPersistenceData
-cpModel <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = dataCP,
-             left = "LastPresentDecimalDays", 
+data_CP <- mockData$CarcassPersistenceData
+cpModel <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = data_CP,
+             left = "LastPresentDecimalDays",
              right = "FirstAbsentDecimalDays", dist = "weibull"
            )
 ```
 
 
-If successfully fit, a `cpm` model output contains a number of elements, 
+If successfully fit, a `cpm` model output contains a number of elements,
 some printed automatically:
 
 ```{r}
@@ -243,12 +243,11 @@ simply run
 plot(cpModel)
 ```
 
-to visualize the model's output. 
-
+to visualize the model's output.
 
 You can generate random draws of the `l` and `s` (or `a` and `b`) parameters
 for each cell grouping (in `cpModel` there are no predictors, so there is one
-cell grouping called "all") using the `cpk` function which, like other `r*` 
+cell grouping called "all") using the `cpk` function which, like other `r*`
 functions in **R** (*i.e.*, `rnorm`) takes the number of random draws (`n`)
 as the first argument:
 
@@ -260,18 +259,18 @@ rcp(n = 10, cpModel, type = "ppersist")
 You can complicate the `l` and `s` formulae independently
 
 ```{r}
-cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = dataCP,
-  left = "LastPresentDecimalDays", right = "FirstAbsentDecimalDays", 
+cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = data_CP,
+  left = "LastPresentDecimalDays", right = "FirstAbsentDecimalDays",
   dist = "weibull"
 )
 ```
 
-Given that the exponential only has one parameter (`l`, location), a model 
+Given that the exponential only has one parameter (`l`, location), a model
 for scale (`formula_s`) is not required:
 
 ```{r}
-cpModExp <- cpm(formula_l = l ~ Visibility*GroundCover, data = dataCP,
-              left = "LastPresentDecimalDays", 
+cpModExp <- cpm(formula_l = l ~ Visibility*GroundCover, data = data_CP,
+              left = "LastPresentDecimalDays",
               right = "FirstAbsentDecimalDays", dist = "exponential"
             )
 ```
@@ -280,60 +279,59 @@ cpModExp <- cpm(formula_l = l ~ Visibility*GroundCover, data = dataCP,
 ### Set of Carcass Persistence Models
 
 The function `cpmSet` provides a simple wrapper on `cpm` that facilitates
-analyzing a set of `cpm` models defined as all allowable models simpler than, 
-and including, the provided model formulae (where "allowable" means that 
-any interaction terms have all component terms included in the model). 
+analyzing a set of `cpm` models defined as all allowable models simpler than,
+and including, the provided model formulae (where "allowable" means that
+any interaction terms have all component terms included in the model).
 
-In addition, `cpmSet` includes the four base distributions (exponential, 
+In addition, `cpmSet` includes the four base distributions (exponential,
 weibull, lognormal, loglogistic) and crosses them with the predictor models,
 but this can be restricted using the `dist` argument.
 
 Consider the following model set analysis, where visibility and season are
 included in the `l` formula but only visibility is in the `s` formula, and
-all only the exponential and lognormal distributions are included, which 
+all only the exponential and lognormal distributions are included, which
 generates a set of 15 models:
 
 ```{r}
-cpmModSet <- cpmSet(formula_l = l ~ Visibility*Season, 
-               formula_s = s ~ Visibility, data = dataCP,
-               left = "LastPresentDecimalDays", 
-               right = "FirstAbsentDecimalDays", 
+cpmModSet <- cpmSet(formula_l = l ~ Visibility*Season,
+               formula_s = s ~ Visibility, data = data_CP,
+               left = "LastPresentDecimalDays",
+               right = "FirstAbsentDecimalDays",
                dist = c("exponential", "lognormal")
              )
 names(cpmModSet)
 ```
 
-The resulting model outputs can be compared in an AICc table 
+The resulting model outputs can be compared in an AICc table
 
 ```{r}
 cpmSetAICcTab(cpmModSet)
 ```
 
-The `plot` function is defined for the `cpmSet` class, and by default, 
+The `plot` function is defined for the `cpmSet` class, and by default,
 creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
-plot(cpmModSet, 
-  specificModel = "dist: lognormal; l ~ Visibility * Season; s ~ Visibility")
+plot(cpmModSet,
+  specificModel = "dist: lognormal; l ~ Visibility * Season; s ~ Visibility"
+)
 ```
-
-
 
 ### Multiple Sizes of Animals and Sets of Carcass Persistence Models
 
-Often, carcasses are grouped in multiple size classes, and we are interested 
+Often, carcasses are grouped in multiple size classes, and we are interested
 in analyzing a set of models separately for each size class. To do so, we
 use the `cpmSetSize` function, which is a wrapper on `cpmSet` that runs
 the subfunction for each unique size class in the column identified by the
 `sizeclassCol` argument:
 
 ```{r}
-cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility*Season, 
-                   formula_s = s ~ Visibility, data = dataCP,
-                   left = "LastPresentDecimalDays", 
-                   right = "FirstAbsentDecimalDays", 
+cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility*Season,
+                   formula_s = s ~ Visibility, data = data_CP,
+                   left = "LastPresentDecimalDays",
+                   right = "FirstAbsentDecimalDays",
                    dist = c("exponential", "lognormal"),
                    sizeclassCol = "Size"
                  )
@@ -342,36 +340,94 @@ cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility*Season,
 The output from `cpmSetSize` is a list where each element corresponds to a
 different unique size class, and contains the associated `cpmSet`object, which
 itself is a list of `cpm` outputs:
- 
+
 ```{r}
 names(cpmModSetSize)
 names(cpmModSetSize[[1]])
 ```
 
-## Detection Probability
+## Fatality Estimation
 
-Detection probability is determined for individual carcasses based on the 
-dates when they are observed, associated covarites, the searcher efficiency 
-and carcass persistence model, and the search schedule. 
+### Detection Probability
 
-The `rghat` function produces `n` random draws of detection probability 
-estimates for each carcass.
+When estimating fatalities, detection probability is determined for individual
+carcasses based on the dates when they are observed, associated covariates, the
+searcher efficiency and carcass persistence models, and the search schedule.
+
+The `rghat` function produces `n` random draws of detection probabilities
+(`ghat`) and arrival intervals (`Aj`) for each carcass.
 
 ```{r}
-pkModel <- GenEst::pkm(formula_p = p ~ Visibility * HabitatType, 
-                       formula_k = k ~ 1, data = dataSE)
-cpModel <- GenEst::cpm(formula_l = l ~ Season, formula_s = s ~ 1, 
-             data = dataCP,
-             left = "LastPresentDecimalDays", 
+model_SE <- pkm(formula_p = p ~ Visibility * HabitatType,
+                       formula_k = k ~ 1, data = data_SE)
+model_CP <- cpm(formula_l = l ~ Season, formula_s = s ~ 1,
+             data = data_CP,
+             left = "LastPresentDecimalDays",
              right = "FirstAbsentDecimalDays", dist = "weibull")
-dataCO <- mockData$CarcassObservationData
-dataSS <- mockData$SearchScheduleData
-ghatMat <- rghat(n = 1000, dataCO, dataSS, model_SE = pkModel, 
-             model_CP = cpModel, seed_SE = 1, seed_CP = 1,
-             unitCol = "Unit", dateFoundCol = "DateFound", 
-             dateSearchedCol = "DateSearched"
+data_CO <- mockData$CarcassObservationData
+data_SS <- mockData$SearchScheduleData
+ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP,
+             seed_SE = 1, seed_CP = 1, unitCol = "Unit",
+             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
+             removeCleanout = TRUE
            )
+ghats <- ghatsAjs$ghat
 ```
 
+### Mortality Estimation
+
+We use the continuous binomial distribution to estimate the number of
+fatalities ($\hat{M}$) associated with each estimate of detection probability
+for each carcass and weight the estimate by the Density Weighted Proportion
+(DWP) of the relevant area (e.g., around the turbine) where the carcass was
+found. If DWP is not provided, `rMhat` makes a simple assumption that DWP is
+1 for all carcasses (i.e., that all of the possibe area where the carcasses
+could have landed was searched).
+
+```{r}
+Mhat <- rMhat(n = 1, ghat = ghats)
+```
+
+If DWP data are available in the standard condensed-table, format, they can be
+incorporated into the ($\hat{M}$) calculation, but need to first be expanded
+to be carcass-by-carcass:
+
+```{r}
+dataDWP <- mockData$DensityWeightedProportionData
+DWP <- DWPbyCarcass(dataDWP, data_CO, unitCol = "Unit",
+         sizeclassCol = "Size",
+         removeCleanout = TRUE, data_SS, dateFoundCol = "DateFound",
+         dateSearchedCol = "DateSearched"
+       )
+Mhat <- rMhat(n = 1, ghat = ghats, DWP, seed = 12)
+```
+
+If one desires $\tilde{M}$ values, they can be obtained using `rMtilde`:
+
+```{r}
+Mtilde <- rMtilde(length(ghats), ghats, seed = 12)
+```
+
+which can then be used to calculate ($\hat{M}$):
+
+```{r}
+Mhat_viaMtilde <- calcMhat(Mtilde, DWP)
+```
+
+By setting the seed here, we can arrive at the same randomized values from
+each procedure (`rMhat` or `rMtilde` and `calcM
+
+By setting the seed here, we can arrive at the same randomized values from
+each procedure (`rMhat` or `rMtilde` and `calcM
+
+Mortality estimates can be split into subcategories, such as species,
+visibility class, season, search interval, or other splitting covariate.
+
+For example,
+```{r}
+SSdat <- SS(data_SS)
+M_by_season <- calcSplits(M = Mhat, Aj = ghatsAjs$Aj, split_SS = "Season", SSdat = SSdat)
+plot(M_by_season)
+```
 
 
