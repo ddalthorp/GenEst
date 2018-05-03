@@ -84,6 +84,7 @@ rghat <- function(n = 1, data_CO, data_SS, model_SE, model_CP,
     ghat[carci, ] <- ghatAndA$ghat
     Aj[carci, ] <- ghatAndA$A
   }
+  rownames(Aj) <- data_CO[ , unitCol]
   out <- list("ghat" = ghat, "Aj" = Aj)
   return(out)
 }
@@ -188,6 +189,7 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
     }
   }  
   Aj <- Aj[nrow(Aj), ]
+  rownames(Aj) <- unit
   out <- list("ghat" = ghat, "Aj" = Aj)
   return(out)
 }
