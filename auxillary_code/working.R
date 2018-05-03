@@ -3,30 +3,32 @@ devtools::load_all()
 data(mockData)
 
 dataSE <- mockData$SearcherEfficiencyData
+dataCP <- mockData$CarcassPersistenceData
+data_carc <- mockData$CarcassObservationData
+data_ss <- mockData$SearchScheduleData
+data_dwp <- mockData$DensityWeightedProportionData
+
 pkModel <- GenEst::pkm(formula_p = p ~ Visibility,
                        formula_k = k ~ 1, data = dataSE)
 
-dataCP <- mockData$CarcassPersistenceData
-cpModel <- GenEst::cpm(formula_l = l ~ Season, formula_s = s ~ 1, data = dataCP,
-             left = "LastPresentDecimalDays", 
+cpModel <- GenEst::cpm(formula_l = l ~ Season, formula_s = s ~ 1, 
+             data = dataCP, left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays", dist = "weibull")
 
+gandA <- rghat(n = 1000, data_carc, data_ss, model_SE = pkModel, 
+               model_CP = cpModel, seed_SE = 1, seed_CP = 1, 
+               kFill = NULL, unitCol = "Unit",
+               dateFoundCol = "DateFound", 
+               dateSearchedCol = "DateSearched")
 
-ds <- data_ss[,"DateSearched"]
-ds <- format(ds, format = "%m/%d/%Y")
-data_ss[,"DateSearched"] <- ds
+ghat <- gandA$ghat
 
-data_carc <- mockData$CarcassObservationData
-data_ss <- mockData$SearchScheduleData
-SEmod <- pkModel
-CPmod <- cpModel
+MT <- rMtilde(length(ghat), ghat, 1)
+DWP <- DWPbyCarcass(data_DWP = data_dwp, data_carc, data_ss, unitCol = "Unit", 
+         sizeclassCol = "Size")
+MH <- calcMhat(MT, DWP)
 
-
-rghat(n = 10, data_carc, data_ss, model_SE = pkModel, model_CP = cpModel, 
-seed_SE = 1, seed_CP = 1, kFill = NULL, unitCol = "Unit",
-                  dateFoundCol = "DateFound", 
-dateSearchedCol = "DateSearched")
-
+MH2 <- rMhat(n = 1, ghat, DWP, seed = 1)
 
 
 pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType, 
