@@ -146,7 +146,7 @@ calcTsplit <- function(rate, days, tsplit){
 #'  [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
 #'  \code{split_time = NULL}. If \code{split_time} is non-NULL, \code{data_SS} is
 #'  required.
-#'
+#' @param ... arguments to be passed down
 #' @return An object of class \code{splitsFull} is returned. If one splitting
 #'  covariate is given, then the output will be an array of estimated mortality
 #'  in each level of the splitting covariate, with one row for each covariate

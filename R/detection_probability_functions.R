@@ -16,7 +16,8 @@
 #' @param dateFoundCol Column name for the date found data
 #' @param dateSearchedCol Column name for the date searched data
 #' @return list of [1] matrix of n ghat estimates for each carcass and [2]
-#'   matrix of n arrival intervals (A) for each carcass
+#'   matrix of n arrival intervals (Aj) for each carcass. The row names of the
+#'   Aj matrix are the names of the units where each carcass was found.
 #' @examples NA
 #' @export
 #'
@@ -82,8 +83,9 @@ rghat <- function(n = 1, data_CO, data_SS, model_SE, model_CP,
                   dateSearchedCol
                 )
     ghat[carci, ] <- ghatAndA$ghat
-    Aj[carci, ] <- ghatAndA$A
+    Aj[carci, ] <- ghatAndA$Aj
   }
+  rownames(Aj) <- data_CO[ , unitCol]
   out <- list("ghat" = ghat, "Aj" = Aj)
   return(out)
 }
@@ -163,7 +165,7 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
     }
     parrive <- diff(c(t0[1], t1[1:oi])) / t1[oi]
     pAjgOi <- pOigAj * parrive
-    pAjgOi <- t(t(pAjgOi)/colSums(pAjgOi))
+    pAjgOi <- t(t(pAjgOi) / colSums(pAjgOi))
     Aj[oi, ] <- rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(n)) + 1
   }
 
