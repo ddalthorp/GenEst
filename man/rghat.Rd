@@ -40,7 +40,8 @@ removed from \code{data_carc}}
 }
 \value{
 list of [1] matrix of n ghat estimates for each carcass and [2]
-  matrix of n arrival intervals (A) for each carcass
+  matrix of n arrival intervals (Aj) for each carcass. The row names of the
+  Aj matrix are the names of the units where each carcass was found.
 }
 \description{
 Simulate ghat values and arrival intervals for a set of carcasses 

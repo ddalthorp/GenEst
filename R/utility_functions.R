@@ -214,7 +214,7 @@ dateToDay <- function(date, ref = NULL){
   if (is.null(ref)){
     ref <- date
   }
-  day <- as.numeric(difftime(date, ref, units = "days") + 1)
+  day <- as.numeric(difftime(date, ref, units = "days"))
   return(day)
 }
 
