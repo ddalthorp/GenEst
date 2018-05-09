@@ -47,6 +47,8 @@ Times must be numeric, strictly increasing, and span the monitoring period
 [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
 \code{split_time = NULL}. If \code{split_time} is non-NULL, \code{data_SS} is
 required.}
+
+\item{...}{arguments to be passed down}
 }
 \value{
 An object of class \code{splitsFull} is returned. If one splitting
