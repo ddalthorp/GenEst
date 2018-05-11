@@ -386,7 +386,7 @@ found. If DWP is not provided, `rMhat` makes a simple assumption that DWP is
 could have landed was searched).
 
 ```{r}
-Mhat <- rMhat(n = 1, ghat = ghats)
+Mhat <- rMhat(n = 1, ghat = ghat)
 ```
 
 If DWP data are available in the standard condensed-table, format, they can be
@@ -400,13 +400,13 @@ DWP <- DWPbyCarcass(dataDWP, data_CO, unitCol = "Unit",
          removeCleanout = TRUE, data_SS, dateFoundCol = "DateFound",
          dateSearchedCol = "DateSearched"
        )
-Mhat <- rMhat(n = 1, ghat = ghats, DWP, seed = 12)
+Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
 ```
 
 If one desires $\tilde{M}$ values, they can be obtained using `rMtilde`:
 
 ```{r}
-Mtilde <- rMtilde(length(ghats), ghats, seed = 12)
+Mtilde <- rMtilde(length(ghat), ghat, seed = 12)
 ```
 
 which can then be used to calculate ($\hat{M}$):
