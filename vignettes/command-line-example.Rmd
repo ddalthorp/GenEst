@@ -420,7 +420,7 @@ visibility class, season, search interval, or other splitting covariate.
 
 For example,
 ```{r}
-SSdat <- SS(data_SS)
+# SSdat <- SS(data_SS)
 # M_by_season <- calcSplits(M = Mhat, Aj = Aj, split_SS = "Season", SSdat = SSdat)
 # plot(M_by_season)
 # M_by_week <- calcSplits(M = Mhat, Aj = Aj,
