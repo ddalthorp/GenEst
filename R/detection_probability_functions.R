@@ -207,7 +207,6 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
 #'
 whichCleanout <- function(data_CO, data_SS, unitCol, timeFoundCol,
                           timeSearchedCol){
-
   ncarc <- nrow(data_CO)
   cleanoutTF <- rep(NA, ncarc)
   for (carci in 1:ncarc){
@@ -237,4 +236,166 @@ kFillPropose <- function(model){
     proposal <- alogit(as.numeric(proposal))
   }
   return(proposal)
+}
+#' Calculate g for a given set of carcass persistence and searcher efficiency
+#' parameters under the given search schedule
+#'
+#' The g estimated by \code{gvec} is a generic aggregate detection probability
+#' and represents the probability of detecting a carcass that arrives at a
+#' (uniform) random time during the period monitored. This is somethat different
+#' from the GenEst estimation of g when the purpose is to estimate total
+#' mortality (M), in which case the detection probability varies with carcass
+#' arrival interval and is difficult to summarize statistically. The \code{gvec}
+#' estimate is useful a a "big picture" summary of detection probability, but
+#' would be difficult to work with for estimating M with precision.
+#'
+#' @param days numeric vector = c(0, ..., span of monitoring season)
+#' @param CPab numeric array with dim = c(n, 2) of n pairs of pda and pdb parms
+#' @param persdist name of persistence distribution ("weibull", "exponential",
+#'  "lognormal", or "loglogistic")
+#' @param seef numeric array with dim = c(n, 2) of n pairs of p and k parms.
+#'  Alternatively, \code{seef} may be an n-vector of simulated p's with a fixed,
+#'  scalar k in [0, 1]
+#' @param k (optional) numeric scalar in [0, 1] giving a fixed \code{k} value if
+#'  \code{seef} is a vector of \code{p}'s and ignored otherwise (i.e., if
+#'  \code{seef} is a 2-d array with columns for both \code{p} and \code{k}).
+#' @return numeric n-vector of estimated detection probabilities corresponding
+#'  to the n pairs of CP and of seef parameters for the given search schedule
+#'  (\code{days}).
+#' @export
+#'
+gvec <- function(days, CPab, persdist, seef, k = NULL){
+  if (is.vector(seef)){
+   if (is.null(k)){
+     stop(paste0("If is.vector(seef), then seef is assumed to be a vector of p's. ",
+      "Scalar k must be provided (or provide seef as a 2-d array with columns for both p and k)"
+     ))
+   }
+    if (!is.numeric(k) || length(k) > 1 || k > 1 || k < 0) {
+      stop("If is.vector(seef) = TRUE, then scalar 0 <= k <= 1 must be provided")
+    }
+  }
+  nsim <- dim(CPab)[1]
+  samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
+  nsearch <- length(days) - 1
+  if (persdist %in% c("Exponential", "exponential")){
+    pdb <- CPab
+    pda <- 1/pdb
+    pdb0 <- exp(mean(log(pdb)))
+    pda0 <- 1/pdb0
+  } else {
+    pda <- CPab[, 1]
+    pdb <- CPab[, 2]
+    pdb0 <- exp(mean(log(pdb)))
+    pda0 <- 1/mean(1/pda)
+  }
+  pk <- array(dim = c(nsim, 2))
+  if (is.null(dim(seef))){
+    pk[, 1] <- seef
+    pk[, 2] <- k
+  } else {
+    pk <- seef
+  }
+
+  ###1. setting estimation control parameters
+  ##  a. search limit: number of searches after arrival to include in estimate
+  f0 <- mean(pk[, 1])
+  k0 <- mean(pk[, 2])
+  ind1 <- rep(1:nsearch, times = nsearch:1)
+  ind2 <- ind1+1
+  ind3 <- unlist(lapply(1:nsearch, function(x) x:nsearch)) + 1
+  schedule.index <- cbind(ind1,ind2,ind3)
+  schedule <- cbind(days[ind1],days[ind2],days[ind3])
+  nmiss <- schedule.index[,3] - schedule.index[,2]
+  maxmiss <- max(nmiss)
+  powk <- cumprod(c(1, rep(k0, maxmiss))) # vector of k^i's
+  notfind <- cumprod(1 - f0*powk[-length(powk)])
+  nvec <- c(1, notfind) * f0
+  # conditional probability of finding a carcass on the ith search (row) after arrival
+  # for given (simulated) searcher efficiency (column):
+  pfind.si <- nvec * powk
+  # persistences:
+  intxsearch <- unique(cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2]), MAR = 1)
+  ppersu <- ppersist(persdist,
+    t_arrive0 = 0,
+    t_arrive1 = intxsearch[,1],
+    t_search = intxsearch[,1] + intxsearch[,2],
+    pda = pda0, pdb = pdb0
+  )
+  arrvec <- (schedule[,2] - schedule[,1])/max(days)
+  prob_obs <- numeric(dim(schedule)[1])
+  for (i in 1:length(prob_obs)){
+    prob_obs[i] <- pfind.si[nmiss[i]+1] *
+      ppersu[which(
+        abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+        abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001
+      ),] * arrvec[i]
+  }
+  ggnm <- numeric(maxmiss+1)
+  for (missi in 0:maxmiss){
+    ggnm[missi+1] <- sum(prob_obs[nmiss==missi])
+  }
+  # if more than 10 searches, consider truncating search schedule because very few carcasses
+  # will be found after being missed 9 or more times, but very large number of searches is
+  # costly in terms of calculation efficiency
+  if (nsearch > 10){
+    iskip <- min(which(cumsum(ggnm)/sum(ggnm) > 0.99)) + 1
+    # cutting off the search schedule introduces a slight bias.
+    # Correct by multiplying the final g's by gadj = sum(ggnm)/ggnm[iskip]
+    gadj <- sum(ggnm)/sum(ggnm[1:iskip])
+  } else {
+    iskip <- maxmiss
+    gadj <- 1
+  }
+  ###2. estimation of g
+  #a. subset the search schedule
+  #   (ignoring probabilities of detection carcasses after they have been missed several times):
+  schedule <- cbind(days[ind1], days[ind2], days[ind3])[ind2 >= ind3 - iskip + 1,]
+  #columns for arrival interval and search number:
+  schedule.index <- cbind(ind1, ind2, ind3)[ind2 >= ind3 - iskip+1,]
+  nmiss <- schedule.index[,3] - schedule.index[,2]
+  maxmiss <- max(nmiss)
+  # searcher efficiencies
+  if (maxmiss == 0) {
+    pfind.si <- pk[,1]
+  } else if (maxmiss == 1){
+    pfind.si<-cbind(pk[,1], (1 - pk[,1]) * pk[,2]*pk[,1])
+  } else {
+    powk<-array(rep(pk[, 2], maxmiss + 1), dim=c(nsim, maxmiss+1))
+    powk[,1] <- 1
+    powk <- matrixStats::rowCumprods(powk)
+    pfind.si <- pk[,1] * powk * cbind(rep(1, nsim), matrixStats::rowCumprods(1 - (pk[,1] * powk[, 1:maxmiss])))
+  }
+  intxsearch<-unique(cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2]), MAR=1)
+  ppersu<-ppersist(persdist,
+    t_arrive0 = 0,
+    t_arrive1 = intxsearch[,1],
+    t_search = intxsearch[,1] + intxsearch[,2],
+    pda = CPab[,1], pdb = CPab[,2]
+  )
+  # arrivals
+  arrvec <- (schedule[,2]-schedule[,1])/max(days) # assumes uniform arrivals
+  # add the probabilities
+  prob_obs <- numeric(nsim)
+  if (maxmiss > 0){
+    for (i in 1:dim(schedule)[1]){
+      prob_obs <- prob_obs +
+        pfind.si[,nmiss[i]+1] *
+        ppersu[which(
+          abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+          abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001),
+        ] * arrvec[i]
+    }
+  } else {
+    for (i in 1:dim(schedule)[1]){
+      prob_obs <- prob_obs +
+      pfind.si[nmiss[i]+1] *
+      ppersu[which(
+        abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+        abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001),
+      ] * arrvec[i]
+    }
+  }
+  # g for monitored period
+  prob_obs
 }

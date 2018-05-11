@@ -15,6 +15,9 @@
 #'  that the given carcass (indexed by row) arrived in the jth search interval
 #'  in the given simulation rep (indexed by column). Arrival interval indices (j)
 #'  are relative to indexed carcasses' search schedules.
+#' @param SSdat \code{\link{SS}} object that contains formatted data for calculating
+#'  splits. Optional argument. Alternatively, user may provide \code{days} and
+#'  \code{searches}.
 #' @param days Vector of all dates that at least one unit was searched. Format
 #'  is the number of days since the first search. For example, days = c(0, 7,
 #'  14, 28, 35) for a simple 7-day search schedule in which searches were
@@ -32,7 +35,11 @@
 #' @useDynLib GenEst
 #' @importFrom Rcpp sourceCpp
 #' @export
-calcRate <- function(M, Aj, days, searches){
+calcRate <- function(M, Aj, SSdat = NULL, days = NULL, searches = NULL){
+  if (!is.null(SSdat) && ("SS" %in% class(SSdat))){
+    days <- SSdat$days
+    searches <- SSdat$searches
+  }
   if (is.vector(M)){
     M <- matrix(M, nrow = 1)
     Aj <- matrix(Aj, nrow = 1)
@@ -50,7 +57,7 @@ calcRate <- function(M, Aj, days, searches){
 #'
 #' @param rate Array (nsim x nsearch) of arrival rates as number of fatalities
 #'  per search interval. Typically, \code{rate} will be the return value of the
-#'  \code{calcRate} function. 
+#'  \code{calcRate} function.
 #' @param days A vector of times representing search dates when at least one
 #'  unit was searched. Times are formatted as number of days since the first
 #'  search, e.g., c(0, 7, 14, 28, 35) would indicate a schedule in at least one
@@ -79,11 +86,11 @@ calcTsplit <- function(rate, days, tsplit){
 #' etc. Given the carcass search data, estimated mortalities, and splitting
 #' covariates, \code{calcSplits()} gives the 'splits' or summaries the estimated
 #' mortalities by levels of the splitting covariates. For example, user may
-#' specify \code{"season"} and \code{"species"} as splitting variables to see estimated
-#' mortalities by season and species. Input would be arrays of estimated
-#' mortalities and arrival intervals when \code{ncarc} carcass have been
-#' discovered and uncertainty in mortality estimates is captured via simulation
-#' with \code{nsim} simulation draws.
+#' specify \code{"season"} and \code{"species"} as splitting variables to see 
+#' estimated mortalities by season and species. Input would be arrays of 
+#' estimated mortalities and arrival intervals when \code{ncarc} carcass have 
+#' been discovered and uncertainty in mortality estimates is captured via 
+#' simulation with \code{nsim} simulation draws.
 #'
 #' Arrival intervals (\code{Aj}) are given as integers, j, that indicate which
 #' search interval the given carcass (indexed by row) arrived in in the given
@@ -119,34 +126,34 @@ calcTsplit <- function(rate, days, tsplit){
 #'  each observed carcass. Typically, the \code{Aj}
 #'  array will be the return value of function xxx.
 #' @param split_CO Character vector of names of splitting covariates to be found
-#'  in the \code{data_CO} data frame. No more than two \code{split_CO} variables
-#'  are allowed. Use \code{split_CO = NULL} if no CO splits are desired. 
-#' @param data_CO data frame that summarizes the carcass search data and must
+#'  in the \code{COdat} data frame. No more than two \code{split_CO} variables
+#'  are allowed. Use \code{split_CO = NULL} if no CO splits are desired.
+#' @param COdat data frame that summarizes the carcass search data and must
 #'  include columns specified by the \code{split_CO} arg. Each row includes
 #'  search and discovery parameters associated with a single observed carcass.
 #'  Columns include carcass ID, carcass discovery date, unit, and any number of
-#'  covariates. \code{data_CO} is required if and only if \code{split_CO} is
+#'  covariates. \code{COdat} is required if and only if \code{split_CO} is
 #'  non-NULL.
 #' @param split_SS Character string giving the name of a splitting covariate in
-#'  the \code{data_SS} list, with \code{data_SS[[split_SS]]} describing
+#'  the \code{SSdat} list, with \code{SSdat[[split_SS]]} describing
 #'  characteristics of the search intervals (e.g., "season"). Note that
-#'  \code{length(data_SS[[split_SS]]} must equal \code{length(data_SS$days) - 1}
+#'  \code{length(SSdat[[split_SS]]} must equal \code{length(SSdat$days) - 1}
 #'  becasue no inference is made about carcass arrivals prior to time t = 0, and
 #'  the "interval" prior to t = 0 is not taken as a "search interval." If no
 #'  \code{split_SS} split is desired, use \code{split_SS = NULL}.
-#' @param data_SS List that summarizes the search schedule data and must include
-#'  (at a minimum) \code{$days}, \code{$searches}, and \code{$unit}. In addition,
-#'  if \code{split_SS} is non-NULL, \code{data_SS} must also include an element
-#'  with name \code{split_SS} (e.g., if \code{split_SS = "season"},
+#' @param SSdat \code{\link{SS}} object that summarizes the search schedule data
+#'  and include (at a minimum) \code{$days}, \code{$searches}, and \code{$unit}.
+#'  In addition, if \code{split_SS} is non-NULL, \code{SSdat} must also include
+#'  an element with name \code{split_SS} (e.g., if \code{split_SS = "season"},
 #'  \code{split_SS} must contain an element named \code{season}). If either
 #'  \code{split_SS} or \code{split_time} is non-NULL, \code{split_SS} is
 #'  required. In other cases it is ignored.
 #' @param split_time Numeric vector that defines time intervals for splits.
 #'  Times must be numeric, strictly increasing, and span the monitoring period
-#'  [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
-#'  \code{split_time = NULL}. If \code{split_time} is non-NULL, \code{data_SS} is
+#'  [0, \code{max(SSdat$days)}]. If no \code{split_time} is desired, use
+#'  \code{split_time = NULL}. If \code{split_time} is non-NULL, \code{SSdat} is
 #'  required.
-#' @param ... arguments to be passed down
+#'
 #' @return An object of class \code{splitsFull} is returned. If one splitting
 #'  covariate is given, then the output will be an array of estimated mortality
 #'  in each level of the splitting covariate, with one row for each covariate
@@ -168,17 +175,18 @@ calcTsplit <- function(rate, days, tsplit){
 #'
 #' @export
 calcSplits <- function(M, Aj = NULL,
-  split_CO = NULL, data_CO = NULL,
-  split_SS = NULL, data_SS = NULL,
+  split_CO = NULL, COdat = NULL,
+  split_SS = NULL, SSdat = NULL,
   split_time = NULL, ...){
   ##### read data and check for errors
-  if ((!is.null(split_SS) || !is.null(split_time)) & is.null(data_SS)){
-    stop("data_SS must be provided if ",
+  if ((!is.null(split_SS) || !is.null(split_time)) & is.null(SSdat)){
+    stop("SSdat must be provided if ",
       ifelse(is.null(split_SS), "split_time ", "split_SS "), "is")
   }
   if (!is.null(split_CO) + !is.null(split_SS) + !is.null(split_time) > 0){
-    if (is.null(data_CO)) stop("data_CO must be provided to perform non-null splits")
+    if (is.null(COdat)) stop("COdat must be provided to perform non-null splits")
   }
+  unit <- rownames(Aj)
   ### declare traffic directing variables (updated after parsing inputs)
   # number of valid split variables:
   nvar <- 0
@@ -204,30 +212,31 @@ calcSplits <- function(M, Aj = NULL,
       }
     }
     maxspl <- max(split_time)
-    maxdays <- max(data_SS$days)
+    maxdays <- max(SSdat$days)
     if (maxspl != maxdays){
       if (maxspl > maxdays){
         stop("max(split_time) = ", maxspl,
-          " but must not be > max(data_SS$days) = ", maxdays)
+          " but must not be > max(SSdat$days) = ", maxdays)
       }
       if (maxspl > maxdays){
         warning(paste0(
-          "max(split_time) = ", maxspl, " < max(data_SS$days) = ", maxdays,
+          "max(split_time) = ", maxspl, " < max(SSdat$days) = ", maxdays,
           ". Appending max(days) to split_time so last split is [",
-          maxspl, ", ", max(data_SS$days),"]."
+          maxspl, ", ", max(SSdat$days),"]."
         ))
       }
     }
     if (sum(diff(split_time) <= 0) > 0){
       stop("split_time must be strictly increasing")
     }
-    # split_time has passed the initial error-checking
+    # split_time has passed the initial error-checking, so assign attributes
+    # to characterize the data
     split_h <- list()
     split_h[["name"]] <- "time"
     split_h[["vals"]] <- split_time
-    if (minspl > min(data_SS$days)) split_h$vals <- c(0, split_h$vals)
+    if (minspl > min(SSdat$days)) split_h$vals <- c(0, split_h$vals)
     if (maxspl < maxdays) split_h$vals <- c(split_h$vals, maxdays)
-    split_h$vals[length(split_h$vals)] <- data_SS$days[length(data_SS$days)]
+    split_h$vals[length(split_h$vals)] <- SSdat$days[length(SSdat$days)]
     split_h[["level"]] <- unique(split_h$vals[-1])
     split_h[["nlev"]] <- length(split_h$level) - 1
     split_h[["type"]] <- "time"
@@ -238,19 +247,19 @@ calcSplits <- function(M, Aj = NULL,
         "Either split_SS or split_time must be NULL")
     }
     if (!is.character(split_SS)){
-      stop("split_SS must be NULL or the name of an element in data_SS")
+      stop("split_SS must be NULL or the name of an element in SSdat")
     }
     if (length(split_SS) > 1){
       stop("At most 1 split_SS variable is allowed")
     }
-    if (!(split_SS %in% names(data_SS))){
-      stop(split_SS, " not found in ", data_SS)
+    if (!(split_SS %in% names(SSdat))){
+      stop(split_SS, " not found in ", SSdat)
     }
     split_h <- list()
     split_h[["name"]] <- split_SS
-    tmp <- cumsum(table(data_SS[[split_h$name]])[order(unique(data_SS[[split_h$name]]))])
-    split_h[["vals"]] <- c(0, days[tmp + 1])
-    split_h[["level"]] <- unique(data_SS[[split_h$name]])
+    tmp <- cumsum(table(SSdat[[split_h$name]])[order(unique(SSdat[[split_h$name]]))])
+    split_h[["vals"]] <- c(0, SSdat$days[tmp])
+    split_h[["level"]] <- unique(SSdat[[split_h$name]])
     split_h[["nlev"]] <- length(split_h$level)
     split_h[["type"]] <- "SS"
   }
@@ -261,15 +270,15 @@ calcSplits <- function(M, Aj = NULL,
       )
     }
     if (!is.character(split_CO)){
-      stop("split_CO must be a name of a selected column in data_CO")
+      stop("split_CO must be a name of a selected column in COdat")
     }
-    if (sum(split_CO %in% names(data_CO)) != length(split_CO)){
-      stop(paste(split_CO[which(!(split_CO %in% names(data_CO)))], "not in data_SS"))
+    if (sum(split_CO %in% names(COdat)) != length(split_CO)){
+      stop(paste(split_CO[which(!(split_CO %in% names(COdat)))], "not in SSdat"))
     }
     if (length(split_CO) == 2 | !is.null(split_h)){
       split_v <- list()
       split_v[["name"]] <- ifelse(!is.null(split_h), split_CO[1], split_CO[2])
-      split_v[["vals"]] <- data_CO[[split_v$name]]
+      split_v[["vals"]] <- COdat[[split_v$name]]
       split_v[["level"]] <- unique(split_v$vals)
       split_v[["nlev"]] <- length(split_v$level)
       split_v[["type"]] <- "CO"
@@ -277,7 +286,7 @@ calcSplits <- function(M, Aj = NULL,
     if (is.null(split_h)){
       split_h <- list()
       split_h[["name"]] <- split_CO[1]
-      split_h[["vals"]] <- data_CO[[split_h$name]]
+      split_h[["vals"]] <- COdat[[split_h$name]]
       split_h[["level"]] <- unique(split_h$vals)
       split_h[["nlev"]] <- length(split_h$level)
       split_h[["type"]] <- "CO"
@@ -286,14 +295,14 @@ calcSplits <- function(M, Aj = NULL,
   nvar <- sum(c(!is.null(split_h), !is.null(split_v)))
 
   # additional preprocessing
-  x <- dim(data_CO)[1] # total observed carcasses (assumes data_CO is error-checked)
   if (is.vector(M)) M <- matrix(M, nrow = 1)
+  x <- dim(M)[1] # total observed carcasses (assumes COdat is error-checked)
   nsim <- dim(M)[2] # number of simulation draws (columns in M)
   if (!is.null(split_h) && (split_h$type %in% c("SS", "time"))){
-    days <- data_SS$days
+    days <- SSdat$days
     searches <- array(0, dim = c(x, length(days)))
     for (xi in 1:x){
-      searches[xi, ] <- data_SS$searches[data_CO$unit[xi], ]
+      searches[xi, ] <- SSdat$searches[unit[xi], ]
     }
   }
 
@@ -304,7 +313,7 @@ calcSplits <- function(M, Aj = NULL,
     if (split_h$type == "CO"){
       splits <- array(dim = c(split_h$nlev, nsim))
       for (li in 1:split_h$nlev) {
-        lind <- which(data_CO[, split_h$name] == split_h$level[li])
+        lind <- which(COdat[, split_h$name] == split_h$level[li])
         if (length(lind) == 1){
           splits[li, ] <- M[lind, ]
         } else {
@@ -312,12 +321,12 @@ calcSplits <- function(M, Aj = NULL,
         }
       }
     } else if (split_h$type %in% c("time", "SS")){
-      searches <- array(0, dim = c(x, length(data_SS$days)))
+      searches <- array(0, dim = c(x, length(SSdat$days)))
       for (xi in 1:x){
-        searches[xi, ] <- data_SS$searches[data_CO$unit[xi],]
+        searches[xi, ] <- SSdat$searches[unit[xi],]
       }
-      rate <- calcRate(M, Aj, data_SS$days, searches)
-      splits <- calcTsplit(rate, data_SS$days, c(split_h$vals))
+      rate <- calcRate(M = M, Aj = Aj, days = SSdat$days, searches = searches)
+      splits <- calcTsplit(rate = rate, days = SSdat$days, tsplit = split_h$vals)
     }
   } else if (nvar == 2){ # two split variables: split_h and split_v
     splits <- list()
@@ -339,8 +348,8 @@ calcSplits <- function(M, Aj = NULL,
     } else if (split_h$type %in% c("SS", "time")){
       for (vi in 1:split_v$nlev){
         lind <- which(split_v$vals == split_v$level[vi])
-        rate <- calcRate(M[lind, ], Aj[lind, ], days, searches[lind,])
-        splits[[vi]] <- calcTsplit(rate, days, split_h$vals)
+        rate <- calcRate(M[lind, ], Aj[lind, ], SSdat$days, searches[lind,])
+        splits[[vi]] <- calcTsplit(rate, SSdat$days, split_h$vals)
       }
     }
   }
@@ -369,11 +378,10 @@ calcSplits <- function(M, Aj = NULL,
 #' and each simulation draw). summary(splits, CL = 0.95, ...) gives
 #' summary statistics of the estimates.
 #'
-#' @param object A \code{splitFull} object (\code{\link{calcSplits}}) that gives
+#' @param splits A \code{splitFull} object (\code{\link{calcSplits}}) that gives
 #'  simulated mortality estimates for all combinations of levels of 1 or 2
 #'  splitting covariates.
 #' @param CL desired confidence level for summary CIs (numeric scalar in (0, 1))
-#' @param ... to be passed down
 #' @return an object of class \code{splitSummary}, which gives 5-number summaries
 #'  for all combinations of levels among the splitting covariates in the
 #'  \code{splits}. The 5-number summaries include the mean and alpha/2, 0.25,
@@ -382,7 +390,7 @@ calcSplits <- function(M, Aj = NULL,
 #'  produced using \code{plot(splits, CL, ...)}.
 #' @export
 summary.splitFull <- function(object, CL = 0.95, ...){
-  split <- object
+  splits <- object
   alpha <- 1 - CL
   probs <- c(alpha/2, 0.25, 0.5, 0.75, 1 - alpha/2)
   if (is.null(attr(splits, "vars"))){
@@ -436,11 +444,10 @@ summary.splitFull <- function(object, CL = 0.95, ...){
 #'  fatality rates per unit time (\code{rate = TRUE}). If the splits do not
 #'  include either a \code{split_SS} or \code{split_time} variable, the
 #'  \code{rate} arg is ignored.
-#' @param ... to be passed down
 #'
 #' @export
 plot.splitSummary <- function(x, rate = FALSE, ...){
-  x <- splits
+  splits <- x
   nvar <- length(attr(splits, "vars"))
   vartype <- attr(splits, "type")
   if (vartype[1] == "CO") rate <- FALSE
@@ -469,7 +476,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       xlim <- range(times)
       ylim <- range(
         matrixStats::rowQuantiles(splits[[vi]], probs = c(alpha/2, 1 - alpha/2))/deltaT
-      )
+        )
     } else {
       hwid <- rep(0.45, nlevel_h) # half-width of boxes
       xlim <- c(1, nlevel_h) + hwid[1] * c(-1, 1)
@@ -504,10 +511,10 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       lab <- times
     }
     if (vi == nlevel_v){
-      axis(1, at = at, labels = lab, cex.axis = cex.axis)
+      axis(1, at = at, lab = lab, cex.axis = cex.axis)
     }
     if (nlevel_v > 1){
-      axis(4, at = mean(par('usr')[c(3, 4)]), labels = vnames[vi],
+      axis(4, at = mean(par('usr')[c(3, 4)]), lab = vnames[vi],
         tck = 0, mgp = c(3, 0.5, 0), cex.axis = cex.axis)
     }
   }
@@ -549,8 +556,100 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
 #'  include either a \code{split_SS} or \code{split_time} variable, the
 #'  \code{rate} arg is ignored.
 #' @param CL desired confidence level to show in box plots
-#' @param ... to be passed down
 #' @export
 plot.splitFull <- function(x, rate = FALSE, CL = 0.95, ...){
   plot(summary(x, CL), rate)
+}
+#' Create search schedule data into an SS object for convenient splits analyses
+#'
+#' xx
+#'
+#' @param SSdata data frame or matrix with search schedule parameters, including
+#'  columns for search dates, covariates (describing characteristics of the
+#'  search intervals), and each unit (with 0s and 1s in rows to indicate whether
+#'  the given unit was searched on the given date)
+#' @param dateColumn name of the column with the search dates in it
+#' @param covars vector of character strings giving the names of columns to be
+#'  interpreted as potential covariates.
+#'
+#' Since SSdata columns largely have a specific, required format, the \code{SS}
+#' function can often decipher the data automatically, but the user may specify
+#' explicit instructions for parsing the data for safety if desired. If the data
+#' are formatted properly, the automatic parsing is reliable in most cases.
+#' There are two exceptions. (1) If there is more than one column with possible
+#' dates (formatted as formal dates (as class \code{Date}, \code{POSIXlt} or
+#' \code{POSIXct}) or character strings or factors that can be unambiguously
+#' interpreted as dates (with assumed format "2018-05-15" or "2018/5/15"). In
+#' that case, the user must specify the desired dates as \code{dateColumn}. (2)
+#' If there is a covariate column consisting entirely of 0s and 1s. In that case,
+#' the user must specify the column(s) in \code{covars}.
+#'
+#' If no \code{dateColumn} is given, \code{SS} will attempt to find the date
+#' column based on data formats. If there is exactly one column that can be
+#' interpreted as dates, that column will be taken as the dates. Column names
+#' that are not listed as \code{covars} will be interpreted as "units" if their
+#' data consists solely of 0s and 1s. Otherwise, they will be included in the
+#' catch-all category of "covariates".
+#'
+#' @return \code{SS} object that can be conveniently used in the splitting
+#'  functions.
+#' @export
+SS <- function(SSdata, dateColumn = NULL, covars = NULL){
+  if (! (class(SSdata) %in% c("data.frame", "matrix"))){
+    stop("SSdata must be a data frame or matrix")
+  } else if (is.null(colnames(SSdata))){
+    stop("SSdata columns must be named")
+  }
+  # extract search dates (if possible)
+  if (is.null(dateColumn)){
+    for (coli in colnames(SSdata)){
+      tmp <- try(as.Date(SSdata[, coli]), silent = T)
+      if (class(tmp) != "try-error"){
+        if (!is.null(dateColumn)){
+          stop("more than 1 date column in SSdata")
+        } else {
+          dateColumn <- coli
+        }
+      }
+    }
+    if (is.null(dateColumn)){
+      stop("no columns can be interpreted as dates")
+    }
+  } else {
+    tmp <- try(as.Date(SSdata[, coli]), silent = T)
+    if (class(tmp) == "try-error"){
+      stop(paste(dateColumn, "is not properly formatted as dates"))
+    }
+  }
+  # extract units
+  unitNames <- NULL
+  for (coli in colnames(SSdata)){
+    if (coli %in% c(covars, dateColumn)) next
+    if (!is.numeric(SSdata[, coli])){
+      covars <- c(covars, coli)
+      next
+    }
+    if (sum(!(SSdata[, coli] %in% 0:1)) > 0){
+      covars <- c(covars, coli)
+      next
+    } else {
+      unitNames <- c(unitNames, coli)
+    }
+  }
+  dates <- as.Date(SSdata[, dateColumn])
+  date0 <- min(dates)
+  ans <- list()
+  ans$date0 <- date0
+  ans$days <- as.numeric(difftime(dates, date0, units = "days"))
+  for (i in 1:length(covars)){
+    if (is.factor(SSdata[, covars[i]])){
+      ans[[covars[i]]] <- as.character(SSdata[,covars[i]])
+    } else {
+      ans[[covars[i]]] <- SSdata[,covars[i]]
+    }
+  }
+  ans$searches <- t(as.matrix(SSdata[, unitNames]))
+  ans$unit <- unitNames
+  class(ans) <- "SS"
+  return(ans)
 }
