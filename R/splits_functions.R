@@ -630,8 +630,8 @@ plot.splitFull <- function(x, rate = FALSE, CL = 0.95, ...){
 #'  including columns for search dates, covariates (describing characteristics
 #'  of the search intervals), and each unit (with 0s and 1s in rows to 
 #'  indicate whether the given unit was searched on the given date)
-#' @param dateColumn name of the column with the search dates in it
-#' @param covars vector of character strings giving the names of columns to be
+#' @param dateCol name of the column with the search dates in it
+#' @param preds vector of character strings giving the names of columns to be
 #'  interpreted as potential covariates.
 #' @return \code{SS} object that can be conveniently used in the splitting
 #'  functions.

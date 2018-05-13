@@ -13,9 +13,9 @@ including columns for search dates, covariates (describing characteristics
 of the search intervals), and each unit (with 0s and 1s in rows to 
 indicate whether the given unit was searched on the given date)}
 
-\item{dateColumn}{name of the column with the search dates in it}
+\item{dateCol}{name of the column with the search dates in it}
 
-\item{covars}{vector of character strings giving the names of columns to be
+\item{preds}{vector of character strings giving the names of columns to be
 interpreted as potential covariates.}
 }
 \value{

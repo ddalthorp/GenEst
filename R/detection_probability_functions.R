@@ -266,7 +266,7 @@ kFillPropose <- function(model){
 #'
 rghatGeneric <- function(n = 1, SS, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL,
-                         dateSearchedCol = "DateSearched", ...){
+                         dateSearchedCol = "DateSearched"){
 
   if (is.na(model_SE$cellwiseTable[1, "k_median"])){
     if (is.null(kFill)){

@@ -6,7 +6,7 @@
   under a given search schedule}
 \usage{
 rghatGeneric(n = 1, SS, model_SE, model_CP, seed_SE = NULL,
-  seed_CP = NULL, kFill = NULL, dateSearchedCol = "DateSearched", ...)
+  seed_CP = NULL, kFill = NULL, dateSearchedCol = "DateSearched")
 }
 \arguments{
 \item{n}{the number of simulation draws}
