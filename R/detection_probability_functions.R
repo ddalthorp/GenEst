@@ -238,3 +238,214 @@ kFillPropose <- function(model){
   }
   return(proposal)
 }
+
+#' Generic ghat estimation for a combination of SE model and CP model 
+#'   under a given search schedule
+#'
+#' The g estimated by \code{rghatGeneric} is a generic aggregate detection 
+#'   probability and represents the probability of detecting a carcass that 
+#'   arrives at a (uniform) random time during the period monitored, for each
+#'   of the possible cell combinations, given the SE and CP models. This 
+#'   is somethat different from the GenEst estimation of g when the purpose 
+#'   is to estimate total mortality (M), in which case the detection 
+#'   probability varies with carcass arrival interval and is difficult to 
+#'   summarize statistically. The \code{rghatGeneric} estimate is a useful 
+#'   "big picture" summary of detection probability, but would be difficult
+#'   to work with for estimating M with precision.
+#'
+#' @param n the number of simulation draws
+#' @param SS Search schedule (vector of days searched)
+#' @param model_SE Searcher Efficiency model
+#' @param model_CP Carcass Persistence model
+#' @param seed_SE seed for random draws of the SE model
+#' @param seed_CP seed for random draws of the CP model
+#' @param kFill value to fill in for missing k when not existing in the model
+#' @param dateSearchedCol Column name for the date searched data
+#'
+#' @export
+#'
+rghatGeneric <- function(n = 1, SS, model_SE, model_CP, seed_SE = NULL,
+                         seed_CP = NULL, kFill = NULL,
+                         dateSearchedCol = "DateSearched", ...){
+
+  if (is.na(model_SE$cellwiseTable[1, "k_median"])){
+    if (is.null(kFill)){
+      kFill <- kFillPropose(model_SE)
+      if (is.na(kFill)){
+        msg <- paste("Searcher efficiency model does not include estimate ",
+                 "for k and kFill was not specified.", sep = "")
+        stop(msg)
+      }
+    }
+  }
+  preds_SE <- model_SE$predictors
+  preds_CP <- model_CP$predictors
+  preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
+
+  data_SE <- model_SE$data
+  data_CP <- model_CP$data
+
+
+  sim_SE <- rpk(n, model_SE, seed_SE, kFill)
+  sim_CP <- rcp(n, model_CP, seed_CP, type = "ppersist") 
+  dist <- tolower(model_CP$dist)
+
+  ncell <- nrow(preds)
+  ghat <- vector("list", ncell)
+  for (celli in 1:ncell){
+    cell_SE <- preds$CellNames_SE[celli]
+    cell_CP <- preds$CellNames_CP[celli]
+    param_SE <- sim_SE[[cell_SE]]
+    param_CP <- sim_CP[[cell_CP]]
+    ghat[[celli]] <- ghatGenericCell(SS, param_SE, param_CP, dist, kFill)
+  }  
+  names(ghat) <- preds$CellNames
+  return(ghat)
+}
+
+#' Generic ghat estimation for a single cell of a combination of SE model and 
+#'   CP model under a given search schedule
+#'
+#' The g estimated by \code{ghatGenericCell} is a generic aggregate detection 
+#'   probability and represents the probability of detecting a carcass that 
+#'   arrives at a (uniform) random time during the period monitored, for one 
+#'   cell across both the SE and CP models. This is somethat different from 
+#'   the GenEst estimation of g when the purpose is to estimate total
+#'   mortality (M), in which case the detection probability varies with 
+#'   carcass arrival interval and is difficult to summarize statistically.
+#'   The \code{ghatGenericCell} estimate is a useful "big picture" summary
+#'   of detection probability, but would be difficult to work with for 
+#'   estimating M with precision.
+#'
+#' @param SS Search schedule (vector of days searched)
+#' @param param_SE Searcher efficiency parameters (p and k
+#' @param param_CP Carcass persistence parameters (a and b)
+#' @param dist distribution for the CP model
+#' @param kFill value to fill in for missing k when not existing in the model
+#'
+#' @export
+#'
+ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
+
+  samtype <- ifelse(length(unique(diff(SS))) == 1, "Formula", "Custom")
+  nsearch <- length(SS) - 1
+  n <- nrow(param_SE)
+
+  if (dist == "exponential"){
+    pdb <- param_CP[ , "pdb"]
+    pda <- 1/pdb
+    pdb0 <- exp(mean(log(pdb)))
+    pda0 <- 1/pdb0
+  } else {
+    pda <- param_CP[ , "pda"]
+    pdb <- param_CP[ , "pdb"]
+    pdb0 <- exp(mean(log(pdb)))
+    pda0 <- 1/mean(1/pda)
+  }
+  pk <- param_SE
+  f0 <- mean(pk[, 1])
+  k0 <- mean(pk[, 2])
+
+ ###1. setting estimation control parameters
+
+  ind1 <- rep(1:nsearch, times = nsearch:1)
+  ind2 <- ind1 + 1
+  ind3 <- unlist(lapply(1:nsearch, function(x) x:nsearch)) + 1
+  schedule.index <- cbind(ind1, ind2, ind3)
+  schedule <- cbind(SS[ind1], SS[ind2], SS[ind3])
+
+  nmiss <- schedule.index[,3] - schedule.index[,2]
+  maxmiss <- max(nmiss)
+
+  powk <- cumprod(c(1, rep(k0, maxmiss))) 
+  notfind <- cumprod(1 - f0*powk[-length(powk)])
+  nvec <- c(1, notfind) * f0
+
+  # conditional probability of finding a carcass on the ith search (row) after 
+  # arrival for given (simulated) searcher efficiency (column)
+  pfind.si <- nvec * powk
+
+  diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
+  intxsearch <- unique(diffs, MAR = 1)
+  ppersu <- ppersist(dist, t_arrive0 = 0, t_arrive1 = intxsearch[,1],
+              t_search = intxsearch[,1] + intxsearch[,2],
+               pda = pda0, pdb = pdb0
+            )
+  arrvec <- (schedule[,2] - schedule[,1]) / max(SS)
+  prob_obs <- numeric(dim(schedule)[1])
+  for (i in 1:length(prob_obs)){
+    match <- which(
+               abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+               abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001
+             )
+    prob_obs[i] <- pfind.si[nmiss[i] + 1] * ppersu[match, ] * arrvec[i]
+  }
+  ggnm <- numeric(maxmiss + 1)
+  for (missi in 0:maxmiss){
+    ggnm[missi + 1] <- sum(prob_obs[nmiss == missi])
+  } 
+
+  # if more than 10 searches, truncate search schedule 
+  # Correct bias by multiplying the final g's by gadj = sum(ggnm)/ggnm[iskip]
+
+  if (nsearch > 10){
+    iskip <- min(which(cumsum(ggnm)/sum(ggnm) > 0.99)) + 1
+    gadj <- sum(ggnm)/sum(ggnm[1:iskip])
+  } else {
+    iskip <- maxmiss
+    gadj <- 1
+  }
+
+ ###2. estimation of g
+ # assumes uniform arrivals
+
+  schedule <- schedule[ind2 >= ind3 - iskip + 1, ]
+  schedule.index <- cbind(ind1, ind2, ind3)[ind2 >= ind3 - iskip + 1,]
+  nmiss <- schedule.index[ , 3] - schedule.index[ , 2]
+  maxmiss <- max(nmiss)
+
+  if (maxmiss == 0) {
+    pfind.si <- pk[ , 1]
+  } else if (maxmiss == 1){
+    pfind.si <- cbind(pk[ , 1], (1 - pk[ , 1]) * pk[ , 2] * pk[ , 1])
+  } else {
+    powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(n, maxmiss + 1))
+    powk[ , 1] <- 1
+    powk <- matrixStats::rowCumprods(powk)
+    pfind.si <- pk[ , 1] * powk * 
+                cbind(rep(1, n), 
+                matrixStats::rowCumprods(1 - (pk[ , 1] * powk[ , 1:maxmiss]))
+                )
+  }
+  diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
+  intxsearch <- unique(diffs, MAR = 1)
+  ppersu <- ppersist(dist, t_arrive0 = 0, t_arrive1 = intxsearch[ , 1],
+              t_search = intxsearch[ , 1] + intxsearch[ , 2],
+              pda = param_CP[ , 1], pdb = param_CP[ , 2]
+            )
+
+  arrvec <- (schedule[ , 2] - schedule[ , 1]) / max(SS) 
+
+  prob_obs <- numeric(n)
+
+  if (maxmiss > 0){
+    for (i in 1:dim(schedule)[1]){
+      match <- which(
+               abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+               abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
+      prob_obs <- prob_obs +
+                  pfind.si[ , nmiss[i] + 1] * ppersu[match, ] * arrvec[i]
+    }
+  } else {
+    for (i in 1:dim(schedule)[1]){
+      match <- which(
+               abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+               abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
+      prob_obs <- prob_obs +
+                  pfind.si[nmiss[i] + 1] * ppersu[match, ] * arrvec[i]
+    }
+  }
+
+  return(prob_obs)
+}
+  
