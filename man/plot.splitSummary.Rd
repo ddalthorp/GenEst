@@ -20,9 +20,9 @@ include either a \code{split_SS} or \code{split_time} variable, the
 \item{...}{to be passed down}
 }
 \description{
-The S3 \code{plot} method for \code{splitSummary} objects constructs boxplots
-of the mortality estimates for all combinations of splitting covariates
-summarized in the \code{splits} variable.
+The S3 \code{plot} method for \code{splitSummary} objects constructs 
+ boxplots of the mortality estimates for all combinations of splitting 
+ covariates summarized in the \code{splits} variable.
 }
 \details{
 For 1-covariate splits, box plots showing median, IQR, and confidence

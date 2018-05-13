@@ -371,7 +371,25 @@ ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP,
              dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
              removeCleanout = TRUE
            )
-ghats <- ghatsAjs$ghat
+ghat <- ghatsAjs$ghat
+```
+
+The `rghatGeneric` function produces `n` random draws of generic (i.e., not
+carcass-sepecific) detection probabilities (`ghat`) for each of the 
+possible carcass cell combinations across the SE and CP models. The generic
+`ghat` is estimated according to a particular search schedule (`SS`), which
+here we define as the Unit 1 search schedule:
+
+```{r}
+SS <- data_SS
+SS[ , "DateSearched"] <- yyyymmdd(SS[ , "DateSearched"])
+date1 <- min(SS[ , "DateSearched"])
+SS[ , "DateSearched"] <- dateToDay(SS[ , "DateSearched"], date1)
+SS <- SS[ which(SS$Unit1 == 1), "DateSearched"]
+
+ghatsGeneric <- rghatGeneric(n = 1000, SS, model_SE, model_CP, seed_SE = 1,
+                  seed_CP = 1, kFill = NULL, dateSearchedCol = "DateSearched"
+                )
 ```
 
 ### Mortality Estimation
@@ -385,7 +403,7 @@ found. If DWP is not provided, `rMhat` makes a simple assumption that DWP is
 could have landed was searched). 
 
 ```{r}
-Mhat <- rMhat(n = 1, ghat = ghats)
+Mhat <- rMhat(n = 1, ghat = ghat)
 ```
 
 If DWP data are available in the standard condensed-table, format, they can be
@@ -399,13 +417,13 @@ DWP <- DWPbyCarcass(dataDWP, data_CO, unitCol = "Unit",
          removeCleanout = TRUE, data_SS, dateFoundCol = "DateFound", 
          dateSearchedCol = "DateSearched"
        )
-Mhat <- rMhat(n = 1, ghat = ghats, DWP, seed = 12)
+Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
 ```
 
 If one desires $\tilde{M}$ values, they can be obtained using `rMtilde`:
 
 ```{r}
-Mtilde <- rMtilde(length(ghats), ghats, seed = 12)
+Mtilde <- rMtilde(length(ghat), ghat, seed = 12)
 ```
 
 which can then be used to calculate ($\hat{M}$):
