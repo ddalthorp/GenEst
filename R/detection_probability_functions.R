@@ -254,7 +254,8 @@ kFillPropose <- function(model){
 #'   to work with for estimating M with precision.
 #'
 #' @param n the number of simulation draws
-#' @param SS Search schedule (vector of days searched)
+#' @param data_SS Search schedule data as either a vector of days searched or
+#'   a multi-unit SS data table, for which the average interval will be used
 #' @param model_SE Searcher Efficiency model
 #' @param model_CP Carcass Persistence model
 #' @param seed_SE seed for random draws of the SE model
@@ -264,9 +265,45 @@ kFillPropose <- function(model){
 #'
 #' @export
 #'
-rghatGeneric <- function(n = 1, SS, model_SE, model_CP, seed_SE = NULL,
+rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL,
                          dateSearchedCol = "DateSearched"){
+  
+  if (is.vector(data_SS)){
+    SS <- data_SS
+  } else if (is.data.frame(data_SS)){
+
+    SS <- data_SS
+    SS[ , "DateSearched"] <- yyyymmdd(SS[ , "DateSearched"])
+    date1 <- min(SS[ , "DateSearched"])
+    SS[ , "DateSearched"] <- dateToDay(SS[ , "DateSearched"], date1)
+    units <- colnames(SS)[grep("unit", tolower(colnames(SS)))]
+    nunits <- length(units)
+  
+    if (nunits == 0){
+      stop("No columns in data_SS include unit in the name")
+    }
+    SSlist <- vector("list", nunits)
+
+    for (uniti in 1:nunits){
+      sample10 <- SS[ , units[uniti]]
+      sampleday <- SS[ , "DateSearched"]
+      daysUnitSampled <- sampleday[sample10 == 1]
+      SSlist[[uniti]] <- daysUnitSampled - min(daysUnitSampled)
+    }
+    
+    avgInterval <- round(mean(unlist(lapply(lapply(SSlist, diff), mean))))
+    maxDay <- max(unlist(lapply(SSlist, max)))
+    SS <- seq(0, maxDay, by = avgInterval)
+    if (max(SS) != maxDay){
+      SS <- c(SS, maxDay)
+    }
+
+  } else{
+    msg <- paste0(class(data_SS), " is not a supported data type for data_SS")
+    stop(msg)
+  }
+
 
   if (is.na(model_SE$cellwiseTable[1, "k_median"])){
     if (is.null(kFill)){
