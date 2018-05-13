@@ -5,13 +5,14 @@
 \title{Generic ghat estimation for a combination of SE model and CP model 
   under a given search schedule}
 \usage{
-rghatGeneric(n = 1, SS, model_SE, model_CP, seed_SE = NULL,
+rghatGeneric(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, kFill = NULL, dateSearchedCol = "DateSearched")
 }
 \arguments{
 \item{n}{the number of simulation draws}
 
-\item{SS}{Search schedule (vector of days searched)}
+\item{data_SS}{Search schedule data as either a vector of days searched or
+a multi-unit SS data table, for which the average interval will be used}
 
 \item{model_SE}{Searcher Efficiency model}
 

@@ -358,12 +358,14 @@ The `rghat` function produces `n` random draws of detection probabilities
 (`ghat`) and arrival intervals (`Aj`) for each carcass.
 
 ```{r}
-model_SE <- pkm(formula_p = p ~ Visibility * HabitatType, 
-                       formula_k = k ~ 1, data = data_SE)
+model_SE <- pkm(formula_p = p ~ Visibility * HabitatType, formula_k = k ~ 1,
+             data = data_SE
+            )
 model_CP <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, 
              data = data_CP,
              left = "LastPresentDecimalDays", 
-             right = "FirstAbsentDecimalDays", dist = "weibull")
+             right = "FirstAbsentDecimalDays", dist = "weibull"
+            )
 data_CO <- mockData$CarcassObservationData
 data_SS <- mockData$SearchScheduleData
 ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
@@ -377,18 +379,15 @@ ghat <- ghatsAjs$ghat
 The `rghatGeneric` function produces `n` random draws of generic (i.e., not
 carcass-sepecific) detection probabilities (`ghat`) for each of the 
 possible carcass cell combinations across the SE and CP models. The generic
-`ghat` is estimated according to a particular search schedule (`SS`), which
-here we define as the Unit 1 search schedule:
+`ghat` is estimated according to a particular search schedule. When we pass 
+`rghatGeneric` a full `data_SS` table like we have here, it will assume the
+units are named as "unit" with a suffix indicator and will use the average
+search schedule across the units.
 
 ```{r}
-SS <- data_SS
-SS[ , "DateSearched"] <- yyyymmdd(SS[ , "DateSearched"])
-date1 <- min(SS[ , "DateSearched"])
-SS[ , "DateSearched"] <- dateToDay(SS[ , "DateSearched"], date1)
-SS <- SS[ which(SS$Unit1 == 1), "DateSearched"]
-
-ghatsGeneric <- rghatGeneric(n = 1000, SS, model_SE, model_CP, seed_SE = 1,
-                  seed_CP = 1, kFill = NULL, dateSearchedCol = "DateSearched"
+ghatsGeneric <- rghatGeneric(n = 1000, data_SS, model_SE, model_CP, 
+                  seed_SE = 1, seed_CP = 1, kFill = NULL, 
+                  dateSearchedCol = "DateSearched"
                 )
 ```
 
