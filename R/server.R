@@ -76,6 +76,8 @@ msg_avgSSfail <- NULL
 msg_RunModM <- NULL
 msg_ModFailM <- NULL
 
+output$SStext <- renderText(seq(0, 364, 7))
+
 observeEvent(input$file_SE, {
   rv$data_SE <- read.csv(input$file_SE$datapath, stringsAsFactors = FALSE)
   rv$colNames_SE <- colnames(rv$data_SE)

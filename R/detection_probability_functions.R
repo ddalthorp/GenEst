@@ -275,7 +275,6 @@ rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
     stop(msg)
   }
 
-
   if (is.na(model_SE$cellwiseTable[1, "k_median"])){
     if (is.null(kFill)){
       kFill <- kFillPropose(model_SE)
@@ -420,10 +419,12 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(n, maxmiss + 1))
     powk[ , 1] <- 1
     powk <- matrixStats::rowCumprods(powk)
+    val <- 1 - (pk[ , 1] * powk[ , 1:maxmiss])
+    if (is.null(dim(val))){
+      val <- matrix(val, nrow = 1)
+    }
     pfind.si <- pk[ , 1] * powk * 
-                cbind(rep(1, n), 
-                matrixStats::rowCumprods(1 - (pk[ , 1] * powk[ , 1:maxmiss]))
-                )
+                cbind(rep(1, n), matrixStats::rowCumprods(val))
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
@@ -455,6 +456,60 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
   }
 
   return(prob_obs)
+}
+
+#' Generic ghat estimation for a combination of SE model and CP model 
+#'   under a given search schedule
+#'
+#' The g estimated by \code{rghatGeneric} is a generic aggregate detection 
+#'   probability and represents the probability of detecting a carcass that 
+#'   arrives at a (uniform) random time during the period monitored, for each
+#'   of the possible cell combinations, given the SE and CP models. This 
+#'   is somethat different from the GenEst estimation of g when the purpose 
+#'   is to estimate total mortality (M), in which case the detection 
+#'   probability varies with carcass arrival interval and is difficult to 
+#'   summarize statistically. The \code{rghatGeneric} estimate is a useful 
+#'   "big picture" summary of detection probability, but would be difficult
+#'   to work with for estimating M with precision.
+#'
+#' @param n the number of simulation draws
+#' @param data_SS Search schedule data as a vector of days searched 
+#' @param modelSetSize_SE Searcher Efficiency model set for multiple sizes
+#' @param modelSetSize_CP Carcass Persistence model set for multiple sizes
+#' @param modelSizeSelections_SE vector of SE models to use, one for each size
+#' @param modelSizeSelections_CP vector of CP models to use, one for each size
+#' @param seed_SE seed for random draws of the SE model
+#' @param seed_CP seed for random draws of the CP model
+#' @param kFill value to fill in for missing k when not existing in the model
+#' @param dateSearchedCol Column name for the date searched data
+#' @return list of ghat estimates, with one element in the list corresponding
+#'   to each of the cells from the cross-model combination
+#' @export
+#'
+rghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE, modelSetSize_CP,
+                             modelSizeSelections_SE, modelSizeSelections_CP,  
+                             seed_SE = NULL, seed_CP = NULL, kFill = NULL){
+
+  sizeclasses_SE <- names(modelSetSize_SE)
+  sizeclasses_CP <- names(modelSetSize_CP)
+  if (!all(sizeclasses_SE %in% sizeclasses_CP) | 
+      !all(sizeclasses_CP %in% sizeclasses_SE)){
+    stop("Size classes don't match between SE and CP model sets")
+  }
+  sizeclasses <- unique(c(sizeclasses_SE, sizeclasses_CP))
+  nsizeclass <- length(sizeclasses)
+  ghats <- vector("list", length = nsizeclass)
+  for (sci in 1:nsizeclass){
+    model_SEsci <- modelSizeSelections_SE[[sci]]
+    model_SE <- modelSetSize_SE[[sizeclasses[sci]]][[model_SEsci]]
+    model_CPsci <- modelSizeSelections_CP[[sci]]
+    model_CP <- modelSetSize_CP[[sizeclasses[sci]]][[model_CPsci]]
+    ghats[[sci]] <- rghatGeneric(n, data_SS, model_SE, model_CP, 
+                      seed_SE, seed_CP, kFill
+                    )
+  }
+  names(ghats) <- sizeclasses
+  return(ghats)
 }
 
 #' Tabulate an average search schedule from a multi-unit SS data table

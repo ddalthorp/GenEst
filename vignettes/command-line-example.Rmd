@@ -385,10 +385,9 @@ units are named as "unit" with a suffix indicator and will use the average
 search schedule across the units.
 
 ```{r}
-ghatsGeneric <- rghatGeneric(n = 1000, data_SS, model_SE, model_CP, 
-                  seed_SE = 1, seed_CP = 1, kFill = NULL, 
-                  dateSearchedCol = "DateSearched"
-                )
+avgSS <- averageSS(data_SS)
+ghatsGeneric <- rghatGeneric(n = 1000, avgSS, model_SE, model_CP, 
+                  seed_SE = 1, seed_CP = 1, kFill = NULL)
 ```
 
 ### Mortality Estimation
