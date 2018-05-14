@@ -6,13 +6,12 @@
   under a given search schedule}
 \usage{
 rghatGeneric(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
-  seed_CP = NULL, kFill = NULL, dateSearchedCol = "DateSearched")
+  seed_CP = NULL, kFill = NULL)
 }
 \arguments{
 \item{n}{the number of simulation draws}
 
-\item{data_SS}{Search schedule data as either a vector of days searched or
-a multi-unit SS data table, for which the average interval will be used}
+\item{data_SS}{Search schedule data as a vector of days searched}
 
 \item{model_SE}{Searcher Efficiency model}
 
@@ -25,6 +24,10 @@ a multi-unit SS data table, for which the average interval will be used}
 \item{kFill}{value to fill in for missing k when not existing in the model}
 
 \item{dateSearchedCol}{Column name for the date searched data}
+}
+\value{
+list of ghat estimates, with one element in the list corresponding
+  to each of the cells from the cross-model combination
 }
 \description{
 The g estimated by \code{rghatGeneric} is a generic aggregate detection 

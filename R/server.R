@@ -47,6 +47,10 @@ rv <- reactiveValues(
         CPdls = NULL, tabfig_CPdlsfig = NULL, tabfig_CPdlstab = NULL, 
 
         data_SS = NULL, colNames_SS = NULL, 
+
+        SS = NULL, SStemp = NULL, avgSI = NULL, dateSearchedCol_g = NULL,
+        gSearchInterval = NULL, gSearchMax = NULL, 
+
         data_DWP = NULL, colNames_DWP = NULL,
         data_CO = NULL, colNames_CO = NULL, removeCleanout = NULL,
 
@@ -68,13 +72,17 @@ msg_SampleSizeSE <- NULL
 msg_RunModCP <- NULL
 msg_ModFailCP <- NULL
 msg_SampleSizeCP <- NULL
+msg_avgSSfail <- NULL
 msg_RunModM <- NULL
 msg_ModFailM <- NULL
 
 observeEvent(input$file_SE, {
   rv$data_SE <- read.csv(input$file_SE$datapath, stringsAsFactors = FALSE)
   rv$colNames_SE <- colnames(rv$data_SE)
-  rv$colNames_all <- updateColNames_all(rv$colNames_all, rv$colNames_SE)
+  rv$colNames_all <- updateColNames_all(colnames(data_SE), rv$colNames_CP,
+                       rv$colNames_CO
+                     )
+print(rv$colNames_all)
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
   output$data_SE <- renderDataTable(datatable(rv$data_SE))
   updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
@@ -87,7 +95,9 @@ observeEvent(input$file_SE, {
 observeEvent(input$file_CP, {
   rv$data_CP <- read.csv(input$file_CP$datapath, stringsAsFactors = FALSE)
   rv$colNames_CP <- colnames(rv$data_CP)
-  rv$colNames_all <- updateColNames_all(rv$colNames_all, rv$colNames_CP)
+  rv$colNames_all <- updateColNames_all(colnames(data_SE), rv$colNames_CP,
+                       rv$colNames_CO
+                     )
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
   output$data_CP <- renderDataTable(datatable(rv$data_CP))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
@@ -104,6 +114,7 @@ observeEvent(input$file_SS, {
   output$data_SS <- renderDataTable(datatable(rv$data_SS))
   updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
   updateSelectizeInput(session, "dateSearchedCol", choices = rv$colNames_SS)
+  updateSelectizeInput(session, "dateSearchedCol_g", choices = rv$colNames_SS)
 })
 observeEvent(input$file_DWP, {
   rv$data_DWP <- read.csv(input$file_DWP$datapath, stringsAsFactors = FALSE)
@@ -113,7 +124,9 @@ observeEvent(input$file_DWP, {
 observeEvent(input$file_CO, {
   rv$data_CO <- read.csv(input$file_CO$datapath, stringsAsFactors = FALSE)
   rv$colNames_CO <- colnames(rv$data_CO)
-  rv$colNames_all <- updateColNames_all(rv$colNames_all, rv$colNames_CO)
+  rv$colNames_all <- updateColNames_all(colnames(data_SE), rv$colNames_CP,
+                       rv$colNames_CO
+                     )
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
@@ -462,6 +475,35 @@ observeEvent(input$tabfig_sizeclassCP, {
     output$AICcTab_CP <- renderDataTable(datatable(rv$AICcTab_CP))
   }
 })
+
+observeEvent(input$useSSdata, {
+  rv$SS <- NULL
+  rv$dateSearchedCol_g <- input$dateSearchedCol_g
+  rv$SStemp <- tryCatch(
+                 averageSS(rv$data_SS, rv$dateSearchedCol_g), 
+                 error = function(x){NA}
+               )
+  if (is.na(rv$SStemp[1])){
+    msg_avgSSfail <- msgSSavgFail()
+  } else{
+    rv$SS <- rv$SStemp
+    rv$avgSI <-  mean(diff(rv$SS[-length(rv$SS)]))
+
+    updateNumericInput(session, "gSearchInterval", value = rv$avgSI)
+    updateNumericInput(session, "gSearchMax", value = max(rv$SS))
+  }
+  output$SStext <- renderText(rv$SS)
+}) 
+observeEvent(input$useSSinputs, {
+  rv$gSearchInterval <- input$gSearchInterval
+  rv$gSearchMax <- input$gSearchMax
+  rv$SS <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
+  if (max(rv$SS) != rv$gSearchMax){
+    rv$SS <- c(rv$SS, rv$gSearchMax)
+  }
+  output$SStext <- renderText(rv$SS)
+})
+
 
 observeEvent(input$runModM, {
 

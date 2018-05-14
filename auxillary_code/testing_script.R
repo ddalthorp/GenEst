@@ -13,8 +13,9 @@ model_CP <- cpm(formula_l = l ~ Season, formula_s = s ~ 1,
              data = data_CP,
              left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays", dist = "weibull")
-ghatsGeneric <- rghatGeneric(n = 1000, data_SS, model_SE, model_CP, seed_SE = 1,
-                  seed_CP = 1, kFill = NULL, dateSearchedCol = "DateSearched"
+avgSS <- averageSS(data_SS)
+ghatsGeneric <- rghatGeneric(n = 1000, avgSS, model_SE, model_CP, seed_SE = 1,
+                  seed_CP = 1, kFill = NULL
                 )
 
 ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
@@ -23,3 +24,7 @@ ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP,
              removeCleanout = TRUE
            )
 ghat <- ghatsAjs$ghat
+
+
+# need to create an rghatGenericSize so it works seamlessly in app
+# need to add basic table and plotting stuff

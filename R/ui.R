@@ -168,19 +168,36 @@ tabPanel("Analyses",
       sidebarPanel(width = 3, 
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
         br(), br(),
-        numericInput("gSearchInterval", "Standard Search Interval (days):", 
+        HTML("<strong><u> Search Schedule Data: </u></strong>"),
+        br(), br(),
+        selectizeInput("dateSearchedCol_g", 
+          "Date Searched Column in Search Schedule Data (if applicable):",  
+          c("No data input yet"), multiple = FALSE
+        ),
+        actionButton("useSSdata", "Use Average Observed Search Schedule"),
+        br(), br(),
+        HTML("<strong><u> Generic Search Schedule Inputs: </u></strong>"),
+        br(), br(),
+        numericInput("gSearchInterval", "Search Interval (days):", 
           value = 7, min = 1, max = 400, step = 1),
+        numericInput("gSearchMax", "Final Seach (day):", 
+          value = 365, min = 1, max = 1000, step = 1),
         conditionalPanel(
           condition = "output.kFillNeed == 'yes'",
           numericInput("kFill", "Assumed k:", value = 0.5, 
             min = 0, max = 1, step = 0.001
           )
         ),
+        actionButton("useSSinputs", "Use Generic Search Schedule Inputs"),
+        br(), br(),
+        HTML("<strong><u> Search Schedule: </u></strong>"),
+        br(), 
+        textOutput("SStext"),
         conditionalPanel(
           condition = 
             "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
              output.sizeclassesSE == output.sizeclassesCP",
-          br(), 
+          br(), br(),
           actionButton("runModg", "Estimate Detection Probability")
         )
       ),

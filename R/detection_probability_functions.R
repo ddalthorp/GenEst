@@ -254,51 +254,22 @@ kFillPropose <- function(model){
 #'   to work with for estimating M with precision.
 #'
 #' @param n the number of simulation draws
-#' @param data_SS Search schedule data as either a vector of days searched or
-#'   a multi-unit SS data table, for which the average interval will be used
+#' @param data_SS Search schedule data as a vector of days searched 
 #' @param model_SE Searcher Efficiency model
 #' @param model_CP Carcass Persistence model
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param kFill value to fill in for missing k when not existing in the model
 #' @param dateSearchedCol Column name for the date searched data
-#'
+#' @return list of ghat estimates, with one element in the list corresponding
+#'   to each of the cells from the cross-model combination
 #' @export
 #'
 rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
-                         seed_CP = NULL, kFill = NULL,
-                         dateSearchedCol = "DateSearched"){
+                         seed_CP = NULL, kFill = NULL){
   
   if (is.vector(data_SS)){
     SS <- data_SS
-  } else if (is.data.frame(data_SS)){
-
-    SS <- data_SS
-    SS[ , "DateSearched"] <- yyyymmdd(SS[ , "DateSearched"])
-    date1 <- min(SS[ , "DateSearched"])
-    SS[ , "DateSearched"] <- dateToDay(SS[ , "DateSearched"], date1)
-    units <- colnames(SS)[grep("unit", tolower(colnames(SS)))]
-    nunits <- length(units)
-  
-    if (nunits == 0){
-      stop("No columns in data_SS include unit in the name")
-    }
-    SSlist <- vector("list", nunits)
-
-    for (uniti in 1:nunits){
-      sample10 <- SS[ , units[uniti]]
-      sampleday <- SS[ , "DateSearched"]
-      daysUnitSampled <- sampleday[sample10 == 1]
-      SSlist[[uniti]] <- daysUnitSampled - min(daysUnitSampled)
-    }
-    
-    avgInterval <- round(mean(unlist(lapply(lapply(SSlist, diff), mean))))
-    maxDay <- max(unlist(lapply(SSlist, max)))
-    SS <- seq(0, maxDay, by = avgInterval)
-    if (max(SS) != maxDay){
-      SS <- c(SS, maxDay)
-    }
-
   } else{
     msg <- paste0(class(data_SS), " is not a supported data type for data_SS")
     stop(msg)
@@ -484,5 +455,42 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
   }
 
   return(prob_obs)
+}
+
+#' Tabulate an average search schedule from a multi-unit SS data table
+#'
+#' @param data_SS a multi-unit SS data table, for which the average interval 
+#'   will be tabulated
+#' @param dateSearchedCol Column name for the date searched data
+#' @return vector of the average search schedule
+#' @export
+#'
+averageSS <- function(data_SS, dateSearchedCol = "DateSearched"){
+  SS <- data_SS
+  SS[ , dateSearchedCol] <- yyyymmdd(SS[ , dateSearchedCol])
+  date1 <- min(SS[ , dateSearchedCol])
+  SS[ , "DateSearched"] <- dateToDay(SS[ , dateSearchedCol], date1)
+  units <- colnames(SS)[grep("unit", tolower(colnames(SS)))]
+  nunits <- length(units)
+  
+  if (nunits == 0){
+    stop("No columns in data_SS include unit in the name")
+  }
+  SSlist <- vector("list", nunits)
+
+  for (uniti in 1:nunits){
+    sample10 <- SS[ , units[uniti]]
+    sampleday <- SS[ , dateSearchedCol]
+    daysUnitSampled <- sampleday[sample10 == 1]
+    SSlist[[uniti]] <- daysUnitSampled - min(daysUnitSampled)
+  }
+    
+  avgInterval <- round(mean(unlist(lapply(lapply(SSlist, diff), mean))))
+  maxDay <- max(unlist(lapply(SSlist, max)))
+  SS <- seq(0, maxDay, by = avgInterval)
+  if (max(SS) != maxDay){
+    SS <- c(SS, maxDay)
+  }
+  return(SS)
 }
   
