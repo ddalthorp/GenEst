@@ -81,10 +81,9 @@ output$SStext <- renderText(seq(0, 364, 7))
 observeEvent(input$file_SE, {
   rv$data_SE <- read.csv(input$file_SE$datapath, stringsAsFactors = FALSE)
   rv$colNames_SE <- colnames(rv$data_SE)
-  rv$colNames_all <- updateColNames_all(colnames(data_SE), rv$colNames_CP,
+  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
                        rv$colNames_CO
                      )
-print(rv$colNames_all)
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
   output$data_SE <- renderDataTable(datatable(rv$data_SE))
   updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
@@ -97,7 +96,7 @@ print(rv$colNames_all)
 observeEvent(input$file_CP, {
   rv$data_CP <- read.csv(input$file_CP$datapath, stringsAsFactors = FALSE)
   rv$colNames_CP <- colnames(rv$data_CP)
-  rv$colNames_all <- updateColNames_all(colnames(data_SE), rv$colNames_CP,
+  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
                        rv$colNames_CO
                      )
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
@@ -126,7 +125,7 @@ observeEvent(input$file_DWP, {
 observeEvent(input$file_CO, {
   rv$data_CO <- read.csv(input$file_CO$datapath, stringsAsFactors = FALSE)
   rv$colNames_CO <- colnames(rv$data_CO)
-  rv$colNames_all <- updateColNames_all(colnames(data_SE), rv$colNames_CP,
+  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
                        rv$colNames_CO
                      )
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
