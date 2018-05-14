@@ -261,8 +261,9 @@ kFillPropose <- function(model){
 #' @param seed_CP seed for random draws of the CP model
 #' @param kFill value to fill in for missing k when not existing in the model
 #' @param dateSearchedCol Column name for the date searched data
-#' @return list of ghat estimates, with one element in the list corresponding
-#'   to each of the cells from the cross-model combination
+#' @return ghatGeneric object that is a list of ghat estimates, with one 
+#'   element in the list correspondingto each of the cells from the 
+#'   cross-model combination
 #' @export
 #'
 rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
@@ -307,6 +308,7 @@ rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
     ghat[[celli]] <- ghatGenericCell(SS, param_SE, param_CP, dist, kFill)
   }  
   names(ghat) <- preds$CellNames
+  class(ghat) <- c("ghatGeneric", "list")
   return(ghat)
 }
 
@@ -549,3 +551,36 @@ averageSS <- function(data_SS, dateSearchedCol = "DateSearched"){
   return(SS)
 }
   
+#' Summarize the ghatGeneric list to a simple table
+#'
+#' @param object ghatGeneric output list (each element is a named vector of 
+#'   ghatGeneric values for a cell in the model combinations)
+#' @param ... arguments to be passed down
+#' @param CL confidence level
+#'
+#' @return a summary table of ghat values (means and confidence bounds) for 
+#'   each cell combination within the ghatGeneric list
+#' @export
+#'
+summary.ghatGeneric <- function(object, ..., CL = 0.9){
+
+  ghats <- object
+  cells <- names(ghats)
+  ncell <- length(cells)
+  predsByCell <- strsplit(cells, "\\.")
+  npred <- length(predsByCell[[1]])
+  out <- matrix(NA, ncell, 2)
+
+  for (celli in 1:ncell){
+    gspec <- ghats[[celli]]
+    gmean <- round(mean(gspec), 3)
+    gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
+    gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
+    gsummary <- paste0(gmean, " [", gCLlow, " - ", gCLup, "]")
+    outi <- c(cells[celli], gsummary)
+    out[celli, ] <- outi
+  }
+  colnames(out) <- c("CellNames", "ghat")
+  out <- data.frame(out)
+  return(out)
+}
