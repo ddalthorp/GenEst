@@ -27,8 +27,6 @@ rghatGenericSize(n = 1, data_SS, modelSetSize_SE, modelSetSize_CP,
 \item{seed_CP}{seed for random draws of the CP model}
 
 \item{kFill}{value to fill in for missing k when not existing in the model}
-
-\item{dateSearchedCol}{Column name for the date searched data}
 }
 \value{
 list of ghat estimates, with one element in the list corresponding
