@@ -271,7 +271,10 @@ combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
   preds <- unique(c(preds_SE, preds_CP))
   npred <- length(preds)
   if (npred == 0){
-    return(data.frame(group = "all", CellNames = "all"))
+    preds <- data.frame(group = "all", CellNames = "all", 
+               CellNames_SE = "all", CellNames_CP = "all"
+             )
+    return(preds)
   }
   if(any(is.na(match(preds_SE, names(data_SE))))) {
     stop("At least one Searcher Efficiency predictor missing from data.")

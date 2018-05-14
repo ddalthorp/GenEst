@@ -181,7 +181,7 @@ tabPanel("Analyses",
         numericInput("gSearchInterval", "Search Interval (days):", 
           value = 7, min = 1, max = 400, step = 1),
         numericInput("gSearchMax", "Final Seach (day):", 
-          value = 365, min = 1, max = 1000, step = 1),
+          value = 364, min = 1, max = 1000, step = 1),
         conditionalPanel(
           condition = "output.kFillNeed == 'yes'",
           numericInput("kFill", "Assumed k:", value = 0.5, 
@@ -191,7 +191,7 @@ tabPanel("Analyses",
         actionButton("useSSinputs", "Use Generic Search Schedule Inputs"),
         br(), br(),
         HTML("<strong><u> Search Schedule: </u></strong>"),
-        br(), 
+        br(), br(), 
         textOutput("SStext"),
         conditionalPanel(
           condition = 
