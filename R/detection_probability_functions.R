@@ -260,7 +260,6 @@ kFillPropose <- function(model){
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param kFill value to fill in for missing k when not existing in the model
-#' @param dateSearchedCol Column name for the date searched data
 #' @return ghatGeneric object that is a list of ghat estimates, with one 
 #'   element in the list correspondingto each of the cells from the 
 #'   cross-model combination
@@ -483,7 +482,6 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param kFill value to fill in for missing k when not existing in the model
-#' @param dateSearchedCol Column name for the date searched data
 #' @return list of ghat estimates, with one element in the list corresponding
 #'   to each of the cells from the cross-model combination
 #' @export
