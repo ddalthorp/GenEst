@@ -17,7 +17,7 @@ fatality rates per unit time (\code{rate = TRUE}). If the splits do not
 include either a \code{split_SS} or \code{split_time} variable, the
 \code{rate} arg is ignored.}
 
-\item{...}{to be passed down}
+\item{...}{additional arguments to be passed down}
 }
 \description{
 The S3 \code{plot} method for \code{splitSummary} objects constructs 
