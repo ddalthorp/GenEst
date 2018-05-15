@@ -17,6 +17,9 @@ pkmParamPlot(model, pk = "p", n, seed, col)
 
 \item{col}{color to use}
 }
+\value{
+a parameter plot panel
+}
 \description{
 Plot parameter box plots for each cell for either p or k
 }

@@ -17,6 +17,9 @@
 
 \item{...}{arguments to be passed to sub functions}
 }
+\value{
+a plot
+}
 \description{
 Plot results of a single pk model
 }
