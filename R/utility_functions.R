@@ -57,7 +57,9 @@ combinePreds <- function(preds, data){
       for (predi in 2:npred){
         npredLevels_i <- npredLevels[[predi]]
         predLevels_i <- predLevels[[predi]]
-        pred_i <- gl(npredLevels_i, reps[predi], labels = predLevels_i) 
+        pred_i <- gl(npredLevels_i, reps[predi], length = reps[1],
+                    labels = predLevels_i
+                  ) 
         output[[predi]] <- pred_i
       }
     }
@@ -310,8 +312,10 @@ combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
     for (predi in 2:npred){
       npredLevels_i <- npredLevels[[predi]]
       predLevels_i <- predLevels[[predi]]
-      pred_i <- gl(npredLevels_i, reps[predi], labels = predLevels_i) 
-      output[[predi]] <- pred_i
+      pred_i <- gl(npredLevels_i, reps[predi], length = reps[1],
+                  labels = predLevels_i
+                ) 
+      output[ , predi] <- pred_i
     }
   }
   names(output) <- predNames
