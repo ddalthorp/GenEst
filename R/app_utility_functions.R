@@ -91,6 +91,18 @@ msgModPartialFail <- function(){
   return(showNotification(msg, type = "warning", duration = NULL))
 }
 
+#' Creates the warning message for when the SS average doesn't work
+#' @return an average SS fail warning
+#' @export
+#'
+msgSSavgFail <- function(){
+  msg <- paste(
+           "Search Schedule cannot be averaged using given date searched ",
+           "column", sep = ""
+         )
+  return(showNotification(msg, type = "warning", duration = NULL))
+}
+
 #' Creates a model running message
 #' @param modelType "SE", "CP", "g", or "M"
 #' @return a model running message
@@ -178,16 +190,42 @@ setkFillNeed <- function(obsCols){
 
 #' Updates the string of column names that are in all the needed tables
 #'
-#' @param colNames_all current vector of column names in all needed tables
-#' @param colNames_new column names of the new table to bring in
-#' @return updated colNames_all
+#' @param colnames_SE column names for the searcher efficiency
+#' @param colnames_CP column names for the carcass persistence
+#' @param colnames_CO column names for the carcass observations
+#' @return possible column names
 #' @export
 #'
-updateColNames_all <- function(colNames_all, colNames_new){
-  if (is.null(colNames_all)){
-    return(colNames_new)
+updateColNames_all <- function(colnames_SE, colnames_CP, colnames_CO){
+
+  SECPCO <- NULL
+  SE <- colnames_SE
+  CP <- colnames_CP
+  CO <- colnames_CO
+
+  SECP <- which(SE %in% CP)
+  SECO <- which(SE %in% CO)
+  CPSE <- which(CP %in% SE)
+  CPCO <- which(CP %in% CO)
+  COSE <- which(CO %in% SE)
+  COCP <- which(CO %in% CP)
+  alltogether <- c(SECP, SECO, CPSE, CPCO, COSE, COCP)
+
+  if (length(alltogether) == 0){
+    if (is.null(SE) + is.null(CP) + is.null(CO) == 2){
+      SECPCO <- unique(c(SE, CP, CO))
+    } 
+  } else{
+    if (is.null(SE) + is.null(CP) + is.null(CO) == 1){
+      SECPCOa <- c(SE[SECP], SE[SECO], CP[CPSE], CP[CPCO], CO[COSE], CO[COCP])
+      SECPCO <- unique(SECPCOa)
+    } else{
+      SECP <- SE[SE %in% CP]
+      SECPCO <- CO[CO %in% SECP]
+    }
   }
-  colNames_new[colNames_new %in% colNames_all]
+
+  return(SECPCO)
 }
 
 #' Updates the name of the size class column based on available names

@@ -8,13 +8,13 @@ calcTsplit(rate, days, tsplit)
 }
 \arguments{
 \item{rate}{Array (nsim x nsearch) of arrival rates as number of fatalities
-per search interval. Typically, \code{rate} will be the return value of the
-\code{calcRate} function.}
+per search interval. Typically, \code{rate} will be the return value of 
+the \code{calcRate} function.}
 
 \item{days}{A vector of times representing search dates when at least one
 unit was searched. Times are formatted as number of days since the first
-search, e.g., c(0, 7, 14, 28, 35) would indicate a schedule in at least one
-unit was searched every 7 days.}
+search, e.g., c(0, 7, 14, 28, 35) would indicate a schedule in at least 
+one unit was searched every 7 days.}
 
 \item{tsplit}{A vector of times that splits the monitoring period into a
 set of time intervals for which \code{calcTsplit} will estimate the number
@@ -30,6 +30,6 @@ A numeric array with dimensions
 }
 \description{
 \code{calcTsplit()} is a lower-level function that requires the output
-of \code{calcRate} as input. See \code{\link{calcSplits}} for a more powerful,
-convenient, and flexible alternative.
+of \code{calcRate} as input. See \code{\link{calcSplits}} for a more 
+powerful, convenient, and flexible alternative.
 }

@@ -29,6 +29,9 @@ pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, col_spec, col_full,
 
 \item{seed_full}{random number seed to use for the full model}
 }
+\value{
+a specific cell plot panel
+}
 \description{
 Plot cell-specific decay curve for searcher efficiency for a specific model
   with comparison to the cellwise model

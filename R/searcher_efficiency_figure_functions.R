@@ -5,7 +5,7 @@
 #' @param seed random number seed to use
 #' @param col color to use
 #' @param ... arguments to be passed to sub functions
-#'
+#' @return a plot
 #' @export
 #'
 plot.pkm <- function(x, n = 1000, seed = 1, col = "black", ...){
@@ -98,7 +98,7 @@ plot.pkm <- function(x, n = 1000, seed = 1, col = "black", ...){
 #' @param col_spec color to use for the specific model
 #' @param col_full color to use for the specific model
 #' @param ... to be sent to subfunctions
-#'
+#' @return a set of plots
 #' @export
 #'
 plot.pkmSet <- function(x, specificModel = NULL, n = 1000, 
@@ -214,7 +214,7 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use
 #' @param col color to use
-#'
+#' @return a parameter plot panel
 #' @export
 #'
 pkmParamPlot <- function(model, pk = "p", n, seed, col){
@@ -275,7 +275,7 @@ pkmParamPlot <- function(model, pk = "p", n, seed, col){
 #' @param col color to use
 #' @param axis_x logical of whether or not to plot the x axis
 #' @param axis_y logical of whether or not to plot the y axis
-#'
+#' @return a cell plot panel
 #' @export
 #'
 pkmSECellPlot <- function(model, specificCell, col, n, seed, 
@@ -348,7 +348,7 @@ pkmSECellPlot <- function(model, specificCell, col, n, seed,
 #' @param seed_full random number seed to use for the full model
 #' @param col_spec color to use for the specific model
 #' @param col_full color to use for the specific model
-#'
+#' @return a specific parameter plot panel
 #' @export
 #' 
 pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n, 
@@ -432,7 +432,7 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n,
 #' @param col_full color to use for the specific model
 #' @param axis_x logical of whether or not to plot the x axis
 #' @param axis_y logical of whether or not to plot the y axis
-#'
+#' @return a specific cell plot panel
 #' @export
 #' 
 pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell, 

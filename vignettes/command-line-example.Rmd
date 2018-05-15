@@ -27,14 +27,9 @@ was constructed using **GenEst** version `r vers` on `r today`.
 
 ## Installation
 
-To obtain the most recent version of **GenEst**, use the **devtools** package
-to download it from GitHub:
-
-```{r, eval = FALSE}
-install.packages("devtools")
-devtools::install_github("ddalthorp/GenEst")
-library(GenEst)
-```
+To obtain the most recent version of **GenEst**, download the most recent 
+version build from 
+[GitHub](https://github.com/ddalthorp/GenEst/tree/master/auxillary_code)
 
 ## Data
 
@@ -58,10 +53,10 @@ R packages) and then browse to the `inst/extdata/mockData` subfolder.
 ### Single Searcher Efficiency Model
 
 The central function for searcher efficiency analyses is `pkm`, which conducts
-a singular searcher efficiency analysis (*i.e.*, a singular set of `p` and
-`k` formulae and a singular size classification of carcasses). As a first
+a singular searcher efficiency analysis (*i.e.*, a singular set of $p$ and
+$k$ formulae and a singular size classification of carcasses). As a first
 example, we will ignore the size category and use intercept-only models for
-both `p` and `k`:
+both $p$ and $k$:
 
 ```{r}
 data_SE <- mockData$SearcherEfficiencyData
@@ -112,7 +107,7 @@ plot(pkModel)
 
 to visualize the model's output.
 
-You can generate random draws of the `p` and `k` parameters for each cell
+You can generate random draws of the $p$ and $k$ parameters for each cell
 grouping (in `pkModel` there are no predictors, so there is one cell grouping
 called "all") using the `rpk` function which, like other `r*` functions in
 **R** (*i.e.*, `rnorm`) takes the number of random draws (`n`) as the first
@@ -122,7 +117,7 @@ argument:
 rpk(n = 10, pkModel)
 ```
 
-You can complicate the `p` and `k` formulae independently
+You can complicate the $p$ and $k$ formulae independently
 
 ```{r}
 pkm(formula_p = p ~ Visibility, formula_k = k ~ HabitatType, data = data_SE,
@@ -130,7 +125,7 @@ pkm(formula_p = p ~ Visibility, formula_k = k ~ HabitatType, data = data_SE,
 )
 ```
 
-And you can fix `k` at a nominal value between 0 and 1 (inclusive) using the
+And you can fix $k$ at a nominal value between 0 and 1 (inclusive) using the
 `kFixed` argument
 
 ```{r}
@@ -147,7 +142,7 @@ and including, the provided model formulae (where "allowable" means that
 any interaction terms have all component terms included in the model).
 
 Consider the following model set analysis, where visibility and habitat type
-are included in the `p` formula but only habitat type is in the `k` formula,
+are included in the $p$ formula but only habitat type is in the $k$ formula,
 which generates a set of 10 models:
 
 ```{r}
@@ -205,13 +200,13 @@ names(pkmModSetSize[[1]])
 ### Single Carcass Persistence Model
 
 The central function for carcass persistence analyses is `cpm`, which conducts
-a singular carcass persistence analysis (*i.e.*, a singular set of `l` and
-`s` formulae and a singular size classification of carcasses). Note that
-we use `l` and `s` to reference `location` and `scale` as the parameters for
+a singular carcass persistence analysis (*i.e.*, a singular set of $l$ and
+$s$ formulae and a singular size classification of carcasses). Note that
+we use $l$ and $s$ to reference $location$ and $scale$ as the parameters for
 survival models, following `survreg`, however we also provide an alternative
-parameterization ("`ab`"). As a first example, we will ignore the size
-category, use intercept-only models for both `l` and `s`, and use the
-Weibull distribution:
+parameterization (using parameters $a$ and $b$, referred to as "`ab`" or
+"ppersist"). As a first example, we will ignore the size category, use 
+intercept-only models for both $l$ and $s$, and use the Weibull distribution:
 
 ```{r}
 data_CP <- mockData$CarcassPersistenceData
@@ -245,7 +240,7 @@ plot(cpModel)
 
 to visualize the model's output.
 
-You can generate random draws of the `l` and `s` (or `a` and `b`) parameters
+You can generate random draws of the $l$ and $s$ (or $a$ and $b$) parameters
 for each cell grouping (in `cpModel` there are no predictors, so there is one
 cell grouping called "all") using the `cpk` function which, like other `r*`
 functions in **R** (*i.e.*, `rnorm`) takes the number of random draws (`n`)
@@ -256,7 +251,7 @@ rcp(n = 10, cpModel)
 rcp(n = 10, cpModel, type = "ppersist")
 ```
 
-You can complicate the `l` and `s` formulae independently
+You can complicate the $l$ and $s$ formulae independently
 
 ```{r}
 cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = data_CP,
@@ -265,7 +260,7 @@ cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = data_CP,
 )
 ```
 
-Given that the exponential only has one parameter (`l`, location), a model
+Given that the exponential only has one parameter ($l$, location), a model
 for scale (`formula_s`) is not required:
 
 ```{r}
@@ -288,7 +283,7 @@ weibull, lognormal, loglogistic) and crosses them with the predictor models,
 but this can be restricted using the `dist` argument.
 
 Consider the following model set analysis, where visibility and season are
-included in the `l` formula but only visibility is in the `s` formula, and
+included in the $l$ formula but only visibility is in the $s$ formula, and
 all only the exponential and lognormal distributions are included, which
 generates a set of 15 models:
 
@@ -346,26 +341,71 @@ names(cpmModSetSize)
 names(cpmModSetSize[[1]])
 ```
 
-## Fatality Estimation
+## Generic Detection Probability
 
-### Detection Probability
+For the purposes of fatality estimation, we calculate carcass-specific
+detection probabilities (see below), which may be difficult to generalize,
+given the specific history of each observed carcass. Thus, we also provide
+a simple means to calculate generic detection probabilities that are 
+cell-specific, rather than carcass-specific. 
 
-When estimating fatalities, detection probability is determined for individual
-carcasses based on the dates when they are observed, associated covariates, the
-searcher efficiency and carcass persistence models, and the search schedule.
-
-The `rghat` function produces `n` random draws of detection probabilities
-(`ghat`) and arrival intervals (`Aj`) for each carcass.
+For any estimation of detection probability ($\hat{g}$), we need to have 
+singular SE and CP models to use. Here, we re-fit those singular models:
 
 ```{r}
-model_SE <- pkm(formula_p = p ~ Visibility * HabitatType,
-                       formula_k = k ~ 1, data = data_SE)
-model_CP <- cpm(formula_l = l ~ Season, formula_s = s ~ 1,
+model_SE <- pkm(formula_p = p ~ Visibility * HabitatType, formula_k = k ~ 1,
+             data = data_SE
+            )
+model_CP <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, 
              data = data_CP,
-             left = "LastPresentDecimalDays",
-             right = "FirstAbsentDecimalDays", dist = "weibull")
-data_CO <- mockData$CarcassObservationData
+             left = "LastPresentDecimalDays", 
+             right = "FirstAbsentDecimalDays", dist = "weibull"
+            )
+```
+
+The `rghatGeneric` function produces `n` random draws of generic (i.e., 
+cell-specific, not carcass-sepecific) detection probabilities for
+each of the possible carcass cell combinations across the SE and CP models. 
+The generic $\hat{g}$ is estimated according to a particular search schedule. 
+When we pass `averageSS` a full `data_SS` table like we have here, it will 
+assume the units are named as "unit" with a suffix indicator and will create
+the average search schedule across the units.
+
+```{r}
 data_SS <- mockData$SearchScheduleData
+avgSS <- averageSS(data_SS)
+ghatsGeneric <- rghatGeneric(n = 1000, avgSS, model_SE, model_CP, 
+                  seed_SE = 1, seed_CP = 1, kFill = NULL)
+```
+
+The output from `rghatGeneric` can be simply summarized
+```{r}
+summary(ghatsGeneric)
+```
+
+or plotted:
+
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+plot(ghatsGeneric)
+```
+
+
+## Fatality Estimation
+
+When estimating fatalities, detection probability is determined for individual
+carcasses based on the dates when they are observed, associated covariates, 
+the searcher efficiency and carcass persistence models, and the search
+schedule. The carcass-specific detection probabilities (as opposed to the 
+generic/cell-specific detection probabilities above) must therefore be
+calculated before estimating the total number of fatalities.
+
+### Carcass-Specific Detection Probability
+
+The `rghat` function produces `n` random draws of carcass-specific detection
+probabilities ($\hat{g}$) and arrival intervals ($A_j$):.
+
+```{r}
+data_CO <- mockData$CarcassObservationData
 ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP,
              seed_SE = 1, seed_CP = 1, unitCol = "Unit",
              dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
@@ -375,7 +415,7 @@ ghat <- ghatsAjs$ghat
 Aj <- ghatsAjs$Aj
 ```
 
-### Mortality Estimation
+### Fatalities
 
 We use the continuous binomial distribution to estimate the number of
 fatalities ($\hat{M}$) associated with each estimate of detection probability
@@ -415,18 +455,4 @@ which can then be used to calculate ($\hat{M}$):
 Mhat_viaMtilde <- calcMhat(Mtilde, DWP)
 ```
 
-Mortality estimates can be split into subcategories, such as species,
-visibility class, season, search interval, or other splitting covariate.
 
-For example,
-```{r}
-# SSdat <- SS(data_SS)
-# M_by_season <- calcSplits(M = Mhat, Aj = Aj, split_SS = "Season", SSdat = SSdat)
-# plot(M_by_season)
-# M_by_week <- calcSplits(M = Mhat, Aj = Aj,
-#  split_time = seq(0, max(SSdat$days), by = 7), SSdat = SSdat)
-# plot(M_by_week, rate = T)
-# M_by_Unit <- calcSplits(M = Mhat, Aj = Aj, split_CO = "Unit", COdat = data_CO)
-# plot(M_by_week, rate = T)
-# summary(M_by_week)
-```

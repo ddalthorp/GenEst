@@ -21,12 +21,8 @@ resulting from the authorized or unauthorized use of the software.
 
 ## Installation
 
-You can install **GenEst** from github using the `R` package `devtools`:
-
-```
-install.packages("devtools")
-devtools::install_github("ddalthorp/GenEst")
-```
+You can install the in-development version of **GenEst** from zipped source
+files in the `/auxillary_code` folder in this repository.
 
 ## GUI
 

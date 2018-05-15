@@ -5,17 +5,21 @@
 \title{Estimate the number of fatalities in each search interval throughout the
 monitoring period.}
 \usage{
-calcRate(M, Aj, days, searches)
+calcRate(M, Aj, data_SS = NULL, days = NULL, searches = NULL)
 }
 \arguments{
 \item{M}{Numeric array (ncarc x nsim) of estimated number of fatalities
 by observed carcass and simulation rep}
 
 \item{Aj}{Integer array (ncarc x nsim) of simulated arrival intervals for
-each observed carcass. Arrival intervals are given as integers j, indicating
-that the given carcass (indexed by row) arrived in the jth search interval
-in the given simulation rep (indexed by column). Arrival interval indices (j)
-are relative to indexed carcasses' search schedules.}
+each observed carcass. Arrival intervals are given as integers j, 
+indicating that the given carcass (indexed by row) arrived in the jth
+search interval in the given simulation rep (indexed by column). Arrival 
+interval indices (j) are relative to indexed carcasses' search schedules.}
+
+\item{data_SS}{\code{\link{SS}} object that contains formatted data for 
+calculating splits. Optional argument. Alternatively, user may provide 
+\code{days} and \code{searches}.}
 
 \item{days}{Vector of all dates that at least one unit was searched. Format
 is the number of days since the first search. For example, days = c(0, 7,
@@ -29,17 +33,18 @@ need be searched on every search date.}
 location (unit) where carcass i was found would be \code{days[c(1, 3, 5)]}.}
 }
 \value{
-Numeric array (nsim x nsearch) of estimated fatalities in each search
- interval. NOTE: The search at time t = 0 does not correspond to an interval,
- and all carcasses found at that time are assumed to have arrived prior to
- the monitoring period and are not included in mortality estimates, so
- \code{nsearch = length(days) - 1}.
+Numeric array (nsim x nsearch) of estimated fatalities in each
+ search interval. NOTE: The search at time t = 0 does not correspond to an
+ interval, and all carcasses found at that time are assumed to have arrived
+ prior to the monitoring period and are not included in mortality estimates
+ so \code{nsearch = length(days) - 1}.
 }
 \description{
 A carcass that is observed in a given search may have arrived at any time
 prior to that search, so carcass discovery time is often not a reliable
-estimate of carcass arrival time. For each observed carcass, \code{calcRate}
-takes into account the estimated probability of arrival in each possible
-arrival interval, adjusts by detection probability, and sums to estimate the
-estimated number of carcass arrivals in every search interval.
+estimate of carcass arrival time. For each observed carcass, 
+\code{calcRate} takes into account the estimated probability of arrival
+in each possible arrival interval, adjusts by detection probability, and 
+sums to estimate the estimated number of carcass arrivals in every search
+interval.
 }

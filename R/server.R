@@ -47,6 +47,11 @@ rv <- reactiveValues(
         CPdls = NULL, tabfig_CPdlsfig = NULL, tabfig_CPdlstab = NULL, 
 
         data_SS = NULL, colNames_SS = NULL, 
+
+        SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "), 
+        SStemp = NULL, avgSI = NULL, 
+        dateSearchedCol_g = NULL, gSearchInterval = NULL, gSearchMax = NULL, 
+
         data_DWP = NULL, colNames_DWP = NULL,
         data_CO = NULL, colNames_CO = NULL, removeCleanout = NULL,
 
@@ -54,10 +59,11 @@ rv <- reactiveValues(
         sizeclassCol = NULL, sizeclasses = NULL, sizeclass = NULL,
         colNames_all = NULL, nsizeclasses = NULL,
 
-        kFill = NULL, unitCol = NULL, 
+        kFill = NULL, kFill_g = NULL, unitCol = NULL, 
         dateFoundCol = NULL, dateSearchedCol = NULL,
         SEmodToUse = NULL, CPmodToUse = NULL, scis = NULL, rghatsAjs = NULL,
-        CL = 0.9, n = 1000
+        CL = 0.9, n = 1000, SEmodToUse_g = NULL, CPmodToUse_g = NULL, 
+        rghatsGeneric = NULL
 
       )
 
@@ -68,13 +74,19 @@ msg_SampleSizeSE <- NULL
 msg_RunModCP <- NULL
 msg_ModFailCP <- NULL
 msg_SampleSizeCP <- NULL
+msg_avgSSfail <- NULL
+msg_RunModg <- NULL
 msg_RunModM <- NULL
 msg_ModFailM <- NULL
+
+output$SStext <- renderText(rv$SStext)
 
 observeEvent(input$file_SE, {
   rv$data_SE <- read.csv(input$file_SE$datapath, stringsAsFactors = FALSE)
   rv$colNames_SE <- colnames(rv$data_SE)
-  rv$colNames_all <- updateColNames_all(rv$colNames_all, rv$colNames_SE)
+  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
+                       rv$colNames_CO
+                     )
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
   output$data_SE <- renderDataTable(datatable(rv$data_SE))
   updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
@@ -87,7 +99,9 @@ observeEvent(input$file_SE, {
 observeEvent(input$file_CP, {
   rv$data_CP <- read.csv(input$file_CP$datapath, stringsAsFactors = FALSE)
   rv$colNames_CP <- colnames(rv$data_CP)
-  rv$colNames_all <- updateColNames_all(rv$colNames_all, rv$colNames_CP)
+  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
+                       rv$colNames_CO
+                     )
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
   output$data_CP <- renderDataTable(datatable(rv$data_CP))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
@@ -104,6 +118,7 @@ observeEvent(input$file_SS, {
   output$data_SS <- renderDataTable(datatable(rv$data_SS))
   updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
   updateSelectizeInput(session, "dateSearchedCol", choices = rv$colNames_SS)
+  updateSelectizeInput(session, "dateSearchedCol_g", choices = rv$colNames_SS)
 })
 observeEvent(input$file_DWP, {
   rv$data_DWP <- read.csv(input$file_DWP$datapath, stringsAsFactors = FALSE)
@@ -113,7 +128,9 @@ observeEvent(input$file_DWP, {
 observeEvent(input$file_CO, {
   rv$data_CO <- read.csv(input$file_CO$datapath, stringsAsFactors = FALSE)
   rv$colNames_CO <- colnames(rv$data_CO)
-  rv$colNames_all <- updateColNames_all(rv$colNames_all, rv$colNames_CO)
+  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
+                       rv$colNames_CO
+                     )
   rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
@@ -463,6 +480,88 @@ observeEvent(input$tabfig_sizeclassCP, {
   }
 })
 
+observeEvent(input$useSSdata, {
+  rv$SS <- NULL
+  rv$dateSearchedCol_g <- input$dateSearchedCol_g
+  rv$SStemp <- tryCatch(
+                 averageSS(rv$data_SS, rv$dateSearchedCol_g), 
+                 error = function(x){NA}
+               )
+  if (is.na(rv$SStemp[1])){
+    msg_avgSSfail <- msgSSavgFail()
+  } else{
+    rv$SS <- rv$SStemp
+    rv$avgSI <-  mean(diff(rv$SS[-length(rv$SS)]))
+
+    updateNumericInput(session, "gSearchInterval", value = rv$avgSI)
+    updateNumericInput(session, "gSearchMax", value = max(rv$SS))
+    rv$SStext <- paste(rv$SS, collapse = ", ")
+    output$SStext <- renderText(rv$SStext)
+  }
+}) 
+observeEvent(input$useSSinputs, {
+  rv$gSearchInterval <- input$gSearchInterval
+  rv$gSearchMax <- input$gSearchMax
+  rv$SS <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
+  if (max(rv$SS) != rv$gSearchMax){
+    rv$SS <- c(rv$SS, rv$gSearchMax)
+  }
+  rv$SStext <- paste(rv$SS, collapse = ", ")
+  output$SStext <- renderText(rv$SStext)
+})
+
+observeEvent(input$runMod_g, {
+
+  msg_RunModg <- msgModRun("g")
+
+  rv$kFill_g <- NA
+  if (length(rv$obsCols_SE) == 1 | rv$kFixedChoice == 1){
+    rv$kFill_g <- input$kFill_g
+  }
+  rv$nsizeclasses <- length(rv$sizeclasses)
+  if (length(rv$nsizeclasses) == 1){
+    if (is.null(rv$sizeclasses)){
+      rv$sizeclasses <- "all"
+      rv$nsizeclasses <- 1
+     }
+  }
+
+  rv$n <- input$n
+  rv$rghatsGeneric <- vector("list", length = rv$nsizeclasses)
+  for (sci in 1:rv$nsizeclasses){
+
+    rv$SEmodToUse_g <- input[[sprintf("modelChoices_SE%d", sci)]]
+    rv$CPmodToUse_g <- input[[sprintf("modelChoices_CP%d", sci)]]
+    if (!grepl("s ~", rv$CPmodToUse_g)){
+      rv$CPmodToUse_g <- paste(rv$CPmodToUse_g, "; NULL", sep = "")
+    }
+    rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
+
+    rv$rghatsGeneric[[sci]] <- rghatGeneric(rv$n, rv$SS, 
+                                 rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
+                                 rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
+                                 kFill = rv$kFill)
+  }
+  names(rv$rghatsGeneric) <- rv$sizeclasses
+
+  removeNotification(msg_RunModg)
+  output$tab_g <- renderDataTable(summary(rv$rghatsGeneric[[1]]))
+  output$fig_g <- renderPlot(plot(rv$rghatsGeneric[[1]]))
+  updateSelectizeInput(session, "tabfig_sizeclassg", choices = rv$sizeclasses)
+  updateTabsetPanel(session, "analyses_g", "Table")
+
+})
+
+observeEvent(input$tabfig_sizeclassg, {
+  rv$tabfig_sizeclassg <- input$tabfig_sizeclassg
+  if ( length(rv$rghatsGeneric) > 0){
+    output$tab_g <- renderDataTable(
+                      summary(rv$rghatsGeneric[[rv$tabfig_sizeclassg]])
+                    )
+    output$fig_g <- renderPlot(plot(rv$rghatsGeneric[[rv$tabfig_sizeclassg]]))
+  }
+})
+
 observeEvent(input$runModM, {
 
   msg_RunModM <- msgModRun("M")
@@ -472,6 +571,7 @@ observeEvent(input$runModM, {
     rv$kFill <- input$kFill
   }
 
+  rv$nsizeclasses <- length(rv$sizeclasses)
   if (length(rv$nsizeclasses) == 1){
     if (is.null(rv$sizeclasses)){
       rv$sizeclasses <- "all"
@@ -482,7 +582,6 @@ observeEvent(input$runModM, {
   rv$dateFoundCol <- input$dateFoundCol
   rv$dateSearchedCol <- input$dateSearchedCol
   rv$n <- input$n
-  rv$nsizeclasses <- length(rv$sizeclasses)
   rv$removeCleanout <- input$removeCleanout
 
   rv$rghatsAjs <- vector("list", length = rv$nsizeclasses)

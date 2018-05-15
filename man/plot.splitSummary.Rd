@@ -17,12 +17,12 @@ fatality rates per unit time (\code{rate = TRUE}). If the splits do not
 include either a \code{split_SS} or \code{split_time} variable, the
 \code{rate} arg is ignored.}
 
-\item{...}{to be passed down}
+\item{...}{additional arguments to be passed down}
 }
 \description{
-The S3 \code{plot} method for \code{splitSummary} objects constructs boxplots
-of the mortality estimates for all combinations of splitting covariates
-summarized in the \code{splits} variable.
+The S3 \code{plot} method for \code{splitSummary} objects constructs 
+ boxplots of the mortality estimates for all combinations of splitting 
+ covariates summarized in the \code{splits} variable.
 }
 \details{
 For 1-covariate splits, box plots showing median, IQR, and confidence
