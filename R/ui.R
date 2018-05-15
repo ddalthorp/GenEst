@@ -182,26 +182,43 @@ tabPanel("Analyses",
           value = 7, min = 1, max = 400, step = 1),
         numericInput("gSearchMax", "Final Seach (day):", 
           value = 364, min = 1, max = 1000, step = 1),
+        actionButton("useSSinputs", "Use Generic Search Schedule Inputs"),
         conditionalPanel(
           condition = "output.kFillNeed == 'yes'",
-          numericInput("kFill", "Assumed k:", value = 0.5, 
+          br(), br(),
+          numericInput("kFill_g", "Assumed k:", value = 0.5, 
             min = 0, max = 1, step = 0.001
           )
         ),
-        actionButton("useSSinputs", "Use Generic Search Schedule Inputs"),
-        br(), br(),
-        HTML("<strong><u> Search Schedule: </u></strong>"),
-        br(), br(), 
-        textOutput("SStext"),
         conditionalPanel(
           condition = 
             "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
              output.sizeclassesSE == output.sizeclassesCP",
           br(), br(),
-          actionButton("runModg", "Estimate Detection Probability")
+          actionButton("runMod_g", "Estimate Detection Probability")
+        ),
+        conditionalPanel(condition = "input.runMod_g > 0", 
+          br(), br(), 
+          HTML("<big><strong><u> Table & Figure Selection: 
+            </u></strong></big>"
+          ), br(), br(),
+          selectizeInput("tabfig_sizeclassg", "Size Class:", 
+            " ", multiple = FALSE
+          )
         )
       ),
-      mainPanel(br())
+      mainPanel(
+        tabsetPanel(id = "analyses_g",
+          tabPanel("Schedule",         
+            br(), br(),
+            HTML("<big><strong><u> Search Schedule: </u></strong></big>"),
+            br(), br(), 
+            textOutput("SStext")
+          ),
+          tabPanel("Table", br(), br(), dataTableOutput("tab_g")),
+          tabPanel("Figure", plotOutput("fig_g"))
+        )
+      )
     ),
     tabPanel("Fatality Estimation", br(), br(),
       sidebarPanel(width = 3, 

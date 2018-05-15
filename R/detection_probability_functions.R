@@ -288,10 +288,9 @@ rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
   }
   preds_SE <- model_SE$predictors
   preds_CP <- model_CP$predictors
-  preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
-
   data_SE <- model_SE$data
   data_CP <- model_CP$data
+  preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
 
 
   sim_SE <- rpk(n, model_SE, seed_SE, kFill)
@@ -572,6 +571,14 @@ summary.ghatGeneric <- function(object, ..., CL = 0.9){
   npred <- length(predsByCell[[1]])
 
   predsTab <- preds[ , -grep("CellNames", colnames(preds))]
+  predsTab <- as.matrix(predsTab, ncol = npred, nrow = ncell)
+  predNames <- colnames(preds)[-grep("CellNames", colnames(preds))]
+  if (length(predNames) == 1 & predNames[1] == "group" & cells[1] == "all"){
+    predNames <- "Group"
+  }
+
+  colnames(predsTab) <- predNames
+
   gTab <- matrix(NA, ncell, 2)
   for (celli in 1:ncell){
     gspec <- ghats[[celli]]
@@ -582,7 +589,7 @@ summary.ghatGeneric <- function(object, ..., CL = 0.9){
     gTabi <- c(cells[celli], gsummary)
     gTab[celli, ] <- gTabi
   }
-  colnames(gTab) <- c("CellNames", "ghat")
+  colnames(gTab) <- c("CellNames", "DetectionProbability")
   out <- data.frame(predsTab, gTab)
   return(out)
 }
