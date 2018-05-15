@@ -47,7 +47,7 @@ University](https://oregonstate.edu/).
 ## Authors
 
 Daniel Dalthorp ([USGS](https://www.usgs.gov/)), Juniper Simonis ([DAPPER
-Stats](www.dapperstats.com)), Lisa Madsen ([OSU](https://oregonstate.edu/)),
+Stats](https://www.dapperstats.com)), Lisa Madsen ([OSU](https://oregonstate.edu/)),
 Paul Rabie ([WEST](http://www.westconsultants.com/)), Jared Studyvin
 ([WEST](http://www.westconsultants.com/)), Robert Wolpert 
 ([Duke](http://www2.stat.duke.edu/~rlw/)), Franzi Korner-Nievergelt 
