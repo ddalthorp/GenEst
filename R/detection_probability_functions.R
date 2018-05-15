@@ -207,7 +207,6 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
 #'
 whichCleanout <- function(data_CO, data_SS, unitCol, timeFoundCol,
                           timeSearchedCol){
-
   ncarc <- nrow(data_CO)
   cleanoutTF <- rep(NA, ncarc)
   for (carci in 1:ncarc){
@@ -238,6 +237,7 @@ kFillPropose <- function(model){
   }
   return(proposal)
 }
+
 
 #' Generic ghat estimation for a combination of SE model and CP model 
 #'   under a given search schedule
@@ -342,10 +342,12 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 
   if (dist == "exponential"){
     pdb <- param_CP[ , "pdb"]
+
     pda <- 1/pdb
     pdb0 <- exp(mean(log(pdb)))
     pda0 <- 1/pdb0
   } else {
+
     pda <- param_CP[ , "pda"]
     pdb <- param_CP[ , "pdb"]
     pdb0 <- exp(mean(log(pdb)))
@@ -399,6 +401,7 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 
   if (nsearch > 10){
     iskip <- min(which(cumsum(ggnm)/sum(ggnm) > 0.99)) + 1
+
     gadj <- sum(ggnm)/sum(ggnm[1:iskip])
   } else {
     iskip <- maxmiss
@@ -592,4 +595,5 @@ summary.ghatGeneric <- function(object, ..., CL = 0.9){
   colnames(gTab) <- c("CellNames", "DetectionProbability")
   out <- data.frame(predsTab, gTab)
   return(out)
+
 }
