@@ -1,11 +1,12 @@
 #' Plot results of a single pk model
 #'
 #' @param x ghatGeneric output
+#' @param ... to be passed down
 #' @param CL confidence level to use
 #' @return a plot
 #' @export
 #'
-plot.ghatGeneric <- function(x, CL = 0.9){
+plot.ghatGeneric <- function(x, ..., CL = 0.9){
 
   ghats <- x$ghat
   cells <- names(ghats)
