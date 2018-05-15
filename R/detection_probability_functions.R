@@ -557,7 +557,7 @@ averageSS <- function(data_SS, dateSearchedCol = "DateSearched"){
 #' @param ... arguments to be passed down
 #' @param CL confidence level
 #'
-#' @return a summary table of ghat values (means and confidence bounds) for 
+#' @return a summary table of ghat values (medians and confidence bounds) for 
 #'   each cell combination within the ghatGeneric list
 #' @export
 #'
@@ -582,10 +582,10 @@ summary.ghatGeneric <- function(object, ..., CL = 0.9){
   gTab <- matrix(NA, ncell, 2)
   for (celli in 1:ncell){
     gspec <- ghats[[celli]]
-    gmean <- round(mean(gspec), 3)
+    gmedian <- round(median(gspec), 3)
     gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
     gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
-    gsummary <- paste0(gmean, " [", gCLlow, " - ", gCLup, "]")
+    gsummary <- paste0(gmedian, " [", gCLlow, " - ", gCLup, "]")
     gTabi <- c(cells[celli], gsummary)
     gTab[celli, ] <- gTabi
   }

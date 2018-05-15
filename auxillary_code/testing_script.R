@@ -7,10 +7,11 @@ data_CO <- mockData$CarcassObservationData
 data_SS <- mockData$SearchScheduleData
 
 
-model_SE <- pkm(formula_p = p ~ 1 * 1, formula_k = k ~ 1,
+model_SE <- pkm(formula_p = p ~ HabitatType, 
+             formula_k = k ~ Visibility + HabitatType,
              data = data_SE
             )
-model_CP <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, 
+model_CP <- cpm(formula_l = l ~ Visibility + Season, formula_s = s ~ 1, 
              data = data_CP,
              left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays", dist = "weibull"

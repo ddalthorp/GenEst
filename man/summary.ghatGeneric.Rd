@@ -15,7 +15,7 @@ ghatGeneric values for a cell in the model combinations)}
 \item{CL}{confidence level}
 }
 \value{
-a summary table of ghat values (means and confidence bounds) for 
+a summary table of ghat values (medians and confidence bounds) for 
   each cell combination within the ghatGeneric list
 }
 \description{

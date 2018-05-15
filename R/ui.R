@@ -82,7 +82,7 @@ tabPanel("Analyses",
         ),
         conditionalPanel(condition = "input.obsCols_SE != null",
           br(), 
-          actionButton("runMod_SE", "Run Searcher Efficiency Model")          
+          actionButton("runMod_SE", "Run Model")          
         ),
         conditionalPanel(condition = "input.runMod_SE > 0", 
           br(), br(),
@@ -131,7 +131,7 @@ tabPanel("Analyses",
         conditionalPanel(
           condition = "input.ltp != null & input.fta != null",
           br(),
-          actionButton("runMod_CP", "Run Carcass Persistence Model")
+          actionButton("runMod_CP", "Run Model")
         ),
         conditionalPanel(condition = "input.runMod_CP > 0", 
           br(), br(), 
@@ -174,7 +174,7 @@ tabPanel("Analyses",
           "Date Searched Column in Search Schedule Data (if applicable):",  
           c("No data input yet"), multiple = FALSE
         ),
-        actionButton("useSSdata", "Use Average Observed Search Schedule"),
+        actionButton("useSSdata", "Create Schedule"),
         br(), br(),
         HTML("<strong><u> Generic Search Schedule Inputs: </u></strong>"),
         br(), br(),
@@ -182,7 +182,7 @@ tabPanel("Analyses",
           value = 7, min = 1, max = 400, step = 1),
         numericInput("gSearchMax", "Final Seach (day):", 
           value = 364, min = 1, max = 1000, step = 1),
-        actionButton("useSSinputs", "Use Generic Search Schedule Inputs"),
+        actionButton("useSSinputs", "Create Schedule"),
         conditionalPanel(
           condition = "output.kFillNeed == 'yes'",
           br(), br(),
@@ -195,7 +195,7 @@ tabPanel("Analyses",
             "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
              output.sizeclassesSE == output.sizeclassesCP",
           br(), br(),
-          actionButton("runMod_g", "Estimate Detection Probability")
+          actionButton("runMod_g", "Estimate")
         ),
         conditionalPanel(condition = "input.runMod_g > 0", 
           br(), br(), 
@@ -213,7 +213,7 @@ tabPanel("Analyses",
             br(), br(),
             HTML("<big><strong><u> Search Schedule: </u></strong></big>"),
             br(), br(), 
-            textOutput("SStext")
+            shinydashboard::box(textOutput("SStext"))
           ),
           tabPanel("Table", br(), br(), dataTableOutput("tab_g")),
           tabPanel("Figure", plotOutput("fig_g"))
@@ -247,7 +247,7 @@ tabPanel("Analyses",
             "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
              output.sizeclassesSE == output.sizeclassesCP",
           br(), 
-          actionButton("runModM", "Estimate Fatalities")
+          actionButton("runModM", "Estimate")
         )
       ),
       mainPanel(br())
