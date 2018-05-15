@@ -260,9 +260,10 @@ kFillPropose <- function(model){
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param kFill value to fill in for missing k when not existing in the model
-#' @return ghatGeneric object that is a list of ghat estimates, with one 
-#'   element in the list correspondingto each of the cells from the 
-#'   cross-model combination
+#' @return ghatGeneric object that is a list of [1] a list of ghat estimates,
+#'    with one element in the list corresponding to each of the cells from the 
+#'    cross-model combination and [2] a table of predictors and cell names 
+#'    associated with the ghats
 #' @export
 #'
 rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
@@ -307,8 +308,9 @@ rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
     ghat[[celli]] <- ghatGenericCell(SS, param_SE, param_CP, dist, kFill)
   }  
   names(ghat) <- preds$CellNames
-  class(ghat) <- c("ghatGeneric", "list")
-  return(ghat)
+  out <- list("ghat" = ghat, "predictors" = preds)
+  class(out) <- c("ghatGeneric", "list")
+  return(out)
 }
 
 #' Generic ghat estimation for a single cell of a combination of SE model and 
@@ -562,23 +564,25 @@ averageSS <- function(data_SS, dateSearchedCol = "DateSearched"){
 #'
 summary.ghatGeneric <- function(object, ..., CL = 0.9){
 
-  ghats <- object
+  ghats <- object$ghat
+  preds <- object$predictors
   cells <- names(ghats)
   ncell <- length(cells)
   predsByCell <- strsplit(cells, "\\.")
   npred <- length(predsByCell[[1]])
-  out <- matrix(NA, ncell, 2)
 
+  predsTab <- preds[ , -grep("CellNames", colnames(preds))]
+  gTab <- matrix(NA, ncell, 2)
   for (celli in 1:ncell){
     gspec <- ghats[[celli]]
     gmean <- round(mean(gspec), 3)
     gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
     gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
     gsummary <- paste0(gmean, " [", gCLlow, " - ", gCLup, "]")
-    outi <- c(cells[celli], gsummary)
-    out[celli, ] <- outi
+    gTabi <- c(cells[celli], gsummary)
+    gTab[celli, ] <- gTabi
   }
-  colnames(out) <- c("CellNames", "ghat")
-  out <- data.frame(out)
+  colnames(gTab) <- c("CellNames", "ghat")
+  out <- data.frame(predsTab, gTab)
   return(out)
 }

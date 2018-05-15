@@ -41,7 +41,7 @@ modelSetSize_CP <- cpmSetSize(formula_l = l ~ Visibility*Season,
                      sizeclassCol = "Size"
                    )
 
-modelSizeSelections_SE <- rep("p ~ 1; k ~ 1", 4)
+modelSizeSelections_SE <- rep("p ~ Visibility; k ~ HabitatType", 4)
 modelSizeSelections_CP <- rep("dist: exponential; l ~ 1; NULL", 4)
 
 ghatsGenericSize <- rghatGenericSize(n = 1000, avgSS, modelSetSize_SE, 

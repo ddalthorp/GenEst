@@ -24,9 +24,10 @@ rghatGeneric(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
 \item{kFill}{value to fill in for missing k when not existing in the model}
 }
 \value{
-ghatGeneric object that is a list of ghat estimates, with one 
-  element in the list correspondingto each of the cells from the 
-  cross-model combination
+ghatGeneric object that is a list of [1] a list of ghat estimates,
+   with one element in the list corresponding to each of the cells from the 
+   cross-model combination and [2] a table of predictors and cell names 
+   associated with the ghats
 }
 \description{
 The g estimated by \code{rghatGeneric} is a generic aggregate detection 
