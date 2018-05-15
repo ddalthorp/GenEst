@@ -22,6 +22,9 @@ pkmSECellPlot(model, specificCell, col, n, seed, axis_y = TRUE,
 
 \item{axis_x}{logical of whether or not to plot the x axis}
 }
+\value{
+a cell plot panel
+}
 \description{
 Plot cell-specific decay curve for searcher efficiency
 }

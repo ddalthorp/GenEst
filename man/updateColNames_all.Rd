@@ -4,15 +4,17 @@
 \alias{updateColNames_all}
 \title{Updates the string of column names that are in all the needed tables}
 \usage{
-updateColNames_all(colNames_all, colNames_new)
+updateColNames_all(colnames_SE, colnames_CP, colnames_CO)
 }
 \arguments{
-\item{colNames_all}{current vector of column names in all needed tables}
+\item{colnames_SE}{column names for the searcher efficiency}
 
-\item{colNames_new}{column names of the new table to bring in}
+\item{colnames_CP}{column names for the carcass persistence}
+
+\item{colnames_CO}{column names for the carcass observations}
 }
 \value{
-updated colNames_all
+possible column names
 }
 \description{
 Updates the string of column names that are in all the needed tables

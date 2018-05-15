@@ -24,6 +24,9 @@
 
 \item{...}{to be sent to subfunctions}
 }
+\value{
+a set of plots
+}
 \description{
 Plot results of a pk model set
 }

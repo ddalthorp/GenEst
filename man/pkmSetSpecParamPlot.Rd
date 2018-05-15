@@ -25,6 +25,9 @@ pkmSetSpecParamPlot(modelSet, specificModel, pk = "p", n, seed_spec,
 
 \item{col_full}{color to use for the specific model}
 }
+\value{
+a specific parameter plot panel
+}
 \description{
 Plot parameter box plots for each cell within a model for either p or k 
   with comparison to the cellwise model
