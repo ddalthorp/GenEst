@@ -4,10 +4,12 @@
 \alias{plot.ghatGeneric}
 \title{Plot results of a single pk model}
 \usage{
-\method{plot}{ghatGeneric}(x, CL = 0.9)
+\method{plot}{ghatGeneric}(x, ..., CL = 0.9)
 }
 \arguments{
 \item{x}{ghatGeneric output}
+
+\item{...}{to be passed down}
 
 \item{CL}{confidence level to use}
 }
