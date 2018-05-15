@@ -470,7 +470,7 @@ summary.splitFull <- function(object, CL = 0.95, ...){
 #'  fatality rates per unit time (\code{rate = TRUE}). If the splits do not
 #'  include either a \code{split_SS} or \code{split_time} variable, the
 #'  \code{rate} arg is ignored.
-#'
+#' @param ... additional arguments to be passed down
 #' @export
 #'
 plot.splitSummary <- function(x, rate = FALSE, ...){
