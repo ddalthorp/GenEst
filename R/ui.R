@@ -272,9 +272,9 @@ tabPanel("About",
         Jared Studyvin
           <a href = 'http://www.west-inc.com'>(WEST)</a>, 
         Franzi Korner-Nievergelt
-          <a href = 'http://http://www.oikostat.ch/'>(oikostat)</a>, 
+          <a href = 'http://www.oikostat.ch/'>(oikostat)</a>, 
         and Robert Wolpert
-          <a href = 'http://http://www2.stat.duke.edu/~rlw/'>(Duke)</a>"),
+          <a href = 'http://www2.stat.duke.edu/~rlw/'>(Duke)</a>"),
       br(), br(),
       HTML("GenEst is a tool for estimating fatalities from efficiency, 
         persistence, and carcass data."
