@@ -21,12 +21,47 @@ resulting from the authorized or unauthorized use of the software.
 
 ## Installation
 
-You can install the in-development version of **GenEst** from zipped source
-files in the `/auxillary_code` folder in this repository.
+You can install the in-development version of **GenEst** using a few different
+options, all of which assume you have installed 
+[**R**](https://www.r-project.org/)
+
+### Windows Base User
+
+Windows users who are not familiar with R development should [download the 
+zipped package](https://github.com/ddalthorp/GenEst/raw/master/GenEst.zip) and
+then in an instance of **R** run 
+```
+utils:::menuInstallLocal()
+```
+and point to the zipped file. Once it is finished installing, run
+
+```
+install.packages("devtools")
+devtools::install_deps(paste0(.libPaths()[1], "/GenEst"))
+```
+
+### Windows Development-Savvy User
+
+Windows users who are familiar with R development should first ensure that
+they have [Rtools](https://cran.r-project.org/bin/windows/Rtools/) installed 
+on their machine and then can simply run
+```
+install.packages("devtools")
+devtools::install_github("ddalthorp/GenEst")
+```
+
+### Mac/Linux User
+
+Mac and Linux users can simply run
+
+```
+install.packages("devtools")
+devtools::install_github("ddalthorp/GenEst")
+```
 
 ## GUI
 
-Having installed **GenEst**, you can launch the app by running
+Having installed **GenEst**, you can launch the app in **R** by running
 
 ```
 GenEst::runGenEst()
@@ -55,4 +90,36 @@ Paul Rabie ([WEST](http://www.westconsultants.com/)), Jared Studyvin
 ([USGS](https://www.usgs.gov/)).
 
 <br><br>
-<img src = 'inst/app/www/blm.jpg' height = '65'> <img src = 'inst/app/www/usgs.png' height = '65'> <img src = 'inst/app/www/nrel.jpg' height = '65'> <img src = 'inst/app/www/west.png' height = '65'> <img src = 'inst/app/www/bci.jpg' height = '65'> <img src = 'inst/app/www/awwi.png' height = '65'> <img src = 'inst/app/www/avangrid.png' height = '65'> <img src = 'inst/app/www/dapper.png' height = '65'> <img src = 'inst/app/www/oikostat.jpg' height = '65'> <img src = 'inst/app/www/osu.jpg' height = '65'> <img src = 'inst/app/www/duke.png' height = '65'>
+<a href="https://www.blm.gov/">
+<img src = 'inst/app/www/blm.jpg' height = '65'> 
+</a>
+<a href="https://www.usgs.gov/">
+<img src = 'inst/app/www/usgs.png' height = '65'> 
+</a>
+<a href="https://www.nrel.gov/">
+<img src = 'inst/app/www/nrel.jpg' height = '65'> 
+</a>
+<a href="http://www.westconsultants.com/">
+<img src = 'inst/app/www/west.png' height = '65'> 
+</a>
+<a href="http://www.batcon.org/">
+<img src = 'inst/app/www/bci.jpg' height = '65'>
+</a>
+<a href="https://awwi.org/">
+<img src = 'inst/app/www/awwi.png' height = '65'> 
+</a>
+<a href="http://www.avangridrenewables.us/">
+<img src = 'inst/app/www/avangrid.png' height = '65'> 
+</a>
+<a href="http://www.dapperstats.com">
+<img src = 'inst/app/www/dapper.png' height = '65'> 
+</a>
+<a href="http://www.oikostat.ch/">
+<img src = 'inst/app/www/oikostat.jpg' height = '65'> 
+</a>
+<a href="https://www.osu.edu/">
+<img src = 'inst/app/www/osu.jpg' height = '65'> 
+</a>
+<a href="https://www.duke.edu/">
+<img src = 'inst/app/www/duke.png' height = '65'>
+</a>

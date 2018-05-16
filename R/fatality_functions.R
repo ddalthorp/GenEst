@@ -9,7 +9,7 @@
 #'
 rXtilde <- function(n = 1, ghat, seed = 1){
   set.seed(seed)
-  Xtilde <- cbinom::rcbinom(n, 1 / ghat, ghat)
+  Xtilde <- rcbinom(n, 1 / ghat, ghat)
   return(Xtilde)
 }
 

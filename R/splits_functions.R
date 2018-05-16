@@ -371,7 +371,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     }
   }
   #protection against unintended loss of attr's
-  splits <- sticky::sticky(splits) 
+  splits <- sticky(splits) 
   attr(splits, "vars") <- c(split_h$name, split_v$name)
   attr(splits, "type") <- c(split_h$type, split_v$type)
   if (split_h$type %in% c("time", "SS")){
@@ -421,8 +421,7 @@ summary.splitFull <- function(object, CL = 0.95, ...){
     sumry <- c(mean = mean(splits), quantile(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
-    sumry <- cbind(mean = rowMeans(splits),
-      matrixStats::rowQuantiles(splits, p = probs))
+    sumry <- cbind(mean = rowMeans(splits), rowQuantiles(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
       splits <- lapply(splits, function(x){
@@ -430,13 +429,13 @@ summary.splitFull <- function(object, CL = 0.95, ...){
       })
     }
     sumry <- lapply(splits, function(x){
-      cbind(mean = rowMeans(x), matrixStats::rowQuantiles(x, p = probs))
+      cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))
     })
   } else {
     stop(paste("length(attr(splits, 'vars')) > 2. ",
                "At most two split variables are allowed."))
   }
-  sumry <- sticky::sticky(sumry)
+  sumry <- sticky(sumry)
   attr(sumry, "CL") <- CL
   attr(sumry, "vars") <- attr(splits, "vars")
   attr(sumry, "type") <- attr(splits, "type")
@@ -501,17 +500,14 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       hwid <- deltaT/2
       xlim <- range(times)
       ylim <- range(
-                matrixStats::rowQuantiles(splits[[vi]], 
-                  probs = c(alpha/2, 1 - alpha/2)
+                rowQuantiles(splits[[vi]], probs = c(alpha/2, 1 - alpha/2)
                 )/deltaT
               )
     } else {
       hwid <- rep(0.45, nlevel_h) # half-width of boxes
       xlim <- c(1, nlevel_h) + hwid[1] * c(-1, 1)
       ylim <- range(
-                matrixStats::rowQuantiles(splits[[vi]], 
-                  probs = c(alpha/2, 1 - alpha/2)
-                )
+                rowQuantiles(splits[[vi]], probs = c(alpha/2, 1 - alpha/2))
               )
     }
     plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F, xlab = "", 
@@ -534,7 +530,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       lines(xx[hi] + hwid[hi]/2 * c(1, -1), rep(qtls[5], 2))
     }
     axis(2, las = 1)
-    box()
+    
     ymid <- mean(par("usr")[3:4])
     if (!rate | vartype[1] == "CO"){
       if (vartype[1] == "time"){
