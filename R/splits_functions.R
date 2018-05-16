@@ -421,7 +421,7 @@ summary.splitFull <- function(object, CL = 0.95, ...){
     sumry <- c(mean = mean(splits), quantile(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
-    sumry <- cbind(mean = rowMeans(splits), rowQuantiles(splits, p = probs))
+    sumry <- cbind(mean = rowMeans(splits), rowQuantiles(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
       splits <- lapply(splits, function(x){
@@ -429,7 +429,7 @@ summary.splitFull <- function(object, CL = 0.95, ...){
       })
     }
     sumry <- lapply(splits, function(x){
-      cbind(mean = rowMeans(x), rowQuantiles(x, p = probs))
+      cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))
     })
   } else {
     stop(paste("length(attr(splits, 'vars')) > 2. ",
