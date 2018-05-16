@@ -21,12 +21,41 @@ resulting from the authorized or unauthorized use of the software.
 
 ## Installation
 
-You can install the in-development version of **GenEst** from zipped source
-files in the `/auxillary_code` folder in this repository.
+You can install the in-development version of **GenEst** using a few different
+options, all of which assume you have installed 
+[**R**](https://www.r-project.org/)
+
+* Windows users who are not familiar with R development should [download the 
+zipped package](https://github.com/ddalthorp/GenEst/raw/master/GenEst.zip) and
+then in an instance of **R**, run 
+```
+utils:::menuInstallLocal()
+```
+and point to the zipped file. Once it is finished installing, run
+
+```
+install.packages("devtools")
+devtools::install_deps(paste0(.libPaths()[1], "/GenEst"))
+```
+
+* Windows users who are familiar with R development should first ensure that
+they have [Rtools](https://cran.r-project.org/bin/windows/Rtools/) installed 
+on their machine, and then they can simply run
+```
+install.packages("devtools")
+devtools::install_github("ddalthorp/GenEst")
+```
+
+* Mac and Linux users should be able to simply run
+
+```
+install.packages("devtools")
+devtools::install_github("ddalthorp/GenEst")
+```
 
 ## GUI
 
-Having installed **GenEst**, you can launch the app by running
+Having installed **GenEst**, you can launch the app in **R** by running
 
 ```
 GenEst::runGenEst()
