@@ -267,8 +267,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     }
     split_h <- list()
     split_h[["name"]] <- split_SS
-    SSsum <- cumsum(table(data_SS[[split_h$name]]))
-    tmp <- SSsum[order(unique(data_SS[[split_h$name]]))]
+    tmp <- cumsum(table(data_SS[[split_h$name]])[unique(data_SS[[split_h$name]])])
     split_h[["vals"]] <- c(0, data_SS$days[tmp])
     split_h[["level"]] <- unique(data_SS[[split_h$name]])
     split_h[["nlev"]] <- length(split_h$level)
