@@ -3,22 +3,24 @@
 \docType{data}
 \name{windClearedPlotData}
 \alias{windClearedPlotData}
-\title{Description of the dataset}
+\title{Synthetic data set based on searches of 60 m cleared plots of 23 out of 100
+  turbines at a theoretical site.}
 \format{A list with 5 items:
 \describe{
   \item{SE_trials}{Searcher efficiency trial data}
   \item{CP_trials}{Carcass persistence trial data}
-  \item{SS_23cleared60}{Search schedule data}
-  \item{DWP_23cleared60}{Density weighted proportion of area searched data}
-  \item{CO_23cleared60}{Carcass observations}  
+  \item{SS_params}{Search schedule parameters}
+  \item{DWP_data}{Density weighted proportion of area searched}
+  \item{CO_data}{Carcass observations}
 }}
 \source{
-Source name
+Mock
 }
 \usage{
 windClearedPlotData
 }
 \description{
-A dataset containing SE, CP, SS, DWP, and CO data.
+Complete data set for fatality estimation at a wind power facility. 
+  Included are SE, CP, SS, DWP, and CO data.
 }
 \keyword{datasets}

@@ -155,8 +155,8 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
       p <- params_SE[[aj]][ , "p"]
       k <- params_SE[[aj]][ , "k"]
       kMat <- matrix(c(1 + numeric(n), rep(k, oi - aj)), nrow = n)
-      powk <- matrixStats::rowCumprods(kMat)
-      pRowProds <- matrixStats::rowProds(1 - p * powk)
+      powk <- rowCumprods(kMat)
+      pRowProds <- rowProds(1 - p * powk)
       pfind <-  pRowProds * p * k * powk[ , dim(powk)[2]]
       if (aj == oi){
         pfind <- p
@@ -166,7 +166,7 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
     parrive <- diff(c(t0[1], t1[1:oi])) / t1[oi]
     pAjgOi <- pOigAj * parrive
     pAjgOi <- t(t(pAjgOi) / colSums(pAjgOi))
-    Aj[oi, ] <- rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(n)) + 1
+    Aj[oi, ] <- rowSums(rowCumsums(t(pAjgOi)) < runif(n)) + 1
   }
 
   ghat <- rep(NA, length = n)
@@ -423,13 +423,13 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
   } else {
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(n, maxmiss + 1))
     powk[ , 1] <- 1
-    powk <- matrixStats::rowCumprods(powk)
+    powk <- rowCumprods(powk)
     val <- 1 - (pk[ , 1] * powk[ , 1:maxmiss])
     if (is.null(dim(val))){
       val <- matrix(val, nrow = 1)
     }
     pfind.si <- pk[ , 1] * powk * 
-                cbind(rep(1, n), matrixStats::rowCumprods(val))
+                cbind(rep(1, n), rowCumprods(val))
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
