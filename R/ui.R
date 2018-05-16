@@ -213,7 +213,7 @@ tabPanel("Analyses",
             br(), br(),
             HTML("<big><strong><u> Search Schedule: </u></strong></big>"),
             br(), br(), 
-            box(textOutput("SStext"))
+            shinydashboard::box(textOutput("SStext"))
           ),
           tabPanel("Table", br(), br(), dataTableOutput("tab_g")),
           tabPanel("Figure", plotOutput("fig_g"))

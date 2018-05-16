@@ -10,21 +10,12 @@
 #'   column fluidRow textOutput
 #' @importFrom htmltools div img br HTML
 #' @importFrom DT dataTableOutput renderDataTable datatable
-#' @importFrom graphics axis mtext par plot points rect text lines polygon
+#' @importFrom graphics axis mtext par plot points rect text box lines polygon
 #' @importFrom grDevices rgb devAskNewPage
 #' @importFrom stats .getXlevels approxfun delete.response formula median
 #'   model.matrix na.omit optim pgamma pnorm qnorm quantile reformulate
 #'   runif terms update.formula weighted.mean as.formula
 #' @importFrom utils combn packageDescription read.csv
-#' @importFrom survival Surv survfit survreg psurvreg dsurvreg
-#' @importFrom mvtnorm rmvnorm
-#' @importFrom gsl hyperg_2F1
-#' @importFrom matrixStats rowCumprods rowProds rowCumsums rowDiffs 
-#'   rowQuantiles
-#' @importFrom cbinom rcbinom
-#' @importFrom sticky sticky
-#' @importFrom shinydashboard box
-#'
 
 #' @title Generalized estimation of fatalities
 #'

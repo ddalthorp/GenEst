@@ -48,9 +48,9 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
   event[which(is.na(t2))] <- 0
   event[which(t1 == t2)] <- 1
   t1[which(t1 == 0)] <- 0.0001
-  survobj <- Surv(t1, t2, event, "interval")
+  survobj <- survival::Surv(t1, t2, event, "interval")
   form <- formula("survobj ~ 1")
-  survfit <- survfit(form, data = observations)
+  survfit <- survival::survfit(form, data = observations)
 
   plot(survfit, ylim = c(0, 1), xlim = c(0, max_x),  
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
@@ -391,9 +391,9 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, fullModel,
   event[which(is.na(t2))] <- 0
   event[which(t1 == t2)] <- 1
   t1[which(t1 == 0)] <- 0.0001
-  survobj <- Surv(t1, t2, event, "interval")
+  survobj <- survival::Surv(t1, t2, event, "interval")
   form <- formula("survobj ~ 1")
-  survfit <- survfit(form, data = observations)
+  survfit <- survival::survfit(form, data = observations)
 
   plot(survfit, ylim = c(0, 1), xlim = c(0, max_x),  
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)

@@ -436,11 +436,11 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 
   powk <- matrix(k, nrow = ncell, ncol = maxmisses + 1)
   powk[ , 1] <- 1
-  powk <- rowCumprods(powk)
+  powk <- matrixStats::rowCumprods(powk)
 
   pmiss <- matrix(1 - (p * powk[ , 1:(maxmisses + 1)]), nrow = ncell)
-  pmiss <- rowCumprods(pmiss)
-  pfind <- rowDiffs(1 - pmiss)
+  pmiss <- matrixStats::rowCumprods(pmiss)
+  pfind <- matrixStats::rowDiffs(1 - pmiss)
   pfind_si <- cbind(pk[ , 1], pfind)
 
   notFoundCell <- cellByCarc[foundOn == 0]
@@ -828,7 +828,7 @@ rpk <- function(n = 1, model, seed = NULL, kFill = NA){
   if (length(seed) > 0){
     set.seed(seed)
   }
-  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
+  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
 
@@ -985,9 +985,10 @@ SEsi <- function(days, pk){
   } else {
       powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
       powk[ , 1] <- 1
-      powk <- rowCumprods(powk)
+      powk <- matrixStats::rowCumprods(powk)
       pfind.si <- pk[, 1] * powk * cbind(
-        rep(1, npk), rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+        rep(1, npk), 
+        matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
       )
   }
   return(t(pfind.si)) 
