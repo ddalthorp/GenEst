@@ -28,8 +28,8 @@
 #'   \item{DWP_data}{Density weighted proportion of area searched}
 #'   \item{CO_data}{Carcass observations}
 #' }
-#' @source RP
-"wind_RP"
+#' @source Mock
+"windRPData"
 
 #' Synthetic data set based on searches of 60 m cleared plots of 23 out of 100
 #'   turbines at a theoretical site.
@@ -45,5 +45,5 @@
 #'   \item{DWP_data}{Density weighted proportion of area searched}
 #'   \item{CO_data}{Carcass observations}
 #' }
-#' @source cleared
-"wind_cleared"
+#' @source Mock
+"windClearedPlotData"

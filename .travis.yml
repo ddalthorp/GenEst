@@ -5,8 +5,4 @@ warnings_are_errors: false
 
 addons:
   apt:
-    packages:
-      - libgsl0-dbg
-      - libgsl0-dev
-      - libgsl0ldbl
-
+    update: true
