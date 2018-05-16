@@ -858,40 +858,14 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     t0 <- t_search-t_arrive0
     tob <- outer(pdb, t1, "yox")
     part1 <- t1/t(1 + tob^pda) * 
-        t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+               t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     tob <- outer(pdb, t0, "yox")
     part0 <- t0 / t(1 + tob^pda) *
-        t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+               t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
   }
   return(probs)
 }
-
-#' Calculate the probability of persistence to for a loglogistic 
-#' 
-#' @param pda parameter a.
-#' @param pdb parameter b.
-#' @param t_arrive0 Beginning of arrival window.
-#' @param t_arrive1 End of arrival window.
-#' @param t_search Search time.
-#' @return Probability of persistence of detection to at t_search, 
-#'          given arrival between t_arrive0 and t_arrive1
-#' @examples
-#' NA
-#' @export 
-#'
-ppersist_loglogistic <- function(t_arrive0, t_arrive1, t_search, pda, pdb){
-
-  t1 <- t_search-t_arrive1 
-  t0 <- t_search-t_arrive0
-  part1 <- ifelse(t1 == 0, 0, t1 / (1 + (t1 / pdb)^pda) *  
-             hyperg_2F1(1, 1, 1 + 1 / pda, 1 / (1 + (t1 / pdb)^(-pda))))
-  part0 <- t0 / (1 + (t0 / pdb)^pda) * hyperg_2F1(1, 1, 1 + 1 / pda, 
-                                         1 / (1 + (t0 / pdb)^(-pda)))
-  out <- -(part1 - part0)/(t_arrive1 - t_arrive0)
-  return(out)
-}
-
 
 #' Check if all of the cpm models fail
 #'
