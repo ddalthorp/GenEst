@@ -14,33 +14,36 @@
 #' @source Mock
 "mockData"
 
-#' Description of the dataset
+#' Synthetic data set based on 120 m radius road and pad searches of all 100
+#'   turbines at a theoretical site.
 #'
-#' A dataset containing SE, CP, SS, DWP, and CO data.
-#'
-#' @format A list with 5 items:
-#' \describe{
-#'   \item{SE_trials}{Searcher efficiency trial data}
-#'   \item{CP_trials}{Carcass persistence trial data}
-#'   \item{SS_23cleared60}{Search schedule data}
-#'   \item{DWP_23cleared60}{Density weighted proportion of area searched data}
-#'   \item{CO_23cleared60}{Carcass observations}  
-#' }
-#' @source Source name
-"windClearedPlotData"
-
-#' Description of the dataset
-#'
-#' A dataset containing SE, CP, SS, DWP, and CO data.
+#' Complete data set for fatality estimation at a wind power facility. 
+#'   Included are SE, CP, SS, DWP, and CO data.
 #'
 #' @format A list with 5 items:
 #' \describe{
 #'   \item{SE_trials}{Searcher efficiency trial data}
 #'   \item{CP_trials}{Carcass persistence trial data}
-#'   \item{SS_RP120}{Search schedule data}
-#'   \item{DWP_RP120}{Density weighted proportion of area searched data}
-#'   \item{CO_dataRP120}{Carcass observations}  
+#'   \item{SS_params}{Search schedule parameters}
+#'   \item{DWP_data}{Density weighted proportion of area searched}
+#'   \item{CO_data}{Carcass observations}
 #' }
-#' @source Source name
-"windRPData"
+#' @source RP
+"wind_RP"
 
+#' Synthetic data set based on searches of 60 m cleared plots of 23 out of 100
+#'   turbines at a theoretical site.
+#'
+#' Complete data set for fatality estimation at a wind power facility. 
+#'   Included are SE, CP, SS, DWP, and CO data.
+#'
+#' @format A list with 5 items:
+#' \describe{
+#'   \item{SE_trials}{Searcher efficiency trial data}
+#'   \item{CP_trials}{Carcass persistence trial data}
+#'   \item{SS_params}{Search schedule parameters}
+#'   \item{DWP_data}{Density weighted proportion of area searched}
+#'   \item{CO_data}{Carcass observations}
+#' }
+#' @source cleared
+"wind_cleared"
