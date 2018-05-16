@@ -93,4 +93,33 @@ Paul Rabie ([WEST](http://www.westconsultants.com/)), Jared Studyvin
 <a href="https://www.blm.gov/">
 <img src = 'inst/app/www/blm.jpg' height = '65'> 
 </a>
-<img src = 'inst/app/www/usgs.png' height = '65'> <img src = 'inst/app/www/nrel.jpg' height = '65'> <img src = 'inst/app/www/west.png' height = '65'> <img src = 'inst/app/www/bci.jpg' height = '65'> <img src = 'inst/app/www/awwi.png' height = '65'> <img src = 'inst/app/www/avangrid.png' height = '65'> <img src = 'inst/app/www/dapper.png' height = '65'> <img src = 'inst/app/www/oikostat.jpg' height = '65'> <img src = 'inst/app/www/osu.jpg' height = '65'> <img src = 'inst/app/www/duke.png' height = '65'>
+<a href="https://www.usgs.gov/">
+<img src = 'inst/app/www/usgs.png' height = '65'> 
+</a>
+<a href="https://www.nrel.gov/">
+<img src = 'inst/app/www/nrel.jpg' height = '65'> 
+</a>
+<a href="http://www.westconsultants.com/">
+<img src = 'inst/app/www/west.png' height = '65'> 
+</a>
+<a href="http://www.batcon.org/">
+<img src = 'inst/app/www/bci.jpg' height = '65'>
+</a>
+<a href="https://awwi.org/">
+<img src = 'inst/app/www/awwi.png' height = '65'> 
+</a>
+<a href="http://www.avangridrenewables.us/">
+<img src = 'inst/app/www/avangrid.png' height = '65'> 
+</a>
+<a href="http://www.dapperstats.com">
+<img src = 'inst/app/www/dapper.png' height = '65'> 
+</a>
+<a href="http://www.oikostat.ch/">
+<img src = 'inst/app/www/oikostat.jpg' height = '65'> 
+</a>
+<a href="https://www.osu.edu/">
+<img src = 'inst/app/www/osu.jpg' height = '65'> 
+</a>
+<a href="https://www.duke.edu/">
+<img src = 'inst/app/www/duke.png' height = '65'>
+</a>
