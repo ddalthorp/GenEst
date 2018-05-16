@@ -229,11 +229,11 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   event[is.na(t2) | is.infinite(t2)] <- 0
   event[round(t1, 3) == round(t2, 3)] <- 1
   t1 <- pmax(t1, 0.0001)
-  tevent <- survival::Surv(time = t1, time2 = t2, event = event, 
+  tevent <- Surv(time = t1, time2 = t2, event = event, 
               type = "interval")
   init_formRHS <- as.character(formulaRHS_l)[-1]
   init_form <- reformulate(init_formRHS, response = "tevent")
-  init_mod <- survival::survreg(formula = init_form, data = data, dist = dist)
+  init_mod <- survreg(formula = init_form, data = data, dist = dist)
   init_l <- init_mod$coef
   names(init_l) <- paste("l_", names(init_l), sep = "")
   init_s <- rep(init_mod$scale, nbeta_s)
@@ -405,12 +405,12 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
   dataMM_s <- matrix(dataMM[which_s, ], ncol = nbeta_s, byrow = TRUE)
   Beta_l <- dataMM_l %*% beta_l 
   Beta_s <- dataMM_s %*% beta_s  
-  psurv_t1 <- survival::psurvreg(t1, Beta_l, Beta_s, dist)
-  psurv_t2 <- survival::psurvreg(t2, Beta_l, Beta_s, dist)
+  psurv_t1 <- psurvreg(t1, Beta_l, Beta_s, dist)
+  psurv_t2 <- psurvreg(t2, Beta_l, Beta_s, dist)
   psurv_t2[which(is.na(psurv_t2))] <- 1
   lik <- psurv_t2 - psurv_t1
   too_small <- t1 + .Machine$double.eps >= t2
-  lik[too_small] <- survival::dsurvreg(t2, Beta_l, Beta_s, dist)
+  lik[too_small] <- dsurvreg(t2, Beta_l, Beta_s, dist)
   lik <- pmax(lik, .Machine$double.eps) 
   nll <- -sum(log(lik))
   return(nll)
@@ -467,7 +467,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
   if (length(seed) > 0){
     set.seed(seed)
   }
-  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
+  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
 
   sim_l <- as.matrix(sim_beta[ , 1:nbeta_l] %*% t(cellMM_l))
   sim_s <- as.matrix(sim_beta[ , which_beta_s] %*% t(cellMM_s))
@@ -858,10 +858,10 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     t0 <- t_search-t_arrive0
     tob <- outer(pdb, t1, "yox")
     part1 <- t1/t(1 + tob^pda) * 
-        t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+        t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     tob <- outer(pdb, t0, "yox")
     part0 <- t0 / t(1 + tob^pda) *
-        t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+        t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
   }
   return(probs)
@@ -885,8 +885,8 @@ ppersist_loglogistic <- function(t_arrive0, t_arrive1, t_search, pda, pdb){
   t1 <- t_search-t_arrive1 
   t0 <- t_search-t_arrive0
   part1 <- ifelse(t1 == 0, 0, t1 / (1 + (t1 / pdb)^pda) *  
-             gsl::hyperg_2F1(1, 1, 1 + 1 / pda, 1 / (1 + (t1 / pdb)^(-pda))))
-  part0 <- t0 / (1 + (t0 / pdb)^pda) * gsl::hyperg_2F1(1, 1, 1 + 1 / pda, 
+             hyperg_2F1(1, 1, 1 + 1 / pda, 1 / (1 + (t1 / pdb)^(-pda))))
+  part0 <- t0 / (1 + (t0 / pdb)^pda) * hyperg_2F1(1, 1, 1 + 1 / pda, 
                                          1 / (1 + (t0 / pdb)^(-pda)))
   out <- -(part1 - part0)/(t_arrive1 - t_arrive0)
   return(out)

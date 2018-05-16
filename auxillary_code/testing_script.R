@@ -21,12 +21,6 @@ ghatsGeneric <- rghatGeneric(n = 1000, avgSS, model_SE, model_CP, seed_SE = 1,
                   seed_CP = 1, kFill = NULL
                 )
 
-ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
-             seed_SE = 1, seed_CP = 1, unitCol = "Unit", 
-             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
-             removeCleanout = TRUE
-           )
-ghat <- ghatsAjs$ghat
 
 
 modelSetSize_SE <- pkmSetSize(formula_p = p ~ Visibility*HabitatType, 
@@ -51,6 +45,16 @@ ghatsGenericSize <- rghatGenericSize(n = 1000, avgSS, modelSetSize_SE,
                       kFill = NULL
                     )
 
+
+
+
+
+ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
+             seed_SE = 1, seed_CP = 1, unitCol = "Unit", 
+             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
+             removeCleanout = TRUE
+           )
+ghat <- ghatsAjs$ghat
 
 
 
