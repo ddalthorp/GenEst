@@ -333,8 +333,6 @@ modNameSplit <- function(modNames, pos){
   return(modNames_split)
 }
 
-
-
 #' Count the minimum number of carcasses in the cells
 #'
 #' @param mods model output from the _SetSize version of a function
@@ -417,9 +415,24 @@ makeMenu <- function(mods, sizeclasses, type){
       modNames <- names(mods[[sci]])[modOrder]
       modNames <- gsub("; NULL", "", modNames)
       modNames <- gsub("dist: ", "", modNames)
+
+      modNames_nchar <- nchar(modNames)
+      modNames_maxchar <- max(modNames_nchar)
+      modNames_nspaces <- modNames_maxchar - modNames_nchar + 10
+      modSpaces <- sapply(modNames_nspaces, 
+                     function(x){paste(rep(" ", x), collapse = "")}
+                   )
+
+      modAICcs <- AICcTab[ , "AICc"]
+      modLabels <- paste0(modNames, " (AIC: ", modAICcs, ")")
+      names(modNames) <- modLabels
+      labels_nchar <- nchar(modLabels)
+      labels_maxchar <- max(labels_nchar)
+      widthval <- max(c(400, labels_maxchar * 7 + 20))
+      widthtxt <- paste0(widthval, "px")
       mtuText <- paste("modelChoices_", type, sci, sep = "") 
       scText <- paste("Model for ", sizeclasses[sci], sep = "")
-      modSelect <- selectizeInput(mtuText, scText, modNames, width = "400px")
+      modSelect <- selectizeInput(mtuText, scText, modNames, width = widthtxt)
       modelMenu <- paste(modelMenu, modSelect)  
     }
   }
