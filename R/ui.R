@@ -103,7 +103,7 @@ tabPanel("Analyses",
         tabsetPanel(id = "analyses_SE",
           tabPanel("Selected Data", br(), br(), dataTableOutput("selected_SE")
           ),
-          tabPanel("Figures", plotOutput("fig_SE")),
+          tabPanel("Figures", br(), plotOutput("fig_SE")),
           tabPanel("Model Tables", br(), br(), dataTableOutput("modTab_SE")
           ),
           tabPanel("Model Comparison", br(), br(), 
@@ -157,7 +157,7 @@ tabPanel("Analyses",
         tabsetPanel(id = "analyses_CP",
           tabPanel("Selected Data", br(), br(),
             dataTableOutput("selected_CP")),
-          tabPanel("Figures", plotOutput("fig_CP")),
+          tabPanel("Figures", br(), plotOutput("fig_CP")),
           tabPanel("Model Tables", br(), br(), dataTableOutput("modTab_CP")
           ),
           tabPanel("Model Comparison", br(), br(), 
@@ -251,7 +251,7 @@ tabPanel("Analyses",
             box(textOutput("SStext"))
           ),
           tabPanel("Table", br(), br(), dataTableOutput("tab_g")),
-          tabPanel("Figure", plotOutput("fig_g"))
+          tabPanel("Figure", br(), plotOutput("fig_g"))
         )
       )
     )

@@ -6,7 +6,8 @@
 \usage{
 \method{plot}{cpmSet}(x, specificModel = NULL, n = 500, seed = 1,
   col = c(exponential = rgb(0.8, 0.38, 0.56), weibull = rgb(1, 0.76, 0.15),
-  loglogistic = rgb(0, 1, 1), lognormal = rgb(0, 0.41, 0.55)), ...)
+  loglogistic = rgb(0, 1, 1), lognormal = rgb(0, 0.41, 0.55)),
+  sizeclassName = NULL, ...)
 }
 \arguments{
 \item{x}{pk model set of class pkmSet}
@@ -18,6 +19,9 @@
 \item{seed}{random number seed to use for the models}
 
 \item{col}{color to use for the specific model}
+
+\item{sizeclassName}{name of the size class if it is to be added to the
+figure}
 
 \item{...}{to be passed down}
 }
