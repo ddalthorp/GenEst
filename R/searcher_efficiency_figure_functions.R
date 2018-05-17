@@ -97,13 +97,15 @@ plot.pkm <- function(x, n = 1000, seed = 1, col = "black", ...){
 #' @param seed_full random number seed to use for the full model
 #' @param col_spec color to use for the specific model
 #' @param col_full color to use for the specific model
+#' @param sizeclassName name of the size class if it is to be added to the
+#'   figure
 #' @param ... to be sent to subfunctions
 #' @return a set of plots
 #' @export
 #'
 plot.pkmSet <- function(x, specificModel = NULL, n = 1000, 
                         seed_spec = 1, seed_full = 1, col_spec = "black", 
-                        col_full = "grey", ...){
+                        col_full = "grey", sizeclassName = NULL, ...){
 
   modelSet <- x
   if (length(specificModel) == 0){
@@ -139,15 +141,15 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
     }
     
     par(mar = c(0, 0, 0, 0))
-    par(fig = c(0, 1, 0.95, 1))
+    par(fig = c(0, 1, 0.935, 1))
     plot(1, 1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
       ylab = "", ylim = c(0, 1), xlim = c(0, 1)
     )
 
-    rect(0.01, 0.2, 0.06, 0.5, lwd = 2, col = col_spec, border = NA)
-    text(x = 0.07, y = 0.4, "= Selected Model", adj = 0, cex = 0.9)
-    rect(0.3, 0.2, 0.35, 0.5, lwd = 2, col = col_full, border = NA)
-    text(x = 0.36, y = 0.4, "= Full Model", adj = 0, cex = 0.9)
+    rect(0.01, 0.2, 0.06, 0.45, lwd = 2, col = col_spec, border = NA)
+    text(x = 0.07, y = 0.35, "= Selected Model", adj = 0, cex = 0.9)
+    rect(0.3, 0.2, 0.35, 0.45, lwd = 2, col = col_full, border = NA)
+    text(x = 0.36, y = 0.35, "= Full Model", adj = 0, cex = 0.9)
 
     labelsText <- paste(model_full$predictors, collapse = ".")
     text_label <- paste("Labels: ", labelsText, sep = "")
@@ -155,18 +157,45 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
     text(x = 0.52, y = 0.3, text_label, adj = 0, cex = 0.75)
     text(x = 0.52, y = 0.7, text_model, adj = 0, cex = 0.75)
 
+    if (!is.null(sizeclassName)){
+      text_sc <- paste("Size class: ", sizeclassName, sep = "")
+      text(x = 0.01, y = 0.8, text_sc, adj = 0, cex = 1, font = 1)
+    }
+
     par(mar = c(2,4,2,1))
-    par(fig = c(0, 0.5, 0.725, 0.975), new = TRUE)
+    par(fig = c(0, 0.45, 0.715, 0.965), new = TRUE)
     pkmSetSpecParamPlot(modelSet, specificModel, "p", n, seed_spec, seed_full,
       col_spec, col_full)
-
-    par(fig = c(0.5, 1, 0.725, 0.975), new = TRUE)
+    par(fig = c(0.45, 0.9, 0.715, 0.965), new = TRUE)
     pkmSetSpecParamPlot(modelSet, specificModel, "k", n, seed_spec, seed_full,
       col_spec, col_full)
 
-    par(fig = c(0, 1, 0, 0.75), new = TRUE)
+    par(mar = c(2,0,2,0))
+    par(fig = c(0.92, 1, 0.715, 0.965), new = TRUE)
+    plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
+      ylab = "", ylim = c(0, 1), xlim = c(0, 1)
+    )
+    x_s <- 0.1
+    CL_split <- (1 - model_spec$CL) / 2
+    probs_y <- c(0, CL_split, 0.25, 0.5, 0.75, 1 - CL_split, 1)
+    set.seed(12)
+    y_s <- quantile(rnorm(1000, 0.5, 0.15), probs = probs_y)
+    med <- c(-0.1, 0.1)
+    tb <- c(-0.07, 0.07)
+    rect(x_s - 0.1, y_s[3], x_s + 0.1, y_s[5], lwd = 2, border = col_spec) 
+    points(x_s + med, rep(y_s[4], 2), type = 'l', lwd = 2, col = col_spec)
+    points(x_s + tb, rep(y_s[2], 2), type = 'l', lwd = 2, col = col_spec)
+    points(x_s + tb, rep(y_s[6], 2), type = 'l', lwd = 2, col = col_spec)
+    points(rep(x_s, 3), y_s[1:3], type = 'l', lwd = 2, col = col_spec)
+    points(rep(x_s, 3), y_s[5:7], type = 'l', lwd = 2, col = col_spec)
+    num_CL <- c(CL_split, 1 - CL_split) * 100
+    text_CL <- paste(num_CL, "%", sep = "")
+    text_ex <- c("min", text_CL[1], "25%", "50%", "75%", text_CL[2], "max")
+    text(x_s + 0.2, y_s, text_ex, cex = 0.65, adj = 0)
+
+    par(fig = c(0, 1, 0, 0.725), new = TRUE)
     par(mar = c(1, 1, 1, 1))
-    plot(1,1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
+    plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = ""
     )
     mtext(side = 1, "Search", line = -0.25, cex = 1.5)
@@ -179,10 +208,10 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
     nmatrix_row <- ceiling(ncell / nmatrix_col)
     figxspace <- 0.95 / nmatrix_col
     figyspace <- 0.65 / nmatrix_row
-    x1 <- rep(figxspace * ((1:nmatrix_col) - 1), nmatrix_row) + 0.05
-    x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.05
-    y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.04
-    y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.04
+    x1 <- rep(figxspace * ((1:nmatrix_col) - 1), nmatrix_row) + 0.035
+    x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.035
+    y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.03
+    y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.03
     bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
     leftCells <- which(1:ncell %% nmatrix_col == 1)
     if (length(leftCells) == 0){
@@ -412,9 +441,19 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n,
     points(rep(x_f, 3), y_f[5:7], type = 'l', lwd = 2, col = col_full)
   }
 
-  axis(1, at = 1:ncell_full, cellNames_full, las = 1, cex.axis = 0.75)
+  axis(1, at = 1:ncell_full, labels = FALSE)
+  ang <- 0
+  offx <- NULL
+  if (ncell_full > 3){
+    ang <- 35 
+    offx <- 1
+  }
+  text(1:ncell_full, -0.11, srt = ang, adj = offx, labels = cellNames_full, 
+    xpd = TRUE, cex = 0.75
+  )
+
   axis(2, at = seq(0, 1, 0.5), las = 1, cex.axis = 0.75)
-  axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.05)
+  axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.02)
   mtext(side = 2, pk, line = 2.75, cex = 1.25)
 
 }
