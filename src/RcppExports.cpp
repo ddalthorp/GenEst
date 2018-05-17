@@ -6,16 +6,16 @@
 using namespace Rcpp;
 
 // calcRateC
-NumericMatrix calcRateC(NumericMatrix Mtilde, NumericMatrix Aj, NumericVector days, NumericMatrix searches);
-RcppExport SEXP _GenEst_calcRateC(SEXP MtildeSEXP, SEXP AjSEXP, SEXP daysSEXP, SEXP searchesSEXP) {
+NumericMatrix calcRateC(NumericMatrix M, NumericMatrix Aj, NumericVector days, NumericMatrix searches);
+RcppExport SEXP _GenEst_calcRateC(SEXP MSEXP, SEXP AjSEXP, SEXP daysSEXP, SEXP searchesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< NumericMatrix >::type Mtilde(MtildeSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type M(MSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type Aj(AjSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type days(daysSEXP);
     Rcpp::traits::input_parameter< NumericMatrix >::type searches(searchesSEXP);
-    rcpp_result_gen = Rcpp::wrap(calcRateC(Mtilde, Aj, days, searches));
+    rcpp_result_gen = Rcpp::wrap(calcRateC(M, Aj, days, searches));
     return rcpp_result_gen;
 END_RCPP
 }
