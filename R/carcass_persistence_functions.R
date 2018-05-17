@@ -790,8 +790,9 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE){
 
   output <- data.frame(dists, formulas_l, formulas_s, AICc, deltaAICc)
   output <- output[AICcOrder, ]
-  colnames(output) <- c("dist", "l formula", "s formula", "AICc", 
-                        "Delta AICc")
+  colnames(output) <- c("Distribution", "Location Formula", "Scale Formula", 
+                        "AICc", "Delta AICc"
+                       )
   whichAICcNA <- which(is.na(output$AICc))
   whichAICcMax <- which(output$AICc == 1e7)
   if (length(whichAICcNA) > 0 & quiet == FALSE){

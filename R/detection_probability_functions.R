@@ -592,8 +592,13 @@ summary.ghatGeneric <- function(object, ..., CL = 0.9){
     gTabi <- c(cells[celli], gsummary)
     gTab[celli, ] <- gTabi
   }
-  colnames(gTab) <- c("CellNames", "DetectionProbability")
   out <- data.frame(predsTab, gTab)
+
+  DPheader <- paste0("Detection Probability (Median [", 
+                (1 - CL) / 2 * 100, "% - ", 
+                (1 - (1 - CL) / 2) * 100, "%])"
+              )
+  colnames(out)[npred + (1:2)] <- c("Cell", DPheader)
   return(out)
 
 }
