@@ -8,7 +8,7 @@
 #'   removeNotification outputOptions isolate updateTabsetPanel renderPlot
 #'   updateNumericInput actionButton checkboxGroupInput
 #'   column fluidRow textOutput
-#' @importFrom htmltools div img br HTML
+#' @importFrom htmltools div img br HTML a
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics axis mtext par plot points rect text lines polygon
 #' @importFrom grDevices rgb devAskNewPage

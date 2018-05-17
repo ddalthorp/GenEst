@@ -6,8 +6,11 @@
 ui <- function(request) {
 
 navbarPage(
-  
-div(img(src = "GenEst.png", style = "margin-top: -8px;", height = 40)),
+
+div(a(href = "https://github.com/ddalthorp/GenEst",
+      img(src = "GenEst.png", style = "margin-top: -8px;", height = 40)
+    )
+),
             
 tabPanel("Home",
   br(),
@@ -164,6 +167,38 @@ tabPanel("Analyses",
         )
       )
     ),
+    tabPanel("Fatality Estimation", br(), br(),
+      sidebarPanel(width = 3, 
+        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+        br(), br(),
+        selectizeInput("unitCol", "Units:", c("No data input yet"), 
+          multiple = FALSE
+        ),
+        selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
+          multiple = FALSE
+        ),
+        selectizeInput("dateSearchedCol", "Date Searched:",  
+          c("No data input yet"), multiple = FALSE
+        ),
+        radioButtons("removeCleanout", "Remove Cleanout Searches?",
+          choices = list("No" = FALSE, "Yes" = TRUE), selected = TRUE
+        ),
+        conditionalPanel(
+          condition = "output.kFillNeed == 'yes'",
+          numericInput("kFill", "Assumed k:", value = 0.5, 
+            min = 0, max = 1, step = 0.001
+          )
+        ),
+        conditionalPanel(
+          condition = 
+            "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
+             output.sizeclassesSE == output.sizeclassesCP",
+          br(), 
+          actionButton("runModM", "Estimate")
+        )
+      ),
+      mainPanel(br())
+    ),
     tabPanel("Detection Probability", br(), br(),
       sidebarPanel(width = 3, 
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
@@ -219,38 +254,6 @@ tabPanel("Analyses",
           tabPanel("Figure", plotOutput("fig_g"))
         )
       )
-    ),
-    tabPanel("Fatality Estimation", br(), br(),
-      sidebarPanel(width = 3, 
-        HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
-        br(), br(),
-        selectizeInput("unitCol", "Units:", c("No data input yet"), 
-          multiple = FALSE
-        ),
-        selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
-          multiple = FALSE
-        ),
-        selectizeInput("dateSearchedCol", "Date Searched:",  
-          c("No data input yet"), multiple = FALSE
-        ),
-        radioButtons("removeCleanout", "Remove Cleanout Searches?",
-          choices = list("No" = FALSE, "Yes" = TRUE), selected = TRUE
-        ),
-        conditionalPanel(
-          condition = "output.kFillNeed == 'yes'",
-          numericInput("kFill", "Assumed k:", value = 0.5, 
-            min = 0, max = 1, step = 0.001
-          )
-        ),
-        conditionalPanel(
-          condition = 
-            "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-             output.sizeclassesSE == output.sizeclassesCP",
-          br(), 
-          actionButton("runModM", "Estimate")
-        )
-      ),
-      mainPanel(br())
     )
   )
 ),
@@ -302,17 +305,29 @@ tabPanel("About",
       br(), br(),
       HTML("GenEst is provided under GNU GPL v3 (and later versions)."),
       br(), br(), br(), br(),
-      HTML("<img src = 'blm.jpg' height = '60'>"),
-      HTML("<img src = 'usgs.png' height = '60'>"),
-      HTML("<img src = 'nrel.jpg' height = '60'>"),
-      HTML("<img src = 'west.png' height = '60'>"),
-      HTML("<img src = 'bci.jpg' height = '60'>"),
-      HTML("<img src = 'awwi.png' height = '60'>"),
-      HTML("<img src = 'avangrid.png' height = '60'>"),
-      HTML("<img src = 'dapper.png' height = '60'>"),
-      HTML("<img src = 'oikostat.jpg' height = '60'>"),
-      HTML("<img src = 'osu.jpg' height = '60'>"),
-      HTML("<img src = 'duke.png' height = '60'>")
+      HTML("<a href='https://www.blm.gov/'>
+         <img src = 'blm.jpg' height = '60'></a>
+         <a href='https://www.usgs.gov/'>
+         <img src = 'usgs.png' height = '60'></a>
+         <a href='https://www.nrel.gov/'>
+         <img src = 'nrel.jpg' height = '60'> </a>
+         <a href='http://www.westconsultants.com/'>
+         <img src = 'west.png' height = '60'></a>
+         <a href='http://www.batcon.org/'>
+         <img src = 'bci.jpg' height = '60'></a>
+         <a href='https://awwi.org/'>
+         <img src = 'awwi.png' height = '60'></a>
+         <a href='http://www.avangridrenewables.us/'>
+         <img src = 'avangrid.png' height = '60'></a>
+         <a href='http://www.dapperstats.com'>
+         <img src = 'dapper.png' height = '60'></a>
+         <a href='http://www.oikostat.ch/'>
+         <img src = 'oikostat.jpg' height = '60'> </a>
+         <a href='https://www.oregonstate.edu/'>
+         <img src = 'osu.jpg' height = '60'> </a>
+         <a href='https://www.duke.edu/'>
+         <img src = 'duke.png' height = '60'></a>"
+       )
     )
   )
 ),
