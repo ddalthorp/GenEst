@@ -5,7 +5,7 @@
 \title{Expand the density weighted proportion table to a value for each carcass}
 \usage{
 DWPbyCarcass(data_DWP, data_carc, unitCol = "Unit", sizeclassCol = NULL,
-  removeCleanout = FALSE, data_ss = NULL, dateFoundCol = "DateFound",
+  removeCleanout = FALSE, data_SS = NULL, dateFoundCol = "DateFound",
   dateSearchedCol = "DateSearched")
 }
 \arguments{
@@ -22,7 +22,7 @@ classes are recorded}
 \item{removeCleanout}{logical indicating if cleanout searches need to be
 removed from \code{data_carc}}
 
-\item{data_ss}{Search Schedule data (if cleanout searches are to be 
+\item{data_SS}{Search Schedule data (if cleanout searches are to be 
 removed)}
 
 \item{dateFoundCol}{Column name for the date found data (if cleanout 

@@ -117,7 +117,7 @@ Paul Rabie ([WEST](http://www.westconsultants.com/)), Jared Studyvin
 <a href="http://www.oikostat.ch/">
 <img src = 'inst/app/www/oikostat.jpg' height = '65'> 
 </a>
-<a href="https://www.osu.edu/">
+<a href="https://www.oregonstate.edu/">
 <img src = 'inst/app/www/osu.jpg' height = '65'> 
 </a>
 <a href="https://www.duke.edu/">
