@@ -149,6 +149,8 @@ plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use for the models
 #' @param col color to use for the specific model
+#' @param sizeclassName name of the size class if it is to be added to the
+#'   figure
 #' @param ... to be passed down
 #'
 #' @export
@@ -157,7 +159,8 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
                         col = c(exponential = rgb(0.80, 0.38, 0.56), 
                                 weibull = rgb(1.00, 0.76, 0.15),
                                 loglogistic = rgb(0.00, 1.00, 1.00),
-                                lognormal = rgb(0.00, 0.41, 0.55)), ...){
+                                lognormal = rgb(0.00, 0.41, 0.55)), 
+                        sizeclassName = NULL, ...){
 
   modelSet <- x
   modelSetNames <- names(modelSet)
@@ -264,23 +267,23 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
     model_full <- modelSet[[whichFull]]
     fullModel <- modNames[whichFull]
 
-    par(fig = c(0, 1, 0, 0.95), mar = c(1, 1, 1, 1))
+    par(fig = c(0, 1, 0, 0.925), mar = c(1, 1, 1, 1))
     plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = ""
     )
     mtext(side = 1, "Time", line = -0.25, cex = 1.5)
     mtext(side = 2, "Carcass Persistence", line = -0.25, cex = 1.5)
 
-    par(fig = c(0, 1, 0.95, 1), mar = c(0, 0, 0, 0), new = TRUE)
+    par(fig = c(0, 1, 0.925, 1), mar = c(0, 0, 0, 0), new = TRUE)
     plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = "", ylim = c(0, 1), xlim = c(0, 1))
 
     x1 <- c(0, 0.29, 0, 0.29)
-    y1 <- c(0.6, 0.6, 0.1, 0.1)
+    y1 <- c(0.4, 0.4, 0.0, 0.0)
     x2 <- c(0.04, 0.33, 0.04, 0.33)
-    y2 <- c(0.8, 0.8, 0.3, 0.3)
+    y2 <- c(0.6, 0.6, 0.2, 0.2)
     xt <- c(0.05, 0.34, 0.05, 0.34)
-    yt <- c(0.75, 0.75, 0.25, 0.25)
+    yt <- c(0.5, 0.5, 0.1, 0.1)
     ndists <- length(distsIncluded)
  
     for (disti in 1:ndists){
@@ -298,6 +301,10 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
         paste("= ", distName, sep = "")
       )
     }
+    if (!is.null(sizeclassName)){
+      text_sc <- paste("Size class: ", sizeclassName, sep = "")
+      text(x = 0.00, y = 0.9, text_sc, adj = 0, cex = 1, font = 1)
+    }
 
     labelsText <- paste(model_full$predictors, collapse = ".")
     text_label <- paste("Labels: ", labelsText, sep = "")
@@ -314,10 +321,10 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
     nmatrix_row <- ceiling(ncell / nmatrix_col)
     figxspace <- 0.925 / nmatrix_col
     figyspace <- 0.875 / nmatrix_row
-    x1 <- rep(figxspace * ((1:nmatrix_col) - 1), nmatrix_row) + 0.05
-    x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.05
-    y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.04
-    y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.04
+    x1 <- rep(figxspace * ((1:nmatrix_col) - 1), nmatrix_row) + 0.04
+    x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.04
+    y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.03
+    y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.03
     bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
     leftCells <- which(1:ncell %% nmatrix_col == 1)
     if (length(leftCells) == 0){

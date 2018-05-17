@@ -424,7 +424,7 @@ makeMenu <- function(mods, sizeclasses, type){
                    )
 
       modAICcs <- AICcTab[ , "AICc"]
-      modLabels <- paste0(modNames, " (AIC: ", modAICcs, ")")
+      modLabels <- paste0(modNames, " (AICc: ", modAICcs, ")")
       names(modNames) <- modLabels
       labels_nchar <- nchar(modLabels)
       labels_maxchar <- max(labels_nchar)
