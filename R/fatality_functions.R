@@ -100,7 +100,7 @@ calcMhat <- function(Mtilde, DWP = 1){
 #' @param data_carc Carcass observation data
 #' @param removeCleanout logical indicating if cleanout searches need to be
 #'   removed from \code{data_carc}
-#' @param data_ss Search Schedule data (if cleanout searches are to be 
+#' @param data_SS Search Schedule data (if cleanout searches are to be 
 #'   removed)
 #' @param unitCol Column name for the unit indicator
 #' @param sizeclassCol Name of colum in \code{data_carc} where the size 
@@ -115,7 +115,7 @@ calcMhat <- function(Mtilde, DWP = 1){
 #'
 DWPbyCarcass <- function(data_DWP, data_carc, unitCol = "Unit",
                          sizeclassCol = NULL, removeCleanout = FALSE,
-                         data_ss = NULL, dateFoundCol = "DateFound",
+                         data_SS = NULL, dateFoundCol = "DateFound",
                          dateSearchedCol = "DateSearched"){
 
   if (!(unitCol %in% colnames(data_DWP) & unitCol %in% colnames(data_carc))){
@@ -129,14 +129,14 @@ DWPbyCarcass <- function(data_DWP, data_carc, unitCol = "Unit",
   }
 
   if (removeCleanout){
-    data_ss[ , dateSearchedCol] <- yyyymmdd(data_ss[ , dateSearchedCol])
+    data_SS[ , dateSearchedCol] <- yyyymmdd(data_SS[ , dateSearchedCol])
     data_carc[ , dateFoundCol] <- yyyymmdd(data_carc[ , dateFoundCol])
-    date1 <- min(data_ss[ , dateSearchedCol])
+    date1 <- min(data_SS[ , dateSearchedCol])
     data_carc[ , dateFoundCol] <- dateToDay(data_carc[ , dateFoundCol], date1)
-    data_ss[ , dateSearchedCol] <- dateToDay(data_ss[ , dateSearchedCol], 
+    data_SS[ , dateSearchedCol] <- dateToDay(data_SS[ , dateSearchedCol], 
                                      date1
                                    )
-    cleanout <- whichCleanout(data_carc, data_ss, unitCol, dateFoundCol,
+    cleanout <- whichCleanout(data_carc, data_SS, unitCol, dateFoundCol,
                   dateSearchedCol
                 )  
     if (length(cleanout) > 0){
