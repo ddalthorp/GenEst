@@ -774,7 +774,7 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
 
   output <- data.frame(formulas_p, formulas_k, AICc, deltaAICc)
   output <- output[AICcOrder, ]
-  colnames(output) <- c("p formula", "k formula", "AICc", "Delta AICc")
+  colnames(output) <- c("p Formula", "k Formula", "AICc", "Delta AICc")
   whichAICcNA <- which(is.na(output$AICc))
   whichAICcMax <- which(output$AICc == 1e7)
   if (length(whichAICcNA) > 0 & quiet == FALSE){

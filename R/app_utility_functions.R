@@ -1,37 +1,72 @@
-#' Creates the names for the Searcher Efficiency model table columns 
+#' Creates the pretty version of the Searcher Efficiency model table
 #'
 #' @description Based on confidence level of interest
+#' @param modTab model table
 #' @param CL Confidence level
 #' @return column names
 #' @export
 #'
-modTabColNamesSE <- function(CL = 0.9){
-  c("Cell", 
-    "p Median", 
-    paste("p ", 100 * (1 - CL) / 2, "%", sep = ""), 
-    paste("p ", 100 - 100 * (1 - CL) / 2, "%", sep = ""),
-    "k Median",
-    paste("k ", 100 * (1 - CL) / 2, "%", sep = ""),
-    paste("k ", 100 - 100 * (1 - CL) / 2, "%", sep = "")
-  )
+prettyModTabSE <- function(modTab, CL = 0.9){
+
+  out <- modTab[ , c("cell", "p_median", "k_median")]
+  ncell <- nrow(out)
+
+  for (celli in 1:ncell){
+    p_m <- modTab[celli, "p_median"]
+    p_l <- modTab[celli, "p_lower"]
+    p_u <- modTab[celli, "p_upper"]
+    k_m <- modTab[celli, "k_median"]
+    k_l <- modTab[celli, "k_lower"]
+    k_u <- modTab[celli, "k_upper"]
+    out[celli, "p_median"] <- paste0(p_m, " [", p_l, " - ", p_u, "]")
+
+    if (is.na(k_m)){
+      out[celli, "k_median"] <- ""
+    } else{
+      out[celli, "k_median"] <- paste0(k_m, " [", k_l, " - ", k_u, "]")
+    }
+  }
+
+  coltxt <- paste0(" (Median [", 100 * (1 - CL) / 2, "% - ", 
+              100 - 100 * (1 - CL) / 2, "%])"
+            )
+  colnames(out) <- c("Cell", paste0(c("p", "k"), coltxt))
+  return(out)
 }
 
-#' Creates the names for the Carcass Persistence model table columns 
+#' Creates the pretty Carcass Persistence model table
 #'
 #' @description Based on confidence level of interest
+#' @param modTab model table
 #' @param CL Confidence level
 #' @return column names
 #' @export
 #'
-modTabColNamesCP <- function(CL = 0.9){
-  c("Cell", 
-    "Location Median", 
-    paste("Location ", 100 * (1 - CL) / 2, "%", sep = ""), 
-    paste("Location ", 100 - 100 * (1 - CL) / 2, "%", sep = ""),
-    "Scale Median",
-    paste("Scale ", 100 * (1 - CL) / 2, "%", sep = ""),
-    paste("Scale ", 100 - 100 * (1 - CL) / 2, "%", sep = "")
-  )
+prettyModTabCP <- function(modTab, CL = 0.9){
+  out <- modTab[ , c("cell", "l_median", "s_median")]
+  ncell <- nrow(out)
+
+  for (celli in 1:ncell){
+    l_m <- modTab[celli, "l_median"]
+    l_l <- modTab[celli, "l_lower"]
+    l_u <- modTab[celli, "l_upper"]
+    s_m <- modTab[celli, "s_median"]
+    s_l <- modTab[celli, "s_lower"]
+    s_u <- modTab[celli, "s_upper"]
+    out[celli, "l_median"] <- paste0(l_m, " [", l_l, " - ", l_u, "]")
+
+    if (s_m == s_l & s_m == s_u & s_m == 1){
+      out[celli, "s_median"] <- "1"
+    } else{
+      out[celli, "s_median"] <- paste0(s_m, " [", s_l, " - ", s_u, "]")
+    }
+  }
+
+  coltxt <- paste0(" (Median [", 100 * (1 - CL) / 2, "% - ", 
+              100 - 100 * (1 - CL) / 2, "%])"
+            )
+  colnames(out) <- c("Cell", paste0(c("Location", "Scale"), coltxt))
+  return(out)
 }
 
 #' Prepares predictors based on inputs

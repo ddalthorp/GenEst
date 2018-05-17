@@ -202,7 +202,7 @@ observeEvent(input$runMod_SE, {
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
     rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
-    colnames(rv$modTab_SE) <- modTabColNamesSE(rv$CL)
+    rv$modTab_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE, 800)
     rv$figW_SE <- setFigW(rv$modSet_SE)
 
@@ -245,7 +245,7 @@ observeEvent(input$tabfig_sizeclassSE, {
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
     rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
-    colnames(rv$modTab_SE) <- modTabColNamesSE(rv$CL)
+    rv$modTab_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE, 800)
     rv$figW_SE <- setFigW(rv$modSet_SE)
 
@@ -263,7 +263,7 @@ observeEvent(input$tabfig_sizeclassSE, {
       rv$tabfig_SEpk <- modNamePaste(c(input$tabfig_SEp, input$tabfig_SEk))
       rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
       rv$modTab_SE <- rv$modSet_SE[[rv$tabfig_SEpk]]$cellwiseTable
-      colnames(rv$modTab_SE) <- modTabColNamesSE(rv$CL)
+      rv$modTab_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
       output$modTab_SE <- renderDataTable(rv$modTab_SE)
       output$fig_SE <- renderPlot({
                          tryCatch(
@@ -279,7 +279,7 @@ observeEvent(input$tabfig_sizeclassSE, {
       rv$tabfig_SEpk <- modNamePaste(c(input$tabfig_SEp, input$tabfig_SEk))
       rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
       rv$modTab_SE <- rv$modSet_SE[[rv$tabfig_SEpk]]$cellwiseTable
-      colnames(rv$modTab_SE) <- modTabColNamesSE(rv$CL)
+      rv$modTab_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
       output$modTab_SE <- renderDataTable(rv$modTab_SE)
       output$fig_SE <- renderPlot({
                          tryCatch(
@@ -355,8 +355,8 @@ observeEvent(input$runMod_CP, {
     rv$sizeclasses_CP <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$tabfig_sizeclassCP)
     rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass]], TRUE)
-    rv$AICcTab_CP[ , "s formula"] <- gsub("NULL", "", 
-                                       rv$AICcTab_CP[ , "s formula"]
+    rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "", 
+                                       rv$AICcTab_CP[ , "Scale Formula"]
                                      )
     rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
     rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass]])[rv$modOrder_CP]
@@ -366,7 +366,8 @@ observeEvent(input$runMod_CP, {
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
     rv$modTab_CP <- rv$mods_CP[[rv$sizeclass]][[rv$best_CP]]$cellwiseTable_ls
-    colnames(rv$modTab_CP) <- modTabColNamesCP(rv$CL)
+    rv$modTab_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
+
     rv$figH_CP <- setFigH(rv$modSet_CP, 700, "CP")
     rv$figW_CP <- setFigW(rv$modSet_CP)
 
@@ -410,7 +411,7 @@ observeEvent(input$tabfig_sizeclassCP, {
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
     rv$modTab_CP <- rv$mods_CP[[rv$sizeclass]][[rv$best_CP]]$cellwiseTable_ls
-    colnames(rv$modTab_CP) <- modTabColNamesCP(rv$CL)
+    rv$modTab_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
     rv$figH_CP <- setFigH(rv$modSet_CP, 700, "CP")
     rv$figW_CP <- setFigW(rv$modSet_CP)
 
@@ -436,8 +437,7 @@ observeEvent(input$tabfig_sizeclassCP, {
       rv$tabfig_CPdlstab <- modNamePaste(rv$CPdls, "CP", tab = TRUE)
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
       rv$modTab_CP <- rv$modSet_CP[[rv$tabfig_CPdlstab]]$cellwiseTable_ls
-      colnames(rv$modTab_CP) <- modTabColNamesCP(rv$CL)
-
+      rv$modTab_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
       output$modTab_CP <- renderDataTable(rv$modTab_CP)
       output$fig_CP <- renderPlot({
                          tryCatch(
@@ -454,8 +454,7 @@ observeEvent(input$tabfig_sizeclassCP, {
       rv$tabfig_CPdlstab <- modNamePaste(rv$CPdls, "CP", tab = TRUE)
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
       rv$modTab_CP <- rv$modSet_CP[[rv$tabfig_CPdlstab]]$cellwiseTable_ls
-      colnames(rv$modTab_CP) <- modTabColNamesCP(rv$CL)
-
+      rv$modTab_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
       output$modTab_CP <- renderDataTable(rv$modTab_CP)
       output$fig_CP <- renderPlot({
                          tryCatch(
@@ -472,8 +471,7 @@ observeEvent(input$tabfig_sizeclassCP, {
       rv$tabfig_CPdlstab <- modNamePaste(rv$CPdls, "CP", tab = TRUE)
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
       rv$modTab_CP <- rv$modSet_CP[[rv$tabfig_CPdlstab]]$cellwiseTable_ls
-      colnames(rv$modTab_CP) <- modTabColNamesCP(rv$CL)
-
+      rv$modTab_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
       output$modTab_CP <- renderDataTable(rv$modTab_CP)
       output$fig_CP <- renderPlot({
                          tryCatch(
@@ -486,8 +484,8 @@ observeEvent(input$tabfig_sizeclassCP, {
     })
 
     rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass]], TRUE)
-    rv$AICcTab_CP[ , "s formula"] <- gsub("NULL", "", 
-                                       rv$AICcTab_CP[ , "s formula"]
+    rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "", 
+                                       rv$AICcTab_CP[ , "Scale Formula"]
                                      )
     output$AICcTab_CP <- renderDataTable(datatable(rv$AICcTab_CP))
   }
