@@ -43,7 +43,7 @@ rv <- reactiveValues(
         AICcTab_CP = NULL,  modOrder_CP = NULL, modNames_CP = NULL, 
         modNames_CPdist = NULL, modNames_CPl = NULL, modNames_CPs = NULL, 
         modSet_CP = NULL, best_CP = NULL, modTab_CP = NULL, 
-        figH_CP = 500, figW_CP = 800, sizeclasses_CP = NULL,  
+        figH_CP = 700, figW_CP = 800, sizeclasses_CP = NULL,  
         CPdls = NULL, tabfig_CPdlsfig = NULL, tabfig_CPdlstab = NULL, 
 
         data_SS = NULL, colNames_SS = NULL, 
@@ -210,7 +210,9 @@ observeEvent(input$runMod_SE, {
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
     output$modTab_SE <- renderDataTable({rv$modTab_SE})
     output$fig_SE <- renderPlot({ 
-                       plot(rv$modSet_SE, specificModel = rv$best_SE)},
+                       plot(rv$modSet_SE, specificModel = rv$best_SE,
+                         sizeclassName = rv$sizeclass
+                       )},
                        height = rv$figH_SE, width = rv$figW_SE
                      )
     outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
@@ -249,7 +251,9 @@ observeEvent(input$tabfig_sizeclassSE, {
 
     output$modTab_SE <- renderDataTable(rv$modTab_SE)
     output$fig_SE <- renderPlot({ 
-                       plot(rv$modSet_SE, specificModel = rv$best_SE)},
+                       plot(rv$modSet_SE, specificModel = rv$best_SE,
+                         sizeclassName = rv$sizeclass
+                       )},
                        height = rv$figH_SE, width = rv$figW_SE
                      )
     updateSelectizeInput(session, "tabfig_SEp", choices = rv$modNames_SEp)
@@ -264,7 +268,8 @@ observeEvent(input$tabfig_sizeclassSE, {
       output$fig_SE <- renderPlot({
                          tryCatch(
                            plot(rv$modSet_SE,
-                             specificModel = rv$tabfig_SEpk
+                             specificModel = rv$tabfig_SEpk,
+                             sizeclassName = rv$sizeclass
                            ), error = function(x){plot(1,1)}
                          )}, 
                        height = rv$figH_SE, width = rv$figW_SE
@@ -279,7 +284,8 @@ observeEvent(input$tabfig_sizeclassSE, {
       output$fig_SE <- renderPlot({
                          tryCatch(
                            plot(rv$modSet_SE, 
-                             specificModel = rv$tabfig_SEpk 
+                             specificModel = rv$tabfig_SEpk,
+                             sizeclassName = rv$sizeclass
                            ), error = function(x){plot(1,1)}
                          )}, 
                        height = rv$figH_SE, width = rv$figW_SE
@@ -361,14 +367,16 @@ observeEvent(input$runMod_CP, {
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
     rv$modTab_CP <- rv$mods_CP[[rv$sizeclass]][[rv$best_CP]]$cellwiseTable_ls
     colnames(rv$modTab_CP) <- modTabColNamesCP(rv$CL)
-    rv$figH_CP <- setFigH(rv$modSet_CP, 500, "CP")
+    rv$figH_CP <- setFigH(rv$modSet_CP, 700, "CP")
     rv$figW_CP <- setFigW(rv$modSet_CP)
 
     output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})    
     output$modTab_CP <- renderDataTable({rv$modTab_CP})
     rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
     output$fig_CP <- renderPlot({ 
-                       plot(rv$modSet_CP, specificModel = rv$best_CP)},
+                       plot(rv$modSet_CP, specificModel = rv$best_CP,
+                         sizeclassName = rv$sizeclass
+                       )},
                        height = rv$figH_CP, width = rv$figW_CP
                      )
     isolate({
@@ -403,14 +411,16 @@ observeEvent(input$tabfig_sizeclassCP, {
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
     rv$modTab_CP <- rv$mods_CP[[rv$sizeclass]][[rv$best_CP]]$cellwiseTable_ls
     colnames(rv$modTab_CP) <- modTabColNamesCP(rv$CL)
-    rv$figH_CP <- setFigH(rv$modSet_CP, 500, "CP")
+    rv$figH_CP <- setFigH(rv$modSet_CP, 700, "CP")
     rv$figW_CP <- setFigW(rv$modSet_CP)
 
     output$modTab_CP <- renderDataTable(rv$modTab_CP)
     rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
 
     output$fig_CP <- renderPlot({ 
-                       plot(rv$modSet_CP, specificModel = rv$best_CP)},
+                       plot(rv$modSet_CP, specificModel = rv$best_CP,
+                         sizeclassName = rv$sizeclass
+                       )},
                        height = rv$figH_CP, width = rv$figW_CP
                      )
 
@@ -432,7 +442,8 @@ observeEvent(input$tabfig_sizeclassCP, {
       output$fig_CP <- renderPlot({
                          tryCatch(
                            plot(rv$modSet_CP,
-                             specificModel = rv$tabfig_CPdlsfig
+                             specificModel = rv$tabfig_CPdlsfig,
+                             sizeclassName = rv$sizeclass
                            ), error = function(x){plot(1,1)}
                          )}, height = rv$figH_CP, width = rv$figW_CP
                        )
@@ -449,7 +460,8 @@ observeEvent(input$tabfig_sizeclassCP, {
       output$fig_CP <- renderPlot({
                          tryCatch(
                            plot(rv$modSet_CP,
-                             specificModel = rv$tabfig_CPdlsfig
+                             specificModel = rv$tabfig_CPdlsfig,
+                             sizeclassName = rv$sizeclass
                            ), error = function(x){plot(1,1)}
                          )}, height = rv$figH_CP, width = rv$figW_CP
                        )
@@ -466,7 +478,8 @@ observeEvent(input$tabfig_sizeclassCP, {
       output$fig_CP <- renderPlot({
                          tryCatch(
                            plot(rv$modSet_CP,
-                             specificModel = rv$tabfig_CPdlsfig
+                             specificModel = rv$tabfig_CPdlsfig,
+                             sizeclassName = rv$sizeclass
                            ), error = function(x){plot(1,1)}
                          )}, height = rv$figH_CP, width = rv$figW_CP
                        )
@@ -514,21 +527,23 @@ observeEvent(input$runMod_g, {
 
   msg_RunModg <- msgModRun("g")
 
+  rv$CL <- input$CL
   rv$kFill_g <- NA
   if (length(rv$obsCols_SE) == 1 | rv$kFixedChoice == 1){
     rv$kFill_g <- input$kFill_g
   }
-  rv$nsizeclasses <- length(rv$sizeclasses)
-  if (length(rv$nsizeclasses) == 1){
-    if (is.null(rv$sizeclasses)){
-      rv$sizeclasses <- "all"
-      rv$nsizeclasses <- 1
-     }
+  rv$sizeclasses_g <- rv$sizeclasses
+  rv$nsizeclasses_g <- length(rv$sizeclasses_g)
+  if (length(rv$nsizeclasses_g) == 1){
+    if (is.null(rv$sizeclasses_g)){
+      rv$sizeclasses_g <- "all"
+      rv$nsizeclasses_g <- 1
+    }
   }
 
   rv$n <- input$n
-  rv$rghatsGeneric <- vector("list", length = rv$nsizeclasses)
-  for (sci in 1:rv$nsizeclasses){
+  rv$rghatsGeneric <- vector("list", length = rv$nsizeclasses_g)
+  for (sci in 1:rv$nsizeclasses_g){
 
     rv$SEmodToUse_g <- input[[sprintf("modelChoices_SE%d", sci)]]
     rv$CPmodToUse_g <- input[[sprintf("modelChoices_CP%d", sci)]]
@@ -542,24 +557,49 @@ observeEvent(input$runMod_g, {
                                  rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
                                  kFill = rv$kFill)
   }
-  names(rv$rghatsGeneric) <- rv$sizeclasses
+  names(rv$rghatsGeneric) <- rv$sizeclasses_g
 
   removeNotification(msg_RunModg)
-  output$tab_g <- renderDataTable(summary(rv$rghatsGeneric[[1]]))
-  output$fig_g <- renderPlot(plot(rv$rghatsGeneric[[1]]))
-  updateSelectizeInput(session, "tabfig_sizeclassg", choices = rv$sizeclasses)
+
+  if (!is.null(rv$rghatsGeneric[[1]])){
+    output$tab_g <- renderDataTable(
+                      summary(rv$rghatsGeneric[[1]], CL = rv$CL)
+                    )
+    output$fig_g <- renderPlot(
+                      tryCatch(
+                        plot(rv$rghatsGeneric[[1]], 
+                          sizeclassName = rv$sizeclasses_g[1], CL = rv$CL
+                        ), error = function(x){plot(1,1)}
+                      )
+                    )
+  }
+  updateSelectizeInput(session, "tabfig_sizeclassg", 
+    choices = rv$sizeclasses_g
+  )
   updateTabsetPanel(session, "analyses_g", "Table")
 
 })
 
 observeEvent(input$tabfig_sizeclassg, {
-  rv$tabfig_sizeclassg <- input$tabfig_sizeclassg
-  if ( length(rv$rghatsGeneric) > 0){
+  rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$tabfig_sizeclassg)
+
+  rv$CL <- input$CL
+
+  if (class(rv$rghatsGeneric[[rv$sizeclass_g]])[1] == "ghatGeneric"){
     output$tab_g <- renderDataTable(
-                      summary(rv$rghatsGeneric[[rv$tabfig_sizeclassg]])
+                      summary(rv$rghatsGeneric[[rv$sizeclass_g]],
+                        CL = rv$CL
+                      )
                     )
-    output$fig_g <- renderPlot(plot(rv$rghatsGeneric[[rv$tabfig_sizeclassg]]))
+    output$fig_g <- renderPlot(
+                      tryCatch(
+                        plot(rv$rghatsGeneric[[rv$sizeclass_g]],
+                          sizeclassName = rv$sizeclass_g, CL = rv$CL
+                        ), error = function(x){plot(1,1)}
+                      )
+                    )
   }
+
 })
 
 observeEvent(input$runModM, {

@@ -5,7 +5,8 @@
 \title{Plot results of a pk model set}
 \usage{
 \method{plot}{pkmSet}(x, specificModel = NULL, n = 1000, seed_spec = 1,
-  seed_full = 1, col_spec = "black", col_full = "grey", ...)
+  seed_full = 1, col_spec = "black", col_full = "grey",
+  sizeclassName = NULL, ...)
 }
 \arguments{
 \item{x}{pk model set of class pkmSet}
@@ -21,6 +22,9 @@
 \item{col_spec}{color to use for the specific model}
 
 \item{col_full}{color to use for the specific model}
+
+\item{sizeclassName}{name of the size class if it is to be added to the
+figure}
 
 \item{...}{to be sent to subfunctions}
 }

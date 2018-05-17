@@ -2,20 +2,23 @@
 % Please edit documentation in R/detection_probability_figure_functions.R
 \name{plot.ghatGeneric}
 \alias{plot.ghatGeneric}
-\title{Plot results of a single pk model}
+\title{Plot results of a single generic ghat estimation}
 \usage{
-\method{plot}{ghatGeneric}(x, ..., CL = 0.9)
+\method{plot}{ghatGeneric}(x, sizeclassName = NULL, CL = 0.9, ...)
 }
 \arguments{
 \item{x}{ghatGeneric output}
 
-\item{...}{to be passed down}
+\item{sizeclassName}{name of the size class if it is to be added to the
+figure}
 
 \item{CL}{confidence level to use}
+
+\item{...}{to be passed down}
 }
 \value{
 a plot
 }
 \description{
-Plot results of a single pk model
+Plot results of a single generic ghat estimation
 }
