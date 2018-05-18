@@ -1,0 +1,95 @@
+---
+title: "Tutorial: GenEst command line tools"
+author: "Dan Dalthorp"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, include = FALSE}
+library(GenEst)
+vers <- packageVersion("GenEst")
+today <- Sys.Date()
+```
+
+This tutorial provides an introduction to the array of command line tools
+**GenEst** provides for estimating carcass arrivals and detection probabilities.
+The approach is to walk through analyses of realistic but fictitious data sets
+representing studies of bird and bat mortality at a wind power facility.
+
+The tutorial was constructed using **GenEst** version `r vers` on `r today`.
+
+```{r}
+
+data(wind_RP)
+batind <- wind_RP[["SE"]]$Size == "bat"
+SE_data <- wind_RP[["SE"]][batind,]
+
+batind <- which(wind_RP[["CP"]]$Size == "bat")
+CP_data <- wind_RP[["CP"]][batind,]
+
+DWP_data <- wind_RP[["DWP"]][ , c("Turbine", "DWP_bat")]
+
+batind <- which(wind_RP[["CO"]]$Size == "bat")
+CO_data <- wind_RP[["CO"]][batind, ]
+
+SS_data <- wind_RP[["SS"]]
+
+pkModel <- pkm(p ~ 1, k ~ 1, data = SE_data)
+cpModel <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
+
+tst <- proc.time()
+nsim <- 1000
+gAj <- rghat(n = nsim,
+  data_CO = CO_data,
+  data_SS = SS_data,
+  model_SE = pkModel,
+  model_CP = cpModel,
+  unitCol = "Turbine",
+  dateFoundCol = "DateFound",
+  dateSearchedCol = "SearchDate",
+  removeCleanout = TRUE
+)
+ghat <- gAj$ghat
+Aj <- gAj$Aj
+proc.time() - tst # 4 minutes!
+
+DWP <- DWPbyCarcass( # doesn't work
+  data_DWP = DWP_data,
+  data_carc = CO_data,
+  unitCol = "Turbine",
+  sizeclassCol = NULL,
+  removeCleanout = TRUE,
+  data_SS = SS_data,
+  dateFoundCol = "DateFound",
+  dateSearchedCol = "SearchDate"
+)
+DWP <- DWP_data$DWP_bat[match(rownames(Aj), DWP_data$Turbine)]
+Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
+
+SSdat <- SS(SS_data)
+
+M_by_season <- calcSplits(
+  M = Mhat, Aj = Aj,
+  split_SS = "Season",
+  data_SS = SS(SS_data)
+)
+
+plot(M_by_season)
+M_by_week <- calcSplits(M = Mhat, Aj = Aj,
+  split_time = seq(0, max(SSdat$days), by = 7), data_SS = SSdat)
+plot(M_by_week, rate = T)
+M_by_unit <- calcSplits(M = Mhat, Aj = Aj, split_CO = "Turbine", data_CO = CO_data)
+plot(M_by_unit, rate = F)
+summary(M_by_unit)
+summary(M_by_unit, CL = 0.9)
+```

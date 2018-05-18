@@ -18,16 +18,17 @@
 #'  interval indices (j) are relative to indexed carcasses' search schedules.
 #' @param data_SS \code{\link{SS}} object that contains formatted data for 
 #'  calculating splits. Optional argument. Alternatively, user may provide 
-#'  \code{days} and \code{searches}.
+#'  \code{days} and \code{searches_carcass}.
 #' @param days Vector of all dates that at least one unit was searched. Format
 #'  is the number of days since the first search. For example, days = c(0, 7,
 #'  14, 28, 35) for a simple 7-day search schedule in which searches were
 #'  conducted every once per week on the same day for 5 weeks. Not all units
 #'  need be searched on every search date.
-#' @param searches An ncarc x length(days) array of 0s and 1s to indicate the
-#'  searches in which the indexed carcass could have been found. For example,
-#'  row i = \code{c(1, 0, 1, 0, 1)} indicates that the search schedule for the
-#' location (unit) where carcass i was found would be \code{days[c(1, 3, 5)]}.
+#' @param searches_carcass An ncarc x length(days) array of 0s and 1s to 
+#'  indicate searches in which the indexed carcass could have been found. 
+#'  For example, row i = \code{c(1, 0, 1, 0, 1)} indicates that the search 
+#'  schedule for the location (unit) where carcass i was found would be 
+#'  \code{days[c(1, 3, 5)]}.
 #' @return Numeric array (nsim x nsearch) of estimated fatalities in each
 #'  search interval. NOTE: The search at time t = 0 does not correspond to an
 #'  interval, and all carcasses found at that time are assumed to have arrived
@@ -36,21 +37,30 @@
 #'
 #' @export
 #'
-calcRate <- function(M, Aj, data_SS = NULL, days = NULL, searches = NULL){
+calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL, 
+                     data_SS = NULL){
  if (!is.null(data_SS) && ("SS" %in% class(data_SS))){
     days <- data_SS$days
-    searches <- data_SS$searches
+    unit <- rownames(Aj)
+    searches_carcass <- array(0, dim = c(x, length(days)))
+    for (xi in 1:x){
+       searches_carcass[xi, ] <- data_SS$searches_unit[unit[xi], ]
+    }
+  } else if (!is.null(data_SS)){
+    stop(
+      "In arg list, data_SS must be an SS object. Alternatively, user may ",
+      "provide 'days' and 'carcass_searches'."
+    )
   }
   if (is.vector(M)){
     M <- matrix(M, nrow = 1)
     Aj <- matrix(Aj, nrow = 1)
-    searches <- matrix(searches, nrow = 1)
+    searches_carcass <- matrix(searches_carcass, nrow = 1)
   }
-  calcRateC(M, Aj, days, searches)
+  calcRateC(M, Aj, days, searches_carcass)
 }
 
 #' Estimate the number of fatalities by time interval
-#'
 #'
 #' \code{calcTsplit()} is a lower-level function that requires the output
 #' of \code{calcRate} as input. See \code{\link{calcSplits}} for a more 
@@ -148,12 +158,13 @@ calcTsplit <- function(rate, days, tsplit){
 #'  is not taken as a "search interval." If no \code{split_SS} split is 
 #'  desired, use \code{split_SS = NULL}.
 #' @param data_SS \code{\link{SS}} object that summarizes the search schedule
-#'  data and must include (at a minimum) \code{$days}, \code{$searches}, and 
-#'  \code{$unit}. In addition, if \code{split_SS} is non-NULL, \code{data_SS}
-#'  must also  include an element with name \code{split_SS} (e.g., 
-#'  if \code{split_SS = "season"}, \code{split_SS} must contain an element 
-#'  named \code{season}). If either \code{split_SS} or \code{split_time} is
-#'  non-NULL, \code{split_SS} is  required. In other cases it is ignored.
+#'  data and must include (at a minimum) \code{$days}, \code{$searches_unit},
+#'  and \code{$unit}. In addition, if \code{split_SS} is non-NULL, 
+#'  \code{data_SS} must also  include an element with name \code{split_SS} 
+#'  (e.g., if \code{split_SS = "season"}, \code{split_SS} must contain an 
+#'  element named \code{season}). If either \code{split_SS} or 
+#'  \code{split_time} is non-NULL, \code{split_SS} is  required. In other 
+#'  cases it is ignored.
 #' @param split_time Numeric vector that defines time intervals for splits.
 #'  Times must be numeric, strictly increasing, and span the monitoring period
 #'  [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
@@ -184,7 +195,7 @@ calcTsplit <- function(rate, days, tsplit){
 calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
                        ...){
-
+  data_SS <- data_SS
   ##### read data and check for errors
   if ((!is.null(split_SS) || !is.null(split_time)) & is.null(data_SS)){
     stop("data_SS must be provided if ",
@@ -212,28 +223,30 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     minspl <- min(split_time)
     if (minspl != 0){
       if (minspl < 0){
-        stop(paste0("min(split_time) = ", minspl, " but must not be < 0" ))
+        stop("min(split_time) = ", minspl, " but must not be < 0" )
       }
       if (minspl > 0){
-        warning(paste0(
-          "min(split_time) = ", minspl,
-          ". Appending 0 to split_time so first split is [0, ", minspl, "]."
-        ))
+        warning(
+          "min(split_time) = ", minspl, ". ",
+          "Appending 0 to split_time, so first split is [0, ", minspl, "]."
+        )
       }
     }
     maxspl <- max(split_time)
     maxdays <- max(data_SS$days)
     if (maxspl != maxdays){
       if (maxspl > maxdays){
-        stop("max(split_time) = ", maxspl,
-          " but must not be > max(data_SS$days) = ", maxdays)
+        stop(
+          "max(split_time) = ", maxspl, " ",
+          "but must not be > max(data_SS$days) = ", maxdays
+        )
       }
       if (maxspl > maxdays){
-        warning(paste0(
-          "max(split_time) = ", maxspl, " < max(data_SS$days) = ", maxdays,
-          ". Appending max(days) to split_time so last split is [",
-          maxspl, ", ", max(data_SS$days),"]."
-        ))
+        warning(
+          "max(split_time) = ", maxspl, " < max(data_SS$days) = ", maxdays, 
+          ". ", "Appending max(days) to split_time so last split is ",
+          "[", maxspl, ", ", max(data_SS$days),"]."
+        )
       }
     }
     if (sum(diff(split_time) <= 0) > 0){
@@ -253,8 +266,10 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   }
   if (!is.null(split_SS)){ # there is a split_SS variable
     if (!is.null(split_h)){
-      stop("Only one temporal split allowed. ",
-        "Either split_SS or split_time must be NULL")
+      stop(
+        "Only one temporal split allowed. ",
+        "Either split_SS or split_time must be NULL"
+      )
     }
     if (!is.character(split_SS)){
       stop("split_SS must be NULL or the name of an element in data_SS")
@@ -267,7 +282,8 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     }
     split_h <- list()
     split_h[["name"]] <- split_SS
-    tmp <- cumsum(table(data_SS[[split_h$name]])[unique(data_SS[[split_h$name]])])
+    tmp <- 
+      cumsum(table(data_SS[[split_h$name]])[unique(data_SS[[split_h$name]])])
     split_h[["vals"]] <- c(0, data_SS$days[tmp])
     split_h[["level"]] <- unique(data_SS[[split_h$name]])
     split_h[["nlev"]] <- length(split_h$level)
@@ -275,20 +291,17 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   }
   if (!is.null(split_CO)){
     if (length(split_CO) > 2 | (length(split_CO) > 1 & !is.null(split_h))){
-      msg1 <- "At most two split variables are allowed in total, i.e. "
-      msg2 <- "length(split_CO) + length(split_SS) + length(split_time) "
-      msg3 <- "must be <= 2"
-      msg <- paste0(msg1, msg2, msg3)
-      stop(msg)
+      stop(
+        "At most two split variables are allowed in total, i.e. ",
+        "length(split_CO) + length(split_SS) + length(split_time) ",
+        "must be <= 2"
+      )
     }
     if (!is.character(split_CO)){
       stop("split_CO must be a name of a selected column in data_CO")
     }
     if (sum(split_CO %in% names(data_CO)) != length(split_CO)){
-      msg1 <- split_CO[which(!(split_CO %in% names(data_CO)))]
-      msg2 <- "not in data_SS"
-      msg <- paste0(msg1, msg2)
-      stop(msg)
+      stop(split_CO[which(!(split_CO %in% names(data_CO)))], "not in data_SS")
     }
     if (length(split_CO) == 2 | !is.null(split_h)){
       split_v <- list()
@@ -310,19 +323,16 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   nvar <- sum(c(!is.null(split_h), !is.null(split_v)))
 
   # additional preprocessing
-  # x is total observed carcasses (assumes data_CO is error-checked)
-  x <- dim(M)[1] 
   if (is.vector(M)) M <- matrix(M, nrow = 1)
   x <- dim(M)[1] # total observed carcasses (assumes data_CO is error-checked)
   nsim <- dim(M)[2] # number of simulation draws (columns in M)
-  if (!is.null(split_h) && (split_h$type %in% c("SS", "time"))){
-    days <- data_SS$days
-    searches <- array(0, dim = c(x, length(days)))
-    for (xi in 1:x){
-      searches[xi, ] <- data_SS$searches[unit[xi], ]
-    }
+  if (split_h$type %in% c("time", "SS")){
+      days <- data_SS$days
+      searches_carcass <- array(0, dim = c(x, length(days)))
+      for (xi in 1:x){
+        searches_carcass[xi, ] <- data_SS$searches_unit[unit[xi], ]
+      }
   }
-
   # calculate splits
   if (nvar == 0){ # no splits...just calculate total M
     splits <- colSums(M)
@@ -338,11 +348,10 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
         }
       }
     } else if (split_h$type %in% c("time", "SS")){
-      searches <- array(0, dim = c(x, length(data_SS$days)))
-      for (xi in 1:x){
-        searches[xi, ] <- data_SS$searches[unit[xi],]
-      }
-      rate <- calcRate(M, Aj, data_SS$days, searches)
+      days <- data_SS$days
+      rate <- calcRate(M, Aj, days = days, 
+                searches_carcass = searches_carcass
+              )
       splits <- calcTsplit(rate, data_SS$days, split_h$vals)
     }
   } else if (nvar == 2){ # two split variables: split_h and split_v
@@ -365,13 +374,14 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     } else if (split_h$type %in% c("SS", "time")){
       for (vi in 1:split_v$nlev){
         lind <- which(split_v$vals == split_v$level[vi])
-        rate <- calcRate(M[lind, ], Aj[lind, ], data_SS$days, searches[lind,])
+        rate <- calcRate(M = M[lind, ], Aj = Aj[lind, ], days = data_SS$days,
+          searches_carcass = searches_carcass[lind,])
         splits[[vi]] <- calcTsplit(rate, data_SS$days, split_h$vals)
       }
     }
   }
   #protection against unintended loss of attr's
-  splits <- sticky(splits) 
+  splits <- sticky::sticky(splits) 
   attr(splits, "vars") <- c(split_h$name, split_v$name)
   attr(splits, "type") <- c(split_h$type, split_v$type)
   if (split_h$type %in% c("time", "SS")){
@@ -421,7 +431,9 @@ summary.splitFull <- function(object, CL = 0.95, ...){
     sumry <- c(mean = mean(splits), quantile(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
-    sumry <- cbind(mean = rowMeans(splits), rowQuantiles(splits, probs = probs))
+    sumry <- cbind(mean = rowMeans(splits), 
+               rowQuantiles(splits, probs = probs)
+             )
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
       splits <- lapply(splits, function(x){
@@ -432,8 +444,10 @@ summary.splitFull <- function(object, CL = 0.95, ...){
       cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))
     })
   } else {
-    stop(paste("length(attr(splits, 'vars')) > 2. ",
-               "At most two split variables are allowed."))
+    stop(
+      "length(attr(splits, 'vars')) > 2.",
+      "At most two split variables are allowed."
+    )
   }
   sumry <- sticky(sumry)
   attr(sumry, "CL") <- CL
@@ -519,15 +533,16 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       xx <- times[-1] - hwid
     }
     for (hi in 1:nlevel_h){
-      deno <- ifelse(vartype[1] == "CO" || !rate, 1, deltaT[hi])
+      ratebars <- !(vartype[1] == "CO" || !rate)
+      deno <- ifelse(ratebars, deltaT[hi], 1)
       qtls <- quantile(splits[[vi]][hi, ], prob = probs)/deno
       polygon(xx[hi] + hwid[hi] * c(1, 1, -1, -1), qtls[c(2, 4, 4, 2)])
       lines(xx[hi] + hwid[hi] * c(1, -1), rep(qtls[3], 2), lwd = 3)
       if (alpha >= 0.5) yst <- c(3, 3) else yst <- c(2, 4)
       lines(rep(xx[hi], 2), qtls[c(1, yst[1])])
       lines(rep(xx[hi], 2), qtls[c(yst[2], 5)])
-      lines(xx[hi] + hwid[hi]/2 * c(1, -1), rep(qtls[1], 2))
-      lines(xx[hi] + hwid[hi]/2 * c(1, -1), rep(qtls[5], 2))
+      lines(xx[hi] + hwid[hi]/(2 - ratebars) * c(1, -1), rep(qtls[1], 2))
+      lines(xx[hi] + hwid[hi]/(2 - ratebars) * c(1, -1), rep(qtls[5], 2))
     }
     axis(2, las = 1)
     
@@ -688,7 +703,7 @@ SS <- function(data_SS, dateCol = NULL, preds = NULL){
       ans[[preds[i]]] <- data_SS[,preds[i]]
     }
   }
-  ans$searches <- t(as.matrix(data_SS[, unitNames]))
+  ans$searches_unit <- t(as.matrix(data_SS[, unitNames]))
   ans$unit <- unitNames
   class(ans) <- "SS"
   return(ans)

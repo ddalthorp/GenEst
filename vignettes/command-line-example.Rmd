@@ -434,8 +434,8 @@ incorporated into the ($\hat{M}$) calculation, but need to first be expanded
 to be carcass-by-carcass:
 
 ```{r}
-dataDWP <- mockData$DensityWeightedProportionData
-DWP <- DWPbyCarcass(dataDWP, data_CO, unitCol = "Unit",
+data_DWP <- mockData$DensityWeightedProportionData
+DWP <- DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit",
          sizeclassCol = "Size",
          removeCleanout = TRUE, data_SS, dateFoundCol = "DateFound",
          dateSearchedCol = "DateSearched"
