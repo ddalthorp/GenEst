@@ -14,7 +14,7 @@
 #' @importFrom grDevices rgb devAskNewPage
 #' @importFrom stats .getXlevels approxfun delete.response formula median
 #'   model.matrix na.omit optim pgamma pnorm qnorm quantile reformulate
-#'   runif terms update.formula weighted.mean as.formula
+#'   runif terms update.formula weighted.mean as.formula rnorm
 #' @importFrom utils combn packageDescription read.csv
 #' @importFrom survival Surv survfit survreg psurvreg dsurvreg
 #' @importFrom mvtnorm rmvnorm
