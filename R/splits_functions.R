@@ -91,8 +91,8 @@ calcTsplit <- function(rate, days, tsplit){
 
 #' Summarize total aggregate mortality
 #'
-#' This would work nicely as an S3 function, but we need to create a Mhat class
-#' structure for it to operate on.
+#' skeleton...This would work nicely as an S3 function, but we'd need to create
+#'  a Mhat class structure for it to operate on.
 #'
 #' @param M numeric array (ncarc x nsim) of estimated number of fatalities
 #'  represented by each carcass discovered
