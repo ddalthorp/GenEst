@@ -42,6 +42,7 @@ calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL,
  if (!is.null(data_SS) && ("SS" %in% class(data_SS))){
     days <- data_SS$days
     unit <- rownames(Aj)
+    x <- nrow(Aj)
     searches_carcass <- array(0, dim = c(x, length(days)))
     for (xi in 1:x){
        searches_carcass[xi, ] <- data_SS$searches_unit[unit[xi], ]
