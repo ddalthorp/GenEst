@@ -283,9 +283,9 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (length(kFixed) == 1){
     betaInit <- betaInit[-length(betaInit)]
   }
-
+  beta <- betaInit
   MLE <- tryCatch(
-           optim(par = betaInit, fn = pkLogLik, method = "BFGS", 
+           optim(par = beta, fn = pkLogLik, method = "BFGS", 
              hessian = TRUE, cellByCarc = cellByCarc, misses = misses, 
              maxmisses = maxmisses, foundOn = foundOn, cellMM = cellMM, 
              nbeta_p = nbeta_p, kFixed = kFixed
@@ -326,7 +326,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     cellVar_k <- cellMM_k %*% varbeta_k %*% t(cellMM_k)
     cellSD_k <- sqrt(diag(cellVar_k))
   }else{
-    cellMean_k <- rep(kFixed, ncell)
+    cellMean_k <- rep(logit(kFixed), ncell)
     cellSD_k <- rep(0, ncell)
   }
 
