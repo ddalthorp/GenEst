@@ -31,21 +31,21 @@ The tutorial was constructed using **GenEst** version `r vers` on `r today`.
 ```{r}
 
 data(wind_RP)
-batind <- which(wind_RP[["SE_trials"]]$Size == "bat")
-SE_data <- wind_RP[["SE_trials"]][batind,]
+batind <- wind_RP[["SE"]]$Size == "bat"
+SE_data <- wind_RP[["SE"]][batind,]
 
-batind <- which(wind_RP[["CP_trials"]]$Size == "bat")
-CP_data <- wind_RP[["CP_trials"]][batind,]
+batind <- which(wind_RP[["CP"]]$Size == "bat")
+CP_data <- wind_RP[["CP"]][batind,]
 
-DWP_data <- wind_RP$DWP_data[ , c("Turbine", "DWP_bat")]
+DWP_data <- wind_RP[["DWP"]][ , c("Turbine", "DWP_bat")]
 
-batind <- which(wind_RP[["CO_data"]]$Size == "bat")
-CO_data <- wind_RP[["CO_data"]][batind, ]
+batind <- which(wind_RP[["CO"]]$Size == "bat")
+CO_data <- wind_RP[["CO"]][batind, ]
 
-SS_data <- wind_RP$SS_params
+SS_data <- wind_RP[["SS"]]
 
-pkModel <- pkm(p ~ Visibility, k ~ 1, data = SE_data)
-cpModel <- cpm(p ~ Visibility, k ~ 1, data = CP_data, left = "Left", right = "Right")
+pkModel <- pkm(p ~ 1, k ~ 1, data = SE_data)
+cpModel <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
 
 tst <- proc.time()
 nsim <- 1000
@@ -74,7 +74,7 @@ proc.time() - tst # 4 minutes!
 #  dateSearchedCol = "SearchDate"
 #)
 DWP <- DWP_data$DWP_bat[match(rownames(Aj), DWP_data$Turbine)]
-Mhat <- rMhat(n = 1, ghat = ghat, DWP)
+Mhat <- (cbinom::rcbinom(length(ghat), 1/(ghat*DWP), ghat*DWP) - (Ecbinom(ghat*DWP) - 1))/(ghat*DWP)
 
 SSdat <- SS(SS_data)
 
