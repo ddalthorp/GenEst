@@ -173,7 +173,7 @@ DWPbyCarcass <- function(data_DWP, data_carc, unitCol = "Unit",
   scexp <- character(0)
   for (uniti in 1:nunits){
     DWPexp <- c(DWPexp, DWPonly[uniti, ])
-    unitexp <- c(unitexp, rep(units_DWP[uniti], nDWPcols))
+    unitexp <- c(unitexp, rep(as.character(units_DWP[uniti]), nDWPcols))
     scexp <- c(scexp, sizeclasses)
   }
   data_DWPtall <- data.frame(DWPexp, unitexp, scexp, stringsAsFactors = FALSE)
