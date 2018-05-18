@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r, include = FALSE}
+```{r, include=FALSE}
 library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
@@ -28,7 +28,7 @@ representing studies of bird and bat mortality at a wind power facility.
 
 The tutorial was constructed using **GenEst** version `r vers` on `r today`.
 
-```{r}
+```{r, eval=FALSE}
 
 data(wind_RP)
 batind <- wind_RP[["SE"]]$Size == "bat"
