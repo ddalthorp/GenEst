@@ -8,14 +8,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r, include = FALSE}
+```{r, include=FALSE}
 library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
@@ -434,8 +434,8 @@ incorporated into the ($\hat{M}$) calculation, but need to first be expanded
 to be carcass-by-carcass:
 
 ```{r}
-dataDWP <- mockData$DensityWeightedProportionData
-DWP <- DWPbyCarcass(dataDWP, data_CO, unitCol = "Unit",
+data_DWP <- mockData$DensityWeightedProportionData
+DWP <- DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit",
          sizeclassCol = "Size",
          removeCleanout = TRUE, data_SS, dateFoundCol = "DateFound",
          dateSearchedCol = "DateSearched"

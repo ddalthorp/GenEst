@@ -7,7 +7,7 @@ data_CO <- mockData$CarcassObservationData
 data_SS <- mockData$SearchScheduleData
 
 
-model_SE <- pkm(formula_p = p ~ HabitatType, 
+model_SE <- pkm(formula_p = p ~ Visibility , 
              formula_k = k ~ Visibility + HabitatType,
              data = data_SE
             )
