@@ -20,13 +20,13 @@
 #' Complete data set for fatality estimation at a wind power facility. Included
 #' are SE, CP, SS, DWP, and CO data.
 #'
-#' @format A list with 5 items:
+#' @format A list with 5 elements:
 #' \describe{
-#'   \item{SE_trials}{Searcher efficiency trial data}
-#'   \item{CP_trials}{Carcass persistence trial data}
-#'   \item{SS_params}{Search schedule parameters}
-#'   \item{DWP_data}{Density weighted proportion of area searched}
-#'   \item{CO_data}{Carcass observations}
+#'   \item{SE}{Searcher efficiency trial data}
+#'   \item{CP}{Carcass persistence trial data}
+#'   \item{SS}{Search schedule parameters}
+#'   \item{DWP}{Density weighted proportion of area searched}
+#'   \item{CO}{Carcass observations}
 #' }
 #' @source RP
 "wind_RP"
@@ -37,13 +37,13 @@
 #' Complete data set for fatality estimation at a wind power facility. Included
 #' are SE, CP, SS, DWP, and CO data.
 #'
-#' @format A list with 5 items:
+#' @format A list with 5 elements:
 #' \describe{
-#'   \item{SE_trials}{Searcher efficiency trial data}
-#'   \item{CP_trials}{Carcass persistence trial data}
-#'   \item{SS_params}{Search schedule parameters}
-#'   \item{DWP_data}{Density weighted proportion of area searched}
-#'   \item{CO_data}{Carcass observations}
+#'   \item{SE}{Searcher efficiency trial data}
+#'   \item{CP}{Carcass persistence trial data}
+#'   \item{SS}{Search schedule parameters}
+#'   \item{DWP}{Density weighted proportion of area searched}
+#'   \item{CO}{Carcass observations}
 #' }
 #' @source cleared
 "wind_cleared"
