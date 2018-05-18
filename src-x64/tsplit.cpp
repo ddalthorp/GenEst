@@ -4,16 +4,18 @@
 using namespace Rcpp;
 
 // [[Rcpp::export]]
-NumericMatrix calcRateC(NumericMatrix Mtilde, NumericMatrix Aj,
+NumericMatrix calcRateC(NumericMatrix M, NumericMatrix Aj,
   NumericVector days, NumericMatrix searches){
-// days = master search schedule with all search days
-// times = vector of bin boundaries for temporal split
-  const int nsim = Mtilde.ncol();
-  const int x = Mtilde.nrow();
+// M = (estimated) mortalities (ncarc x nsim)
+// Aj = (simulated) arrival intervals (ncarc x nsim)
+// days = vector of all search days (on all units) = c(0, ...)
+// searches = (ncarc x ndays) array of 0s & 1s; indicates search days for carcs
+  const int nsim = M.ncol();
+  const int x = M.nrow();
   const int nsearch = days.size() - 1;
   int xi, i, i0, i1;
 // di = index into days for carcass xi [so c(1, 0, 1, 1, 0) -> c(0, 2, 3, 0, 0)]
-  int di[x][nsearch + 1];
+  int di[x][nsearch + 1]; // search schedules for each carcass
   for (xi = 0; xi < x; xi++){
     i = 0;
     for (int si = 0; si < days.size(); si++){
@@ -29,13 +31,13 @@ NumericMatrix calcRateC(NumericMatrix Mtilde, NumericMatrix Aj,
     for (int xi = 0; xi < x; xi++){
       i0 = int(Aj(xi, simi)) - 1;
       i1 = i0 + 1;
-      tmprate = Mtilde(xi, simi)/(days[di[xi][i1]] - days[di[xi][i0]]);
+      tmprate = M(xi, simi)/(days[di[xi][i1]] - days[di[xi][i0]]);
       for (i = di[xi][i0]; i < di[xi][i1]; i++){
         rate(simi, i) += tmprate; 
       }
     }
   }
-// need to prorate the rate for the unmonitored parts of the season
+// need to prorate the rate for the unmonitored parts of the season [not done]
   return(rate);
 }
 
@@ -43,7 +45,7 @@ NumericMatrix calcRateC(NumericMatrix Mtilde, NumericMatrix Aj,
 NumericMatrix calcTsplitC(NumericMatrix rate, NumericVector days, NumericVector times){
 // rate = array of rates
 // days = master search schedule with all search days
-// tbins = vector of bin boundaries for temporal split
+// times = vector of bin boundaries for temporal split
   const int nsim = rate.nrow();
   const int ntimes = times.size();
   int si;
