@@ -4,7 +4,7 @@
 \name{wind_cleared}
 \alias{wind_cleared}
 \title{Synthetic data set based on searches of 60 m cleared plots of 23 out of 100
-turbines at a theoretical site.}
+  turbines at a theoretical site.}
 \format{A list with 5 elements:
 \describe{
   \item{SE}{Searcher efficiency trial data}
@@ -20,7 +20,7 @@ cleared
 wind_cleared
 }
 \description{
-Complete data set for fatality estimation at a wind power facility. Included
-are SE, CP, SS, DWP, and CO data.
+Complete data set for fatality estimation at a wind power facility. 
+  Included are SE, CP, SS, DWP, and CO data.
 }
 \keyword{datasets}
