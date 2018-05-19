@@ -7,8 +7,7 @@
 \usage{
 rghat(n = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, seed_ghat = NULL, kFill = NULL, unitCol = "Unit",
-  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
-  removeCleanout = FALSE)
+  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched")
 }
 \arguments{
 \item{n}{the number of simulation draws}
@@ -34,9 +33,6 @@ rghat(n = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
 \item{dateFoundCol}{Column name for the date found data}
 
 \item{dateSearchedCol}{Column name for the date searched data}
-
-\item{removeCleanout}{logical indicating if cleanout searches need to be
-removed from \code{data_carc}}
 }
 \value{
 list of [1] matrix of n ghat estimates for each carcass and [2]

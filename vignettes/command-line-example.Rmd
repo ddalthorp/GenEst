@@ -409,7 +409,6 @@ data_CO <- mockData$CarcassObservationData
 ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP,
              seed_SE = 1, seed_CP = 1, unitCol = "Unit",
              dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
-             removeCleanout = TRUE
            )
 ghat <- ghatsAjs$ghat
 Aj <- ghatsAjs$Aj
@@ -436,8 +435,7 @@ to be carcass-by-carcass:
 ```{r}
 data_DWP <- mockData$DensityWeightedProportionData
 DWP <- DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit",
-         sizeclassCol = "Size",
-         removeCleanout = TRUE, data_SS, dateFoundCol = "DateFound",
+         sizeclassCol = "Size", data_SS, dateFoundCol = "DateFound",
          dateSearchedCol = "DateSearched"
        )
 Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
