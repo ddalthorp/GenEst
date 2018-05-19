@@ -5,7 +5,8 @@
 \title{Estimate the number of fatalities by up to two splitting covariates}
 \usage{
 calcSplits(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
-  split_SS = NULL, data_SS = NULL, split_time = NULL, ...)
+  split_SS = NULL, data_SS = NULL, split_time = NULL, unitCol = "Unit",
+  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched", ...)
 }
 \arguments{
 \item{M}{Numeric array (ncarc x nsim) of estimated mortalities, such as
@@ -36,20 +37,17 @@ carcass arrivals prior to time t = 0, and the "interval" prior to t = 0
 is not taken as a "search interval." If no \code{split_SS} split is 
 desired, use \code{split_SS = NULL}.}
 
-\item{data_SS}{\code{\link{SS}} object that summarizes the search schedule
-data and must include (at a minimum) \code{$days}, \code{$searches_unit},
-and \code{$unit}. In addition, if \code{split_SS} is non-NULL, 
-\code{data_SS} must also  include an element with name \code{split_SS} 
-(e.g., if \code{split_SS = "season"}, \code{split_SS} must contain an 
-element named \code{season}). If either \code{split_SS} or 
-\code{split_time} is non-NULL, \code{split_SS} is  required. In other 
-cases it is ignored.}
+\item{data_SS}{Search schedule data}
 
 \item{split_time}{Numeric vector that defines time intervals for splits.
 Times must be numeric, strictly increasing, and span the monitoring period
 [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
 \code{split_time = NULL}. If \code{split_time} is non-NULL, \code{data_SS}
 is required.}
+
+\item{dateFoundCol}{Column name for the date found data}
+
+\item{dateSearchedCol}{Column name for the date searched data}
 
 \item{...}{arguments to be passed down}
 }

@@ -64,7 +64,7 @@ proc.time() - tst # 4 minutes!
 
 DWP <- DWPbyCarcass( # doesn't work
   data_DWP = DWP_data,
-  data_carc = CO_data,
+  data_CO = CO_data,
   unitCol = "Turbine",
   sizeclassCol = NULL,
   data_SS = SS_data,
@@ -74,19 +74,36 @@ DWP <- DWPbyCarcass( # doesn't work
 DWP <- DWP_data$DWP_bat[match(rownames(Aj), DWP_data$Turbine)]
 Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
 
-SSdat <- SS(SS_data)
-
 M_by_season <- calcSplits(
   M = Mhat, Aj = Aj,
   split_SS = "Season",
-  data_SS = SS(SS_data)
+  data_SS = SS_data,
+  data_CO = CO_data,
+  unitCol = "Turbine", 
+  dateFoundCol = "DateFound", 
+  dateSearchedCol = "SearchDate"
 )
-
 plot(M_by_season)
-M_by_week <- calcSplits(M = Mhat, Aj = Aj,
-  split_time = seq(0, max(SSdat$days), by = 7), data_SS = SSdat)
+
+M_by_week <- calcSplits(
+  M = Mhat, Aj = Aj,
+  split_time = seq(0, max(SSdat$days), by = 7), 
+  data_SS = SS_data,
+  data_CO = CO_data,
+  unitCol = "Turbine", 
+  dateFoundCol = "DateFound", 
+  dateSearchedCol = "SearchDate")
 plot(M_by_week, rate = T)
-M_by_unit <- calcSplits(M = Mhat, Aj = Aj, split_CO = "Turbine", data_CO = CO_data)
+
+M_by_unit <- calcSplits(
+  M = Mhat, Aj = Aj, 
+  split_CO = "Turbine", 
+  data_CO = CO_data, 
+  data_SS = SS_data,
+  unitCol = "Turbine", 
+  split_SS = "Season",
+  dateFoundCol = "DateFound", 
+  dateSearchedCol = "SearchDate")
 plot(M_by_unit, rate = F)
 summary(M_by_unit)
 summary(M_by_unit, CL = 0.9)
