@@ -158,20 +158,16 @@ calcTsplit <- function(rate, days, tsplit){
 #'  carcass arrivals prior to time t = 0, and the "interval" prior to t = 0 
 #'  is not taken as a "search interval." If no \code{split_SS} split is 
 #'  desired, use \code{split_SS = NULL}.
-#' @param data_SS \code{\link{SS}} object that summarizes the search schedule
-#'  data and must include (at a minimum) \code{$days}, \code{$searches_unit},
-#'  and \code{$unit}. In addition, if \code{split_SS} is non-NULL, 
-#'  \code{data_SS} must also  include an element with name \code{split_SS} 
-#'  (e.g., if \code{split_SS = "season"}, \code{split_SS} must contain an 
-#'  element named \code{season}). If either \code{split_SS} or 
-#'  \code{split_time} is non-NULL, \code{split_SS} is  required. In other 
-#'  cases it is ignored.
+#' @param data_SS Search schedule data
 #' @param split_time Numeric vector that defines time intervals for splits.
 #'  Times must be numeric, strictly increasing, and span the monitoring period
 #'  [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
 #'  \code{split_time = NULL}. If \code{split_time} is non-NULL, \code{data_SS}
 #'  is required.
 #' @param ... arguments to be passed down
+#' @param dateFoundCol Column name for the date found data
+#' @param dateSearchedCol Column name for the date searched data
+#' @param unitCol Column name for the unit indicator
 #' @return An object of class \code{splitsFull} is returned. If one splitting
 #'  covariate is given, then the output will be an array of estimated 
 #'  mortality in each level of the splitting covariate, with one row for each
@@ -195,8 +191,9 @@ calcTsplit <- function(rate, days, tsplit){
 #'
 calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
-                       ...){
-  data_SS <- data_SS
+                       unitCol = "Unit", dateFoundCol = "DateFound", 
+                       dateSearchedCol = "DateSearched", ...){
+
   ##### read data and check for errors
   if ((!is.null(split_SS) || !is.null(split_time)) & is.null(data_SS)){
     stop("data_SS must be provided if ",
@@ -207,6 +204,28 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       stop("data_CO must be provided to perform non-null splits")
     }
   }
+ 
+  dateSearched <- data_SS[ , dateSearchedCol]
+  data_SS[ , dateSearchedCol] <- yyyymmdd(data_SS[ , dateSearchedCol])
+  data_CO[ , dateFoundCol] <- yyyymmdd(data_CO[ , dateFoundCol])
+
+  date0 <- min(data_SS[ , dateSearchedCol])
+  data_CO[ , dateFoundCol] <- dateToDay(data_CO[ , dateFoundCol], date0)
+  data_SS[ , dateSearchedCol] <- dateToDay(data_SS[ , dateSearchedCol], date0)
+
+  which_day0 <- which(data_SS[ , dateSearchedCol] == 0)
+  SSunitCols <- which(colnames(data_SS) %in% unique(data_CO[ , unitCol]))
+  data_SS[which_day0, SSunitCols] <- 1
+
+  cleanout <- whichCleanout(data_CO, data_SS, unitCol, dateFoundCol,
+                dateSearchedCol
+              )  
+  if (length(cleanout) > 0){
+    data_CO <- data_CO[-cleanout, ]
+  }
+  data_SS[ , dateSearchedCol] <- dateSearched
+  data_SS <- SS(data_SS)
+
   unit <- rownames(Aj)
   ### declare traffic directing variables (updated after parsing inputs)
   # number of valid split variables:
