@@ -45,6 +45,8 @@ Times must be numeric, strictly increasing, and span the monitoring period
 \code{split_time = NULL}. If \code{split_time} is non-NULL, \code{data_SS}
 is required.}
 
+\item{unitCol}{Column name for the unit indicator}
+
 \item{dateFoundCol}{Column name for the date found data}
 
 \item{dateSearchedCol}{Column name for the date searched data}

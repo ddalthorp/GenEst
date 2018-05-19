@@ -167,6 +167,7 @@ calcTsplit <- function(rate, days, tsplit){
 #' @param ... arguments to be passed down
 #' @param dateFoundCol Column name for the date found data
 #' @param dateSearchedCol Column name for the date searched data
+#' @param unitCol Column name for the unit indicator
 #' @return An object of class \code{splitsFull} is returned. If one splitting
 #'  covariate is given, then the output will be an array of estimated 
 #'  mortality in each level of the splitting covariate, with one row for each
