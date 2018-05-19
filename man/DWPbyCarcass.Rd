@@ -4,26 +4,22 @@
 \alias{DWPbyCarcass}
 \title{Expand the density weighted proportion table to a value for each carcass}
 \usage{
-DWPbyCarcass(data_DWP, data_carc, unitCol = "Unit", sizeclassCol = NULL,
-  removeCleanout = FALSE, data_SS = NULL, dateFoundCol = "DateFound",
+DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit", sizeclassCol = NULL,
+  data_SS = NULL, dateFoundCol = "DateFound",
   dateSearchedCol = "DateSearched")
 }
 \arguments{
 \item{data_DWP}{Survey unit (rows) by size (columns) density weighted 
 proportion table}
 
-\item{data_carc}{Carcass observation data}
+\item{data_CO}{Carcass observation data}
 
 \item{unitCol}{Column name for the unit indicator}
 
-\item{sizeclassCol}{Name of colum in \code{data_carc} where the size 
+\item{sizeclassCol}{Name of colum in \code{data_CO} where the size 
 classes are recorded}
 
-\item{removeCleanout}{logical indicating if cleanout searches need to be
-removed from \code{data_carc}}
-
-\item{data_SS}{Search Schedule data (if cleanout searches are to be 
-removed)}
+\item{data_SS}{Search Schedule data}
 
 \item{dateFoundCol}{Column name for the date found data (if cleanout 
 searches are to be removed)}
