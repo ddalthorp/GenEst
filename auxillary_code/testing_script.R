@@ -22,6 +22,27 @@ ghatsGeneric <- rghatGeneric(n = 1000, avgSS, model_SE, model_CP, seed_SE = 1,
                 )
 
 
+data_DWP <- mockData$DensityWeightedProportionData
+DWP <- DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit",
+         sizeclassCol = NULL, data_SS, dateFoundCol = "DateFound",
+         dateSearchedCol = "DateSearched"
+       )
+
+
+
+ghatsAjs <- rghat(n = 10, data_CO, data_SS, model_SE, model_CP, 
+             seed_SE = 1, seed_CP = 1, unitCol = "Unit", 
+             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
+removeCleanout = TRUE
+           )
+ghat <- ghatsAjs$ghat
+
+
+
+
+
+
+
 
 modelSetSize_SE <- pkmSetSize(formula_p = p ~ Visibility*HabitatType, 
                      formula_k = k ~ HabitatType, data = data_SE,
@@ -47,14 +68,6 @@ ghatsGenericSize <- rghatGenericSize(n = 1000, avgSS, modelSetSize_SE,
 
 
 
-
-
-ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
-             seed_SE = 1, seed_CP = 1, unitCol = "Unit", 
-             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
-             removeCleanout = TRUE
-           )
-ghat <- ghatsAjs$ghat
 
 
 

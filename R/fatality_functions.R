@@ -97,13 +97,10 @@ calcMhat <- function(Mtilde, DWP = 1){
 #'
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted 
 #'   proportion table 
-#' @param data_carc Carcass observation data
-#' @param removeCleanout logical indicating if cleanout searches need to be
-#'   removed from \code{data_carc}
-#' @param data_SS Search Schedule data (if cleanout searches are to be 
-#'   removed)
+#' @param data_CO Carcass observation data
+#' @param data_SS Search Schedule data 
 #' @param unitCol Column name for the unit indicator
-#' @param sizeclassCol Name of colum in \code{data_carc} where the size 
+#' @param sizeclassCol Name of colum in \code{data_CO} where the size 
 #'   classes are recorded
 #' @param dateFoundCol Column name for the date found data (if cleanout 
 #'   searches are to be removed)
@@ -113,43 +110,43 @@ calcMhat <- function(Mtilde, DWP = 1){
 #' @examples NA
 #' @export 
 #'
-DWPbyCarcass <- function(data_DWP, data_carc, unitCol = "Unit",
-                         sizeclassCol = NULL, removeCleanout = FALSE,
-                         data_SS = NULL, dateFoundCol = "DateFound",
+DWPbyCarcass <- function(data_DWP, data_CO, unitCol = "Unit",
+                         sizeclassCol = NULL, data_SS = NULL, 
+                         dateFoundCol = "DateFound",
                          dateSearchedCol = "DateSearched"){
 
-  if (!(unitCol %in% colnames(data_DWP) & unitCol %in% colnames(data_carc))){
+  if (!(unitCol %in% colnames(data_DWP) & unitCol %in% colnames(data_CO))){
     stop("Unit column not in both DWP and carcass tables")
   }
-  units_carc <- unique(data_carc[ , unitCol])
+  units_carc <- unique(data_CO[ , unitCol])
   units_DWP <- data_DWP[ , unitCol]
   nunits <- nrow(data_DWP)
   if (!all(units_carc %in% units_DWP)){
     stop("Units present in carcass table not in DWP table")
   }
 
-  if (removeCleanout){
-    data_SS[ , dateSearchedCol] <- yyyymmdd(data_SS[ , dateSearchedCol])
-    data_carc[ , dateFoundCol] <- yyyymmdd(data_carc[ , dateFoundCol])
-    date1 <- min(data_SS[ , dateSearchedCol])
-    data_carc[ , dateFoundCol] <- dateToDay(data_carc[ , dateFoundCol], date1)
-    data_SS[ , dateSearchedCol] <- dateToDay(data_SS[ , dateSearchedCol], 
-                                     date1
-                                   )
-    cleanout <- whichCleanout(data_carc, data_SS, unitCol, dateFoundCol,
-                  dateSearchedCol
-                )  
-    if (length(cleanout) > 0){
-      data_carc <- data_carc[-cleanout, ]
-    }
-  }
+  data_SS[ , dateSearchedCol] <- yyyymmdd(data_SS[ , dateSearchedCol])
+  data_CO[ , dateFoundCol] <- yyyymmdd(data_CO[ , dateFoundCol])
+  date0 <- min(data_SS[ , dateSearchedCol])
+  data_CO[ , dateFoundCol] <- dateToDay(data_CO[ , dateFoundCol], date0)
+  data_SS[ , dateSearchedCol] <- dateToDay(data_SS[ , dateSearchedCol], date0)
 
+  which_day0 <- which(data_SS[ , dateSearchedCol] == 0)
+  SSunitCols <- which(colnames(data_SS) %in% unique(data_CO[ , unitCol]))
+  data_SS[which_day0, SSunitCols] <- 1
+
+  cleanout <- whichCleanout(data_CO, data_SS, unitCol, dateFoundCol,
+                dateSearchedCol
+              )  
+  if (length(cleanout) > 0){
+    data_CO <- data_CO[-cleanout, ]
+  }
   DWPcols <- which(grepl("DWP", colnames(data_DWP)))
   nDWPcols <- length(DWPcols)
 
   if (is.null(sizeclassCol)){
     sizeclassCol <- "scc"
-    data_carc$scc <- "all"
+    data_CO$scc <- "all"
     DWPmat <- as.matrix(data_DWP[ , DWPcols], nrow = nunits, ncol = nDWPcols)
     DWPs <- apply(DWPmat, 1, mean)
 
@@ -158,11 +155,11 @@ DWPbyCarcass <- function(data_DWP, data_carc, unitCol = "Unit",
     DWPcols <- which(grepl("DWP", colnames(data_DWP)))
     nDWPcols <- length(DWPcols)
   }
-  if (!(sizeclassCol %in% colnames(data_carc))){
+  if (!(sizeclassCol %in% colnames(data_CO))){
     stop("Provided size class column not present in carcass table")
   }
   sizeclasses <- gsub("DWP_", "", colnames(data_DWP)[DWPcols])
-  carcassSizeclasses <- unique(data_carc[ , sizeclassCol])
+  carcassSizeclasses <- unique(data_CO[ , sizeclassCol])
   if (!all(carcassSizeclasses %in% sizeclasses)){
     stop("Size classes present in carcass table not in DWP table")
   }
@@ -179,12 +176,12 @@ DWPbyCarcass <- function(data_DWP, data_carc, unitCol = "Unit",
   data_DWPtall <- data.frame(DWPexp, unitexp, scexp, stringsAsFactors = FALSE)
   colnames(data_DWPtall) <- c("DWP", unitCol, sizeclassCol)
 
-  ncarc <- nrow(data_carc)
+  ncarc <- nrow(data_CO)
   DWPbyCarc <- numeric(ncarc)
   for (carci in 1:ncarc){
-    unitOfInterest <- data_carc[carci, unitCol]
+    unitOfInterest <- data_CO[carci, unitCol]
     matchUnit <- data_DWPtall[ , unitCol] == unitOfInterest
-    sizeOfInterest <- data_carc[carci, sizeclassCol]
+    sizeOfInterest <- data_CO[carci, sizeclassCol]
     matchSize <- data_DWPtall[ , sizeclassCol] == sizeOfInterest
     matchBoth <- matchUnit & matchSize
     DWPbyCarc[carci] <- data_DWPtall[which(matchBoth), "DWP"]

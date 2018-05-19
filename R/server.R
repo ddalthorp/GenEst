@@ -53,7 +53,7 @@ rv <- reactiveValues(
         dateSearchedCol_g = NULL, gSearchInterval = NULL, gSearchMax = NULL, 
 
         data_DWP = NULL, colNames_DWP = NULL,
-        data_CO = NULL, colNames_CO = NULL, removeCleanout = NULL,
+        data_CO = NULL, colNames_CO = NULL, 
 
 
         sizeclassCol = NULL, sizeclasses = NULL, sizeclass = NULL,
@@ -620,7 +620,6 @@ observeEvent(input$runModM, {
   rv$dateFoundCol <- input$dateFoundCol
   rv$dateSearchedCol <- input$dateSearchedCol
   rv$n <- input$n
-  rv$removeCleanout <- input$removeCleanout
 
   rv$rghatsAjs <- vector("list", length = rv$nsizeclasses)
   for (sci in 1:rv$nsizeclasses){
@@ -642,8 +641,7 @@ observeEvent(input$runModM, {
                              rv$mods_CP[[sci]][[rv$CPmodToUse]], 
                              kFill = rv$kFill, unitCol = rv$unitCol, 
                              dateFoundCol = rv$dateFoundCol, 
-                             dateSearchedCol = rv$dateSearchedCol,
-                             removeCleanout = rv$removeCleanout
+                             dateSearchedCol = rv$dateSearchedCol
                            ), error = function(x){NA}
                          )
   }
