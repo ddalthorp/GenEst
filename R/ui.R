@@ -180,9 +180,6 @@ tabPanel("Analyses",
         selectizeInput("dateSearchedCol", "Date Searched:",  
           c("No data input yet"), multiple = FALSE
         ),
-        radioButtons("removeCleanout", "Remove Cleanout Searches?",
-          choices = list("No" = FALSE, "Yes" = TRUE), selected = TRUE
-        ),
         conditionalPanel(
           condition = "output.kFillNeed == 'yes'",
           numericInput("kFill", "Assumed k:", value = 0.5, 

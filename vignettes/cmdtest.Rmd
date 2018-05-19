@@ -56,8 +56,7 @@ gAj <- rghat(n = nsim,
   model_CP = cpModel,
   unitCol = "Turbine",
   dateFoundCol = "DateFound",
-  dateSearchedCol = "SearchDate",
-  removeCleanout = TRUE
+  dateSearchedCol = "SearchDate"
 )
 ghat <- gAj$ghat
 Aj <- gAj$Aj
@@ -68,7 +67,6 @@ DWP <- DWPbyCarcass( # doesn't work
   data_carc = CO_data,
   unitCol = "Turbine",
   sizeclassCol = NULL,
-  removeCleanout = TRUE,
   data_SS = SS_data,
   dateFoundCol = "DateFound",
   dateSearchedCol = "SearchDate"
