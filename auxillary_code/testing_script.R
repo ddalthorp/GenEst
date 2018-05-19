@@ -30,18 +30,20 @@ DWP <- DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit",
 
 
 
-ghatsAjs <- rghat(n = 10, data_CO, data_SS, model_SE, model_CP, 
+ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
              seed_SE = 1, seed_CP = 1, unitCol = "Unit", 
-             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
-removeCleanout = TRUE
+             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
            )
 ghat <- ghatsAjs$ghat
+Aj <- ghatsAjs$Aj
 
+Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
 
-
-
-
-
+Mhat_season <- calcSplits(M = Mhat, Aj = Aj, split_SS = "Season", 
+                 split_CO = "Split",
+                 data_SS = data_SS, data_CO = data_CO, unitCol = "Unit", 
+                 dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
+               )
 
 
 modelSetSize_SE <- pkmSetSize(formula_p = p ~ Visibility*HabitatType, 
