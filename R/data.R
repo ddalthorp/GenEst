@@ -4,15 +4,14 @@
 #'
 #' @format A list with 5 items:
 #' \describe{
-#'   \item{SearcherEfficiencyData}{Searcher efficiency trial data}
-#'   \item{CarcassPersistenceData}{Carcass persistence trial data}
-#'   \item{SearchData}{Search schedule data}
-#'   \item{DensityWeightedProportionData}{Density weighted proportion of area 
-#'     searched data}
-#'   \item{CarcassObservationData}{Carcass observations}  
+#'   \item{SE}{Searcher efficiency trial data}
+#'   \item{CP}{Carcass persistence trial data}
+#'   \item{SS}{Search schedule data}
+#'   \item{DWP}{Density weighted proportion of area searched data}
+#'   \item{CO}{Carcass observations}   
 #' }
 #' @source Mock
-"mockData"
+"mock"
 
 #' Synthetic data set based on 120 m radius road and pad searches of all 100
 #'   turbines at a theoretical site.
@@ -54,15 +53,14 @@
 #'
 #' @format A list with 5 items:
 #' \describe{
-#'   \item{SearcherEfficiencyData}{Searcher efficiency trial data}
-#'   \item{CarcassPersistenceData}{Carcass persistence trial data}
-#'   \item{SearchData}{Search schedule data}
-#'   \item{DensityWeightedProportionData}{Density weighted proportion of area 
-#'     searched data}
-#'   \item{CarcassObservationData}{Carcass observations}  
+#'   \item{SE}{Searcher efficiency trial data}
+#'   \item{CP}{Carcass persistence trial data}
+#'   \item{SS}{Search schedule data}
+#'   \item{DWP}{Density weighted proportion of area searched data}
+#'   \item{CO}{Carcass observations}  
 #' }
 #' @source Mock
-"solarTroughData"
+"solar_trough"
 
 #' Synthetic solar facility data
 #'
@@ -70,12 +68,11 @@
 #'
 #' @format A list with 5 items:
 #' \describe{
-#'   \item{SearcherEfficiencyData}{Searcher efficiency trial data}
-#'   \item{CarcassPersistenceData}{Carcass persistence trial data}
-#'   \item{SearchData}{Search schedule data}
-#'   \item{DensityWeightedProportionData}{Density weighted proportion of area 
-#'     searched data}
-#'   \item{CarcassObservationData}{Carcass observations}  
+#'   \item{SE}{Searcher efficiency trial data}
+#'   \item{CP}{Carcass persistence trial data}
+#'   \item{SS}{Search schedule data}
+#'   \item{DWP}{Density weighted proportion of area searched data}
+#'   \item{CO}{Carcass observations}  
 #' }
 #' @source Mock
-"solarPVData"
+"solar_pv"

@@ -106,6 +106,8 @@ calcMhat <- function(Mtilde, DWP = 1){
 #'   searches are to be removed)
 #' @param dateSearchedCol Column name for the date searched data (if cleanout 
 #'   searches are to be removed)
+#' @param DWPCol Column name for the DWP values in the DWP table when no
+#'   size class is used
 #' @return DWP value for each carcass 
 #' @examples NA
 #' @export 
@@ -113,7 +115,8 @@ calcMhat <- function(Mtilde, DWP = 1){
 DWPbyCarcass <- function(data_DWP, data_CO, unitCol = "Unit",
                          sizeclassCol = NULL, data_SS = NULL, 
                          dateFoundCol = "DateFound",
-                         dateSearchedCol = "DateSearched"){
+                         dateSearchedCol = "DateSearched",
+                         DWPCol = NULL){
 
   if (!(unitCol %in% colnames(data_DWP) & unitCol %in% colnames(data_CO))){
     stop("Unit column not in both DWP and carcass tables")
@@ -141,36 +144,39 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = "Unit",
   if (length(cleanout) > 0){
     data_CO <- data_CO[-cleanout, ]
   }
-  DWPcols <- which(grepl("DWP", colnames(data_DWP)))
-  nDWPcols <- length(DWPcols)
 
   if (is.null(sizeclassCol)){
+    if (is.null(DWPCol)){
+      whichDWPCol <- grep("dwp", colnames(data_DWP), ignore.case = TRUE)
+      if (length(whichDWPCol) == 0){
+        stop("No DWP data indicated and no obvious choice for DWP column.")
+      }     
+      DWPCol <- colnames(data_DWP)[whichDWPCol[1]]
+    }
     sizeclassCol <- "scc"
     data_CO$scc <- "all"
-    DWPmat <- as.matrix(data_DWP[ , DWPcols], nrow = nunits, ncol = nDWPcols)
-    DWPs <- apply(DWPmat, 1, mean)
+    sizeclasses <- "all"
+  } else{
+    if (!(sizeclassCol %in% colnames(data_CO))){
+      stop("Provided size class column not present in carcass table")
+    }
+    sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
+    DWPCol <- colnames(data_DWP)[colnames(data_DWP) %in% sizeclasses]
+    if (!all(sizeclasses %in% DWPCol)){
+      stop("Size classes present in carcass table not in DWP table")
+    }
+  }
 
-    data_DWP <- data.frame(data_DWP[ , unitCol], DWPs)
-    colnames(data_DWP) <- c(unitCol, "DWP_all")
-    DWPcols <- which(grepl("DWP", colnames(data_DWP)))
-    nDWPcols <- length(DWPcols)
-  }
-  if (!(sizeclassCol %in% colnames(data_CO))){
-    stop("Provided size class column not present in carcass table")
-  }
-  sizeclasses <- gsub("DWP_", "", colnames(data_DWP)[DWPcols])
-  carcassSizeclasses <- unique(data_CO[ , sizeclassCol])
-  if (!all(carcassSizeclasses %in% sizeclasses)){
-    stop("Size classes present in carcass table not in DWP table")
-  }
-  DWPonly <- as.matrix(data_DWP[ , DWPcols], nrow = nunits, ncol = nDWPcols)
+  nDWPCol <- length(DWPCol)
+
+  DWPonly <- as.matrix(data_DWP[ , DWPCol], nrow = nunits, ncol = nDWPCol)
 
   DWPexp <- numeric(0)
   unitexp <- character(0)
   scexp <- character(0)
   for (uniti in 1:nunits){
     DWPexp <- c(DWPexp, DWPonly[uniti, ])
-    unitexp <- c(unitexp, rep(as.character(units_DWP[uniti]), nDWPcols))
+    unitexp <- c(unitexp, rep(as.character(units_DWP[uniti]), nDWPCol))
     scexp <- c(scexp, sizeclasses)
   }
   data_DWPtall <- data.frame(DWPexp, unitexp, scexp, stringsAsFactors = FALSE)
