@@ -56,17 +56,12 @@ rghat <- function(n = 1, data_CO, data_SS, model_SE, model_CP,
   sim_SE <- rpk(n, model_SE, seed_SE, kFill)
   sim_CP <- rcp(n, model_CP, seed_CP, type = "ppersist") 
 
-
-# UNDER CONSTRUCTION FROM HERE DOWN
-
   data_SS[ , dateSearchedCol] <- yyyymmdd(data_SS[ , dateSearchedCol])
   data_CO[ , dateFoundCol] <- yyyymmdd(data_CO[ , dateFoundCol])
 
   date0 <- min(data_SS[ , dateSearchedCol])
   data_CO[ , dateFoundCol] <- dateToDay(data_CO[ , dateFoundCol], date0)
   data_SS[ , dateSearchedCol] <- dateToDay(data_SS[ , dateSearchedCol], date0)
-
-# need to make the first row in the unit columns all 1s
 
   which_day0 <- which(data_SS[ , dateSearchedCol] == 0)
   SSunitCols <- which(colnames(data_SS) %in% unique(data_CO[ , unitCol]))
