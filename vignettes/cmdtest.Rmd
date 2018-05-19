@@ -37,7 +37,7 @@ SE_data <- wind_RP[["SE"]][batind,]
 batind <- which(wind_RP[["CP"]]$Size == "bat")
 CP_data <- wind_RP[["CP"]][batind,]
 
-DWP_data <- wind_RP[["DWP"]][ , c("Turbine", "DWP_bat")]
+DWP_data <- wind_RP[["DWP"]][ , c("Turbine", "bat")]
 
 batind <- which(wind_RP[["CO"]]$Size == "bat")
 CO_data <- wind_RP[["CO"]][batind, ]
@@ -62,16 +62,15 @@ ghat <- gAj$ghat
 Aj <- gAj$Aj
 proc.time() - tst # 4 minutes!
 
-DWP <- DWPbyCarcass( # doesn't work
+DWP <- DWPbyCarcass(
   data_DWP = DWP_data,
   data_CO = CO_data,
   unitCol = "Turbine",
-  sizeclassCol = NULL,
+  DWPCol = "bat",
   data_SS = SS_data,
   dateFoundCol = "DateFound",
   dateSearchedCol = "SearchDate"
 )
-DWP <- DWP_data$DWP_bat[match(rownames(Aj), DWP_data$Turbine)]
 Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
 
 M_by_season <- calcSplits(
@@ -85,6 +84,7 @@ M_by_season <- calcSplits(
 )
 plot(M_by_season)
 
+SSdat <- SS(SS_data)
 M_by_week <- calcSplits(
   M = Mhat, Aj = Aj,
   split_time = seq(0, max(SSdat$days), by = 7), 
@@ -101,7 +101,6 @@ M_by_unit <- calcSplits(
   data_CO = CO_data, 
   data_SS = SS_data,
   unitCol = "Turbine", 
-  split_SS = "Season",
   dateFoundCol = "DateFound", 
   dateSearchedCol = "SearchDate")
 plot(M_by_unit, rate = F)

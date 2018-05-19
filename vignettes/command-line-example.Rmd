@@ -39,8 +39,8 @@ Persistence, Search Schedule, Density Weighted Proportion, and Carcass
 Observation Data.
 
 ```{r}
-data(mockData)
-names(mockData)
+data(mock)
+names(mock)
 ```
 
 To see the raw `.csv` versions of the data files, find the **GenEst**
@@ -59,7 +59,7 @@ example, we will ignore the size category and use intercept-only models for
 both $p$ and $k$:
 
 ```{r}
-data_SE <- mockData$SearcherEfficiencyData
+data_SE <- mock$SE
 pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = data_SE)
 ```
 
@@ -209,7 +209,7 @@ parameterization (using parameters $a$ and $b$, referred to as "`ab`" or
 intercept-only models for both $l$ and $s$, and use the Weibull distribution:
 
 ```{r}
-data_CP <- mockData$CarcassPersistenceData
+data_CP <- mock$CP
 cpModel <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = data_CP,
              left = "LastPresentDecimalDays",
              right = "FirstAbsentDecimalDays", dist = "weibull"
@@ -372,7 +372,7 @@ assume the units are named as "unit" with a suffix indicator and will create
 the average search schedule across the units.
 
 ```{r}
-data_SS <- mockData$SearchScheduleData
+data_SS <- mock$SS
 avgSS <- averageSS(data_SS)
 ghatsGeneric <- rghatGeneric(n = 1000, avgSS, model_SE, model_CP, 
                   seed_SE = 1, seed_CP = 1, kFill = NULL)
@@ -405,7 +405,7 @@ The `rghat` function produces `n` random draws of carcass-specific detection
 probabilities ($\hat{g}$) and arrival intervals ($A_j$):.
 
 ```{r}
-data_CO <- mockData$CarcassObservationData
+data_CO <- mock$CO
 ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP,
              seed_SE = 1, seed_CP = 1, unitCol = "Unit",
              dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
@@ -433,7 +433,7 @@ incorporated into the ($\hat{M}$) calculation, but need to first be expanded
 to be carcass-by-carcass:
 
 ```{r}
-data_DWP <- mockData$DensityWeightedProportionData
+data_DWP <- mock$DWP
 DWP <- DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit",
          sizeclassCol = "Size", data_SS, dateFoundCol = "DateFound",
          dateSearchedCol = "DateSearched"
@@ -459,28 +459,38 @@ carcass observation data sets.
 
 ### First, a temporal split:  
 
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 Mhat_season <- calcSplits(M = Mhat, Aj = Aj, split_SS = "Season", 
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO, 
                  unitCol = "Unit", dateFoundCol = "DateFound", 
                  dateSearchedCol = "DateSearched"
                )
+summary(Mhat_season)
+plot(Mhat_season)
+```
 
 ### Next, a carcass split:  
 
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 Mhat_class <- calcSplits(M = Mhat, Aj = Aj, split_SS = NULL, 
                 split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
                 unitCol = "Unit", dateFoundCol = "DateFound", 
                 dateSearchedCol = "DateSearched"
               )
+summary(Mhat_class)
+plot(Mhat_class)
+```
 
 ### And finally, if two splits are included, the mortality estimation is 
 expanded fully factorially:
 
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 Mhat_SbyC <- calcSplits(M = Mhat, Aj = Aj, split_SS = "Season", 
                split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
                unitCol = "Unit", dateFoundCol = "DateFound", 
                dateSearchedCol = "DateSearched"
              )
-
-
+summary(Mhat_SbyC)
+plot(Mhat_SbyC)
+```
 

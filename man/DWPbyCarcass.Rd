@@ -6,7 +6,7 @@
 \usage{
 DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit", sizeclassCol = NULL,
   data_SS = NULL, dateFoundCol = "DateFound",
-  dateSearchedCol = "DateSearched")
+  dateSearchedCol = "DateSearched", DWPCol = NULL)
 }
 \arguments{
 \item{data_DWP}{Survey unit (rows) by size (columns) density weighted 
@@ -26,6 +26,9 @@ searches are to be removed)}
 
 \item{dateSearchedCol}{Column name for the date searched data (if cleanout 
 searches are to be removed)}
+
+\item{DWPCol}{Column name for the DWP values in the DWP table when no
+size class is used}
 }
 \value{
 DWP value for each carcass
