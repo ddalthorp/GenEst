@@ -1,10 +1,10 @@
 devtools::load_all()
 data(mockData)
 
-data_SE <- mockData$SearcherEfficiencyData
-data_CP <- mockData$CarcassPersistenceData
-data_CO <- mockData$CarcassObservationData
-data_SS <- mockData$SearchScheduleData
+data_SE <- mock$SE
+data_CP <- mock$CP
+data_CO <- mock$CO
+data_SS <- mock$SS
 
 
 model_SE <- pkm(formula_p = p ~ Visibility , 
