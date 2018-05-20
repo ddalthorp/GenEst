@@ -168,7 +168,7 @@ calcTsplit <- function(rate, days, tsplit){
 #' @param dateFoundCol Column name for the date found data
 #' @param dateSearchedCol Column name for the date searched data
 #' @param unitCol Column name for the unit indicator
-#' @return An object of class \code{splitsFull} is returned. If one splitting
+#' @return An object of class \code{splitFull} is returned. If one splitting
 #'  covariate is given, then the output will be an array of estimated 
 #'  mortality in each level of the splitting covariate, with one row for each
 #'  covariate level and one column for each simulation draw. If two splitting
@@ -176,10 +176,10 @@ calcTsplit <- function(rate, days, tsplit){
 #'  the estimated mortalities for one level of the second splitting covariate
 #'  and all levels of the first splitting covariate.
 #'
-#' Objects of class \code{splitsFull} have attributes \code{vars} (which gives
+#' Objects of class \code{splitFull} have attributes \code{vars} (which gives
 #' the name of the splitting covariate(s)) and \code{type} (which specifies
 #' whether the covariate(s) are of type \code{split_CO}, \code{split_SS}, or
-#' \code{split_time}). A summary of a resulting \code{splitsFull} object
+#' \code{split_time}). A summary of a resulting \code{splitFull} object
 #' is returned from the S3 function \code{summary(splits, CL = 0.95, ...)},
 #' which gives the mean and a 5-number summary for each level of each 
 #' covariate. The 5-number summary includes the alpha/2, 0.25, 0.5, 0.75, and
@@ -728,3 +728,58 @@ SS <- function(data_SS, dateCol = NULL, preds = NULL){
   class(ans) <- "SS"
   return(ans)
 }
+#' Transpose a list of arrays
+#'
+#' A list of \code{n} arrays, each with dimension \code{m} x \code{k} is
+#' redimensioned to a list of \code{m} arrays, each with dimension \code{m} x
+#' \code{k}. NOTE: Attributes are not preserved.
+#'
+#' @param M a list of \code{n} \code{m} x \code{k} arrays
+#' @return a list of \code{m} \code{n} x \code{k} arrays
+#'
+#' @export
+#'
+ltranspose <- function(M){
+  if (!is.list(M))
+    stop(substitute(M), " must be a list")
+  ans <- list()
+  if (!is.matrix(M[[1]]))
+    stop("elements of ", substitute(M), " must be arrays.")
+  adim <- dim(M[[1]])
+  for (i in 1:length(M)){
+    if (!isTRUE(all.equal(dim(M[[i]]), adim))){
+      stop(
+        "elements of ", substitute(M),
+        " must be arrays with the same dimensions"
+      )
+    }
+    ans[[i]] <- do.call("rbind", lapply(M, function(x) x[i, ]))
+  }
+  return(ans)
+}
+
+#' Transpose a \code{splitFull} array (preserving attributes)
+#'
+#' @param splits a \code{splitFull} object, which is a list of \code{n}
+#'  \code{m} x \code{k} arrays with attributes describing characteristics of the
+#'  splits
+#' @return a list of \code{m} \code{n} x \code{k} arrays as a \code{splitFull}
+#'  object
+#' @export
+
+transposeSplits <- function(splits){
+  if (!(class(splits) %in% "splitFull")){
+    stop(
+      substitute(splits), " is not a splitFull object. ",
+      "Only splitFull objects can be transposed using transposeSplits()"
+    )
+  }
+  ans <- ltranspose(splits)
+  names(ans) <- rownames(splits[[1]])
+  class(ans) <- "splitFull"
+  attr(ans, "vars") <- attr(splits, "vars")[2:1]
+  attr(ans, "type") <- attr(splits, "type")[2:1]
+  attr(ans, "times") <- attr(splits, "times")
+  return(ans)
+}
+
