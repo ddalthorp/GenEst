@@ -742,7 +742,6 @@ SS <- function(data_SS, dateCol = NULL, preds = NULL){
 ltranspose <- function(M){
   if (!is.list(M))
     stop(substitute(M), " must be a list")
-  ans <- list()
   if (!is.matrix(M[[1]]))
     stop("elements of ", substitute(M), " must be arrays.")
   adim <- dim(M[[1]])
@@ -753,6 +752,9 @@ ltranspose <- function(M){
         " must be arrays with the same dimensions"
       )
     }
+  }
+  ans <- list()
+  for (i in 1:adim[1]){
     ans[[i]] <- do.call("rbind", lapply(M, function(x) x[i, ]))
   }
   return(ans)
