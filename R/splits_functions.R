@@ -440,7 +440,9 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
 #'  in the \code{splits}. The 5-number summaries include the mean and alpha/2,
 #'  0.25, 0.5, 0.75, and 1 - alpha/2 quantiles of mortality estimates, where
 #'  alpha = 1 - CL. A graphical representation of the results can be
-#'  produced using \code{plot(splits, CL, ...)}.
+#'  produced using \code{plot(splits, CL, ...)}. For splits along CO covariates,
+#'  the levels are organized alphabetically (but with numeric suffixes appearing
+#'  in numeric order, e.g., "t1", "t2", "t10" rather than "t1", "t10", "t2").
 #' @export
 #'
 summary.splitFull <- function(object, CL = 0.95, ...){
@@ -451,25 +453,36 @@ summary.splitFull <- function(object, CL = 0.95, ...){
     sumry <- c(mean = mean(splits), quantile(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
-    sumry <- cbind(mean = rowMeans(splits), 
-               rowQuantiles(splits, probs = probs)
-             )
+    sumry <- cbind(
+      mean = rowMeans(splits), matrixStats::rowQuantiles(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
-      splits <- lapply(splits, function(x){
-        matrix(x, nrow = 1)
-      })
+      splits <- lapply(splits, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits, function(x){
-      cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))
-    })
+        cbind(mean = rowMeans(x), matrixStats::rowQuantiles(x, probs = probs))})
   } else {
     stop(
       "length(attr(splits, 'vars')) > 2.",
       "At most two split variables are allowed."
     )
   }
-  sumry <- sticky(sumry)
+  # order the non-temporal dimensions "alphabetically"
+  if (!is.list(splits)){
+    if (attr(splits, "type") == "CO"){
+      sumry <- sumry[gtools::mixedsort(rownames(sumry)), ]
+    }
+  } else {
+    if (attr(splits, "type")[1] == "CO"){
+      for (i in 1:length(splits)){
+        sumry[[i]] <- sumry[[i]][gtools::mixedsort(rownames(sumry[[i]])), ]
+      }
+    }
+    if (attr(splits, "type")[2] == "CO"){
+      sumry <- sumry[gtools::mixedsort(names(sumry))]
+    }
+  }
+  sumry <- sticky::sticky(sumry)
   attr(sumry, "CL") <- CL
   attr(sumry, "vars") <- attr(splits, "vars")
   attr(sumry, "type") <- attr(splits, "type")
@@ -477,6 +490,7 @@ summary.splitFull <- function(object, CL = 0.95, ...){
   class(sumry) <- "splitSummary"
   return(sumry)
 }
+
 
 #' Plot summary statistics for splits of mortality estimates
 #'
