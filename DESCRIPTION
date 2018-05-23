@@ -23,6 +23,7 @@ Imports:
     digest,
     DT,	
     gsl,
+    gtools,
     htmltools,
     matrixStats,
     mvtnorm,
