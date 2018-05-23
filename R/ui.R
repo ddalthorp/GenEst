@@ -12,11 +12,7 @@ div(a(href = "https://github.com/ddalthorp/GenEst",
     )
 ),
             
-tabPanel("Home",
-  br(),
-  HTML('<center><img src = "Logo.jpg" height = "500"></center>'), br()
-),
-  
+ 
 tabPanel("Data Input",
   sidebarLayout(
     sidebarPanel(width = 3,
@@ -257,6 +253,9 @@ tabPanel("Analyses",
 tabPanel("About",
   fluidRow(
     column(5, offset = 2,
+      br(),
+      HTML('<center><img src = "Logo.jpg" width = "600"></center>'), 
+
       br(), br(), 
       HTML("<b>Authors:</b>  
         Juniper Simonis 

@@ -1,11 +1,11 @@
 devtools::load_all()
-data(mockData)
+data(mock)
 
 data_SE <- mock$SE
 data_CP <- mock$CP
 data_CO <- mock$CO
 data_SS <- mock$SS
-
+data_DWP <- mock$DWP
 
 model_SE <- pkm(formula_p = p ~ Visibility , 
              formula_k = k ~ Visibility + HabitatType,
@@ -17,20 +17,20 @@ model_CP <- cpm(formula_l = l ~ Visibility + Season, formula_s = s ~ 1,
              right = "FirstAbsentDecimalDays", dist = "weibull"
             )
 avgSS <- averageSS(data_SS)
-ghatsGeneric <- rghatGeneric(n = 1000, avgSS, model_SE, model_CP, seed_SE = 1,
-                  seed_CP = 1, kFill = NULL
+ghatsGeneric <- estghatGeneric(n = 1000, avgSS, model_SE, model_CP, 
+                  seed_SE = 1, seed_CP = 1, kFill = NULL
                 )
 
 
-data_DWP <- mockData$DensityWeightedProportionData
-DWP <- DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit",
-         sizeclassCol = NULL, data_SS, dateFoundCol = "DateFound",
-         dateSearchedCol = "DateSearched"
-       )
+
+DWP <- DWPbyCarcass(data_DWP, data_CO, data_SS, 
+                         dateFoundCol = "DateFound",
+                         dateSearchedCol = "DateSearched",
+                         DWPCol = "S", unitCol = "Unit")
 
 
 
-ghatsAjs <- rghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
+ghatsAjs <- estghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
              seed_SE = 1, seed_CP = 1, unitCol = "Unit", 
              dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
            )
