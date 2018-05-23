@@ -3,15 +3,15 @@
 \docType{data}
 \name{wind_cleared}
 \alias{wind_cleared}
-\title{Synthetic data set based on searches of 60 m cleared plots of 23 out of 100
-  turbines at a theoretical site.}
-\format{A list with 5 elements:
+\title{A complete example data set for estimating fatalities from 60 m cleared plots
+at 23 out of 100 searches at a wind power facility}
+\format{\code{wind_cleared} is a list with 5 elements:
 \describe{
-  \item{SE}{Searcher efficiency trial data}
-  \item{CP}{Carcass persistence trial data}
-  \item{SS}{Search schedule parameters}
-  \item{DWP}{Density weighted proportion of area searched}
-  \item{CO}{Carcass observations}
+  \item{\code{SE}}{Searcher efficiency trial data}
+  \item{\code{CP}}{Carcass persistence trial data}
+  \item{\code{SS}}{Search schedule parameters}
+  \item{\code{DWP}}{Density weighted proportion of area searched}
+  \item{\code{CO}}{Carcass observations}
 }}
 \source{
 cleared
@@ -20,7 +20,15 @@ cleared
 wind_cleared
 }
 \description{
-Complete data set for fatality estimation at a wind power facility. 
-  Included are SE, CP, SS, DWP, and CO data.
+Data on carcass observations (CO) from road and pad searches out to 120 m
+from each of 100 turbines at a theoretical site, field trials for estimating
+carcass persistence (CP) and searcher efficiency (SE), search schedule (SS)
+parameters (for example, which turbines were searched on which days), and
+density weighted proportion (DWP) of area searched at each turbine (which is
+an area adjustment factor to account for incomplete search coverage).
 }
+\section{General Description}{
+NA
+}
+
 \keyword{datasets}
