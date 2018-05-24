@@ -29,7 +29,8 @@ multiple size classes)}
 
 \item{seed_ghat}{seed for random draws of the ghats}
 
-\item{kFill}{value to fill in for missing k when not existing in the model}
+\item{kFill}{value(s) to fill in for missing k when not existing in the 
+model(s)}
 
 \item{unitCol}{Column name for the unit indicator}
 

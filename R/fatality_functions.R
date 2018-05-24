@@ -63,7 +63,7 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
 
   est <- estghat(nsim, data_CO, data_SS, model_SE, model_CP, seed_SE,  
            seed_CP, seed_ghat, kFill, unitCol, dateFoundCol, 
-           dateSearchedCol, sizeclassCol
+           dateSearchedCol, sizeclassCol, cleanoutCarcs = c_outs
          )
 
   gDWPf <- est$ghat * DWP * frac

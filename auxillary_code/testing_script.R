@@ -8,7 +8,7 @@ data_SS <- mock$SS
 data_DWP <- mock$DWP
 
 model_SE <- pkm(formula_p = p ~ Visibility , 
-             formula_k = k ~ Visibility + HabitatType, kFixed = 0.5,
+             formula_k = k ~ Visibility + HabitatType,
              data = data_SE
             )
 model_CP <- cpm(formula_l = l ~ Visibility + Season, formula_s = s ~ 1, 
@@ -18,27 +18,21 @@ model_CP <- cpm(formula_l = l ~ Visibility + Season, formula_s = s ~ 1,
             )
 avgSS <- averageSS(data_SS)
 ghatsGeneric <- estghatGeneric(n = 1000, avgSS, model_SE, model_CP, 
-                  seed_SE = 1, seed_CP = 1, kFill = NULL
+                  seed_SE = 1, seed_CP = 1, kFill = 0.5
                 )
 
+eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
+                 model_SE = model_SE, model_CP = model_CP, 
+                 seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
+                 seed_M = NULL, kFill = NULL,  
+                 unitCol = "Unit", dateFoundCol = "DateFound", 
+                 dateSearchedCol = "DateSearched", DWPCol = "S",
+                 sizeclassCol = NULL)
 
 
-DWP <- DWPbyCarcass(data_DWP, data_CO, data_SS, 
-                         dateFoundCol = "DateFound",
-                         dateSearchedCol = "DateSearched",
-                         DWPCol = c("S", "M", "L", "XL"), unitCol = "Unit", 
-                         sizeclassCol = "Size")
 
 
 
-ghatsAjs <- estghat(n = 1000, data_CO, data_SS, model_SE, model_CP, 
-             seed_SE = 1, seed_CP = 1, unitCol = "Unit", 
-             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
-           )
-ghat <- ghatsAjs$ghat
-Aj <- ghatsAjs$Aj
-
-Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
 
 Mhat_season <- calcSplits(M = Mhat, Aj = Aj, split_SS = "Season", 
                  split_CO = "Split",
