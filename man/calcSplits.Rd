@@ -54,7 +54,7 @@ is required.}
 \item{...}{arguments to be passed down}
 }
 \value{
-An object of class \code{splitsFull} is returned. If one splitting
+An object of class \code{splitFull} is returned. If one splitting
  covariate is given, then the output will be an array of estimated 
  mortality in each level of the splitting covariate, with one row for each
  covariate level and one column for each simulation draw. If two splitting
@@ -62,10 +62,10 @@ An object of class \code{splitsFull} is returned. If one splitting
  the estimated mortalities for one level of the second splitting covariate
  and all levels of the first splitting covariate.
 
-Objects of class \code{splitsFull} have attributes \code{vars} (which gives
+Objects of class \code{splitFull} have attributes \code{vars} (which gives
 the name of the splitting covariate(s)) and \code{type} (which specifies
 whether the covariate(s) are of type \code{split_CO}, \code{split_SS}, or
-\code{split_time}). A summary of a resulting \code{splitsFull} object
+\code{split_time}). A summary of a resulting \code{splitFull} object
 is returned from the S3 function \code{summary(splits, CL = 0.95, ...)},
 which gives the mean and a 5-number summary for each level of each 
 covariate. The 5-number summary includes the alpha/2, 0.25, 0.5, 0.75, and

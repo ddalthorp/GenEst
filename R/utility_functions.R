@@ -213,6 +213,9 @@ isNeverDecreasing <- function(x, tiesOK = TRUE, na.rm = TRUE){
 #' @export 
 #'
 dateToDay <- function(date, ref = NULL){
+  if (is.numeric(date)){
+    return(date)
+  }
   if (is.null(ref)){
     ref <- date
   }
