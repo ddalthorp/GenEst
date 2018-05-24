@@ -11,7 +11,8 @@
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param seed_ghat seed for random draws of the ghats
-#' @param kFill value to fill in for missing k when not existing in the model
+#' @param kFill value(s) to fill in for missing k when not existing in the 
+#'   model(s)
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
 #' @param dateSearchedCol Column name for the date searched data
@@ -35,10 +36,14 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
   if (is.null(sizeclassCol)){
     sizeclassCol <- "placeholder"
     data_CO$placeholder <- "value"
+    sizeclass <- data_CO$placeholder
     sizeclasses <- "value"
-    nsizeclasses <- 1
+    nsizeclass <- 1
     model_SE <- list("value" = model_SE)
     model_CP <- list("value" = model_CP)
+    if (!is.null(kFill)){
+      names(kFill) <- "value"
+    }
   } else{
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not in carcass data.")
@@ -90,10 +95,13 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
   names(preds_static) <- sizeclasses
   names(preds_dynamic) <- sizeclasses
 
-  if (!all(preds %in% c(preds_static, preds_dynamic))){
+  preds_u <- unlist(preds)
+  preds_static_u <- unlist(preds_static)
+  preds_dynamic_u <- unlist(preds_dynamic)
+  if (!all(preds_u %in% c(preds_static_u, preds_dynamic_u))){
     stop("Some model predictors required not in carcass or search data.")
   }
-  if (any(preds %in% preds_static & preds %in% preds_dynamic)) {
+  if (any(preds_u %in% preds_static_u & preds_u %in% preds_dynamic_u)) {
     msg <- paste("Predictor(s) duplicated across both carcass and search ",
              "data. Each predictor should be in only one data set.", sep = "") 
     stop(msg)
@@ -250,6 +258,9 @@ estghatCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
 kFillPropose <- function(model){
 
   proposal <- model$cellwiseTable[1, c("k_median", "k_lower", "k_upper")]
+  if (any(is.na(proposal))){
+    return(NA)
+  }
   if (proposal[1] == proposal[2] & proposal[1] == proposal[3]){
     proposal <- proposal[1]
   } else{
@@ -505,7 +516,7 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 #' @param modelSizeSelections_CP vector of CP models to use, one for each size
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
-#' @param kFill value to fill in for missing k when not existing in the model
+#' @param kFill values to fill in for missing k when not existing in the model
 #' @return list of ghat estimates, with one element in the list corresponding
 #'   to each of the cells from the cross-model combination
 #' @export
@@ -525,12 +536,13 @@ estghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
   nsizeclass <- length(sizeclasses)
   ghats <- vector("list", length = nsizeclass)
   for (sci in 1:nsizeclass){
-    model_SEsci <- modelSizeSelections_SE[[sci]]
-    model_SE <- modelSetSize_SE[[sizeclasses[sci]]][[model_SEsci]]
-    model_CPsci <- modelSizeSelections_CP[[sci]]
-    model_CP <- modelSetSize_CP[[sizeclasses[sci]]][[model_CPsci]]
+    sc <- sizeclasses[sci]
+    model_SEsci <- modelSizeSelections_SE[[sc]]
+    model_SE <- modelSetSize_SE[[sc]][[model_SEsci]]
+    model_CPsci <- modelSizeSelections_CP[[sc]]
+    model_CP <- modelSetSize_CP[[sc]][[model_CPsci]]
     ghats[[sci]] <- estghatGeneric(n, data_SS, model_SE, model_CP, 
-                      seed_SE, seed_CP, kFill
+                      seed_SE, seed_CP, kFill[sc]
                     )
   }
   names(ghats) <- sizeclasses
