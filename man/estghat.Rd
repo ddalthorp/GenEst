@@ -8,7 +8,7 @@
 estghat(nsim = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, seed_ghat = NULL, kFill = NULL, unitCol = "Unit",
   dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
-  sizeclassCol = NULL, c_outs = NULL)
+  sizeclassCol = NULL, cleanoutCarcs = NULL)
 }
 \arguments{
 \item{nsim}{the number of simulation draws}
@@ -40,7 +40,7 @@ multiple size classes)}
 \item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
 are recorded}
 
-\item{indicator}{of which carcasses (if any) were found on cleanout 
+\item{cleanoutCarcs}{of which carcasses (if any) were found on cleanout 
 searches}
 }
 \value{
