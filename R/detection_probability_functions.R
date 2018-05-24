@@ -1,99 +1,150 @@
-#' Simulate ghat values and arrival intervals for a set of carcasses 
+#' Estimate ghat values and arrival intervals for a set of carcasses 
 #'   from fitted pk and cp models and search data
 #'
-#' @param n the number of simulation draws
+#' @param nsim the number of simulation draws
 #' @param data_CO Carcass Observation data
 #' @param data_SS Search Schedule data
-#' @param model_SE Searcher Efficiency model
-#' @param model_CP Carcass Persistence model
+#' @param model_SE Searcher Efficiency model (or list of models if there are 
+#'   multiple size classes)
+#' @param model_CP Carcass Persistence model (or list of models if there are 
+#'   multiple size classes)
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param seed_ghat seed for random draws of the ghats
-#' @param kFill value to fill in for missing k when not existing in the model
+#' @param kFill value(s) to fill in for missing k when not existing in the 
+#'   model(s)
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
 #' @param dateSearchedCol Column name for the date searched data
+#' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
+#'   are recorded
+#' @param cleanoutCarcs of which carcasses (if any) were found on cleanout 
+#'   searches
 #' @return list of [1] matrix of n ghat estimates for each carcass and [2]
 #'   matrix of n arrival intervals (Aj) for each carcass. The row names of the
 #'   Aj matrix are the names of the units where each carcass was found.
 #' @examples NA
 #' @export
 #'
-rghat <- function(n = 1, data_CO, data_SS, model_SE, model_CP, 
-                  seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
-                  kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound", 
-                  dateSearchedCol = "DateSearched"){
+estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP, 
+                    seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
+                    kFill = NULL, unitCol = "Unit", 
+                    dateFoundCol = "DateFound", 
+                    dateSearchedCol = "DateSearched", sizeclassCol = NULL,
+                    cleanoutCarcs = NULL){
 
-  if (is.na(model_SE$cellwiseTable[1, "k_median"])){
-    if (is.null(kFill)){
-      kFill <- kFillPropose(model_SE)
-      if (is.na(kFill)){
-        msg <- paste("Searcher efficiency model does not include estimate ",
-                 "for k and kFill was not specified.", sep = "")
-        stop(msg)
+  if (is.null(sizeclassCol)){
+    sizeclassCol <- "placeholder"
+    data_CO$placeholder <- "value"
+    sizeclass <- data_CO$placeholder
+    sizeclasses <- "value"
+    nsizeclass <- 1
+    model_SE <- list("value" = model_SE)
+    model_CP <- list("value" = model_CP)
+    if (!is.null(kFill)){
+      names(kFill) <- "value"
+    }
+  } else{
+    if (!(sizeclassCol %in% colnames(data_CO))){
+      stop("size class column not in carcass data.")
+    }
+    sizeclass <- as.character(data_CO[ , sizeclassCol])
+    sizeclasses <- unique(sizeclass)
+    nsizeclass <- length(sizeclasses)
+  }
+
+  for (sci in 1:nsizeclass){
+    sc <- sizeclasses[sci]
+    if (is.na(model_SE[[sc]]$cellwiseTable[1, "k_median"])){
+      if (is.null(kFill)){
+        kFill[[sc]] <- kFillPropose(model_SE[[sc]])
+        if (is.na(kFill[[sc]])){
+          msg <- paste("Searcher efficiency model does not include estimate ",
+                   "for k and kFill was not specified.", sep = ""
+                 )
+          stop(msg)
+        }
       }
     }
   }
 
-  preds_SE <- model_SE$predictors
-  preds_CP <- model_CP$predictors
-  preds <- unique(c(preds_SE, preds_CP))
-  data_SE <- model_SE$data
-  data_CP <- model_CP$data
-  dist <- model_CP$dist
-  preds_static <- preds[which(preds %in% names(data_CO))]
-  preds_dynamic <- preds[which(preds %in% names(data_SS))]
+  preds_SE <- vector("list", nsizeclass)
+  preds_CP <- vector("list", nsizeclass)
+  preds <- vector("list", nsizeclass)
+  data_SE <- vector("list", nsizeclass)
+  data_CP <- vector("list", nsizeclass)
+  dist <- rep(NA, nsizeclass)
+  preds_static <- vector("list", nsizeclass)
+  preds_dynamic <- vector("list", nsizeclass)
 
-  if (!all(preds %in% c(preds_static, preds_dynamic))){
+  for (sci in 1:nsizeclass){
+    sc <- sizeclasses[sci]
+    preds_SE[[sci]] <- model_SE[[sc]]$predictors
+    preds_CP[[sci]] <- model_CP[[sc]]$predictors
+    preds[[sci]] <- unique(c(preds_SE[[sci]], preds_CP[[sci]]))
+    data_SE[[sci]] <- model_SE[[sc]]$data
+    data_CP[[sci]] <- model_CP[[sc]]$data
+    dist[sci] <- model_CP[[sc]]$dist
+    spreds <- preds[[sci]]
+    preds_static[[sci]] <- spreds[which(spreds %in% names(data_CO))]
+    preds_dynamic[[sci]] <- spreds[which(spreds %in% names(data_SS))]
+  }
+  names(preds_SE) <- sizeclasses
+  names(preds_CP) <- sizeclasses
+  names(dist) <- sizeclasses
+  names(preds_static) <- sizeclasses
+  names(preds_dynamic) <- sizeclasses
+
+  preds_u <- unlist(preds)
+  preds_static_u <- unlist(preds_static)
+  preds_dynamic_u <- unlist(preds_dynamic)
+  if (!all(preds_u %in% c(preds_static_u, preds_dynamic_u))){
     stop("Some model predictors required not in carcass or search data.")
   }
-  if (any(preds %in% preds_static & preds %in% preds_dynamic)) {
+  if (any(preds_u %in% preds_static_u & preds_u %in% preds_dynamic_u)) {
     msg <- paste("Predictor(s) duplicated across both carcass and search ",
              "data. Each predictor should be in only one data set.", sep = "") 
     stop(msg)
   }
 
-  sim_SE <- rpk(n, model_SE, seed_SE, kFill)
-  sim_CP <- rcp(n, model_CP, seed_CP, type = "ppersist") 
-
-  data_SS[ , dateSearchedCol] <- yyyymmdd(data_SS[ , dateSearchedCol])
-  data_CO[ , dateFoundCol] <- yyyymmdd(data_CO[ , dateFoundCol])
-
-  date0 <- min(data_SS[ , dateSearchedCol])
-  data_CO[ , dateFoundCol] <- dateToDay(data_CO[ , dateFoundCol], date0)
-  data_SS[ , dateSearchedCol] <- dateToDay(data_SS[ , dateSearchedCol], date0)
-
-  which_day0 <- which(data_SS[ , dateSearchedCol] == 0)
-  SSunitCols <- which(colnames(data_SS) %in% unique(data_CO[ , unitCol]))
-  data_SS[which_day0, SSunitCols] <- 1
-
-  cleanout <- whichCleanout(data_CO, data_SS, unitCol, dateFoundCol,
-                dateSearchedCol
-              )  
-  if (length(cleanout) > 0){
-    data_CO <- data_CO[-cleanout, ]
+  sim_SE <- vector("list", nsizeclass)
+  sim_CP <- vector("list", nsizeclass)
+  for (sci in 1:nsizeclass){
+    sc <- sizeclasses[sci]
+    sim_SE[[sci]] <- rpk(nsim, model_SE[[sc]], seed_SE, kFill[sc])
+    sim_CP[[sci]] <- rcp(nsim, model_CP[[sc]], seed_CP, type = "ppersist") 
   }
+  names(sim_SE) <- sizeclasses
+  names(sim_CP) <- sizeclasses
+
   ncarc <- nrow(data_CO)
-  ghat <- matrix(NA, nrow = ncarc, ncol = n)
-  Aj <- matrix(NA, nrow = ncarc, ncol = n)
+  ghat <- matrix(NA, nrow = ncarc, ncol = nsim)
+  Aj <- matrix(NA, nrow = ncarc, ncol = nsim)
+  set.seed(seed_ghat)
   for (carci in 1:ncarc){
-    ghatAndA <- rghatCarcass(n, data_carc = data_CO[carci, ], dist,  
-                  data_SS, preds_SE, preds_CP, sim_SE, sim_CP,
-                  preds_static, preds_dynamic, unitCol, dateFoundCol, 
-                  dateSearchedCol
-                )
-    ghat[carci, ] <- ghatAndA$ghat
-    Aj[carci, ] <- ghatAndA$Aj
+    if (carci %in% cleanoutCarcs){
+      ghat[carci, ] <- 0
+      Aj[carci, ] <- 0
+    } else{
+      sc <- sizeclass[carci]
+      est <- estghatCarcass(nsim, data_carc = data_CO[carci, ], dist[sc],  
+                    data_SS, preds_SE[[sc]], preds_CP[[sc]], sim_SE[[sc]], 
+                    sim_CP[[sc]], preds_static[[sc]], preds_dynamic[[sc]], 
+                    unitCol, dateFoundCol, dateSearchedCol
+                  )
+      ghat[carci, ] <- est$ghat
+      Aj[carci, ] <- est$Aj
+    }
   }
   rownames(Aj) <- data_CO[ , unitCol]
-  out <- list("ghat" = ghat, "Aj" = Aj)
+  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
   return(out)
 }
 
-#' Simulate ghat values and arrival intervals for a carcass from fitted pk 
+#' Estimate ghat values and arrival intervals for a carcass from fitted pk 
 #'   and cp models and search data
 #'
-#' @param n the number of simulation draws
+#' @param nsim the number of simulation draws
 #' @param data_carc Carcass Observation data for the carcass
 #' @param dist distribution for the CP model
 #' @param data_SS Search Schedule data
@@ -111,10 +162,10 @@ rghat <- function(n = 1, data_CO, data_SS, model_SE, model_CP,
 #' @examples NA
 #' @export
 #'
-rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
-                         sim_SE, sim_CP, preds_static, preds_dynamic,
-                         unitCol, timeFoundCol, timeSearchedCol){
-
+estghatCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
+                           preds_CP, sim_SE, sim_CP, preds_static, 
+                           preds_dynamic, unitCol, timeFoundCol, 
+                           timeSearchedCol){
   unit <- data_carc[, unitCol]
   carc <- data_carc[, preds_static]
   dateFound <- data_carc[ , timeFoundCol]
@@ -143,10 +194,10 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
   t1 <- data_carc[-1, timeSearchedCol]
   tS <- data_carc[-1, timeSearchedCol]
 
-  Aj <- matrix(NA, nrow = length(tS), ncol = n)
+  Aj <- matrix(NA, nrow = length(tS), ncol = nsim)
 
   for (oi in 1:length(tS)){
-    pOigAj <- matrix(NA, nrow = oi, ncol = n)
+    pOigAj <- matrix(NA, nrow = oi, ncol = nsim)
 
     for (aj in 1:oi){
       pda <- params_CP[[aj]][ , "pda"]
@@ -154,7 +205,7 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
       persist <- ppersist(pda, pdb, dist, t0[aj], t1[aj], tS[oi])
       p <- params_SE[[aj]][ , "p"]
       k <- params_SE[[aj]][ , "k"]
-      kMat <- matrix(c(1 + numeric(n), rep(k, oi - aj)), nrow = n)
+      kMat <- matrix(c(1 + numeric(nsim), rep(k, oi - aj)), nrow = nsim)
       powk <- rowCumprods(kMat)
       pRowProds <- rowProds(1 - p * powk)
       pfind <-  pRowProds * p * k * powk[ , dim(powk)[2]]
@@ -166,10 +217,10 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
     parrive <- diff(c(t0[1], t1[1:oi])) / t1[oi]
     pAjgOi <- pOigAj * parrive
     pAjgOi <- t(t(pAjgOi) / colSums(pAjgOi))
-    Aj[oi, ] <- rowSums(rowCumsums(t(pAjgOi)) < runif(n)) + 1
+    Aj[oi, ] <- rowSums(rowCumsums(t(pAjgOi)) < runif(nsim)) + 1
   }
 
-  ghat <- rep(NA, length = n)
+  ghat <- rep(NA, length = nsim)
   Aj_specific <- Aj[nrow(Aj), ]
   Aj_unique <- unique(Aj_specific)
   for (aj in Aj_unique){
@@ -190,33 +241,10 @@ rghatCarcass <- function(n = 1, data_carc, dist, data_SS, preds_SE, preds_CP,
     }
   }  
   Aj <- Aj[nrow(Aj), ]
-  out <- list("ghat" = ghat, "Aj" = Aj)
+  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
   return(out)
 }
 
-#' Determine which carcasses were from cleanout searches
-#'
-#' @param data_CO Carcass observation data
-#' @param data_SS Search schedule data
-#' @param unitCol Column name for the unit indicator
-#' @param timeFoundCol Column name for the time found data
-#' @param timeSearchedCol Column name for the time searched data
-#' @return index values of which carcasses were taken on the first search
-#' @examples NA
-#' @export 
-#'
-whichCleanout <- function(data_CO, data_SS, unitCol, timeFoundCol,
-                          timeSearchedCol){
-  ncarc <- nrow(data_CO)
-  cleanoutTF <- rep(NA, ncarc)
-  for (carci in 1:ncarc){
-    specificUnit <- data_CO[carci, unitCol]
-    times <- data_SS[data_SS[, specificUnit] == 1, timeSearchedCol]
-    time_cleanout <- min(times)
-    cleanoutTF[carci] <- data_CO[carci, timeFoundCol] == time_cleanout
-  }
-  return(which(cleanoutTF))
-}
 
 #' Propose a k value if it is not in the model table 
 #'
@@ -229,11 +257,14 @@ whichCleanout <- function(data_CO, data_SS, unitCol, timeFoundCol,
 #'
 kFillPropose <- function(model){
 
-  proposal <- as.character(model$call["kFixed"])
-  if (proposal == "NULL"){
-    proposal <- NA
+  proposal <- model$cellwiseTable[1, c("k_median", "k_lower", "k_upper")]
+  if (any(is.na(proposal))){
+    return(NA)
+  }
+  if (proposal[1] == proposal[2] & proposal[1] == proposal[3]){
+    proposal <- proposal[1]
   } else{
-    proposal <- alogit(as.numeric(proposal))
+    proposal <- NULL
   }
   return(proposal)
 }
@@ -266,7 +297,7 @@ kFillPropose <- function(model){
 #'    associated with the ghats
 #' @export
 #'
-rghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
+estghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
   
   if (is.vector(data_SS)){
@@ -485,14 +516,15 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 #' @param modelSizeSelections_CP vector of CP models to use, one for each size
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
-#' @param kFill value to fill in for missing k when not existing in the model
+#' @param kFill values to fill in for missing k when not existing in the model
 #' @return list of ghat estimates, with one element in the list corresponding
 #'   to each of the cells from the cross-model combination
 #' @export
 #'
-rghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE, modelSetSize_CP,
-                             modelSizeSelections_SE, modelSizeSelections_CP,  
-                             seed_SE = NULL, seed_CP = NULL, kFill = NULL){
+estghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE, 
+                               modelSetSize_CP, modelSizeSelections_SE, 
+                               modelSizeSelections_CP, seed_SE = NULL, 
+                               seed_CP = NULL, kFill = NULL){
 
   sizeclasses_SE <- names(modelSetSize_SE)
   sizeclasses_CP <- names(modelSetSize_CP)
@@ -504,12 +536,13 @@ rghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE, modelSetSize_CP,
   nsizeclass <- length(sizeclasses)
   ghats <- vector("list", length = nsizeclass)
   for (sci in 1:nsizeclass){
-    model_SEsci <- modelSizeSelections_SE[[sci]]
-    model_SE <- modelSetSize_SE[[sizeclasses[sci]]][[model_SEsci]]
-    model_CPsci <- modelSizeSelections_CP[[sci]]
-    model_CP <- modelSetSize_CP[[sizeclasses[sci]]][[model_CPsci]]
-    ghats[[sci]] <- rghatGeneric(n, data_SS, model_SE, model_CP, 
-                      seed_SE, seed_CP, kFill
+    sc <- sizeclasses[sci]
+    model_SEsci <- modelSizeSelections_SE[[sc]]
+    model_SE <- modelSetSize_SE[[sc]][[model_SEsci]]
+    model_CPsci <- modelSizeSelections_CP[[sc]]
+    model_CP <- modelSetSize_CP[[sc]][[model_CPsci]]
+    ghats[[sci]] <- estghatGeneric(n, data_SS, model_SE, model_CP, 
+                      seed_SE, seed_CP, kFill[sc]
                     )
   }
   names(ghats) <- sizeclasses

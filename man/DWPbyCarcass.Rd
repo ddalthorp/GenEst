@@ -2,11 +2,11 @@
 % Please edit documentation in R/fatality_functions.R
 \name{DWPbyCarcass}
 \alias{DWPbyCarcass}
-\title{Expand the density weighted proportion table to a value for each carcass}
+\title{Assign DWP Value to Each Carcass}
 \usage{
-DWPbyCarcass(data_DWP, data_CO, unitCol = "Unit", sizeclassCol = NULL,
-  data_SS = NULL, dateFoundCol = "DateFound",
-  dateSearchedCol = "DateSearched", DWPCol = NULL)
+DWPbyCarcass(data_DWP, data_CO, data_SS, dateFoundCol = "DateFound",
+  dateSearchedCol = "DateSearched", DWPCol = NULL, unitCol = "Unit",
+  sizeclassCol = NULL)
 }
 \arguments{
 \item{data_DWP}{Survey unit (rows) by size (columns) density weighted 
@@ -14,27 +14,27 @@ proportion table}
 
 \item{data_CO}{Carcass observation data}
 
-\item{unitCol}{Column name for the unit indicator}
-
-\item{sizeclassCol}{Name of colum in \code{data_CO} where the size 
-classes are recorded}
-
 \item{data_SS}{Search Schedule data}
 
-\item{dateFoundCol}{Column name for the date found data (if cleanout 
-searches are to be removed)}
+\item{dateFoundCol}{Column name for the date found data}
 
-\item{dateSearchedCol}{Column name for the date searched data (if cleanout 
-searches are to be removed)}
+\item{dateSearchedCol}{Column name for the date searched data}
 
-\item{DWPCol}{Column name for the DWP values in the DWP table when no
+\item{DWPCol}{Column name(s) for the DWP values in the DWP table when no
 size class is used}
+
+\item{unitCol}{Column name for the unit indicator}
+
+\item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
+are recorded. Optional.}
 }
 \value{
 DWP value for each carcass
 }
 \description{
-Expand the density weighted proportion table to a value for each carcass
+Expand the density weighted proportion table to a value for 
+  each carcass (across multiple classes if desired) based on the unit where 
+  they were found
 }
 \examples{
 NA

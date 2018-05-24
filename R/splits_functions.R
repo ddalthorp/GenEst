@@ -217,7 +217,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   SSunitCols <- which(colnames(data_SS) %in% unique(data_CO[ , unitCol]))
   data_SS[which_day0, SSunitCols] <- 1
 
-  cleanout <- whichCleanout(data_CO, data_SS, unitCol, dateFoundCol,
+  cleanout <- cleanouts(data_CO, data_SS, unitCol, dateFoundCol,
                 dateSearchedCol
               )  
   if (length(cleanout) > 0){
