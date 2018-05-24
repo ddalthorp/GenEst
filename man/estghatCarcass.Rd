@@ -9,6 +9,8 @@ estghatCarcass(nsim = 1, data_carc, dist, data_SS, preds_SE, preds_CP, sim_SE,
   sim_CP, preds_static, preds_dynamic, unitCol, timeFoundCol, timeSearchedCol)
 }
 \arguments{
+\item{nsim}{the number of simulation draws}
+
 \item{data_carc}{Carcass Observation data for the carcass}
 
 \item{dist}{distribution for the CP model}
@@ -32,8 +34,6 @@ estghatCarcass(nsim = 1, data_carc, dist, data_SS, preds_SE, preds_CP, sim_SE,
 \item{timeFoundCol}{Column name for the time found data}
 
 \item{timeSearchedCol}{Column name for the time searched data}
-
-\item{n}{the number of simulation draws}
 }
 \value{
 list of [1] n ghat estimates for a carcass and [2] n arrival 

@@ -66,7 +66,6 @@
 #'   \item{\code{DWP}}{Density weighted proportion of area searched}
 #'   \item{\code{CO}}{Carcass observations}
 #' }
-#' @section General Description:
 #' @section Searcher Efficiency (\code{SE}):
 #'  \code{$SE} is a data frame with each row representing the fate of a single
 #'  carcass in the searcher efficience trials. There are columns for:
@@ -132,7 +131,8 @@
 #'    in place of \code{-}.}
 #'   \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"} 
 #'    to indicate which season the search was conducted in. \code{Season} is
-#'    optional but may be used as a temporal covariate for fatality estimates.}
+#'    optional but may be used as a temporal covariate for fatality 
+#'    estimates.}
 #'   \item{\code{t1}, etc.}{unique ID for all turbines that were searched on
 #'    at least one search date. Values are either 1 or 0, indicating whether
 #'    the given turbine (column) was searched or not on the given date (row).}
@@ -149,7 +149,8 @@
 #'   \item{\code{DWP_bat}, \code{DWP_sml}, \code{DWP_med}, 
 #'         \code{DWP_lrg}}{\code{"spring"}, \code{"summer"}, or \code{"fall"}
 #'    to indicate which season the search was conducted in. \code{Season} is
-#'    optional but may be used as a temporal covariate for fatality estimates.}
+#'    optional but may be used as a temporal covariate for fatality 
+#'    estimates.}
 #'   \item{\code{t1}, etc.}{unique ID for all turbines that were searched on 
 #'    at least one search date. Values are either 1 or 0, indicating whether
 #'    the given turbine (column) was searched or not on the given date (row).}
