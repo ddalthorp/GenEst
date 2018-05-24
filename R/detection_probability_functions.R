@@ -24,31 +24,68 @@
 #' @export
 #'
 estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP, 
-                  seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
-                  kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound", 
-                  dateSearchedCol = "DateSearched", sizeclassCol = NULL){
+                    seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
+                    kFill = NULL, unitCol = "Unit", 
+                    dateFoundCol = "DateFound", 
+                    dateSearchedCol = "DateSearched", sizeclassCol = NULL){
 
-  if (is.na(model_SE$cellwiseTable[1, "k_median"])){
-    if (is.null(kFill)){
-      kFill <- kFillPropose(model_SE)
-      if (is.na(kFill)){
-        msg <- paste("Searcher efficiency model does not include estimate ",
-                 "for k and kFill was not specified.", sep = "")
-        stop(msg)
+  if (is.null(sizeclassCol)){
+    sizeclassCol <- "placeholder"
+    data_CO$placeholder <- "value"
+    sizeclasses <- "value"
+    nsizeclasses <- 1
+    model_SE <- list("value" = model_SE)
+    model_CP <- list("value" = model_CP)
+  } else{
+    if (!(sizeclassCol %in% colnames(data_CO))){
+      stop("size class column not in carcass data.")
+    }
+    sizeclass <- as.character(data_CO[ , sizeclassCol])
+    sizeclasses <- unique(sizeclass)
+    nsizeclass <- length(sizeclasses)
+  }
+
+  for (sci in 1:nsizeclass){
+    sc <- sizeclasses[sci]
+    if (is.na(model_SE[[sc]]$cellwiseTable[1, "k_median"])){
+      if (is.null(kFill)){
+        kFill[[sc]] <- kFillPropose(model_SE[[sc]])
+        if (is.na(kFill[[sc]])){
+          msg <- paste("Searcher efficiency model does not include estimate ",
+                   "for k and kFill was not specified.", sep = ""
+                 )
+          stop(msg)
+        }
       }
     }
   }
 
-########### this needs to be generalized to multiple size classes
+  preds_SE <- vector("list", nsizeclass)
+  preds_CP <- vector("list", nsizeclass)
+  preds <- vector("list", nsizeclass)
+  data_SE <- vector("list", nsizeclass)
+  data_CP <- vector("list", nsizeclass)
+  dist <- rep(NA, nsizeclass)
+  preds_static <- vector("list", nsizeclass)
+  preds_dynamic <- vector("list", nsizeclass)
 
-  preds_SE <- model_SE$predictors
-  preds_CP <- model_CP$predictors
-  preds <- unique(c(preds_SE, preds_CP))
-  data_SE <- model_SE$data
-  data_CP <- model_CP$data
-  dist <- model_CP$dist
-  preds_static <- preds[which(preds %in% names(data_CO))]
-  preds_dynamic <- preds[which(preds %in% names(data_SS))]
+  for (sci in 1:nsizeclass){
+    sc <- sizeclasses[sci]
+    preds_SE[[sci]] <- model_SE[[sc]]$predictors
+    preds_CP[[sci]] <- model_CP[[sc]]$predictors
+    preds[[sci]] <- unique(c(preds_SE[[sci]], preds_CP[[sci]]))
+    data_SE[[sci]] <- model_SE[[sc]]$data
+    data_CP[[sci]] <- model_CP[[sc]]$data
+    dist[sci] <- model_CP[[sc]]$dist
+    spreds <- preds[[sci]]
+    preds_static[[sci]] <- spreds[which(spreds %in% names(data_CO))]
+    preds_dynamic[[sci]] <- spreds[which(spreds %in% names(data_SS))]
+  }
+  names(preds_SE) <- sizeclasses
+  names(preds_CP) <- sizeclasses
+  names(dist) <- sizeclasses
+  names(preds_static) <- sizeclasses
+  names(preds_dynamic) <- sizeclasses
 
   if (!all(preds %in% c(preds_static, preds_dynamic))){
     stop("Some model predictors required not in carcass or search data.")
@@ -59,8 +96,15 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
     stop(msg)
   }
 
-  sim_SE <- rpk(nsim, model_SE, seed_SE, kFill)
-  sim_CP <- rcp(nsim, model_CP, seed_CP, type = "ppersist") 
+  sim_SE <- vector("list", nsizeclass)
+  sim_CP <- vector("list", nsizeclass)
+  for (sci in 1:nsizeclass){
+    sc <- sizeclasses[sci]
+    sim_SE[[sci]] <- rpk(nsim, model_SE[[sc]], seed_SE, kFill[sc])
+    sim_CP[[sci]] <- rcp(nsim, model_CP[[sc]], seed_CP, type = "ppersist") 
+  }
+  names(sim_SE) <- sizeclasses
+  names(sim_CP) <- sizeclasses
 
   ncarc <- nrow(data_CO)
   ghat <- matrix(NA, nrow = ncarc, ncol = nsim)
@@ -71,13 +115,14 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
       ghat[carci, ] <- 0
       Aj[carci, ] <- 0
     } else{
-      ghatAndA <- estghatCarcass(nsim, data_carc = data_CO[carci, ], dist,  
-                    data_SS, preds_SE, preds_CP, sim_SE, sim_CP,
-                    preds_static, preds_dynamic, unitCol, dateFoundCol, 
-                    dateSearchedCol
+      sc <- sizeclass[carci]
+      est <- estghatCarcass(nsim, data_carc = data_CO[carci, ], dist[sc],  
+                    data_SS, preds_SE[[sc]], preds_CP[[sc]], sim_SE[[sc]], 
+                    sim_CP[[sc]], preds_static[[sc]], preds_dynamic[[sc]], 
+                    unitCol, dateFoundCol, dateSearchedCol
                   )
-      ghat[carci, ] <- ghatAndA$ghat
-      Aj[carci, ] <- ghatAndA$Aj
+      ghat[carci, ] <- est$ghat
+      Aj[carci, ] <- est$Aj
     }
   }
   rownames(Aj) <- data_CO[ , unitCol]
@@ -185,7 +230,7 @@ estghatCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
     }
   }  
   Aj <- Aj[nrow(Aj), ]
-  out <- list("ghat" = ghat, "Aj" = Aj)
+  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
   return(out)
 }
 
@@ -201,11 +246,11 @@ estghatCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
 #'
 kFillPropose <- function(model){
 
-  proposal <- as.character(model$call["kFixed"])
-  if (proposal == "NULL"){
-    proposal <- NA
+  proposal <- model$cellwiseTable[1, c("k_median", "k_lower", "k_upper")]
+  if (proposal[1] == proposal[2] & proposal[1] == proposal[3]){
+    proposal <- proposal[1]
   } else{
-    proposal <- alogit(as.numeric(proposal))
+    proposal <- NULL
   }
   return(proposal)
 }
@@ -481,7 +526,7 @@ estghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
     model_SE <- modelSetSize_SE[[sizeclasses[sci]]][[model_SEsci]]
     model_CPsci <- modelSizeSelections_CP[[sci]]
     model_CP <- modelSetSize_CP[[sizeclasses[sci]]][[model_CPsci]]
-    ghats[[sci]] <- rghatGeneric(n, data_SS, model_SE, model_CP, 
+    ghats[[sci]] <- estghatGeneric(n, data_SS, model_SE, model_CP, 
                       seed_SE, seed_CP, kFill
                     )
   }

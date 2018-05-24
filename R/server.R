@@ -550,7 +550,7 @@ observeEvent(input$runMod_g, {
     }
     rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
 
-    rv$rghatsGeneric[[sci]] <- rghatGeneric(rv$n, rv$SS, 
+    rv$rghatsGeneric[[sci]] <- estghatGeneric(rv$n, rv$SS, 
                                  rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
                                  rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
                                  kFill = rv$kFill)
@@ -635,15 +635,15 @@ observeEvent(input$runModM, {
       rv$scis <- which(rv$data_CO[ , rv$sizeclassCol] == rv$sizeclasses[sci])
     }
 
-    rv$rghatsAjs[[sci]] <- tryCatch(
-                           rghat(rv$n, rv$data_CO[rv$scis, ], rv$data_SS, 
-                             rv$mods_SE[[sci]][[rv$SEmodToUse]], 
-                             rv$mods_CP[[sci]][[rv$CPmodToUse]], 
-                             kFill = rv$kFill, unitCol = rv$unitCol, 
-                             dateFoundCol = rv$dateFoundCol, 
-                             dateSearchedCol = rv$dateSearchedCol
-                           ), error = function(x){NA}
-                         )
+    rv$rghatsAjs[[sci]] <- NULL #tryCatch(
+                           #rghat(rv$n, rv$data_CO[rv$scis, ], rv$data_SS, 
+                            # rv$mods_SE[[sci]][[rv$SEmodToUse]], 
+                            # rv$mods_CP[[sci]][[rv$CPmodToUse]], 
+                            # kFill = rv$kFill, unitCol = rv$unitCol, 
+                            # dateFoundCol = rv$dateFoundCol, 
+                            # dateSearchedCol = rv$dateSearchedCol
+                           #), error = function(x){NA}
+                         #)
   }
 
   removeNotification(msg_RunModM)

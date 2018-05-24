@@ -8,7 +8,7 @@ data_SS <- mock$SS
 data_DWP <- mock$DWP
 
 model_SE <- pkm(formula_p = p ~ Visibility , 
-             formula_k = k ~ Visibility + HabitatType,
+             formula_k = k ~ Visibility + HabitatType, kFixed = 0.5,
              data = data_SE
             )
 model_CP <- cpm(formula_l = l ~ Visibility + Season, formula_s = s ~ 1, 
@@ -26,7 +26,8 @@ ghatsGeneric <- estghatGeneric(n = 1000, avgSS, model_SE, model_CP,
 DWP <- DWPbyCarcass(data_DWP, data_CO, data_SS, 
                          dateFoundCol = "DateFound",
                          dateSearchedCol = "DateSearched",
-                         DWPCol = "S", unitCol = "Unit")
+                         DWPCol = c("S", "M", "L", "XL"), unitCol = "Unit", 
+                         sizeclassCol = "Size")
 
 
 
@@ -59,14 +60,52 @@ modelSetSize_CP <- cpmSetSize(formula_l = l ~ Visibility*Season,
                      sizeclassCol = "Size"
                    )
 
-modelSizeSelections_SE <- rep("p ~ Visibility; k ~ HabitatType", 4)
-modelSizeSelections_CP <- rep("dist: exponential; l ~ 1; NULL", 4)
+modelSizeSelections_SE <- c("p ~ Visibility; k ~ HabitatType", 
+                            "p ~ Visibility * HabitatType; k ~ HabitatType",
+                            "p ~ HabitatType; k ~ HabitatType",
+                            "p ~ 1; k ~ HabitatType")
+names(modelSizeSelections_SE) <- c("S", "M", "L", "XL")
+modelSizeSelections_CP <- c("dist: exponential; l ~ 1; NULL",
+                            "dist: lognormal; l ~ Visibility; s ~ Visibility",
+                            "dist: exponential; l ~ 1; NULL",
+                            "dist: exponential; l ~ Visibility; NULL")
+names(modelSizeSelections_CP) <- c("S", "M", "L", "XL")
 
-ghatsGenericSize <- rghatGenericSize(n = 1000, avgSS, modelSetSize_SE, 
+ghatsGenericSize <- estghatGenericSize(n = 1000, avgSS, modelSetSize_SE, 
                       modelSetSize_CP, modelSizeSelections_SE,
                       modelSizeSelections_CP, seed_SE = 1, seed_CP = 1, 
                       kFill = NULL
                     )
+
+sizeclassCol <- "Size"
+sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
+nsizeclass <- length(sizeclasses)
+models_SE <- vector("list", length = nsizeclass)
+names(models_SE) <- names(modelSetSize_SE)
+models_CP <- vector("list", length = nsizeclass)
+names(models_CP) <- names(modelSetSize_CP)
+
+for (sci in 1:nsizeclass){
+  sizeclass <- names(models_SE[sizeclasses[sci]])
+  classMatch <- which(names(models_SE) == sizeclass)
+  modSE <- modelSizeSelections_SE[[sizeclass]]
+  modCP <- modelSizeSelections_CP[[sizeclass]]
+  models_SE[[sizeclass]] <- modelSetSize_SE[[sizeclass]][[modSE]]
+  models_CP[[sizeclass]] <- modelSetSize_CP[[sizeclass]][[modCP]]
+}
+
+
+
+
+eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
+                 model_SE = models_SE, model_CP = models_CP, 
+                 seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
+                 seed_M = NULL, kFill = NULL,  
+                 unitCol = "Unit", dateFoundCol = "DateFound", 
+                 dateSearchedCol = "DateSearched", DWPCol = sizeclasses,
+                 sizeclassCol = "Size")
+
+
 
 
 
