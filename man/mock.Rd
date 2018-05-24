@@ -3,7 +3,7 @@
 \docType{data}
 \name{mock}
 \alias{mock}
-\title{Completely mock example data set}
+\title{A mock example data set}
 \format{A list with 5 items:
 \describe{
   \item{SE}{Searcher efficiency trial data}
@@ -19,6 +19,6 @@ Mock
 mock
 }
 \description{
-A dataset containing SE, CP, SS, DWP, and CO data.
+A template dataset used for testing purposes.  Dataset containing SE, CP, SS, DWP, and CO data.
 }
 \keyword{datasets}
