@@ -16,7 +16,9 @@
 #' @param dateFoundCol Column name for the date found data
 #' @param dateSearchedCol Column name for the date searched data
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
-#'  are recorded
+#'   are recorded
+#' @param indicator of which carcasses (if any) were found on cleanout 
+#'   searches
 #' @return list of [1] matrix of n ghat estimates for each carcass and [2]
 #'   matrix of n arrival intervals (Aj) for each carcass. The row names of the
 #'   Aj matrix are the names of the units where each carcass was found.
@@ -27,7 +29,8 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
                     seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
                     kFill = NULL, unitCol = "Unit", 
                     dateFoundCol = "DateFound", 
-                    dateSearchedCol = "DateSearched", sizeclassCol = NULL){
+                    dateSearchedCol = "DateSearched", sizeclassCol = NULL,
+                    c_outs = NULL){
 
   if (is.null(sizeclassCol)){
     sizeclassCol <- "placeholder"
@@ -133,7 +136,7 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
 #' Estimate ghat values and arrival intervals for a carcass from fitted pk 
 #'   and cp models and search data
 #'
-#' @param n the number of simulation draws
+#' @param nsim the number of simulation draws
 #' @param data_carc Carcass Observation data for the carcass
 #' @param dist distribution for the CP model
 #' @param data_SS Search Schedule data
