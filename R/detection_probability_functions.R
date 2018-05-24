@@ -17,7 +17,7 @@
 #' @param dateSearchedCol Column name for the date searched data
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'   are recorded
-#' @param indicator of which carcasses (if any) were found on cleanout 
+#' @param cleanoutCarcs of which carcasses (if any) were found on cleanout 
 #'   searches
 #' @return list of [1] matrix of n ghat estimates for each carcass and [2]
 #'   matrix of n arrival intervals (Aj) for each carcass. The row names of the
@@ -30,7 +30,7 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
                     kFill = NULL, unitCol = "Unit", 
                     dateFoundCol = "DateFound", 
                     dateSearchedCol = "DateSearched", sizeclassCol = NULL,
-                    c_outs = NULL){
+                    cleanoutCarcs = NULL){
 
   if (is.null(sizeclassCol)){
     sizeclassCol <- "placeholder"
@@ -114,7 +114,7 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
   Aj <- matrix(NA, nrow = ncarc, ncol = nsim)
   set.seed(seed_ghat)
   for (carci in 1:ncarc){
-    if (carci %in% c_outs){
+    if (carci %in% cleanoutCarcs){
       ghat[carci, ] <- 0
       Aj[carci, ] <- 0
     } else{
