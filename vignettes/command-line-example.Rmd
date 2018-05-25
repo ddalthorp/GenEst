@@ -396,19 +396,23 @@ When estimating fatalities, detection probability is determined for individual
 carcasses based on the dates when they are observed, associated covariates, 
 the searcher efficiency and carcass persistence models, and the search
 schedule. The carcass-specific detection probabilities (as opposed to the 
-generic/cell-specific detection probabilities above) must therefore be
-calculated before estimating the total number of fatalities.
+generic/cell-specific detection probabilities above) are therefore calculated 
+before estimating the total number of fatalities. Although it is possible
+to estimate these detection probabilities on their own, they are best 
+interpreted together and in the context of DWP and the fraction of the 
+facility surveyed. That is, in the context of a full fatality estimation. 
 
 ### Carcass-Specific Detection Probability
 
-The `rghat` function produces `n` random draws of carcass-specific detection
+If a user is interested in estimating carcass-specific probabilities, the
+`estghat` function produces `nsim` random draws of carcass-specific detection
 probabilities ($\hat{g}$) and arrival intervals ($A_j$):.
 
 ```{r, eval=FALSE}
 data_CO <- mock$CO
-ghatsAjs <- estghat(n = 1000, data_CO, data_SS, model_SE, model_CP,
+ghatsAjs <- estghat(nsim = 1000, data_CO, data_SS, model_SE, model_CP,
              seed_SE = 1, seed_CP = 1, unitCol = "Unit",
-             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
+             dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
            )
 ghat <- ghatsAjs$ghat
 Aj <- ghatsAjs$Aj

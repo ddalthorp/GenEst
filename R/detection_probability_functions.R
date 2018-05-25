@@ -554,19 +554,30 @@ estghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
 #' @param data_SS a multi-unit SS data table, for which the average interval 
 #'   will be tabulated
 #' @param dateSearchedCol Column name for the date searched data
+#' @param unitPrefix prefix for the unit identifiers, which correspond to 
+#'   columns in \code{data_ss}
 #' @return vector of the average search schedule
 #' @export
 #'
-averageSS <- function(data_SS, dateSearchedCol = "DateSearched"){
+averageSS <- function(data_SS, dateSearchedCol = "DateSearched", 
+                      unitPrefix = "Unit"){
+
+  if (!dateSearchedCol %in% colnames(data_SS)){
+    stop("date searched column name provided not present in data.")
+  }
   SS <- data_SS
   SS[ , dateSearchedCol] <- yyyymmdd(SS[ , dateSearchedCol])
   date1 <- min(SS[ , dateSearchedCol])
   SS[ , "DateSearched"] <- dateToDay(SS[ , dateSearchedCol], date1)
-  units <- colnames(SS)[grep("unit", tolower(colnames(SS)))]
+  SScols <- colnames(SS)
+  prefixLength <- nchar(unitPrefix)
+  SScolPrefixes <- substr(SScols, 1, prefixLength)
+  
+  units <- colnames(SS)[which(SScolPrefixes == unitPrefix)]
   nunits <- length(units)
   
   if (nunits == 0){
-    stop("No columns in data_SS include unit in the name")
+    stop(paste0("No columns in data_SS include ", unitPrefix, " in the name"))
   }
   SSlist <- vector("list", nunits)
 
