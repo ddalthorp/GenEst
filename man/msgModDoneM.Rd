@@ -4,10 +4,10 @@
 \alias{msgModDoneM}
 \title{Creates the M finished message}
 \usage{
-msgModDoneM(ghatAj)
+msgModDoneM(M)
 }
 \arguments{
-\item{ghatAj}{output from rghat}
+\item{M}{output from estM}
 }
 \value{
 M done message
