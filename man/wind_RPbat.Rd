@@ -13,7 +13,7 @@
   \item{\code{CO}}{Carcass observations}
 }}
 \source{
-RPbat
+\code{wind_RPbat}
 }
 \usage{
 wind_RPbat

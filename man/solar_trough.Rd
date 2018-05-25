@@ -13,7 +13,7 @@
   \item{\code{CO}}{Carcass observations}
 }}
 \source{
-trough
+\code{solar_trough}
 }
 \usage{
 solar_trough

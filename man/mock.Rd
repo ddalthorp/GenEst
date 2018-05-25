@@ -13,7 +13,7 @@
   \item{CO}{Carcass observations}   
 }}
 \source{
-Mock
+\code{mock}
 }
 \usage{
 mock
