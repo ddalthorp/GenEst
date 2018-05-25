@@ -155,7 +155,7 @@ msgModRun <- function(modelType){
     msg <- ("Running Detection Probability Model")
   }
   if (modelType == "M"){
-    msg <- ("Running Fatality Model")
+    msg <- ("Estimating Fatalities")
   }
   if(!is.null(msg)){
     return(showNotification(msg, duration = NULL))
@@ -164,25 +164,26 @@ msgModRun <- function(modelType){
 
 #' Creates the M finished message
 #'
-#' @param ghatAj output from rghat
+#' @param M output from estM
 #' @return M done message
 #' @export
 #'
-msgModDoneM <- function(ghatAj){
+msgModDoneM <- function(M){
 
-  if (any(is.na(ghatAj))){
-    if (all(is.na(ghatAj))){
-      msg <- "All ghat estimations failed, check input"
+  if (any(is.na(M))){
+    if (all(is.na(M))){
+      msg <- "All M estimations failed, check input"
       return(showNotification(msg, type = "error", duration = NULL))
     } else{
-      msg <- "Some ghat estimations failed, check input"
+      msg <- "Some M estimations failed, check input"
       return(showNotification(msg, type = "warning", duration = NULL))
     }
   } else{
-    msg  <- "ghat estimation done."
+    msg  <- "M estimation done."
     return(showNotification(msg, type = "message", duration = NULL))
   }
 }
+
 #' Creates the SE data size notification 
 #'
 #' @param formula_k formula for k

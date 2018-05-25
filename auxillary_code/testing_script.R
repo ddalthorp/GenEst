@@ -24,7 +24,7 @@ ghatsGeneric <- estghatGeneric(n = 1000, avgSS, model_SE, model_CP,
 eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
                  model_SE = model_SE, model_CP = model_CP, 
                  seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
-                 seed_M = NULL, kFill = NULL,  
+                 seed_M = NULL, kFill = NA,  
                  unitCol = "Unit", dateFoundCol = "DateFound", 
                  dateSearchedCol = "DateSearched", DWPCol = "S",
                  sizeclassCol = NULL)
