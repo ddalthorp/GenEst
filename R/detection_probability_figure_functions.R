@@ -89,6 +89,32 @@ plot.ghatGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
   text_CL <- paste(num_CL, "%", sep = "")
   text_ex <- c("min", text_CL[1], "25%", "50%", "75%", text_CL[2], "max")
   text(x_s + 0.2, y_s, text_ex, cex = 0.65, adj = 0)
+}
 
 
+
+#' Plot results of a set of size-based generic ghat estimations
+#'
+#' @param x ghatGenericSize output
+#' @param CL confidence level to use
+#' @param ... to be passed down
+#' @return a plot
+#' @export
+#'
+plot.ghatGenericSize <- function(x, sizeclassName = NULL, CL = 0.9, ...){
+
+  nsizeclass <- length(x)
+
+  if (nsizeclass == 1){
+    devAskNewPage(FALSE)
+  }else{
+    devAskNewPage(TRUE)
+  }
+
+  sizeclassNames <- names(x)
+  for (sci in 1:nsizeclass){
+    plot(x[[sci]], sizeclassName = sizeclassNames[sci], CL = CL)#, ...)
+  }
+
+  devAskNewPage(FALSE)
 }
