@@ -5,7 +5,7 @@
 \title{Fit a single carcass persistence model.}
 \usage{
 cpm(formula_l, formula_s = NULL, data = NULL, left = NULL, right = NULL,
-  dist = "weibull", CL = 0.9, quiet = FALSE, maxit = 5000)
+  dist = "weibull", CL = 0.9, quiet = FALSE)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 
