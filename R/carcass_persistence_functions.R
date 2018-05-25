@@ -126,8 +126,7 @@
 #' @export
 #'
 cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
-                right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE,
-                maxit = 5000){
+                right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE){
 
 
   if (length(formula_s) != 0 & dist == "exponential" & quiet == FALSE){
