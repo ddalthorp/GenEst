@@ -19,38 +19,43 @@
 solar_trough
 }
 \description{
-An example data set for estimating fatalities from a trough-based solar thermal electric power
-generation facility.  The simulated site is inspected daily along ten 2000 meter long transects,
- which run  north-south. Observers look up to 150 meters away down the rows created by troughs 
-(east-west).  One sided distance sampling will be used, with observers looking consistently in 
-one cardinal direction as they travel through the facility.  A sitewide clearout search is
-implemented before the first scheduled winter search.
+An example data set for estimating fatalities from a trough-based solar 
+thermal electric power generation facility.  The simulated site is inspected 
+daily along ten 2000 meter long transects,  which run  north-south. Observers
+look up to 150 meters away down the rows created by troughs  (east-west).  
+One sided distance sampling will be used, with observers looking consistently
+in  one cardinal direction as they travel through the facility. A sitewide 
+clearout search is implemented before the first scheduled winter search.
  
-The dataset consists of five parts: Data on carcass observations (CO) from daily searches, field
-trials for estimating carcass persistence (CP) and searcher efficiency (SE), search schedule 
-(SS), and density weighted proportion (DWP) of area searched for the rows within each transect 
-(which is an area adjustment factor to account for incomplete search coverage).
+The dataset consists of five parts: Data on carcass observations (CO) from 
+daily searches, field trials for estimating carcass persistence (CP) and 
+searcher efficiency (SE), search schedule (SS), and density weighted 
+proportion (DWP) of area searched for the rows within each transect (which is
+an area adjustment factor to account for incomplete search coverage).
 }
 \section{Searcher Efficiency (\code{SE})}{
 
  \code{$SE} is a data frame with each row representing the fate of a single
  carcass in the searcher efficiency trials. There are columns for:
 \describe{
-  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or \code{"fall"}}
-  \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or \code{"sml"} bird}
-  \item{\code{"Search1",...,"Search5"}}{fate of carcass on the 1st, 2nd, 3rd, 4th, and
-     5th search after placement. A value of 1 implies that a carcass was
-     discovered by searchers, 0 implies the carcass was present but not
-     discovered, and any other value is interpreted as "no search" or
-     "carcass not present" and ignored in the model. In this data set,
-     \code{NA} indicates that a carcass had been previously discovered and
-     removed from the field. A user may use a variety of values to
-     differentiate different reasons no search was conducted or the carcass
-     was not present. For example, "NS" to indicate the search
-     was not scheduled in that location at that time, or "SC" to indicate the
-     carcass had been removed by scavengers prior to the search.}
-  \item{\code{Distance}}{the distance a carcass was placed from the observer's transect.
-    Used in determining probability to detect with distance sampling.}
+  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or 
+  \code{"fall"}}
+  \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or 
+  \code{"sml"} bird}
+  \item{\code{"Search1",...,"Search5"}}{fate of carcass on the 1st, 2nd, 3rd,
+   4th, and 5th search after placement. A value of 1 implies that a carcass 
+   was discovered by searchers, 0 implies the carcass was present but not
+   discovered, and any other value is interpreted as "no search" or
+   "carcass not present" and ignored in the model. In this data set,
+   \code{NA} indicates that a carcass had been previously discovered and
+   removed from the field. A user may use a variety of values to
+   differentiate different reasons no search was conducted or the carcass
+   was not present. For example, "NS" to indicate the search
+   was not scheduled in that location at that time, or "SC" to indicate the
+   carcass had been removed by scavengers prior to the search.}
+  \item{\code{Distance}}{the distance a carcass was placed from the 
+   observer's transect. Used in determining probability to detect with 
+   distance sampling.}
 }
 }
 
@@ -60,34 +65,40 @@ trials for estimating carcass persistence (CP) and searcher efficiency (SE), sea
  carcass in the carcass persistence trials. There are columns for:
 \describe{
   \item{\code{Index}}{unique ID for each carcass}
-  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or \code{"fall"}}
-  \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or \code{"sml"} bird}
-  \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing the time the carcass was
-  scavenged or otherwise removed from the field. For example, \code{Left = 2.04}, 
-   \code{Right = 3.21} indicates that the carcass was last observed 2.04 days after being placed
-  in the field and was noted missing 3.21 days after being placed. If the precise time of 
-  carcass removal is known (e.g., recorded by camera), then \code{Left} and \code{Right} should
-  be set equal to each other. If a carcass persists beyond the last day of the field trial, 
-   \code{Left} is the last time it was observed and \code{Right} is entered as \code{Inf} or 
-   \code{NA}.}
+  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or 
+  \code{"fall"}}
+  \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or 
+  \code{"sml"} bird}
+  \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing the 
+  time the carcass was scavenged or otherwise removed from the field. For 
+  example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the carcass
+  was last observed 2.04 days after being placed in the field and was noted 
+  missing 3.21 days after being placed. If the precise time of carcass 
+  removal is known (e.g., recorded by camera), then \code{Left} and 
+  \code{Right} should be set equal to each other. If a carcass persists 
+  beyond the last day of the field trial, \code{Left} is the last time it was
+   observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
 }
 }
 
 \section{Search Schedule (\code{SS})}{
 
- \code{$SS} is a data frame with a row for each date a transect at the site was searched, a 
- column of \code{SearchDate}s, and a column for each transect. In addition, there is an optional
- column to indicate the \code{Season}. The columns for distinct area (array) and the date column
- are required, and the names of the columns for search areas must match the names of areas used 
- in the DWP and CO files.
+ \code{$SS} is a data frame with a row for each date a transect at the site 
+ was searched, a column of \code{SearchDate}s, and a column for each 
+ transect. In addition, there is an optional column to indicate the 
+ \code{Season}. The columns for distinct area (array) and the date column
+ are required, and the names of the columns for search areas must match the 
+ names of areas used in the DWP and CO files.
 \describe{
-  \item{\code{SearchDate}}{columns of dates when a transect was searched. Format in this data is
-    \code{"\%Y-\%m-\%d CDT"}, but time zone (\code{CDT}) is optional. A time stamp may be included 
-    if desired (e.g., \code{2018-03-20 02:15:41}). Alternatively, \code{\\} can be used in
+  \item{\code{SearchDate}}{columns of dates when a transect was searched. 
+  Format in this data is \code{"\%Y-\%m-\%d CDT"}, but time zone (\code{CDT})
+   is optional. A time stamp may be included if desired (e.g., 
+   \code{2018-03-20 02:15:41}). Alternatively, \code{\\} can be used in
    place of \code{-}.}
-  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or \code{"fall"} to
-   indicate which season the search was conducted in. \code{Season} is
-   optional but may be used as a temporal covariate for fatality estimates.}
+  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or 
+   \code{"fall"} to indicate which season the search was conducted in. 
+   \code{Season} is optional but may be used as a temporal covariate for 
+   fatality estimates.}
 }
 }
 
@@ -113,12 +124,14 @@ trials for estimating carcass persistence (CP) and searcher efficiency (SE), sea
 
 \section{Carcass Observations (\code{CO})}{
 
-\code{$CO} is a data frame with a row for carcass observed in the carcass searches and a number 
-of columns giving information about the given carcass (date found, size, species, etc.)
+\code{$CO} is a data frame with a row for carcass observed in the carcass 
+searches and a number of columns giving information about the given carcass 
+(date found, size, species, etc.)
 \describe{
   \item{\code{Index}}{unique identifier for each carcass.}
-  \item{\code{Unit}}{identifier for which transect the given carcass was found at.  Values must 
-   match with DWP Transect values Search Schedule column names.}
+  \item{\code{Unit}}{identifier for which transect the given carcass was 
+  found at.  Values must match with DWP Transect values Search Schedule 
+  column names.}
   \item{\code{Species}}{species of the carcass: \code{"BA"}, \code{"BB"},
     \code{"BC"}, \code{"BD"}, \code{"BE"}, \code{"LA"}, \code{"LB"},
     \code{"LD"}, \code{"LE"}, \code{"MA"}, \code{"MB"}, \code{"SA"},
@@ -126,10 +139,12 @@ of columns giving information about the given carcass (date found, size, species
     \code{"SG"}}
   \item{\code{Size}}{size: \code{"bat"}, \code{"lrg"}, \code{"med"},
    \code{"sml"}}
-  \item{\code{Row}}{Optional indicator of which row within an array a carcass was found at.}
-  \item{\code{Distance}}{The perpendicular distance from the searcher's transect at which the 
-  carcass was discovered at.}
-  \item{\code{DateFound}}{dates entered in the same format as in \code{$SS$SearchDate}. 
+  \item{\code{Row}}{Optional indicator of which row within an array a carcass
+   was found at.}
+  \item{\code{Distance}}{The perpendicular distance from the searcher's 
+   transect at which the carcass was discovered at.}
+  \item{\code{DateFound}}{dates entered in the same format as in 
+   \code{$SS$SearchDate}. 
   Every date entered here is (and must be) included in the search schedule 
   (\code{$SS$SearchDate})}
   \item{\code{X}}{UTM Easting of carcass.}

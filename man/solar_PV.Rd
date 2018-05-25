@@ -19,32 +19,35 @@
 solar_PV
 }
 \description{
-An example data set for estimating fatalities from a large photovoltaic solar generation 
-facility.
+An example data set for estimating fatalities from a large photovoltaic solar
+ generation facility.
  
-The simulated site is organized into 300 arrays of panels.  As observers walk north-south along
-paths between arrays, they look east or west down rows between solar panels 150 meters long, 
-with 38 searchable rows per array.  Observers consistently look for animals down one cardinal 
-direction, making this a one-sided distance sample.  Searches are scheduled on a seven day
-rotation, with 60 arrays searched per weekday.  A sitewide clearout search is implemented 
-before the first scheduled winter search.
+The simulated site is organized into 300 arrays of panels.  As observers walk
+ north-south along paths between arrays, they look east or west down rows 
+ between solar panels 150 meters long, with 38 searchable rows per array.  
+ Observers consistently look for animals down one cardinal direction, making 
+ this a one-sided distance sample.  Searches are scheduled on a seven day
+ rotation, with 60 arrays searched per weekday.  A sitewide clearout search 
+ is implemented before the first scheduled winter search.
  
-The dataset consists of five parts: Data on carcass observations (CO) from array searches, 
-field trials for estimating carcass persistence (CP) and searcher efficiency
-(SE), search schedule (SS), and density weighted proportion (DWP) of area searched at each 
-array (which is an area adjustment factor to account for incomplete search coverage).
+The dataset consists of five parts: Data on carcass observations (CO) from 
+array searches, field trials for estimating carcass persistence (CP) and 
+searcher efficiency (SE), search schedule (SS), and density weighted 
+proportion (DWP) of area searched at each array (which is an area adjustment 
+factor to account for incomplete search coverage).
 }
 \section{Searcher Efficiency (\code{SE})}{
 
  \code{$SE} is a data frame with each row representing the fate of a single
  carcass in the searcher efficiency trials. There are columns for:
 \describe{
-  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or \code{"fall"}}
+  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or 
+  \code{"fall"}}
   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or
     \code{"sml"} bird}
-  \item{\code{"Search1",...,"Search5"}}{fate of carcass on the 1st, 2nd, 3rd, 4th, and
-     5th search after placement. A value of 1 implies that a carcass was
-     discovered by searchers, 0 implies the carcass was present but not
+  \item{\code{"Search1",...,"Search5"}}{fate of carcass on the 1st, 2nd, 3rd,
+   4th, and 5th search after placement. A value of 1 implies that a carcass 
+   was discovered by searchers, 0 implies the carcass was present but not
      discovered, and any other value is interpreted as "no search" or
      "carcass not present" and ignored in the model. In this data set,
      \code{NA} indicates that a carcass had been previously discovered and
@@ -53,8 +56,9 @@ array (which is an area adjustment factor to account for incomplete search cover
      was not present. For example, "NS" to indicate the search
      was not scheduled in that location at that time, or "SC" to indicate the
      carcass had been removed by scavengers prior to the search.}
-  \item{\code{Distance}}{the distance a carcass was placed from the observer's transect.
-    Used in determining probability to detect with distance sampling.}
+  \item{\code{Distance}}{the distance a carcass was placed from the 
+  observer's transect. Used in determining probability to detect with 
+  distance sampling.}
 }
 }
 
@@ -64,7 +68,8 @@ array (which is an area adjustment factor to account for incomplete search cover
  carcass in the carcass persistence trials. There are columns for:
 \describe{
   \item{\code{Index}}{unique ID for each carcass}
-  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or \code{"fall"}}
+  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or 
+  \code{"fall"}}
   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or
    \code{"sml"} bird}
   \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing
@@ -81,35 +86,39 @@ array (which is an area adjustment factor to account for incomplete search cover
 
 \section{Search Schedule (\code{SS})}{
 
- \code{$SS} is a data frame with a row for each date an array at the site was searched, a column
- of \code{SearchDate}s, and a column for each array. In addition, there is an optional column to 
- indicate the \code{Season}. The columns for distinct area (array) and the date column are
- required, and the names of the columns for search areas must match the names of areas used in 
- the DWP and CO files.
+ \code{$SS} is a data frame with a row for each date an array at the site was
+  searched, a column of \code{SearchDate}s, and a column for each array. In 
+  addition, there is an optional column to indicate the \code{Season}. The 
+  columns for distinct area (array) and the date column are required, and the
+  names of the columns for search areas must match the names of areas used in 
+  the DWP and CO files.
 \describe{
-  \item{\code{SearchDate}}{columns of dates when arrays were searched. Format in this data is
-    \code{"\%Y-\%m-\%d CDT"}, but time zone (\code{CDT}) is optional. A time stamp may be included 
-    if desired (e.g., \code{2018-03-20 02:15:41}). Alternatively, \code{\\} can be used in
+  \item{\code{SearchDate}}{columns of dates when arrays were searched. Format
+   in this data is \code{"\%Y-\%m-\%d CDT"}, but time zone (\code{CDT}) is 
+   optional. A time stamp may be included if desired (e.g., 
+   \code{2018-03-20 02:15:41}). Alternatively, \code{\\} can be used in
    place of \code{-}.}
-  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"}, or \code{"fall"} to
-   indicate which season the search was conducted in. \code{Season} is
-   optional but may be used as a temporal covariate for fatality estimates.}
+  \item{\code{Season}}{\code{"winter"}, \code{"spring"}, \code{"summer"},
+   or \code{"fall"} to indicate which season the search was conducted in. 
+   \code{Season} is optional but may be used as a temporal covariate for 
+   fatality estimates.}
 }
 }
 
 \section{Density Weighted Proportion (\code{DWP})}{
 
- \code{$DWP} is a data frame with a row for each array and columns for each carcass size class 
- (labels must match those of the class factors in the carcass observation file). Values 
- represent the density-weighted proportion of the searched area for each size (or the fraction
- of carcasses that fall in the searched area).  In this example, observers walk along transects 
- separated by 150 meters, so distance sampling is applied per size class.  Viewshed limits, or 
- the point beyond which an observer has a low chance to observe carcasses were used to define
- DWP.  (Low is defined as average probability to detect carcasses in the region as less than
- 5\%.)
+ \code{$DWP} is a data frame with a row for each array and columns for each 
+ carcass size class (labels must match those of the class factors in the 
+ carcass observation file). Values represent the density-weighted proportion 
+ of the searched area for each size (or the fraction of carcasses that fall 
+ in the searched area).  In this example, observers walk along transects 
+ separated by 150 meters, so distance sampling is applied per size class.  
+ Viewshed limits, or the point beyond which an observer has a low chance to 
+ observe carcasses were used to define DWP.  (Low is defined as average 
+ probability to detect carcasses in the region as less than 5\%.)
 \describe{
-  \item{\code{Unit}}{unique ID for each array.  IDs match those used in the \code{$CO} data 
-  frame and the column names in the \code{$SS} data.}
+  \item{\code{Unit}}{unique ID for each array.  IDs match those used in the 
+  \code{$CO} data frame and the column names in the \code{$SS} data.}
   \item{\code{bat}}{DWP associated with size class Bat}
   \item{\code{sml}}{DWP associated with size class Small}
   \item{\code{med}}{DWP associated with size class Medium}
@@ -124,9 +133,9 @@ array (which is an area adjustment factor to account for incomplete search cover
   carcass (date found, size, species, etc.)
 \describe{
   \item{\code{Index}}{unique identifier for each carcass.}
-  \item{\code{Unit}}{identifier for which unit the given carcass was found at: \code{"arc19"},
-   \code{"arc65"}, etc, for arcs in the outer heliostat field, or \code{"center"}, indicating 
-   the inner heliostat field.}
+  \item{\code{Unit}}{identifier for which unit the given carcass was found 
+  at: \code{"arc19"}, \code{"arc65"}, etc, for arcs in the outer heliostat 
+  field, or \code{"center"}, indicating the inner heliostat field.}
   \item{\code{Species}}{species of the carcass: \code{"BA"}, \code{"BB"},
     \code{"BC"}, \code{"BD"}, \code{"BE"}, \code{"LA"}, \code{"LB"},
     \code{"LD"}, \code{"LE"}, \code{"MA"}, \code{"MB"}, \code{"SA"},
@@ -134,11 +143,13 @@ array (which is an area adjustment factor to account for incomplete search cover
     \code{"SG"}}
   \item{\code{Size}}{size: \code{"bat"}, \code{"lrg"}, \code{"med"},
    \code{"sml"}}
-  \item{\code{Row}}{Optional indicator of which row within an array a carcass was found at.}
-  \item{\code{Distance}}{The perpendicular distance from the searcher's transect at which the 
-  carcass was discovered at.}
-  \item{\code{DateFound}}{dates entered in the same format as in \code{$SS$SearchDate}. 
-  Every date entered here is (and must be) included in the search schedule 
+  \item{\code{Row}}{Optional indicator of which row within an array a carcass
+   was found at.}
+  \item{\code{Distance}}{The perpendicular distance from the searcher's 
+  transect at which the carcass was discovered at.}
+  \item{\code{DateFound}}{dates entered in the same format as in 
+  \code{$SS$SearchDate}. Every date entered here is (and must be) included in
+   the search schedule 
   (\code{$SS$SearchDate}}
   \item{\code{X}}{UTM Easting of carcass.}
   \item{\code{Y}}{UTM Northing of carcass.}

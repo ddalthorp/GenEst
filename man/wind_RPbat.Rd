@@ -19,16 +19,18 @@
 wind_RPbat
 }
 \description{
-This example dataset considers only bats found on 120 m radius road and pad searches of all 100 
- turbines at a theoretical site.  The simulated site consists of 100 turbines, searched on roads 
- and pads only, out to 120 meters.  Search schedule differs by turbine and season, with more 
- frequent searches in the fall, and a subset of twenty turbines searched at every scheduled 
- search.
+This example dataset considers only bats found on 120 m radius road and pad 
+ searches of all 100 turbines at a theoretical site.  The simulated site 
+ consists of 100 turbines, searched on roads and pads only, out to 120 
+ meters.  Search schedule differs by turbine and season, with more frequent 
+ searches in the fall, and a subset of twenty turbines searched at every 
+ scheduled search.
  
-Data on carcass observations (CO) from searches, field trials for estimating carcass persistence
-(CP) and searcher efficiency (SE), search schedule (SS) parameters (for example, which turbines 
-were searched on which days), and density weighted proportion (DWP) of area searched at each 
-turbine (which is an area adjustment factor to account for incomplete search coverage).
+Data on carcass observations (CO) from searches, field trials for estimating 
+carcass persistence (CP) and searcher efficiency (SE), search schedule (SS) 
+parameters (for example, which turbines  were searched on which days), and 
+density weighted proportion (DWP) of area searched at each  turbine (which is
+an area adjustment factor to account for incomplete search coverage).
 }
 \section{Searcher Efficiency (\code{SE})}{
 
@@ -82,8 +84,8 @@ turbine (which is an area adjustment factor to account for incomplete search cov
   \item{\code{SearchDate}}{columns of dates on which at least one turbine was
    searched. Format in this data is \code{"\%Y-\%m-\%d CDT"}, but time zone
    (\code{CDT}) is optional. A time stamp may be included if desired
-   (e.g., \code{2018-03-20 02:15:41}). Alternatively, \code{\\} can be used in
-   place of \code{-}.}
+   (e.g., \code{2018-03-20 02:15:41}). Alternatively, \code{\\} can be used 
+   in place of \code{-}.}
   \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"} to
    indicate which season the search was conducted in. \code{Season} is
    optional but may be used as a temporal covariate for fatality estimates.}
@@ -102,8 +104,8 @@ turbine (which is an area adjustment factor to account for incomplete search cov
 \describe{
   \item{\code{Turbine}}{unique ID for each turbine. IDs match those used in
    the \code{$CO} data frame and the column names in the \code{$SS} data.}
-  \item{\code{bat}}{Contains the DWP for each turbine, with respect to size class (in this case,
-  bats only.}
+  \item{\code{bat}}{Contains the DWP for each turbine, with respect to size 
+  class (in this case, bats only.}
 }
 }
 

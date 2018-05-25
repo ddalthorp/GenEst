@@ -19,13 +19,14 @@
 wind_cleared
 }
 \description{
-A complete example data set for estimating fatalities from 60 m cleared plots at 23 out of 100
-searches at a wind power facility.  Data on carcass observations (CO) from a search of all 
-terrain out to 60m from each of 100 turbines at a theoretical site, field trials for estimating
-carcass persistence (CP) and searcher efficiency (SE), search schedule (SS) parameters (for 
-example, which turbines were searched on which days), and density weighted proportion (DWP) of
-area searched at each turbine (which is an area adjustment factor to account for incomplete 
-search coverage).
+A complete example data set for estimating fatalities from 60 m cleared plots
+ at 23 out of 100 searches at a wind power facility.  Data on carcass 
+ observations (CO) from a search of all terrain out to 60m from each of 100 
+ turbines at a theoretical site, field trials for estimating carcass 
+ persistence (CP) and searcher efficiency (SE), search schedule (SS) 
+ parameters (for example, which turbines were searched on which days), and 
+ density weighted proportion (DWP) of area searched at each turbine (which is 
+ an area adjustment factor to account for incomplete  search coverage).
 }
 \section{Searcher Efficiency (\code{SE})}{
 
@@ -61,19 +62,22 @@ search coverage).
  carcass in the carcass persistence trials. There are columns for:
 \describe{
   \item{\code{cpID}}{unique ID for each carcass}
-  \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or \code{"sml"} bird}
+  \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or 
+  \code{"sml"} bird}
   \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"}}
-  \item{\code{Visibility}}{indicator for visibility class of the ground, with \code{"RP"} for
-  carcasses placed on a road or turbine pad, \code{"M"} for moderate visibility (e.g., plowed 
-  field; short, sparse vegetation), or \code{"D"} for difficult visibility.}
-  \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing the time the carcass was
-  scavenged or otherwise removed from the field. For example, \code{Left = 2.04}, 
-   \code{Right = 3.21} indicates that the carcass was last observed 2.04 days after being placed
-  in the field and was noted missing 3.21 days after being placed. If the precise time of
-  carcass removal is known (e.g., recorded by camera), then \code{Left} and \code{Right} should
-  be set equal to each other. If a carcass persists beyond the last day of the field trial, 
-   \code{Left} is the last time it was observed and \code{Right} is entered as \code{Inf} or 
-   \code{NA}.}
+  \item{\code{Visibility}}{indicator for visibility class of the ground, with
+   \code{"RP"} for carcasses placed on a road or turbine pad, \code{"M"} for 
+   moderate visibility (e.g., plowed field; short, sparse vegetation), or 
+   \code{"D"} for difficult visibility.} \item{\code{Left}, 
+   \code{Right}}{endpoints of the interval bracketing the time the carcass 
+   was scavenged or otherwise removed from the field. For example, 
+   \code{Left = 2.04}, \code{Right = 3.21} indicates that the carcass was 
+   last observed 2.04 days after being placed in the field and was noted 
+   missing 3.21 days after being placed. If the precise time of carcass 
+   removal is known (e.g., recorded by camera), then \code{Left} and 
+   \code{Right} should be set equal to each other. If a carcass persists 
+   beyond the last day of the field trial, \code{Left} is the last time it 
+   was observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
 }
 }
 
@@ -85,10 +89,11 @@ search coverage).
  search dates and columns for each turbine searched are required. Other
  columns are optional.
 \describe{
-  \item{\code{SearchDate}}{columns of dates on which at least one turbine was searched. Format 
-  in this data is \code{"\%Y-\%m-\%d CDT"}, but time zone (\code{CDT}) is optional. A time 
-  stamp may be included if desired (e.g., \code{2018-03-20 02:15:41}). Alternatively, 
-  \code{\\} can be used in place of \code{-}.}
+  \item{\code{SearchDate}}{columns of dates on which at least one turbine was
+   searched. Format in this data is \code{"\%Y-\%m-\%d CDT"}, but time zone 
+   (\code{CDT}) is optional. A time stamp may be included if desired (e.g., 
+   \code{2018-03-20 02:15:41}). Alternatively, \code{\\} can be used in place
+    of \code{-}.}
   \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"} to
    indicate which season the search was conducted in. \code{Season} is
    optional but may be used as a temporal covariate for fatality estimates.}
@@ -105,19 +110,19 @@ search coverage).
   of the searched area for each size (or the fraction of carcasses that fall
   in the searched area).
 \describe{
-  \item{\code{Turbine}}{unique ID for each turbine. IDs match those used in the \code{$CO} data
-  frame and the column names in the \code{$SS} data.}
+  \item{\code{Turbine}}{unique ID for each turbine. IDs match those used in 
+  the \code{$CO} data frame and the column names in the \code{$SS} data.}
   \item{\code{Size}}{\code{bat}, \code{sml}, \code{med}, \code{lrg}}
-  \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"} to indicate which 
-  season the search was conducted in. \code{Season} is optional but may be used as a temporal
-  covariate for fatality estimates.}}
+  \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"} to 
+  indicate which season the search was conducted in. \code{Season} is 
+  optional but may be used as a temporal covariate for fatality estimates.}}
 }
 
 \section{Carcass Observations (\code{CO})}{
 
 \code{$CO} is a data frame with a row for carcass observed in the carcass
-  searches and a number of columns giving information about the given
-  carcass (date found, size, species, etc.)
+  searches and a number of columns giving information about the given carcass
+  (date found, size, species, etc.)
 \describe{
   \item{\code{carcID}}{unique identifier for each carcass: \code{"x30"},
   \code{"x46"}, etc.}
