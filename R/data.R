@@ -11,7 +11,7 @@
 #'   \item{DWP}{Density weighted proportion of area searched data}
 #'   \item{CO}{Carcass observations}   
 #' }
-#' @source Mock
+#' @source \code{mock}
 "mock"
 
 # Cleared ------------------------------
@@ -140,7 +140,7 @@
 #'   \item{\code{Distance}}{distance from the turbine}
 #' }
 #'   
-#' @source cleared
+#' @source \code{wind_cleared}
 "wind_cleared"
 
 # RP ------------------------------
@@ -271,7 +271,7 @@
 #'   \item{\code{Distance}}{distance from the turbine}
 #' }
 #'
-#' @source RP
+#' @source \code{wind_RP}
 "wind_RP"
 
 # RPbat ------------------------------
@@ -386,7 +386,7 @@
 #'    \code{"brd1"}, \code{"brd2"}, \code{"brd3"}}
 #'   \item{\code{Distance}}{Distance from the turbine.}
 #' }
-#' @source RPbat
+#' @source \code{wind_RPbat}
 "wind_RPbat"
 
 
@@ -509,7 +509,7 @@
 #'   \item{\code{Y}}{UTM Northing of carcass.}
 #'  }
 #'
-#' @source trough
+#' @source \code{solar_trough}
 "solar_trough"
 
 
@@ -640,7 +640,7 @@
 #'   \item{\code{Y}}{UTM Northing of carcass.}
 #' }
 #'
-#' @source PV
+#' @source \code{solar_PV}
 "solar_PV"
 
 
@@ -783,5 +783,5 @@
 #'   \item{\code{Y}}{Distance in meters from the Southern edge of the facility.}
 #' }
 #'
-#' @source powerTower
+#' @source \code{solar_powerTower}
 "solar_powerTower"

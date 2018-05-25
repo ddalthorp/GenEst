@@ -13,7 +13,7 @@
   \item{\code{CO}}{Carcass observations}
 }}
 \source{
-cleared
+\code{wind_cleared}
 }
 \usage{
 wind_cleared

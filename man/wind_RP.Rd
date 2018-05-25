@@ -13,7 +13,7 @@
   \item{\code{CO}}{Carcass observations}
 }}
 \source{
-RP
+\code{wind_RP}
 }
 \usage{
 wind_RP
