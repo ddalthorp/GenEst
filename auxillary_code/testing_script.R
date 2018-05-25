@@ -29,16 +29,16 @@ eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,
                  dateSearchedCol = "DateSearched", DWPCol = "S",
                  sizeclassCol = NULL)
 
+M <- eM$M
+Aj <- eM$Aj
 
-
-
-
-
-Mhat_season <- calcSplits(M = Mhat, Aj = Aj, split_SS = "Season", 
+M_season <- calcSplits(M = M, Aj = Aj, split_SS = "Season", 
                  split_CO = "Split",
                  data_SS = data_SS, data_CO = data_CO, unitCol = "Unit", 
                  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
                )
+
+
 
 
 modelSetSize_SE <- pkmSetSize(formula_p = p ~ Visibility*HabitatType, 
@@ -99,7 +99,14 @@ eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,
                  dateSearchedCol = "DateSearched", DWPCol = sizeclasses,
                  sizeclassCol = "Size")
 
+M <- eM$M
+Aj <- eM$Aj
 
+M_season <- calcSplits(M = M, Aj = Aj, split_SS = "Season", 
+                 split_CO = "Split",
+                 data_SS = data_SS, data_CO = data_CO, unitCol = "Unit", 
+                 dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
+               )
 
 
 

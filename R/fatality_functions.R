@@ -73,8 +73,7 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
   }
   n <- length(gDWPf)
   set.seed(seed_M)
-  Mhat <- sum(rcbinom(n, 1 / gDWPf, gDWPf) - (Ecbinom(gDWPf) - 1))/(gDWPf)
-
+  Mhat <- ((rcbinom(n, 1 / gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/(gDWPf)
   if (length(c_out) > 0){
     zeroes <- matrix(0, nrow = length(c_out), ncol = ncol(est$ghat))
     Mhat <- rbind(zeroes, Mhat)
