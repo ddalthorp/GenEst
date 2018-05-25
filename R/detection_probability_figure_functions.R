@@ -101,7 +101,7 @@ plot.ghatGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
 #' @return a plot
 #' @export
 #'
-plot.ghatGenericSize <- function(x, sizeclassName = NULL, CL = 0.9, ...){
+plot.ghatGenericSize <- function(x, CL = 0.9, ...){
 
   nsizeclass <- length(x)
 
