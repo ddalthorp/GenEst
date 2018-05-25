@@ -42,7 +42,7 @@ desired, use \code{split_SS = NULL}.}
 \item{split_time}{Numeric vector that defines time intervals for splits.
 Times must be numeric, strictly increasing, and span the monitoring period
 [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
-\code{split_time = NULL}. If \code{split_time} is non-NULL, \code{data_SS}
+\code{split_time = NULL}. If \code{split_time} is NULL, \code{data_SS}
 is required.}
 
 \item{unitCol}{Column name for the unit indicator}
@@ -77,7 +77,7 @@ a graphical representation of the \code{summary}.
 Total mortality can be split into sub-categories, according to various
 splitting covariates such as species, visibility class, season, site, unit,
 etc. Given the carcass search data, estimated mortalities, and splitting
-covariates, \code{calcSplits()} gives the 'splits' or summaries the 
+covariates, \code{calcSplits()} gives the "splits" or summaries the 
 estimated mortalities by levels of the splitting covariates. For example,
 user may specify \code{"season"} and \code{"species"} as splitting 
 variables to see estimated mortalities by season and species. Input would

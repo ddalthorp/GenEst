@@ -8,8 +8,8 @@ transposeSplits(splits)
 }
 \arguments{
 \item{splits}{a \code{splitFull} object, which is a list of \code{n}
-\code{m} x \code{k} arrays with attributes describing characteristics of the
-splits}
+\code{m} x \code{k} arrays with attributes describing characteristics of 
+the splits}
 }
 \value{
 a list of \code{m} \code{n} x \code{k} arrays as a \code{splitFull}

@@ -126,14 +126,10 @@
 #' @export
 #'
 cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
-                right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE){
+                right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE,
+                maxit = 5000){
 
-  if (any(data[ , left] > data[ , right], na.rm = TRUE)){
-    stop("Last time observed data are greater than first time absent data.") 
-  }
-  if (all(data[ , left] == data[ , right], na.rm = TRUE)){
-    stop("Last time observed data are identical to first time absent data.") 
-  }
+
   if (length(formula_s) != 0 & dist == "exponential" & quiet == FALSE){
     msg <- paste("Formula given for scale, but exponential distribution ",
              "chosen, which does have a scale parameter. Formula ignored.", 
@@ -195,6 +191,12 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   if (sum(predCheck %in% colnames(data)) != length(predCheck)){
     stop("Predictor(s) in formula(e) not found in data.")
   }
+  if (any(data[ , left] > data[ , right], na.rm = TRUE)){
+    stop("Last time observed data are greater than first time absent data.") 
+  }
+  if (all(data[ , left] == data[ , right], na.rm = TRUE)){
+    stop("Last time observed data are identical to first time absent data.") 
+  }
 
   preds <- unique(c(preds_l, preds_s) )
   cells <- combinePreds(preds, data)
@@ -244,9 +246,10 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
            optim(par = betaInit, fn = cpLogLik, method = "BFGS", 
              t1 = t1, t2 = t2, cellMM = cellMM, dist = dist, hessian = TRUE,
              nbeta_l = nbeta_l, cellByCarc = cellByCarc, dataMM = dataMM, 
-             control = list(maxit = 5000)
+             control = list(maxit = 1000)
            ), error = function(x) {NA}
          )
+
   betahat <- MLE$par
   convergence <- MLE$convergence
   betaHessian <- MLE$hessian
