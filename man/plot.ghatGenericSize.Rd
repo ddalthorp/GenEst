@@ -4,7 +4,7 @@
 \alias{plot.ghatGenericSize}
 \title{Plot results of a set of size-based generic ghat estimations}
 \usage{
-\method{plot}{ghatGenericSize}(x, sizeclassName = NULL, CL = 0.9, ...)
+\method{plot}{ghatGenericSize}(x, CL = 0.9, ...)
 }
 \arguments{
 \item{x}{ghatGenericSize output}
