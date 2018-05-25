@@ -56,6 +56,9 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
       stop("not all size classes are present in the DWP columns provided.")
     }
   }
+  if (is.null(sizeclassCol) & length(DWPCol) > 1){
+    stop("multiple DWP columns provided, but no sizeclass column to use.")
+  }
 
   DWP <- DWPbyCarcass(data_DWP, data_CO, data_SS, dateFoundCol, 
            dateSearchedCol, DWPCol, unitCol, sizeclassCol

@@ -546,6 +546,8 @@ estghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
                     )
   }
   names(ghats) <- sizeclasses
+  class(ghats) <- c("ghatGenericSize", "list")
+
   return(ghats)
 }
 
@@ -645,4 +647,27 @@ summary.ghatGeneric <- function(object, ..., CL = 0.9){
   colnames(out)[npred + (1:2)] <- c("Cell", DPheader)
   return(out)
 
+}
+
+#' Summarize the ghatGenericSize list to a list of simple tables
+#'
+#' @param object ghatGenericSize output list (each element is a size-named 
+#'   list of named vectors of ghatGeneric values for a cell in the model 
+#'   combinations)
+#' @param ... arguments to be passed down
+#' @param CL confidence level
+#'
+#' @return a list of summary tables of ghat values (medians and confidence 
+#'   bounds) for each cell combination within the ghatGeneric list
+#' @export
+#'
+summary.ghatGenericSize <- function(object, ..., CL = 0.9){
+
+  nsizeclass <- length(object)
+  out <- vector("list", length = nsizeclass)
+  names(out) <- names(object)
+  for (sci in 1:nsizeclass){
+    out[[sci]] <- summary(object[[sci]], ..., CL = CL)
+  }
+  return(out)
 }
