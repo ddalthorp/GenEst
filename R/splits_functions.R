@@ -39,6 +39,7 @@
 #'
 calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL, 
                      data_SS = NULL){
+
  if (!is.null(data_SS) && ("SS" %in% class(data_SS))){
     days <- data_SS$days
     unit <- rownames(Aj)
@@ -68,7 +69,6 @@ calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL,
 #' powerful, convenient, and flexible alternative.
 #'
 #' @param rate Array (nsim x nsearch) of arrival rates as number of fatalities
-
 #'  per search interval. Typically, \code{rate} will be the return value of 
 #'  the \code{calcRate} function. 
 #' @param days A vector of times representing search dates when at least one
@@ -99,7 +99,7 @@ calcTsplit <- function(rate, days, tsplit){
 #' Total mortality can be split into sub-categories, according to various
 #' splitting covariates such as species, visibility class, season, site, unit,
 #' etc. Given the carcass search data, estimated mortalities, and splitting
-#' covariates, \code{calcSplits()} gives the 'splits' or summaries the 
+#' covariates, \code{calcSplits()} gives the "splits" or summaries the 
 #' estimated mortalities by levels of the splitting covariates. For example,
 #' user may specify \code{"season"} and \code{"species"} as splitting 
 #' variables to see estimated mortalities by season and species. Input would
@@ -162,7 +162,7 @@ calcTsplit <- function(rate, days, tsplit){
 #' @param split_time Numeric vector that defines time intervals for splits.
 #'  Times must be numeric, strictly increasing, and span the monitoring period
 #'  [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
-#'  \code{split_time = NULL}. If \code{split_time} is non-NULL, \code{data_SS}
+#'  \code{split_time = NULL}. If \code{split_time} is NULL, \code{data_SS}
 #'  is required.
 #' @param ... arguments to be passed down
 #' @param dateFoundCol Column name for the date found data
@@ -440,9 +440,10 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
 #'  in the \code{splits}. The 5-number summaries include the mean and alpha/2,
 #'  0.25, 0.5, 0.75, and 1 - alpha/2 quantiles of mortality estimates, where
 #'  alpha = 1 - CL. A graphical representation of the results can be
-#'  produced using \code{plot(splits, CL, ...)}. For splits along CO covariates,
-#'  the levels are organized alphabetically (but with numeric suffixes appearing
-#'  in numeric order, e.g., "t1", "t2", "t10" rather than "t1", "t10", "t2").
+#'  produced using \code{plot(splits, CL, ...)}. For splits along CO 
+#'  covariates, the levels are organized alphabetically (but with numeric
+#'  suffixes appearing in numeric order, e.g., "t1", "t2", "t10" rather than
+#'  "t1", "t10", "t2").
 #' @export
 #'
 summary.splitFull <- function(object, CL = 0.95, ...){
@@ -454,13 +455,13 @@ summary.splitFull <- function(object, CL = 0.95, ...){
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
     sumry <- cbind(
-      mean = rowMeans(splits), matrixStats::rowQuantiles(splits, probs = probs))
+    mean = rowMeans(splits), matrixStats::rowQuantiles(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
       splits <- lapply(splits, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits, function(x){
-        cbind(mean = rowMeans(x), matrixStats::rowQuantiles(x, probs = probs))})
+      cbind(mean = rowMeans(x), matrixStats::rowQuantiles(x, probs = probs))})
   } else {
     stop(
       "length(attr(splits, 'vars')) > 2.",
@@ -777,8 +778,8 @@ ltranspose <- function(M){
 #' Transpose a \code{splitFull} array (preserving attributes)
 #'
 #' @param splits a \code{splitFull} object, which is a list of \code{n}
-#'  \code{m} x \code{k} arrays with attributes describing characteristics of the
-#'  splits
+#'  \code{m} x \code{k} arrays with attributes describing characteristics of 
+#'  the splits
 #' @return a list of \code{m} \code{n} x \code{k} arrays as a \code{splitFull}
 #'  object
 #' @export
