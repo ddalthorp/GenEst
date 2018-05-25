@@ -100,7 +100,7 @@ tabPanel("Analyses",
           tabPanel("Selected Data", br(), br(), dataTableOutput("selected_SE")
           ),
           tabPanel("Figures", br(), plotOutput("fig_SE")),
-          tabPanel("Model Tables", br(), br(), dataTableOutput("modTab_SE")
+          tabPanel("Estimates", br(), br(), dataTableOutput("modTab_SE")
           ),
           tabPanel("Model Comparison", br(), br(), 
             dataTableOutput("AICcTab_SE")
@@ -154,7 +154,7 @@ tabPanel("Analyses",
           tabPanel("Selected Data", br(), br(),
             dataTableOutput("selected_CP")),
           tabPanel("Figures", br(), plotOutput("fig_CP")),
-          tabPanel("Model Tables", br(), br(), dataTableOutput("modTab_CP")
+          tabPanel("Estimates", br(), br(), dataTableOutput("modTab_CP")
           ),
           tabPanel("Model Comparison", br(), br(), 
             dataTableOutput("AICcTab_CP")
@@ -167,6 +167,9 @@ tabPanel("Analyses",
       sidebarPanel(width = 3, 
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
         br(), br(),
+        numericInput("frac", "Fraction of Facility Surveyed:", value = 1.0, 
+          min = 0.01, max = 1.0, step = 0.01
+        ),
         selectizeInput("unitCol", "Units:", c("No data input yet"), 
           multiple = FALSE
         ),
@@ -180,6 +183,12 @@ tabPanel("Analyses",
           condition = "output.kFillNeed == 'yes'",
           numericInput("kFill", "Assumed k:", value = 0.5, 
             min = 0, max = 1, step = 0.001
+          )
+        ),
+        conditionalPanel(
+          condition = "output.DWPNeed == 'yes'",
+          selectizeInput("DWPCol", "DWP Column", c("No data input yet"), 
+            multiple = FALSE
           )
         ),
         conditionalPanel(
