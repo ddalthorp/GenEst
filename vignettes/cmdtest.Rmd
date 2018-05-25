@@ -43,7 +43,7 @@ interval, month, etc. or by combinations of splitting covariates, like species
 by season, turbine by search interval, etc.
 
 Load the full data set into R:
-```{r, eval = FALSE}
+```{r}
 data(wind_RPbat)
 names(wind_RPbat)
 ```
@@ -54,7 +54,7 @@ at each turbine (i.e., the fraction of carcasses expected to fall in the
 search plots), and a carcass observation (`CO`) data. To streamline the 
 notation, we will extract the data from the `wind_RPbat` list into its 
 components:
-```{r, eval = TRUE}
+```{r}
 SE_data <- wind_RPbat$SE
 CP_data <- wind_RPbat$CP
 SS_data <- wind_RPbat$SS
@@ -76,7 +76,7 @@ normal carcass surveys were removed from the field. Carcasses were left in
 the field for up to 5 searches after carcass placement.
 
 Results of the SE field trials are stored in the `SE_data` data frame:
-```{r, eval = FALSE}
+```{r}
 head(SE_data)
 ```
 Columns `s1, s2,` ... show the fate of carcass `pkID` on the 1st, 2nd, ...
@@ -94,7 +94,7 @@ days after placement in the field (exact times were entered as decimal
 fractions of days after placement).
 
 Results of the SE field trials are stored in the `CP_data` data frame:
-```{r, eval = FALSE}
+```{r}
 head(CP_data)
 ```
 
@@ -122,18 +122,18 @@ are stored in `SS_data`, which is a data frame with a column for search dates
 each turbine, indication whether it was searched on the given date; and zero 
 or more optional columns giving additional information about the date (e.g.,
 season).
-```{r, eval=FALSE}
+```{r}
 head(SS_data[, 1:10])
 print("NOTE: there are 100 turbine columns altogether (t1, ..., t100)")
 ```
 
 ### Density Weighted Proportion (`DWP`)
-```{r, eval=FALSE}
+```{r}
 head(DWP_data)
 ```
 
 ### Carcass Observations (`CO`)
-```{r, eval=FALSE}
+```{r}
 head(CO_data)
 ```
 
@@ -141,7 +141,7 @@ head(CO_data)
 SE_model <- pkm(p ~ 1, k ~ 1, data = SE_data)
 CP_model <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
 
-tst <- proc.time()
+
 nsim <- 1000
 gAj <- rghat(n = nsim,
   data_CO = CO_data,

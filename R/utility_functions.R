@@ -340,3 +340,32 @@ combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
   output$CellNames_CP <- CellNames_CP
   return(output)
 }
+
+#' Trim a Model-Set-Size Complex to a Single Model Per Size
+#'
+#' @description Select a single model from each size class (based on the model
+#'   names).
+#'
+#' @param modSetSize modSetSize complex (cpm or pkm)
+#'
+#' @param mods named (according to size classes) vector of model names to use
+#'
+#' @return modSetSize reduced to a single model per size class
+#'
+#' @export
+#'
+trimSetSize <- function(modSetSize, mods){
+
+  sizeclasses <- names(modSetSize)
+  nsizeclass <- length(sizeclasses)
+  models <- vector("list", length = nsizeclass)
+  names(models) <- names(modSetSize)
+  
+  for (sci in 1:nsizeclass){
+    sizeclass <- names(models[sizeclasses[sci]])
+    classMatch <- which(names(models) == sizeclass)
+    mod <- mods[[sizeclass]]
+    models[[sizeclass]] <- modSetSize[[sizeclass]][[mod]]
+  }
+  return(models)
+}
