@@ -60,8 +60,9 @@ rv <- reactiveValues(
         colNames_all = NULL, nsizeclasses = NULL,
 
         kFill = NULL, kFill_g = NULL, unitCol = NULL, 
-        dateFoundCol = NULL, dateSearchedCol = NULL,
-        SEmodToUse = NULL, CPmodToUse = NULL, scis = NULL, rghatsAjs = NULL,
+        dateFoundCol = NULL, dateSearchedCol = NULL, sizeclassCol_M = NULL,
+        SEmodToUse = NULL, CPmodToUse = NULL, M = NULL,
+        models_SE = NULL, models_CP = NULL, DWPCol = NULL, 
         CL = 0.9, n = 1000, SEmodToUse_g = NULL, CPmodToUse_g = NULL, 
         rghatsGeneric = NULL
 
@@ -122,8 +123,10 @@ observeEvent(input$file_SS, {
 })
 observeEvent(input$file_DWP, {
   rv$data_DWP <- read.csv(input$file_DWP$datapath, stringsAsFactors = FALSE)
+  rv$colNames_DWP <- colnames(rv$data_DWP)
   output$data_DWP<- renderDataTable(datatable(rv$data_DWP))
   updateTabsetPanel(session, "LoadedDataViz", "Density Weighted Proportion")
+  updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
 })
 observeEvent(input$file_CO, {
   rv$data_CO <- read.csv(input$file_CO$datapath, stringsAsFactors = FALSE)
@@ -231,6 +234,13 @@ observeEvent(input$runMod_SE, {
     if (rv$kFixedChoice == 1){
       updateNumericInput(session, "kFill", value = rv$kFixed)
     }
+    if (length(rv$sizeclasses) == 1){
+      output$DWPNeed <- renderText("yes")
+    } else{
+      output$DWPNeed <- renderText("no")
+    }
+    outputOptions(output, "DWPNeed", suspendWhenHidden = FALSE)
+
   }
 })
 
@@ -521,6 +531,70 @@ observeEvent(input$useSSinputs, {
   output$SStext <- renderText(rv$SStext)
 })
 
+observeEvent(input$runModM, {
+
+  msg_RunModM <- msgModRun("M")
+
+  rv$kFill <- NA
+  if (length(rv$obsCols_SE) == 1 | rv$kFixedChoice == 1){
+    rv$kFill <- input$kFill
+  }
+
+  rv$nsizeclasses <- length(rv$sizeclasses)
+  if (length(rv$nsizeclasses) == 1){
+    if (is.null(rv$sizeclasses)){
+      rv$sizeclasses <- "all"
+     }
+  }
+
+  rv$unitCol <- input$unitCol
+  rv$dateFoundCol <- input$dateFoundCol
+  rv$dateSearchedCol <- input$dateSearchedCol
+  rv$n <- input$n
+  rv$frac <- input$frac
+  rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
+  rv$CPmodToUse <- rep(NA, rv$nsizeclasses)
+
+  for (sci in 1:rv$nsizeclasses){
+    rv$SEmodToUse[sci] <- input[[sprintf("modelChoices_SE%d", sci)]]
+    rv$CPmodToUse[sci] <- input[[sprintf("modelChoices_CP%d", sci)]]
+    if (!grepl("s ~", rv$CPmodToUse[sci])){
+      rv$CPmodToUse[sci] <- paste(rv$CPmodToUse[sci], "; NULL", sep = "")
+    }
+    rv$CPmodToUse[sci] <- paste("dist: ", rv$CPmodToUse[sci], sep = "")
+  }
+  names(rv$SEmodToUse) <- rv$sizeclasses
+  names(rv$CPmodToUse) <- rv$sizeclasses
+
+  rv$models_SE <- trimSetSize(rv$mods_SE, rv$SEmodToUse)
+  rv$models_CP <- trimSetSize(rv$mods_CP, rv$CPmodToUse)
+
+  if (rv$nsizeclasses > 1){
+    rv$DWPCol <- rv$sizeclasses
+    rv$sizeclassCol_M <- rv$sizeclassCol
+  } else{
+    rv$DWPCol <- input$DWPCol  
+    rv$sizeclassCol_M <- NULL
+    rv$models_SE <- rv$models_SE[[1]]
+    rv$models_CP <- rv$models_CP[[1]]
+  }
+
+  rv$M <- tryCatch(
+            estM(nsim = rv$n, rv$data_CO, rv$data_SS, rv$data_DWP, 
+              frac = rv$frac, model_SE = rv$models_SE, 
+              model_CP = rv$models_CP, kFill = rv$kFill, 
+              unitCol = rv$unitCol, dateFoundCol = rv$dateFoundCol, 
+              dateSearchedCol = rv$dateSearchedCol, DWPCol = rv$DWPCol,
+              sizeclassCol = rv$sizeclassCol_M
+            ), error = function(x){NA}
+          )
+  print(names(rv$M))
+  removeNotification(msg_RunModM)
+  msg_ModFailM <- msgModDoneM(rv$M)
+
+})
+
+
 observeEvent(input$runMod_g, {
 
   msg_RunModg <- msgModRun("g")
@@ -580,9 +654,7 @@ observeEvent(input$runMod_g, {
 
 observeEvent(input$tabfig_sizeclassg, {
   rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$tabfig_sizeclassg)
-
   rv$CL <- input$CL
-
   if (class(rv$rghatsGeneric[[rv$sizeclass_g]])[1] == "ghatGeneric"){
     output$tab_g <- renderDataTable(
                       summary(rv$rghatsGeneric[[rv$sizeclass_g]],
@@ -597,58 +669,6 @@ observeEvent(input$tabfig_sizeclassg, {
                       )
                     )
   }
-
-})
-
-observeEvent(input$runModM, {
-
-  msg_RunModM <- msgModRun("M")
-
-  rv$kFill <- NA
-  if (length(rv$obsCols_SE) == 1 | rv$kFixedChoice == 1){
-    rv$kFill <- input$kFill
-  }
-
-  rv$nsizeclasses <- length(rv$sizeclasses)
-  if (length(rv$nsizeclasses) == 1){
-    if (is.null(rv$sizeclasses)){
-      rv$sizeclasses <- "all"
-     }
-  }
-
-  rv$unitCol <- input$unitCol
-  rv$dateFoundCol <- input$dateFoundCol
-  rv$dateSearchedCol <- input$dateSearchedCol
-  rv$n <- input$n
-
-  rv$rghatsAjs <- vector("list", length = rv$nsizeclasses)
-  for (sci in 1:rv$nsizeclasses){
-    rv$SEmodToUse <- input[[sprintf("modelChoices_SE%d", sci)]]
-    rv$CPmodToUse <- input[[sprintf("modelChoices_CP%d", sci)]]
-    if (!grepl("s ~", rv$CPmodToUse)){
-      rv$CPmodToUse <- paste(rv$CPmodToUse, "; NULL", sep = "")
-    }
-    rv$CPmodToUse <- paste("dist: ", rv$CPmodToUse, sep = "")
-    if (rv$sizeclasses[1] == "all"){
-      rv$scis <- 1:nrow(rv$data_CO)
-    } else{
-      rv$scis <- which(rv$data_CO[ , rv$sizeclassCol] == rv$sizeclasses[sci])
-    }
-
-    rv$rghatsAjs[[sci]] <- NULL #tryCatch(
-                           #rghat(rv$n, rv$data_CO[rv$scis, ], rv$data_SS, 
-                            # rv$mods_SE[[sci]][[rv$SEmodToUse]], 
-                            # rv$mods_CP[[sci]][[rv$CPmodToUse]], 
-                            # kFill = rv$kFill, unitCol = rv$unitCol, 
-                            # dateFoundCol = rv$dateFoundCol, 
-                            # dateSearchedCol = rv$dateSearchedCol
-                           #), error = function(x){NA}
-                         #)
-  }
-
-  removeNotification(msg_RunModM)
-  msg_ModFailM <- msgModDoneM(rv$rghatsAjs)
-
 })
 
 }
