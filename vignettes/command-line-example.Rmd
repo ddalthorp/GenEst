@@ -355,7 +355,6 @@ the best-fit of the models for each size class:
 
 
 ```{r}
-
 pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
             "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ HabitatType"
           )
@@ -418,8 +417,68 @@ function:
 ```{r}
 pkmModSize <- trimSetSize(pkmModSetSize, pkMods)
 cpmModSize <- trimSetSize(cpmModSetSize, cpMods)
-
 ```
 
+In addition to the models and search schedule data, `estM` requires DWP 
+(Density Weighted Proportion) and CO (Carcass Observation) data. A required
+input is also the column names associated with the DWP value for each size
+class (argument `DWPCol` in `estM`):
 
+```{r}
+data_CO <- mock$CO
+data_DWP <- mock$DWP
+head(data_DWP)
+DWPcolnames <- names(pkmModSize)
+```
 
+```{r}
+eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
+        model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
+        seed_CP = NULL, seed_ghat = NULL, seed_M = NULL, kFill = NULL,  
+        unitCol = "Unit", dateFoundCol = "DateFound", 
+        dateSearchedCol = "DateSearched", DWPCol = DWPcolnames,
+        sizeclassCol = "Size")
+```
+
+### Splitting Fatality Estimations
+
+It is possible to split the resulting fatality estimation into components
+that are denoted according to covariates in either the search schedule or
+carcass observation data sets. 
+
+#### First, a temporal split:  
+
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season", 
+                 split_CO = NULL, data_SS = data_SS, data_CO = data_CO, 
+                 unitCol = "Unit", dateFoundCol = "DateFound", 
+                 dateSearchedCol = "DateSearched"
+             )
+summary(M_season)
+plot(M_season)
+```
+
+#### Next, a carcass split:  
+
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL, 
+             split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
+             unitCol = "Unit", dateFoundCol = "DateFound", 
+             dateSearchedCol = "DateSearched"
+           )
+summary(M_class)
+plot(M_class)
+```
+
+#### And finally, if two splits are included, the mortality estimation is 
+expanded fully factorially:
+
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season", 
+            split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
+            unitCol = "Unit", dateFoundCol = "DateFound", 
+            dateSearchedCol = "DateSearched"
+          )
+summary(M_SbyC)
+plot(M_SbyC)
+```
