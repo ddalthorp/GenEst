@@ -111,7 +111,9 @@ msgModFail <- function(mods){
             gsub("Failed model fit: ", "", unique(unlist(mods))),
             sep = " "
          )
-  return(showNotification(msg, type = "error", duration = NULL))
+  if(!is.null(msg)){
+    return(showNotification(msg, type = "error", duration = NULL))
+  }
 }
 
 #' Creates the warning message for when only some models are fit successfully
@@ -223,6 +225,52 @@ setkFillNeed <- function(obsCols){
   }
 }
 
+#' @title Clear specific notifications
+#' @description Clear notifications within the app. 
+#'
+#' @param msg_NobsSE Number of search occasions message for SE
+#' @param msg_SampleSizeSE Sample size message for SE
+#' @param msg_ModFailSE Fail message for SE
+#' @param msg_ModFailCP  Fail message for CP
+#' @param msg_SampleSizeCP Sample size message for CP 
+#' @param msg_ModFailM Fail message for mortality estimation
+#' @param msg_ModFailg Fail message for generic g estimation
+#' @param msg_avgSSfail Fail message for averaging search schedule
+#' @return Nothing
+#' @export
+#'
+clearNotifications <- function(msg_NobsSE = NULL, msg_SampleSizeSE = NULL,
+                               msg_ModFailSE = NULL,
+                               msg_ModFailCP = NULL, msg_SampleSizeCP = NULL,
+                               msg_ModFailM = NULL, msg_ModFailg = NULL,
+                               msg_avgSSfail = NULL){
+
+  if(!is.null(msg_ModFailSE)){
+    removeNotification(msg_ModFailSE)
+  }
+  if(!is.null(msg_SampleSizeSE)){
+    removeNotification(msg_SampleSizeSE)
+  }
+  if(!is.null(msg_NobsSE)){
+    removeNotification(msg_NobsSE)
+  }
+  if(!is.null(msg_ModFailCP)){
+    removeNotification(msg_ModFailCP)
+  }
+  if(!is.null(msg_SampleSizeCP)){
+    removeNotification(msg_SampleSizeCP)
+  }
+  if(!is.null(msg_ModFailM)){
+    removeNotification(msg_ModFailM)
+  }
+  if(!is.null(msg_ModFailg)){
+    removeNotification(msg_ModFailg)
+  }
+  if(!is.null(msg_avgSSfail)){
+    removeNotification(msg_avgSSfail)
+  }
+ 
+}
 
 #' Updates the string of column names that are in all the needed tables
 #'

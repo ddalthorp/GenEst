@@ -8,10 +8,10 @@
 #' @return a plot
 #' @export
 #'
-plot.ghatGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
+plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
 
-  ghats <- x$ghat
-  cells <- names(ghats)
+  gs <- x$g
+  cells <- names(gs)
   ncell <- length(cells)
   predsByCell <- strsplit(cells, "\\.")
   npred <- length(predsByCell[[1]])
@@ -53,7 +53,7 @@ plot.ghatGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
 
   for (celli in 1:ncell){
     x <- celli
-    y <- quantile(ghats[[celli]], probs)
+    y <- quantile(gs[[celli]], probs)
 
     med <- c(-0.1, 0.1)
     tb <- c(-0.07, 0.07)
@@ -93,15 +93,15 @@ plot.ghatGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
 
 
 
-#' Plot results of a set of size-based generic ghat estimations
+#' Plot results of a set of size-based generic g estimations
 #'
-#' @param x ghatGenericSize output
+#' @param x gGenericSize output
 #' @param CL confidence level to use
 #' @param ... to be passed down
 #' @return a plot
 #' @export
 #'
-plot.ghatGenericSize <- function(x, CL = 0.9, ...){
+plot.gGenericSize <- function(x, CL = 0.9, ...){
 
   nsizeclass <- length(x)
 
@@ -113,7 +113,7 @@ plot.ghatGenericSize <- function(x, CL = 0.9, ...){
 
   sizeclassNames <- names(x)
   for (sci in 1:nsizeclass){
-    plot(x[[sci]], sizeclassName = sizeclassNames[sci], CL = CL)#, ...)
+    plot(x[[sci]], sizeclassName = sizeclassNames[sci], CL = CL, ...)
   }
 
   devAskNewPage(FALSE)
