@@ -1,4 +1,13 @@
 #' @useDynLib GenEst, .registration = TRUE
+#' @importFrom cbinom rcbinom
+#' @importFrom DT dataTableOutput renderDataTable datatable
+#' @importFrom graphics axis mtext par plot points rect text lines polygon
+#' @importFrom grDevices rgb devAskNewPage
+#' @importFrom gsl hyperg_2F1
+#' @importFrom htmltools div img br HTML a
+#' @importFrom matrixStats rowCumprods rowProds rowCumsums rowDiffs 
+#'   rowQuantiles
+#' @importFrom mvtnorm rmvnorm
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny shinyApp shinyAppDir navbarPage tabPanel tabsetPanel
 #'   selectizeInput renderUI showNotification renderText showModal modalDialog
@@ -8,22 +17,14 @@
 #'   removeNotification outputOptions isolate updateTabsetPanel renderPlot
 #'   updateNumericInput actionButton checkboxGroupInput
 #'   column fluidRow textOutput
-#' @importFrom htmltools div img br HTML a
-#' @importFrom DT dataTableOutput renderDataTable datatable
-#' @importFrom graphics axis mtext par plot points rect text lines polygon
-#' @importFrom grDevices rgb devAskNewPage
+#' @importFrom shinydashboard box
 #' @importFrom stats .getXlevels approxfun delete.response formula median
 #'   model.matrix na.omit optim pgamma pnorm qnorm quantile reformulate
-#'   runif terms update.formula weighted.mean as.formula rnorm
-#' @importFrom utils combn packageDescription read.csv
-#' @importFrom survival Surv survfit survreg psurvreg dsurvreg
-#' @importFrom mvtnorm rmvnorm
-#' @importFrom gsl hyperg_2F1
-#' @importFrom matrixStats rowCumprods rowProds rowCumsums rowDiffs 
-#'   rowQuantiles
-#' @importFrom cbinom rcbinom
+#'   runif terms update.formula weighted.mean as.formula rnorm approxfun
+#'   density
 #' @importFrom sticky sticky
-#' @importFrom shinydashboard box
+#' @importFrom survival Surv survfit survreg psurvreg dsurvreg
+#' @importFrom utils combn packageDescription read.csv
 #'
 
 #' @title Generalized estimation of fatalities
