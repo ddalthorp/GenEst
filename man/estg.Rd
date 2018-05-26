@@ -7,7 +7,7 @@
 \usage{
 estg(nsim = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, seed_g = NULL, kFill = NULL, unitCol = "Unit",
-  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched",
+  dateFoundCol = "DateFound", datesSearchedCol = "DateSearched",
   sizeclassCol = NULL, cleanoutCarcs = NULL)
 }
 \arguments{
@@ -36,7 +36,7 @@ model(s)}
 
 \item{dateFoundCol}{Column name for the date found data}
 
-\item{dateSearchedCol}{Column name for the date searched data}
+\item{datesSearchedCol}{Column name for the date searched data}
 
 \item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
 are recorded}

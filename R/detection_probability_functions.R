@@ -15,7 +15,7 @@
 #'   model(s)
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
-#' @param dateSearchedCol Column name for the date searched data
+#' @param datesSearchedCol Column name for the date searched data
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'   are recorded
 #' @param cleanoutCarcs of which carcasses (if any) were found on cleanout 
@@ -31,7 +31,7 @@ estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
                  kFill = NULL, unitCol = "Unit", 
                  dateFoundCol = "DateFound", 
-                 dateSearchedCol = "DateSearched", sizeclassCol = NULL,
+                 datesSearchedCol = "DateSearched", sizeclassCol = NULL,
                  cleanoutCarcs = NULL){
 
   if (is.null(sizeclassCol)){
@@ -131,7 +131,7 @@ estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
       est <- estgCarcass(nsim, data_carc = data_CO[carci, ], dist[sc],  
                data_SS, preds_SE[[sc]], preds_CP[[sc]], sim_SE[[sc]], 
                sim_CP[[sc]], preds_static[[sc]], preds_dynamic[[sc]], 
-               unitCol, dateFoundCol, dateSearchedCol
+               unitCol, dateFoundCol, datesSearchedCol
              )
       ghat[carci, ] <- est$ghat
       Aj[carci, ] <- est$Aj
@@ -556,22 +556,22 @@ estgGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
 #'
 #' @param data_SS a multi-unit SS data table, for which the average interval 
 #'   will be tabulated
-#' @param dateSearchedCol Column name for the date searched data
+#' @param datesSearchedCol Column name for the date searched data
 #' @param unitPrefix prefix for the unit identifiers, which correspond to 
 #'   columns in \code{data_ss}
 #' @return vector of the average search schedule
 #' @export
 #'
-averageSS <- function(data_SS, dateSearchedCol = "DateSearched", 
+averageSS <- function(data_SS, datesSearchedCol = "DateSearched", 
                       unitPrefix = "Unit"){
 
-  if (!dateSearchedCol %in% colnames(data_SS)){
+  if (!datesSearchedCol %in% colnames(data_SS)){
     stop("date searched column name provided not present in data.")
   }
   SS <- data_SS
-  SS[ , dateSearchedCol] <- yyyymmdd(SS[ , dateSearchedCol])
-  date1 <- min(SS[ , dateSearchedCol])
-  SS[ , "DateSearched"] <- dateToDay(SS[ , dateSearchedCol], date1)
+  SS[ , datesSearchedCol] <- yyyymmdd(SS[ , datesSearchedCol])
+  date1 <- min(SS[ , datesSearchedCol])
+  SS[ , datesSearchedCol] <- dateToDay(SS[ , datesSearchedCol], date1)
   SScols <- colnames(SS)
   prefixLength <- nchar(unitPrefix)
   SScolPrefixes <- substr(SScols, 1, prefixLength)
@@ -586,7 +586,7 @@ averageSS <- function(data_SS, dateSearchedCol = "DateSearched",
 
   for (uniti in 1:nunits){
     sample10 <- SS[ , units[uniti]]
-    sampleday <- SS[ , dateSearchedCol]
+    sampleday <- SS[ , datesSearchedCol]
     daysUnitSampled <- sampleday[sample10 == 1]
     SSlist[[uniti]] <- daysUnitSampled - min(daysUnitSampled)
   }

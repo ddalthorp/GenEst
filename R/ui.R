@@ -190,7 +190,7 @@ tabPanel("Analyses",
         )
       )
     ),
-    tabPanel("Fatality Estimation", br(), br(),
+    tabPanel("Mortality Estimation", br(), br(),
       sidebarPanel(width = 3, 
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
         br(), br(),
@@ -203,7 +203,7 @@ tabPanel("Analyses",
         selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
           multiple = FALSE
         ),
-        selectizeInput("dateSearchedCol", "Date Searched:",  
+        selectizeInput("datesSearchedCol", "Dates Searched:",  
           c("No data input yet"), multiple = FALSE
         ),
         conditionalPanel(
@@ -243,8 +243,8 @@ tabPanel("Analyses",
         br(), br(),
         HTML("<strong><u> Search Schedule Data: </u></strong>"),
         br(), br(),
-        selectizeInput("dateSearchedCol_g", 
-          "Date Searched Column in Search Schedule Data (if applicable):",  
+        selectizeInput("datesSearchedCol_g", 
+          "Dates Searched Column in Search Schedule Data (if applicable):",  
           c("No data input yet"), multiple = FALSE
         ),
         actionButton("useSSdata", "Create Schedule"),
@@ -329,7 +329,7 @@ tabPanel("About",
         and Robert Wolpert
           <a href = 'http://www2.stat.duke.edu/~rlw/'>(Duke)</a>"),
       br(), br(),
-      HTML("GenEst is a tool for estimating fatalities from efficiency, 
+      HTML("GenEst is a tool for estimating mortalities from efficiency, 
         persistence, and carcass data."
       ),
       br(), br(),
