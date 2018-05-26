@@ -391,7 +391,7 @@ summary(gsGeneric)
 
 or plotted (not shown):
 
-```{r, eval=FALSE}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 10}
 plot(gsGeneric)
 ```
 
