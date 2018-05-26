@@ -78,7 +78,7 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
   set.seed(seed_M)
   Mhat <- ((rcbinom(n, 1 / gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/(gDWPf)
   if (length(c_out) > 0){
-    zeroes <- matrix(0, nrow = length(c_out), ncol = ncol(est$g))
+    zeroes <- matrix(0, nrow = length(c_out), ncol = ncol(est$ghat))
     Mhat <- rbind(zeroes, Mhat)
   }
   out <- list(est$pk, est$ab, est$ghat, est$Aj, Mhat)
