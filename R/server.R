@@ -64,7 +64,7 @@ rv <- reactiveValues(
         SEmodToUse = NULL, CPmodToUse = NULL, M = NULL,
         models_SE = NULL, models_CP = NULL, DWPCol = NULL, 
         CL = 0.9, n = 1000, SEmodToUse_g = NULL, CPmodToUse_g = NULL, 
-        rghatsGeneric = NULL
+        gGeneric = NULL
 
       )
 
@@ -79,6 +79,7 @@ msg_avgSSfail <- NULL
 msg_RunModg <- NULL
 msg_RunModM <- NULL
 msg_ModFailM <- NULL
+msg_ModFailg <- NULL
 
 output$SStext <- renderText(rv$SStext)
 
@@ -158,6 +159,9 @@ observeEvent(input$preds_SE, {
 
 observeEvent(input$runMod_SE, {
 
+  clearNotifications(msg_NobsSE = msg_NobsSE)
+  clearNotifications(msg_SampleSizeSE = msg_SampleSizeSE)
+  clearNotifications(msg_ModFailSE = msg_ModFailSE) 
   msg_RunModSE <- msgModRun("SE")
 
   rv$obsCols_SE <- input$obsCols_SE
@@ -182,17 +186,17 @@ observeEvent(input$runMod_SE, {
   if (all(unlist(pkmSetSizeFail(rv$mods_SE)))){
 
     removeNotification(msg_RunModSE)
-    msg_ModFailSE <- msgModFail(rv$mod_SE)
+    msg_ModFailSE <<- msgModFail(rv$mod_SE)
 
   } else{
 
     if (any(unlist(pkmSetSizeFail(rv$mods_SE)))){
-      msg_ModFailSE <- msgModPartialFail()
+      msg_ModFailSE <<- msgModPartialFail()
       rv$mods_SE <- pkmSetSizeFailRemove(rv$mods_SE)
     }
     removeNotification(msg_RunModSE)
-    msg_SampleSizeSE <- msgSampleSize(rv$mod_SE)
-    msg_NobsSE <- msgNobsSE(rv$formula_k, rv$kFixed, rv$obsCols_SE)
+    msg_SampleSizeSE <<- msgSampleSize(rv$mod_SE)
+    msg_NobsSE <<- msgNobsSE(rv$formula_k, rv$kFixed, rv$obsCols_SE)
 
     rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
     rv$sizeclasses_SE <- rv$sizeclasses
@@ -240,7 +244,8 @@ observeEvent(input$runMod_SE, {
       output$DWPNeed <- renderText("no")
     }
     outputOptions(output, "DWPNeed", suspendWhenHidden = FALSE)
-
+    output$sizeclass_SE1 <-  renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_SE2 <-  renderText(paste0("Size class: ", rv$sizeclass))
   }
 })
 
@@ -303,6 +308,8 @@ observeEvent(input$tabfig_sizeclassSE, {
     })
     rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass]], TRUE)
     output$AICcTab_SE <- renderDataTable(datatable(rv$AICcTab_SE))
+    output$sizeclass_SE1 <- renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
   }
 })
 
@@ -327,6 +334,8 @@ observeEvent(input$preds_CP, {
 
 observeEvent(input$runMod_CP, {
 
+  clearNotifications(msg_SampleSizeCP = msg_SampleSizeCP)
+  clearNotifications(msg_ModFailCP = msg_ModFailCP)
   msg_RunModCP <- msgModRun("CP")
 
   rv$ltp <- input$ltp
@@ -350,16 +359,16 @@ observeEvent(input$runMod_CP, {
   if (all(unlist(cpmSetSizeFail(rv$mods_CP)))){
 
     removeNotification(msg_RunModCP)
-    msg_ModFailCP <- msgModFail(rv$mod_CP)
+    msg_ModFailCP <<- msgModFail(rv$mod_CP)
 
   } else{
 
     if (any(unlist(pkmSetSizeFail(rv$mods_CP)))){
-      msg_ModFailCP <- msgModPartialFail()
+      msg_ModFailCP <<- msgModPartialFail()
       rv$mods_CP <- cpmSetSizeFailRemove(rv$mods_CP)
     }
     removeNotification(msg_RunModCP)
-    msg_SampleSizeCP <- msgSampleSize(rv$mod_CP)
+    msg_SampleSizeCP <<- msgSampleSize(rv$mod_CP)
 
     rv$sizeclasses <- updateSizeclasses(rv$data_CP, rv$sizeclassCol)
     rv$sizeclasses_CP <- rv$sizeclasses
@@ -405,7 +414,8 @@ observeEvent(input$runMod_CP, {
     updateSelectizeInput(session, "tabfig_sizeclassCP", 
       choices = rv$sizeclasses
     )
-
+    output$sizeclass_CP1 <-  renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
   }
 })
 
@@ -498,41 +508,14 @@ observeEvent(input$tabfig_sizeclassCP, {
                                        rv$AICcTab_CP[ , "Scale Formula"]
                                      )
     output$AICcTab_CP <- renderDataTable(datatable(rv$AICcTab_CP))
+    output$sizeclass_CP1 <-  renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
   }
-})
-
-observeEvent(input$useSSdata, {
-  rv$SS <- NULL
-  rv$dateSearchedCol_g <- input$dateSearchedCol_g
-  rv$SStemp <- tryCatch(
-                 averageSS(rv$data_SS, rv$dateSearchedCol_g), 
-                 error = function(x){NA}
-               )
-  if (is.na(rv$SStemp[1])){
-    msg_avgSSfail <- msgSSavgFail()
-  } else{
-    rv$SS <- rv$SStemp
-    rv$avgSI <-  mean(diff(rv$SS[-length(rv$SS)]))
-
-    updateNumericInput(session, "gSearchInterval", value = rv$avgSI)
-    updateNumericInput(session, "gSearchMax", value = max(rv$SS))
-    rv$SStext <- paste(rv$SS, collapse = ", ")
-    output$SStext <- renderText(rv$SStext)
-  }
-}) 
-observeEvent(input$useSSinputs, {
-  rv$gSearchInterval <- input$gSearchInterval
-  rv$gSearchMax <- input$gSearchMax
-  rv$SS <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
-  if (max(rv$SS) != rv$gSearchMax){
-    rv$SS <- c(rv$SS, rv$gSearchMax)
-  }
-  rv$SStext <- paste(rv$SS, collapse = ", ")
-  output$SStext <- renderText(rv$SStext)
 })
 
 observeEvent(input$runModM, {
-
+  rv$M <- NULL
+  clearNotifications(msg_ModFailM = msg_ModFailM)
   msg_RunModM <- msgModRun("M")
 
   rv$kFill <- NA
@@ -586,17 +569,51 @@ observeEvent(input$runModM, {
               unitCol = rv$unitCol, dateFoundCol = rv$dateFoundCol, 
               dateSearchedCol = rv$dateSearchedCol, DWPCol = rv$DWPCol,
               sizeclassCol = rv$sizeclassCol_M
-            ), error = function(x){NA}
+            ), error = function(x){NULL}, warning = function(x){NULL}
           )
-  print(names(rv$M))
   removeNotification(msg_RunModM)
-  msg_ModFailM <- msgModDoneM(rv$M)
-
+  if (is.null(rv$M)){
+    msg_ModFailM <<- msgModFail(rv$M)
+  } else{
+    output$fig_M <- renderPlot(plot(rv$M))
+  }
 })
 
+observeEvent(input$useSSdata, {
+  clearNotifications(msg_avgSSfail = msg_avgSSfail )
+  rv$SS <- NULL
+  rv$dateSearchedCol_g <- input$dateSearchedCol_g
+  rv$SStemp <- tryCatch(
+                 averageSS(rv$data_SS, rv$dateSearchedCol_g), 
+                 error = function(x){NA}
+               )
+  if (is.na(rv$SStemp[1])){
+    msg_avgSSfail <<- msgSSavgFail()
+  } else{
+    rv$SS <- rv$SStemp
+    rv$avgSI <-  mean(diff(rv$SS[-length(rv$SS)]))
+
+    updateNumericInput(session, "gSearchInterval", value = rv$avgSI)
+    updateNumericInput(session, "gSearchMax", value = max(rv$SS))
+    rv$SStext <- paste(rv$SS, collapse = ", ")
+    output$SStext <- renderText(rv$SStext)
+  }
+}) 
+
+observeEvent(input$useSSinputs, {
+  rv$gSearchInterval <- input$gSearchInterval
+  rv$gSearchMax <- input$gSearchMax
+  rv$SS <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
+  if (max(rv$SS) != rv$gSearchMax){
+    rv$SS <- c(rv$SS, rv$gSearchMax)
+  }
+  rv$SStext <- paste(rv$SS, collapse = ", ")
+  output$SStext <- renderText(rv$SStext)
+})
 
 observeEvent(input$runMod_g, {
 
+  clearNotifications(msg_ModFailg = msg_ModFailg)
   msg_RunModg <- msgModRun("g")
 
   rv$CL <- input$CL
@@ -614,7 +631,7 @@ observeEvent(input$runMod_g, {
   }
 
   rv$n <- input$n
-  rv$rghatsGeneric <- vector("list", length = rv$nsizeclasses_g)
+  rv$gGeneric <- vector("list", length = rv$nsizeclasses_g)
   for (sci in 1:rv$nsizeclasses_g){
 
     rv$SEmodToUse_g <- input[[sprintf("modelChoices_SE%d", sci)]]
@@ -624,46 +641,52 @@ observeEvent(input$runMod_g, {
     }
     rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
 
-    rv$rghatsGeneric[[sci]] <- estghatGeneric(rv$n, rv$SS, 
-                                 rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
-                                 rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
-                                 kFill = rv$kFill)
+    rv$gGeneric[[sci]] <- tryCatch( 
+                                 estgGeneric(rv$n, rv$SS, 
+                                   rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
+                                   rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
+                                   kFill = rv$kFill
+                                 ), error = function(x){NULL}
+                               )
   }
-  names(rv$rghatsGeneric) <- rv$sizeclasses_g
+  names(rv$gGeneric) <- rv$sizeclasses_g
 
   removeNotification(msg_RunModg)
 
-  if (!is.null(rv$rghatsGeneric[[1]])){
+  if (!is.null(rv$gGeneric[[1]])){
     output$tab_g <- renderDataTable(
-                      summary(rv$rghatsGeneric[[1]], CL = rv$CL)
+                      summary(rv$gGeneric[[1]], CL = rv$CL)
                     )
     output$fig_g <- renderPlot(
                       tryCatch(
-                        plot(rv$rghatsGeneric[[1]], 
+                        plot(rv$gGeneric[[1]], 
                           sizeclassName = rv$sizeclasses_g[1], CL = rv$CL
                         ), error = function(x){plot(1,1)}
                       )
                     )
+    updateSelectizeInput(session, "tabfig_sizeclassg", 
+      choices = rv$sizeclasses_g
+    )
+    updateTabsetPanel(session, "analyses_g", "Table")
+
+  } else{
+    msg_ModFailg <<- msgModFail(rv$gGeneric)
   }
-  updateSelectizeInput(session, "tabfig_sizeclassg", 
-    choices = rv$sizeclasses_g
-  )
-  updateTabsetPanel(session, "analyses_g", "Table")
 
 })
 
 observeEvent(input$tabfig_sizeclassg, {
   rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$tabfig_sizeclassg)
   rv$CL <- input$CL
-  if (class(rv$rghatsGeneric[[rv$sizeclass_g]])[1] == "ghatGeneric"){
+  if (class(rv$gGeneric[[rv$sizeclass_g]])[1] == "gGeneric"){
     output$tab_g <- renderDataTable(
-                      summary(rv$rghatsGeneric[[rv$sizeclass_g]],
+                      summary(rv$gGeneric[[rv$sizeclass_g]],
                         CL = rv$CL
                       )
                     )
     output$fig_g <- renderPlot(
                       tryCatch(
-                        plot(rv$rghatsGeneric[[rv$sizeclass_g]],
+                        plot(rv$gGeneric[[rv$sizeclass_g]],
                           sizeclassName = rv$sizeclass_g, CL = rv$CL
                         ), error = function(x){plot(1,1)}
                       )

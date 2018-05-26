@@ -193,7 +193,7 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
     text_ex <- c("min", text_CL[1], "25%", "50%", "75%", text_CL[2], "max")
     text(x_s + 0.2, y_s, text_ex, cex = 0.65, adj = 0)
 
-    par(fig = c(0, 1, 0, 0.725), new = TRUE)
+    par(fig = c(0, 1, 0, 0.715), new = TRUE)
     par(mar = c(1, 1, 1, 1))
     plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = ""
