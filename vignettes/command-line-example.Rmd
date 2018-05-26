@@ -389,9 +389,9 @@ The output from `estgGeneric` can be simply summarized
 summary(gsGeneric)
 ```
 
-or plotted:
+or plotted (not shown):
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 4}
+```{r, eval=FALSE}
 plot(gsGeneric)
 ```
 
