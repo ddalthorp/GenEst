@@ -1,4 +1,4 @@
-#' Estimate ghat values and arrival intervals for a set of carcasses 
+#' Estimate g values and arrival intervals for a set of carcasses 
 #'   from fitted pk and cp models and search data
 #'
 #' @param nsim the number of simulation draws
@@ -10,7 +10,7 @@
 #'   multiple size classes)
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
-#' @param seed_ghat seed for random draws of the ghats
+#' @param seed_g seed for random draws of the gs
 #' @param kFill value(s) to fill in for missing k when not existing in the 
 #'   model(s)
 #' @param unitCol Column name for the unit indicator
@@ -20,18 +20,19 @@
 #'   are recorded
 #' @param cleanoutCarcs of which carcasses (if any) were found on cleanout 
 #'   searches
-#' @return list of [1] matrix of n ghat estimates for each carcass and [2]
-#'   matrix of n arrival intervals (Aj) for each carcass. The row names of the
-#'   Aj matrix are the names of the units where each carcass was found.
+#' @return list of [1] g estimates, [2] arrival interval (Aj) estimates,
+#'   [3]  estimates of SE parameters (pk), and [4] estimates CP parameters 
+#'   (ab) for each of the carcasses. The row names of the Aj matrix are the
+#'   names of the units where each carcass was found.
 #' @examples NA
 #' @export
 #'
-estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP, 
-                    seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
-                    kFill = NULL, unitCol = "Unit", 
-                    dateFoundCol = "DateFound", 
-                    dateSearchedCol = "DateSearched", sizeclassCol = NULL,
-                    cleanoutCarcs = NULL){
+estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP, 
+                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
+                 kFill = NULL, unitCol = "Unit", 
+                 dateFoundCol = "DateFound", 
+                 dateSearchedCol = "DateSearched", sizeclassCol = NULL,
+                 cleanoutCarcs = NULL){
 
   if (is.null(sizeclassCol)){
     sizeclassCol <- "placeholder"
@@ -118,30 +119,30 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
   names(sim_CP) <- sizeclasses
 
   ncarc <- nrow(data_CO)
-  ghat <- matrix(NA, nrow = ncarc, ncol = nsim)
+  g <- matrix(NA, nrow = ncarc, ncol = nsim)
   Aj <- matrix(NA, nrow = ncarc, ncol = nsim)
-  set.seed(seed_ghat)
+  set.seed(seed_g)
   for (carci in 1:ncarc){
     if (carci %in% cleanoutCarcs){
-      ghat[carci, ] <- 0
+      g[carci, ] <- 0
       Aj[carci, ] <- 0
     } else{
       sc <- sizeclass[carci]
-      est <- estghatCarcass(nsim, data_carc = data_CO[carci, ], dist[sc],  
-                    data_SS, preds_SE[[sc]], preds_CP[[sc]], sim_SE[[sc]], 
-                    sim_CP[[sc]], preds_static[[sc]], preds_dynamic[[sc]], 
-                    unitCol, dateFoundCol, dateSearchedCol
-                  )
-      ghat[carci, ] <- est$ghat
+      est <- estgCarcass(nsim, data_carc = data_CO[carci, ], dist[sc],  
+               data_SS, preds_SE[[sc]], preds_CP[[sc]], sim_SE[[sc]], 
+               sim_CP[[sc]], preds_static[[sc]], preds_dynamic[[sc]], 
+               unitCol, dateFoundCol, dateSearchedCol
+             )
+      g[carci, ] <- est$g
       Aj[carci, ] <- est$Aj
     }
   }
   rownames(Aj) <- data_CO[ , unitCol]
-  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
+  out <- list("g" = g, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
   return(out)
 }
 
-#' Estimate ghat values and arrival intervals for a carcass from fitted pk 
+#' Estimate g values and arrival intervals for a carcass from fitted pk 
 #'   and cp models and search data
 #'
 #' @param nsim the number of simulation draws
@@ -157,12 +158,13 @@ estghat <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
 #' @param unitCol Column name for the unit indicator
 #' @param timeFoundCol Column name for the time found data
 #' @param timeSearchedCol Column name for the time searched data
-#' @return list of [1] n ghat estimates for a carcass and [2] n arrival 
-#'   interval (Aj) estimates for a carcass
+#' @return list of [1] g estimates, [2] arrival interval (Aj) estimates,
+#'   [3]  estimates of SE parameters (pk), and [4] estimates CP parameters 
+#'   (ab) for the carcass
 #' @examples NA
 #' @export
 #'
-estghatCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
+estgCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
                            preds_CP, sim_SE, sim_CP, preds_static, 
                            preds_dynamic, unitCol, timeFoundCol, 
                            timeSearchedCol){
@@ -220,7 +222,7 @@ estghatCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
     Aj[oi, ] <- rowSums(rowCumsums(t(pAjgOi)) < runif(nsim)) + 1
   }
 
-  ghat <- rep(NA, length = nsim)
+  g <- rep(NA, length = nsim)
   Aj_specific <- Aj[nrow(Aj), ]
   Aj_unique <- unique(Aj_specific)
   for (aj in Aj_unique){
@@ -235,13 +237,13 @@ estghatCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
     est_SE <- SEsi(days_j, params_SE[[aj]][included, ])
 
     if (aj < length(t0)){
-      ghat[included] <- colSums(est_SE * est_CP)
+      g[included] <- colSums(est_SE * est_CP)
     } else{
-      ghat[included] <- as.vector(est_SE) * as.vector(est_CP)
+      g[included] <- as.vector(est_SE) * as.vector(est_CP)
     }
   }  
   Aj <- Aj[nrow(Aj), ]
-  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
+  out <- list("g" = g, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
   return(out)
 }
 
@@ -270,17 +272,17 @@ kFillPropose <- function(model){
 }
 
 
-#' Generic ghat estimation for a combination of SE model and CP model 
+#' Generic g estimation for a combination of SE model and CP model 
 #'   under a given search schedule
 #'
-#' The g estimated by \code{rghatGeneric} is a generic aggregate detection 
+#' The g estimated by \code{estgGeneric} is a generic aggregate detection 
 #'   probability and represents the probability of detecting a carcass that 
 #'   arrives at a (uniform) random time during the period monitored, for each
 #'   of the possible cell combinations, given the SE and CP models. This 
 #'   is somethat different from the GenEst estimation of g when the purpose 
 #'   is to estimate total mortality (M), in which case the detection 
 #'   probability varies with carcass arrival interval and is difficult to 
-#'   summarize statistically. The \code{rghatGeneric} estimate is a useful 
+#'   summarize statistically. The \code{estgGeneric} estimate is a useful 
 #'   "big picture" summary of detection probability, but would be difficult
 #'   to work with for estimating M with precision.
 #'
@@ -291,13 +293,13 @@ kFillPropose <- function(model){
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param kFill value to fill in for missing k when not existing in the model
-#' @return ghatGeneric object that is a list of [1] a list of ghat estimates,
+#' @return gGeneric object that is a list of [1] a list of g estimates,
 #'    with one element in the list corresponding to each of the cells from the 
 #'    cross-model combination and [2] a table of predictors and cell names 
-#'    associated with the ghats
+#'    associated with the gs
 #' @export
 #'
-estghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
+estgGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
   
   if (is.vector(data_SS)){
@@ -329,31 +331,31 @@ estghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
   dist <- tolower(model_CP$dist)
 
   ncell <- nrow(preds)
-  ghat <- vector("list", ncell)
+  g <- vector("list", ncell)
   for (celli in 1:ncell){
     cell_SE <- preds$CellNames_SE[celli]
     cell_CP <- preds$CellNames_CP[celli]
     param_SE <- sim_SE[[cell_SE]]
     param_CP <- sim_CP[[cell_CP]]
-    ghat[[celli]] <- ghatGenericCell(SS, param_SE, param_CP, dist, kFill)
+    g[[celli]] <- estgGenericCell(SS, param_SE, param_CP, dist, kFill)
   }  
-  names(ghat) <- preds$CellNames
-  out <- list("ghat" = ghat, "predictors" = preds)
-  class(out) <- c("ghatGeneric", "list")
+  names(g) <- preds$CellNames
+  out <- list("g" = g, "predictors" = preds)
+  class(out) <- c("gGeneric", "list")
   return(out)
 }
 
-#' Generic ghat estimation for a single cell of a combination of SE model and 
+#' Generic g estimation for a single cell of a combination of SE model and 
 #'   CP model under a given search schedule
 #'
-#' The g estimated by \code{ghatGenericCell} is a generic aggregate detection 
+#' The g estimated by \code{gGenericCell} is a generic aggregate detection 
 #'   probability and represents the probability of detecting a carcass that 
 #'   arrives at a (uniform) random time during the period monitored, for one 
 #'   cell across both the SE and CP models. This is somethat different from 
 #'   the GenEst estimation of g when the purpose is to estimate total
 #'   mortality (M), in which case the detection probability varies with 
 #'   carcass arrival interval and is difficult to summarize statistically.
-#'   The \code{ghatGenericCell} estimate is a useful "big picture" summary
+#'   The \code{gGenericCell} estimate is a useful "big picture" summary
 #'   of detection probability, but would be difficult to work with for 
 #'   estimating M with precision.
 #'
@@ -365,7 +367,7 @@ estghatGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
 #'
 #' @export
 #'
-ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
+estgGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 
   samtype <- ifelse(length(unique(diff(SS))) == 1, "Formula", "Custom")
   nsearch <- length(SS) - 1
@@ -494,17 +496,17 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
   return(prob_obs)
 }
 
-#' Generic ghat estimation for a combination of SE model and CP model 
+#' Generic g estimation for a combination of SE model and CP model 
 #'   under a given search schedule
 #'
-#' The g estimated by \code{rghatGeneric} is a generic aggregate detection 
+#' The g estimated by \code{estgGeneric} is a generic aggregate detection 
 #'   probability and represents the probability of detecting a carcass that 
 #'   arrives at a (uniform) random time during the period monitored, for each
 #'   of the possible cell combinations, given the SE and CP models. This 
 #'   is somethat different from the GenEst estimation of g when the purpose 
 #'   is to estimate total mortality (M), in which case the detection 
 #'   probability varies with carcass arrival interval and is difficult to 
-#'   summarize statistically. The \code{rghatGeneric} estimate is a useful 
+#'   summarize statistically. The \code{estgGeneric} estimate is a useful 
 #'   "big picture" summary of detection probability, but would be difficult
 #'   to work with for estimating M with precision.
 #'
@@ -517,11 +519,11 @@ ghatGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param kFill values to fill in for missing k when not existing in the model
-#' @return list of ghat estimates, with one element in the list corresponding
+#' @return list of g estimates, with one element in the list corresponding
 #'   to each of the cells from the cross-model combination
 #' @export
 #'
-estghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE, 
+estgGenericSize <- function(n = 1, data_SS, modelSetSize_SE, 
                                modelSetSize_CP, modelSizeSelections_SE, 
                                modelSizeSelections_CP, seed_SE = NULL, 
                                seed_CP = NULL, kFill = NULL){
@@ -534,21 +536,21 @@ estghatGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
   }
   sizeclasses <- unique(c(sizeclasses_SE, sizeclasses_CP))
   nsizeclass <- length(sizeclasses)
-  ghats <- vector("list", length = nsizeclass)
+  gs <- vector("list", length = nsizeclass)
   for (sci in 1:nsizeclass){
     sc <- sizeclasses[sci]
     model_SEsci <- modelSizeSelections_SE[[sc]]
     model_SE <- modelSetSize_SE[[sc]][[model_SEsci]]
     model_CPsci <- modelSizeSelections_CP[[sc]]
     model_CP <- modelSetSize_CP[[sc]][[model_CPsci]]
-    ghats[[sci]] <- estghatGeneric(n, data_SS, model_SE, model_CP, 
+    gs[[sci]] <- estgGeneric(n, data_SS, model_SE, model_CP, 
                       seed_SE, seed_CP, kFill[sc]
                     )
   }
-  names(ghats) <- sizeclasses
-  class(ghats) <- c("ghatGenericSize", "list")
+  names(gs) <- sizeclasses
+  class(gs) <- c("gGenericSize", "list")
 
-  return(ghats)
+  return(gs)
 }
 
 #' Tabulate an average search schedule from a multi-unit SS data table
@@ -599,22 +601,22 @@ averageSS <- function(data_SS, dateSearchedCol = "DateSearched",
   return(SS)
 }
   
-#' Summarize the ghatGeneric list to a simple table
+#' Summarize the gGeneric list to a simple table
 #'
-#' @param object ghatGeneric output list (each element is a named vector of 
-#'   ghatGeneric values for a cell in the model combinations)
+#' @param object gGeneric output list (each element is a named vector of 
+#'   gGeneric values for a cell in the model combinations)
 #' @param ... arguments to be passed down
 #' @param CL confidence level
 #'
-#' @return a summary table of ghat values (medians and confidence bounds) for 
-#'   each cell combination within the ghatGeneric list
+#' @return a summary table of g values (medians and confidence bounds) for 
+#'   each cell combination within the gGeneric list
 #' @export
 #'
-summary.ghatGeneric <- function(object, ..., CL = 0.9){
+summary.gGeneric <- function(object, ..., CL = 0.9){
 
-  ghats <- object$ghat
+  gs <- object$g
   preds <- object$predictors
-  cells <- names(ghats)
+  cells <- names(gs)
   ncell <- length(cells)
   predsByCell <- strsplit(cells, "\\.")
   npred <- length(predsByCell[[1]])
@@ -630,7 +632,7 @@ summary.ghatGeneric <- function(object, ..., CL = 0.9){
 
   gTab <- matrix(NA, ncell, 2)
   for (celli in 1:ncell){
-    gspec <- ghats[[celli]]
+    gspec <- gs[[celli]]
     gmedian <- round(median(gspec), 3)
     gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
     gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
@@ -649,19 +651,19 @@ summary.ghatGeneric <- function(object, ..., CL = 0.9){
 
 }
 
-#' Summarize the ghatGenericSize list to a list of simple tables
+#' Summarize the gGenericSize list to a list of simple tables
 #'
-#' @param object ghatGenericSize output list (each element is a size-named 
-#'   list of named vectors of ghatGeneric values for a cell in the model 
+#' @param object gGenericSize output list (each element is a size-named 
+#'   list of named vectors of gGeneric values for a cell in the model 
 #'   combinations)
 #' @param ... arguments to be passed down
 #' @param CL confidence level
 #'
-#' @return a list of summary tables of ghat values (medians and confidence 
-#'   bounds) for each cell combination within the ghatGeneric list
+#' @return a list of summary tables of g values (medians and confidence 
+#'   bounds) for each cell combination within the gGeneric list
 #' @export
 #'
-summary.ghatGenericSize <- function(object, ..., CL = 0.9){
+summary.gGenericSize <- function(object, ..., CL = 0.9){
 
   nsizeclass <- length(object)
   out <- vector("list", length = nsizeclass)
