@@ -190,7 +190,7 @@ tabPanel("Analyses",
         )
       )
     ),
-    tabPanel("Fatality Estimation", br(), br(),
+    tabPanel("Mortality Estimation", br(), br(),
       sidebarPanel(width = 3, 
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
         br(), br(),
@@ -329,7 +329,7 @@ tabPanel("About",
         and Robert Wolpert
           <a href = 'http://www2.stat.duke.edu/~rlw/'>(Duke)</a>"),
       br(), br(),
-      HTML("GenEst is a tool for estimating fatalities from efficiency, 
+      HTML("GenEst is a tool for estimating mortalities from efficiency, 
         persistence, and carcass data."
       ),
       br(), br(),

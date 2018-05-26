@@ -222,7 +222,7 @@ prepSSCO <- function(data_SS, data_CO, dateSearchedCol = "DateSearched",
   return(out)
 }
 
-#' @title Summarize total fatality estimation
+#' @title Summarize total mortality estimation
 #' @description \code{summary} defined for class \code{estM} objects
 #' @param object \code{estM} object
 #' @param ... arguments to pass down
