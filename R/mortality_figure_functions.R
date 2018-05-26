@@ -17,15 +17,19 @@ plot.estM <- function(x, ..., CL = 0.9){
   Mmed <- median(Mtot)
   Mmean <- mean(Mtot)
 
+  Mtext_m <- paste0("Median: ", round(Mmed, 1))
+  CLtext <- paste0(round(MCLlow, 1), ", ", round(MCLhi, 1))
+  Mtext_CL <- paste0(CL * 100, "% CI: [", CLtext, "]")
+  Mtext <- paste0(Mtext_m, "; ", Mtext_CL)
+
   df <- approxfun(density(Mtot)) 
   xnew <- seq(minMtot, maxMtot, 1)
   ynew <- df(xnew)
   maxynew <- max(ynew)
-  par(mar = c(4, 6, 2, 1))
+  par(mar = c(4, 6, 2, 1), fig = c(0, 1, 0, 1))
   plot(xnew, ynew, type = "l", bty = "L", xlab = "", ylab = "", las = 1)
-  mtext(side = 1, "Fatatalities", line = 2.75, cex = 1.5)
+  mtext(side = 1, "Mortalities", line = 2.75, cex = 1.5)
   mtext(side = 2, "Probability Density", line = 4.5, cex = 1.5)
-  Mtext <- paste0(names(summary(x)), ": ", summary(x))
   text(minMtot, maxynew * 1.075, Mtext, adj = 0, xpd = T, cex = 0.85)
 
   xxnew <- seq(MCLlow, MCLhi, 1)
