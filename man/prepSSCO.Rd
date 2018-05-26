@@ -4,7 +4,7 @@
 \alias{prepSSCO}
 \title{Prepare the SS and CO data}
 \usage{
-prepSSCO(data_SS, data_CO, dateSearchedCol = "DateSearched",
+prepSSCO(data_SS, data_CO, datesSearchedCol = "DateSearched",
   dateFoundCol = "DateFound", unitCol = "Unit")
 }
 \arguments{
@@ -12,7 +12,7 @@ prepSSCO(data_SS, data_CO, dateSearchedCol = "DateSearched",
 
 \item{data_CO}{Carcass observation data}
 
-\item{dateSearchedCol}{Column name for the date searched data}
+\item{datesSearchedCol}{Column name for the date searched data}
 
 \item{dateFoundCol}{Column name for the date found data}
 

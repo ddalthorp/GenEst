@@ -7,7 +7,7 @@
 estM(nsim = 1, data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
   seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
   kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound",
-  dateSearchedCol = "DateSearched", DWPCol = NULL, sizeclassCol = NULL)
+  datesSearchedCol = "DateSearched", DWPCol = NULL, sizeclassCol = NULL)
 }
 \arguments{
 \item{nsim}{the number of simulation draws}
@@ -41,7 +41,7 @@ multiple size classes)}
 
 \item{dateFoundCol}{Column name for the date found data}
 
-\item{dateSearchedCol}{Column name for the date searched data}
+\item{datesSearchedCol}{Column name for the date searched data}
 
 \item{DWPCol}{Column name for the DWP values in the DWP table when no
 size class is used}

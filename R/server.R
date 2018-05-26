@@ -50,7 +50,7 @@ rv <- reactiveValues(
 
         SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "), 
         SStemp = NULL, avgSI = NULL, 
-        dateSearchedCol_g = NULL, gSearchInterval = NULL, gSearchMax = NULL, 
+        datesSearchedCol_g = NULL, gSearchInterval = NULL, gSearchMax = NULL, 
 
         data_DWP = NULL, colNames_DWP = NULL,
         data_CO = NULL, colNames_CO = NULL, 
@@ -60,7 +60,7 @@ rv <- reactiveValues(
         colNames_all = NULL, nsizeclasses = NULL,
 
         kFill = NULL, kFill_g = NULL, unitCol = NULL, 
-        dateFoundCol = NULL, dateSearchedCol = NULL, sizeclassCol_M = NULL,
+        dateFoundCol = NULL, datesSearchedCol = NULL, sizeclassCol_M = NULL,
         SEmodToUse = NULL, CPmodToUse = NULL, M = NULL,
         models_SE = NULL, models_CP = NULL, DWPCol = NULL, 
         CL = 0.9, n = 1000, SEmodToUse_g = NULL, CPmodToUse_g = NULL, 
@@ -119,8 +119,8 @@ observeEvent(input$file_SS, {
   rv$colNames_SS <- colnames(rv$data_SS)
   output$data_SS <- renderDataTable(datatable(rv$data_SS))
   updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
-  updateSelectizeInput(session, "dateSearchedCol", choices = rv$colNames_SS)
-  updateSelectizeInput(session, "dateSearchedCol_g", choices = rv$colNames_SS)
+  updateSelectizeInput(session, "datesSearchedCol", choices = rv$colNames_SS)
+  updateSelectizeInput(session, "datesSearchedCol_g",choices = rv$colNames_SS)
 })
 observeEvent(input$file_DWP, {
   rv$data_DWP <- read.csv(input$file_DWP$datapath, stringsAsFactors = FALSE)
@@ -532,7 +532,7 @@ observeEvent(input$runModM, {
 
   rv$unitCol <- input$unitCol
   rv$dateFoundCol <- input$dateFoundCol
-  rv$dateSearchedCol <- input$dateSearchedCol
+  rv$datesSearchedCol <- input$datesSearchedCol
   rv$n <- input$n
   rv$frac <- input$frac
   rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
@@ -567,7 +567,7 @@ observeEvent(input$runModM, {
               frac = rv$frac, model_SE = rv$models_SE, 
               model_CP = rv$models_CP, kFill = rv$kFill, 
               unitCol = rv$unitCol, dateFoundCol = rv$dateFoundCol, 
-              dateSearchedCol = rv$dateSearchedCol, DWPCol = rv$DWPCol,
+              datesSearchedCol = rv$datesSearchedCol, DWPCol = rv$DWPCol,
               sizeclassCol = rv$sizeclassCol_M
             ), error = function(x){NULL}, warning = function(x){NULL}
           )
@@ -582,9 +582,9 @@ observeEvent(input$runModM, {
 observeEvent(input$useSSdata, {
   clearNotifications(msg_avgSSfail = msg_avgSSfail )
   rv$SS <- NULL
-  rv$dateSearchedCol_g <- input$dateSearchedCol_g
+  rv$datesSearchedCol_g <- input$datesSearchedCol_g
   rv$SStemp <- tryCatch(
-                 averageSS(rv$data_SS, rv$dateSearchedCol_g), 
+                 averageSS(rv$data_SS, rv$datesSearchedCol_g), 
                  error = function(x){NA}
                )
   if (is.na(rv$SStemp[1])){
