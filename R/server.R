@@ -661,7 +661,8 @@ observeEvent(input$runMod_g, {
                       tryCatch(
                         plot(rv$gGeneric[[1]], 
                           sizeclassName = rv$sizeclasses_g[1], CL = rv$CL
-                        ), error = function(x){plot(1,1)}
+                        ), error = function(x){plot(1,1)},
+                           warning = function(x){plot(1,1)}
                       )
                     )
     updateSelectizeInput(session, "tabfig_sizeclassg", 
@@ -688,7 +689,8 @@ observeEvent(input$tabfig_sizeclassg, {
                       tryCatch(
                         plot(rv$gGeneric[[rv$sizeclass_g]],
                           sizeclassName = rv$sizeclass_g, CL = rv$CL
-                        ), error = function(x){plot(1,1)}
+                        ), error = function(x){plot(1,1)},
+                           warning = function(x){plot(1,1)}
                       )
                     )
   }
