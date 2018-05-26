@@ -4,13 +4,13 @@
 \alias{averageSS}
 \title{Tabulate an average search schedule from a multi-unit SS data table}
 \usage{
-averageSS(data_SS, dateSearchedCol = "DateSearched", unitPrefix = "Unit")
+averageSS(data_SS, datesSearchedCol = "DateSearched", unitPrefix = "Unit")
 }
 \arguments{
 \item{data_SS}{a multi-unit SS data table, for which the average interval 
 will be tabulated}
 
-\item{dateSearchedCol}{Column name for the date searched data}
+\item{datesSearchedCol}{Column name for the date searched data}
 
 \item{unitPrefix}{prefix for the unit identifiers, which correspond to 
 columns in \code{data_ss}}

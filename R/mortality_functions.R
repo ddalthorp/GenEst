@@ -23,7 +23,7 @@
 #' @param kFill value to fill in for missing k when not existing in the model
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
-#' @param dateSearchedCol Column name for the date searched data
+#' @param datesSearchedCol Column name for the date searched data
 #' @param DWPCol Column name for the DWP values in the DWP table when no
 #'   size class is used
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
@@ -37,10 +37,10 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
                  seed_M = NULL, kFill = NULL,  
                  unitCol = "Unit", dateFoundCol = "DateFound", 
-                 dateSearchedCol = "DateSearched", DWPCol = NULL,
+                 datesSearchedCol = "DateSearched", DWPCol = NULL,
                  sizeclassCol = NULL){
 
-  SSCO <- prepSSCO(data_SS, data_CO, dateSearchedCol, dateFoundCol, unitCol)  
+  SSCO <- prepSSCO(data_SS, data_CO, datesSearchedCol, dateFoundCol, unitCol)  
   data_CO <- SSCO$data_CO
   data_SS <- SSCO$data_SS
   c_outs <- SSCO$cleanout_carcasses
@@ -61,12 +61,12 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
   }
 
   DWP <- DWPbyCarcass(data_DWP, data_CO, data_SS, dateFoundCol, 
-           dateSearchedCol, DWPCol, unitCol, sizeclassCol
+           datesSearchedCol, DWPCol, unitCol, sizeclassCol
          )
 
   est <- estg(nsim, data_CO, data_SS, model_SE, model_CP, seed_SE,  
            seed_CP, seed_g, kFill, unitCol, dateFoundCol, 
-           dateSearchedCol, sizeclassCol, cleanoutCarcs = c_outs
+           datesSearchedCol, sizeclassCol, cleanoutCarcs = c_outs
          )
 
   gDWPf <- est$ghat * DWP * frac
@@ -97,7 +97,7 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
 #' @param data_CO Carcass observation data
 #' @param data_SS Search Schedule data 
 #' @param dateFoundCol Column name for the date found data
-#' @param dateSearchedCol Column name for the date searched data
+#' @param datesSearchedCol Column name for the date searched data
 #' @param DWPCol Column name(s) for the DWP values in the DWP table when no
 #'   size class is used
 #' @param unitCol Column name for the unit indicator
@@ -109,7 +109,7 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
 #'
 DWPbyCarcass <- function(data_DWP, data_CO, data_SS, 
                          dateFoundCol = "DateFound",
-                         dateSearchedCol = "DateSearched",
+                         datesSearchedCol = "DateSearched",
                          DWPCol = NULL, unitCol = "Unit",
                          sizeclassCol = NULL){
 
@@ -194,7 +194,7 @@ cleanouts <- function(data_CO, data_SS, unitCol, timeFoundCol,
 #' @param data_SS Search Schedule data 
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
-#' @param dateSearchedCol Column name for the date searched data
+#' @param datesSearchedCol Column name for the date searched data
 #'
 #' @return list of [1] SS with days (starting with t = 0), [2] CO data with 
 #'   days (starting with t = 0), and [3] a vector of the CO_data rows 
@@ -202,20 +202,20 @@ cleanouts <- function(data_CO, data_SS, unitCol, timeFoundCol,
 #' @examples NA
 #' @export 
 #'
-prepSSCO <- function(data_SS, data_CO, dateSearchedCol = "DateSearched",
+prepSSCO <- function(data_SS, data_CO, datesSearchedCol = "DateSearched",
                      dateFoundCol = "DateFound", unitCol = "Unit"){
 
-  data_SS[ , dateSearchedCol] <- yyyymmdd(data_SS[ , dateSearchedCol])
+  data_SS[ , datesSearchedCol] <- yyyymmdd(data_SS[ , datesSearchedCol])
   data_CO[ , dateFoundCol] <- yyyymmdd(data_CO[ , dateFoundCol])
-  date0 <- min(data_SS[ , dateSearchedCol])
+  date0 <- min(data_SS[ , datesSearchedCol])
   data_CO[ , dateFoundCol] <- dateToDay(data_CO[ , dateFoundCol], date0)
-  data_SS[ , dateSearchedCol] <- dateToDay(data_SS[ , dateSearchedCol], date0)
+  data_SS[, datesSearchedCol] <- dateToDay(data_SS[, datesSearchedCol], date0)
 
-  which_day0 <- which(data_SS[ , dateSearchedCol] == 0)
+  which_day0 <- which(data_SS[ , datesSearchedCol] == 0)
   SSunitCols <- which(colnames(data_SS) %in% unique(data_CO[ , unitCol]))
   data_SS[which_day0, SSunitCols] <- 1
 
-  c_out <- cleanouts(data_CO, data_SS, unitCol, dateFoundCol, dateSearchedCol)
+  c_out <- cleanouts(data_CO, data_SS, unitCol, dateFoundCol,datesSearchedCol)
 
   out <- list(data_SS, data_CO, c_out)
   names(out) <- c("data_SS", "data_CO", "cleanout_carcasses")

@@ -436,7 +436,7 @@ eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,
         model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
         seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
         unitCol = "Unit", dateFoundCol = "DateFound", 
-        dateSearchedCol = "DateSearched", DWPCol = DWPcolnames,
+        datesSearchedCol = "DateSearched", DWPCol = DWPcolnames,
         sizeclassCol = "Size")
 ```
 
@@ -463,7 +463,7 @@ carcass observation data sets.
 M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season", 
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO, 
                  unitCol = "Unit", dateFoundCol = "DateFound", 
-                 dateSearchedCol = "DateSearched"
+                 datesSearchedCol = "DateSearched"
              )
 summary(M_season)
 plot(M_season)
@@ -475,7 +475,7 @@ plot(M_season)
 M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL, 
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
              unitCol = "Unit", dateFoundCol = "DateFound", 
-             dateSearchedCol = "DateSearched"
+             datesSearchedCol = "DateSearched"
            )
 summary(M_class)
 plot(M_class)
@@ -488,7 +488,7 @@ expanded fully factorially:
 M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season", 
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
             unitCol = "Unit", dateFoundCol = "DateFound", 
-            dateSearchedCol = "DateSearched"
+            datesSearchedCol = "DateSearched"
           )
 summary(M_SbyC)
 plot(M_SbyC)

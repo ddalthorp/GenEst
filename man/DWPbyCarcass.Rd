@@ -5,7 +5,7 @@
 \title{Assign DWP Value to Each Carcass}
 \usage{
 DWPbyCarcass(data_DWP, data_CO, data_SS, dateFoundCol = "DateFound",
-  dateSearchedCol = "DateSearched", DWPCol = NULL, unitCol = "Unit",
+  datesSearchedCol = "DateSearched", DWPCol = NULL, unitCol = "Unit",
   sizeclassCol = NULL)
 }
 \arguments{
@@ -18,7 +18,7 @@ proportion table}
 
 \item{dateFoundCol}{Column name for the date found data}
 
-\item{dateSearchedCol}{Column name for the date searched data}
+\item{datesSearchedCol}{Column name for the date searched data}
 
 \item{DWPCol}{Column name(s) for the DWP values in the DWP table when no
 size class is used}
