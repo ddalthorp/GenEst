@@ -16,7 +16,6 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include=FALSE}
-library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
 ```
@@ -343,7 +342,7 @@ names(cpmModSetSize[[1]])
 
 ## Generic Detection Probability
 
-For the purposes of fatality estimation, we calculate carcass-specific
+For the purposes of mortality estimation, we calculate carcass-specific
 detection probabilities (see below), which may be difficult to generalize,
 given the specific history of each observed carcass. Thus, we also provide
 a simple means to calculate generic detection probabilities that are 
@@ -396,16 +395,16 @@ plot(gsGeneric)
 ```
 
 
-## Fatality Estimation
+## Mortality Estimation
 
-When estimating fatalities, detection probability is determined for individual
-carcasses based on the dates when they are observed, size class values, 
-associated covariates, the searcher efficiency and carcass persistence models,
-and the search schedule. The carcass-specific detection probabilities (as
-opposed to the generic/cell-specific detection probabilities above) are 
-therefore calculated before estimating the total number of fatalities. 
+When estimating mortality, detection probability is determined for 
+individualcarcasses based on the dates when they are observed, size class 
+values, associated covariates, the searcher efficiency and carcass persistence 
+models, and the search schedule. The carcass-specific detection probabilities 
+(as opposed to the generic/cell-specific detection probabilities above) are 
+therefore calculated before estimating the total mortality. 
 Although it is possible to estimate these detection probabilities separately,
-they are best interpreted in the context of a full fatality estimation. 
+they are best interpreted in the context of a full mortality estimation. 
 
 The `estM` function is the general wrapper function for estimating `M`, 
 whether for a single size class or multiple size classes. Prior to estimation,
@@ -436,7 +435,7 @@ eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,
         model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
         seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
         unitCol = "Unit", dateFoundCol = "DateFound", 
-        dateSearchedCol = "DateSearched", DWPCol = DWPcolnames,
+        datesSearchedCol = "DateSearched", DWPCol = DWPcolnames,
         sizeclassCol = "Size")
 ```
 
@@ -451,9 +450,9 @@ summary(eM)
 plot(eM)
 ```
 
-### Splitting Fatality Estimations
+### Splitting Mortality Estimations
 
-It is possible to split the resulting fatality estimation into components
+It is possible to split the resulting mortality estimation into components
 that are denoted according to covariates in either the search schedule or
 carcass observation data sets. 
 
@@ -463,7 +462,7 @@ carcass observation data sets.
 M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season", 
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO, 
                  unitCol = "Unit", dateFoundCol = "DateFound", 
-                 dateSearchedCol = "DateSearched"
+                 datesSearchedCol = "DateSearched"
              )
 summary(M_season)
 plot(M_season)
@@ -475,7 +474,7 @@ plot(M_season)
 M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL, 
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
              unitCol = "Unit", dateFoundCol = "DateFound", 
-             dateSearchedCol = "DateSearched"
+             datesSearchedCol = "DateSearched"
            )
 summary(M_class)
 plot(M_class)
@@ -488,7 +487,7 @@ expanded fully factorially:
 M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season", 
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
             unitCol = "Unit", dateFoundCol = "DateFound", 
-            dateSearchedCol = "DateSearched"
+            datesSearchedCol = "DateSearched"
           )
 summary(M_SbyC)
 plot(M_SbyC)
