@@ -1,4 +1,4 @@
-#' @title Plot total fatality estimation
+#' @title Plot total mortality estimation
 #' @description \code{plot} defined for class \code{estM} objects
 #' @param x \code{estM} object
 #' @param ... arguments to pass down
