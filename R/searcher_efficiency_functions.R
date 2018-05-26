@@ -177,6 +177,16 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   nsearch <- length(obsCol)
   obsData <- data[ , obsCol]
   obsData <- as.matrix(obsData, ncol = nsearch)
+  ncarc <- nrow(obsData)
+  obsChar <- as.character(obsData)
+  obsChar <- gsub(" ", "", obsChar)
+  nonStandard <- which(obsChar != "0" & obsChar != "1")
+  if (length(nonStandard) > 0){
+    obsChar[nonStandard] <- NA
+  }
+  obsData <- suppressWarnings(as.numeric(obsData))
+  obsData <- matrix(obsData, nrow = ncarc, ncol = nsearch)
+
   obsNA <- is.na(obsData)
   onlyNA <- which(apply(obsNA, 1, sum) == apply(obsNA, 1, length))
   if (length(onlyNA) > 0){

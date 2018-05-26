@@ -79,6 +79,12 @@ tabPanel("Analyses",
             min = 0, max = 1, step = 0.001
           )
         ),
+        conditionalPanel(condition = "input.obsCols_SE == null",
+          br(), 
+          HTML("<center><em>Select observation columns to run 
+            model</center></em>"
+          )          
+        ),
         conditionalPanel(condition = "input.obsCols_SE != null",
           br(), 
           actionButton("runMod_SE", "Run Model")          
@@ -100,9 +106,16 @@ tabPanel("Analyses",
           tabPanel("Selected Data", br(), br(), dataTableOutput("selected_SE")
           ),
           tabPanel("Figures", br(), plotOutput("fig_SE")),
-          tabPanel("Estimates", br(), br(), dataTableOutput("modTab_SE")
+          tabPanel("Estimates", 
+            br(),  
+            textOutput("sizeclass_SE1"),
+            br(), 
+            dataTableOutput("modTab_SE")
           ),
-          tabPanel("Model Comparison", br(), br(), 
+          tabPanel("Model Comparison",
+            br(), 
+            textOutput("sizeclass_SE2"),
+            br(), 
             dataTableOutput("AICcTab_SE")
           ),
           tabPanel("Model Selection", br(), htmlOutput("modelMenu_SE"))
@@ -126,6 +139,13 @@ tabPanel("Analyses",
           choices = CPdistOptions(), 
           selected = c("exponential", "weibull", "lognormal", "loglogistic"),
           inline = TRUE
+        ),
+        conditionalPanel(
+          condition = "input.ltp == null | input.fta == null",
+          br(), 
+          HTML("<center><em>Select observation columns to run 
+            model</center></em>"
+          )          
         ),
         conditionalPanel(
           condition = "input.ltp != null & input.fta != null",
@@ -154,9 +174,16 @@ tabPanel("Analyses",
           tabPanel("Selected Data", br(), br(),
             dataTableOutput("selected_CP")),
           tabPanel("Figures", br(), plotOutput("fig_CP")),
-          tabPanel("Estimates", br(), br(), dataTableOutput("modTab_CP")
+          tabPanel("Estimates",
+            br(),  
+            textOutput("sizeclass_CP1"),
+            br(), 
+            dataTableOutput("modTab_CP")
           ),
-          tabPanel("Model Comparison", br(), br(), 
+          tabPanel("Model Comparison", 
+            br(),  
+            textOutput("sizeclass_CP2"),
+            br(), 
             dataTableOutput("AICcTab_CP")
           ),
           tabPanel("Model Selection", br(), htmlOutput("modelMenu_CP"))
@@ -193,13 +220,22 @@ tabPanel("Analyses",
         ),
         conditionalPanel(
           condition = 
+            "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
+             output.sizeclassesSE != output.sizeclassesCP",
+          br(), 
+          HTML("<center><em>Select SE and CP models fit to matching size
+            classes to run model</center></em>"
+          )
+        ),
+        conditionalPanel(
+          condition = 
             "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
              output.sizeclassesSE == output.sizeclassesCP",
           br(), 
           actionButton("runModM", "Estimate")
         )
       ),
-      mainPanel(br())
+      mainPanel(br(), br(), plotOutput("fig_M"))
     ),
     tabPanel("Detection Probability", br(), br(),
       sidebarPanel(width = 3, 
@@ -225,6 +261,15 @@ tabPanel("Analyses",
           br(), br(),
           numericInput("kFill_g", "Assumed k:", value = 0.5, 
             min = 0, max = 1, step = 0.001
+          )
+        ),
+        conditionalPanel(
+          condition = 
+            "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
+             output.sizeclassesSE != output.sizeclassesCP",
+          br(), 
+          HTML("<center><em>Select SE and CP models fit to matching size
+            classes to run model</center></em>"
           )
         ),
         conditionalPanel(

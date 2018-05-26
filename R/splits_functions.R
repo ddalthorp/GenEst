@@ -646,7 +646,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
 #'
 #' @export
 #'
-plot.splitFull <- function(x, rate = FALSE, CL = 0.95, ...){
+plot.splitFull <- function(x, rate = FALSE, CL = 0.9, ...){
   plot(summary(x, CL), rate)
 }
 
