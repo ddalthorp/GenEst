@@ -17,13 +17,13 @@ model_CP <- cpm(formula_l = l ~ Visibility + Season, formula_s = s ~ 1,
              right = "FirstAbsentDecimalDays", dist = "weibull"
             )
 avgSS <- averageSS(data_SS)
-ghatsGeneric <- estghatGeneric(n = 1000, avgSS, model_SE, model_CP, 
+ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
                   seed_SE = 1, seed_CP = 1, kFill = 0.5
                 )
 
 eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
                  model_SE = model_SE, model_CP = model_CP, 
-                 seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
+                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
                  seed_M = NULL, kFill = NA,  
                  unitCol = "Unit", dateFoundCol = "DateFound", 
                  dateSearchedCol = "DateSearched", DWPCol = "S",
@@ -65,7 +65,7 @@ modelSizeSelections_CP <- c("dist: exponential; l ~ 1; NULL",
                             "dist: exponential; l ~ Visibility; NULL")
 names(modelSizeSelections_CP) <- c("S", "M", "L", "XL")
 
-ghatsGenericSize <- estghatGenericSize(n = 1000, avgSS, modelSetSize_SE, 
+ghatsGenericSize <- estgGenericSize(n = 1000, avgSS, modelSetSize_SE, 
                       modelSetSize_CP, modelSizeSelections_SE,
                       modelSizeSelections_CP, seed_SE = 1, seed_CP = 1, 
                       kFill = NULL

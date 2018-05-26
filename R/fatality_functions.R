@@ -69,7 +69,7 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
            dateSearchedCol, sizeclassCol, cleanoutCarcs = c_outs
          )
 
-  gDWPf <- est$g * DWP * frac
+  gDWPf <- est$ghat * DWP * frac
   c_out <- which(apply(gDWPf, 1, sum) == 0)
   if (length(c_out) > 0){
     gDWPf <- gDWPf[-c_out, ]
@@ -81,8 +81,8 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
     zeroes <- matrix(0, nrow = length(c_out), ncol = ncol(est$g))
     Mhat <- rbind(zeroes, Mhat)
   }
-  out <- list(est$pk, est$ab, est$g, est$Aj, Mhat)
-  names(out) <- c("pk", "ab", "g", "Aj", "M")
+  out <- list(est$pk, est$ab, est$ghat, est$Aj, Mhat)
+  names(out) <- c("pk", "ab", "ghat", "Aj", "M")
   class(out) <- c("estM", "list")
   return(out)
 }

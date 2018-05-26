@@ -10,8 +10,8 @@
 #'
 plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
 
-  gs <- x$g
-  cells <- names(gs)
+  ghats <- x$ghat
+  cells <- names(ghats)
   ncell <- length(cells)
   predsByCell <- strsplit(cells, "\\.")
   npred <- length(predsByCell[[1]])
@@ -53,7 +53,7 @@ plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
 
   for (celli in 1:ncell){
     x <- celli
-    y <- quantile(gs[[celli]], probs)
+    y <- quantile(ghats[[celli]], probs)
 
     med <- c(-0.1, 0.1)
     tb <- c(-0.07, 0.07)
@@ -91,8 +91,6 @@ plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.9, ...){
   text(x_s + 0.2, y_s, text_ex, cex = 0.65, adj = 0)
 }
 
-
-
 #' Plot results of a set of size-based generic g estimations
 #'
 #' @param x gGenericSize output
@@ -126,8 +124,8 @@ plot.gGenericSize <- function(x, CL = 0.9, ...){
   for (sci in 1:nsizeclass){
 
     par(fig = c(0, 0.9, y1[sci], y2[sci]), new = TRUE)
-    gs <- x[[sci]]$g
-    cells <- names(gs)
+    ghats <- x[[sci]]$ghat
+    cells <- names(ghats)
     ncell <- length(cells)
     predsByCell <- strsplit(cells, "\\.")
     npred <- length(predsByCell[[1]])
@@ -135,7 +133,7 @@ plot.gGenericSize <- function(x, CL = 0.9, ...){
     predNames <- colNames[-grep("CellNames", colNames)]
     labelText <- paste("Labels = ", paste(predNames, collapse = "."))
 
-    par(mar = c(2, 4, 2, 1))  
+    par(mar = c(3, 4, 3, 1))  
     plot (1, 1, type = "n", xlab = "", ylab = "", xaxt = "n", yaxt = "n", 
       bty = "L", xlim = c(0.5, ncell + 0.5), ylim = c(0, 1)
     )
@@ -149,7 +147,7 @@ plot.gGenericSize <- function(x, CL = 0.9, ...){
     }
 
     text(1:ncell, -0.2, srt = ang, adj = offx, labels = cells, xpd = TRUE, 
-      cex = 0.75
+      cex = 0.5
     )
     if (predNames[1] == "group" & length(predNames) == 1 & cells[1] == "all"){
       labelText <- NULL
@@ -166,7 +164,7 @@ plot.gGenericSize <- function(x, CL = 0.9, ...){
 
     for (celli in 1:ncell){
       xx <- celli
-      yy <- quantile(gs[[celli]], probs)
+      yy <- quantile(ghats[[celli]], probs)
 
       med <- c(-0.1, 0.1)
       tb <- c(-0.07, 0.07)
