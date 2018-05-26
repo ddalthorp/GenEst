@@ -5,7 +5,7 @@
 \title{Estimate mortality}
 \usage{
 estM(nsim = 1, data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
-  seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, seed_M = NULL,
+  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
   kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound",
   dateSearchedCol = "DateSearched", DWPCol = NULL, sizeclassCol = NULL)
 }
@@ -31,7 +31,7 @@ multiple size classes)}
 
 \item{seed_CP}{seed for random draws of the CP model}
 
-\item{seed_ghat}{seed for random draws of the ghats}
+\item{seed_g}{seed for random draws of the gs}
 
 \item{seed_M}{seed for the random draws of the Mhats}
 
@@ -50,7 +50,7 @@ size class is used}
 are recorded. Optional.}
 }
 \value{
-list of SE parameters (pk), CP parameters (ab), ghat, Aj, and Mhat
+list of SE parameters (pk), CP parameters (ab), g, Aj, and Mhat
 }
 \description{
 Given given fitted Searcher Efficiency and Carcass 

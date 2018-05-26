@@ -365,12 +365,12 @@ cpMods <- c("S" = "dist: exponential; l ~ Season; NULL",
           )
 ```
 
-The `estghatGenericSize` function produces `n` random draws of generic (i.e., 
+The `estgGenericSize` function produces `n` random draws of generic (i.e., 
 cell-specific, not carcass-sepecific) detection probabilities for
 each of the possible carcass cell combinations across the selected SE and CP 
-models across the size classes. `estghatGeneric` is a single-size-class
-version of function and `estghatGenericSize` actually loops over 
-`estghatGeneric`. The generic $\hat{g}$ is estimated according to a particular 
+models across the size classes. `estgGeneric` is a single-size-class
+version of function and `estgGenericSize` actually loops over 
+`estgGeneric`. The generic $\hat{g}$ is estimated according to a particular 
 search schedule. When we pass `averageSS` a full `data_SS` table like we have
 here, it will assume the units are named as "unit" with a suffix indicator
 and will create the average search schedule across the units.
@@ -378,21 +378,21 @@ and will create the average search schedule across the units.
 ```{r}
 data_SS <- mock$SS
 avgSS <- averageSS(data_SS)
-ghatsGeneric <- estghatGenericSize(n = 1000, avgSS, pkmModSetSize, 
+gsGeneric <- estgGenericSize(n = 1000, avgSS, pkmModSetSize, 
                   cpmModSetSize, pkMods, cpMods, seed_SE = 1, seed_CP = 1,
                   kFill = NULL
                 )
 ```
 
-The output from `rghatGeneric` can be simply summarized
+The output from `estgGeneric` can be simply summarized
 ```{r}
-summary(ghatsGeneric)
+summary(gsGeneric)
 ```
 
-or plotted:
+or plotted (not shown):
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 4}
-plot(ghatsGeneric)
+```{r, eval=FALSE}
+plot(gsGeneric)
 ```
 
 
@@ -434,10 +434,21 @@ DWPcolnames <- names(pkmModSize)
 ```{r}
 eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
         model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
-        seed_CP = NULL, seed_ghat = NULL, seed_M = NULL, kFill = NULL,  
+        seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
         unitCol = "Unit", dateFoundCol = "DateFound", 
         dateSearchedCol = "DateSearched", DWPCol = DWPcolnames,
         sizeclassCol = "Size")
+```
+
+`estM` returns an object that contains the random draws of `pkm` and `cpm`
+parameters (named `pk` and `ab`, respectively) and the estimated carcass-level 
+detection parameters (`g`), arrival intervals (`Aj`), and associated total
+mortality (`M`) values for each simulation. These `M` values should be 
+considered in combination, and can be summarized and plotted simply:
+
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+summary(eM)
+plot(eM)
 ```
 
 ### Splitting Fatality Estimations

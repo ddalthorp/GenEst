@@ -18,7 +18,7 @@
 #'   multiple size classes)
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
-#' @param seed_ghat seed for random draws of the ghats
+#' @param seed_g seed for random draws of the gs
 #' @param seed_M seed for the random draws of the Mhats
 #' @param kFill value to fill in for missing k when not existing in the model
 #' @param unitCol Column name for the unit indicator
@@ -28,13 +28,13 @@
 #'   size class is used
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional.
-#' @return list of SE parameters (pk), CP parameters (ab), ghat, Aj, and Mhat 
+#' @return list of SE parameters (pk), CP parameters (ab), g, Aj, and Mhat 
 #' @examples NA
 #' @export 
 #'
 estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,  
                  model_SE, model_CP, 
-                 seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
+                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
                  seed_M = NULL, kFill = NULL,  
                  unitCol = "Unit", dateFoundCol = "DateFound", 
                  dateSearchedCol = "DateSearched", DWPCol = NULL,
@@ -64,12 +64,12 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
            dateSearchedCol, DWPCol, unitCol, sizeclassCol
          )
 
-  est <- estghat(nsim, data_CO, data_SS, model_SE, model_CP, seed_SE,  
-           seed_CP, seed_ghat, kFill, unitCol, dateFoundCol, 
+  est <- estg(nsim, data_CO, data_SS, model_SE, model_CP, seed_SE,  
+           seed_CP, seed_g, kFill, unitCol, dateFoundCol, 
            dateSearchedCol, sizeclassCol, cleanoutCarcs = c_outs
          )
 
-  gDWPf <- est$ghat * DWP * frac
+  gDWPf <- est$g * DWP * frac
   c_out <- which(apply(gDWPf, 1, sum) == 0)
   if (length(c_out) > 0){
     gDWPf <- gDWPf[-c_out, ]
@@ -78,11 +78,12 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
   set.seed(seed_M)
   Mhat <- ((rcbinom(n, 1 / gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/(gDWPf)
   if (length(c_out) > 0){
-    zeroes <- matrix(0, nrow = length(c_out), ncol = ncol(est$ghat))
+    zeroes <- matrix(0, nrow = length(c_out), ncol = ncol(est$g))
     Mhat <- rbind(zeroes, Mhat)
   }
-  out <- list(est$pk, est$ab, est$ghat, est$Aj, Mhat)
-  names(out) <- c("pk", "ab", "ghat", "Aj", "M")
+  out <- list(est$pk, est$ab, est$g, est$Aj, Mhat)
+  names(out) <- c("pk", "ab", "g", "Aj", "M")
+  class(out) <- c("estM", "list")
   return(out)
 }
 #' @title Assign DWP Value to Each Carcass
@@ -219,4 +220,27 @@ prepSSCO <- function(data_SS, data_CO, dateSearchedCol = "DateSearched",
   out <- list(data_SS, data_CO, c_out)
   names(out) <- c("data_SS", "data_CO", "cleanout_carcasses")
   return(out)
+}
+
+#' @title Summarize total fatality estimation
+#' @description \code{summary} defined for class \code{estM} objects
+#' @param object \code{estM} object
+#' @param ... arguments to pass down
+#' @param CL confidence level
+#' @export
+#'
+summary.estM <- function(object, ..., CL = 0.9){
+  M <- object$M
+  Mtot <- apply(M, 2, sum)
+  minMtot <- min(Mtot)
+  maxMtot <- max(Mtot)
+  pl <- (1 - CL)/2
+  ph <- 1 - (1 - CL)/2
+  MCLlow <- round(quantile(Mtot, pl), 2)
+  MCLhi <- round(quantile(Mtot, ph), 2) 
+  Mmed <- round(median(Mtot), 2)
+
+  out <- paste0(Mmed, " [", MCLlow, " - ", MCLhi, "]")
+  names(out) <- paste0("Median [", names(MCLlow), " - " , names(MCLhi), "]")
+  return(out)         
 }
