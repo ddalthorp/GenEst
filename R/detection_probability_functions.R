@@ -119,12 +119,12 @@ estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
   names(sim_CP) <- sizeclasses
 
   ncarc <- nrow(data_CO)
-  g <- matrix(NA, nrow = ncarc, ncol = nsim)
+  ghat <- matrix(NA, nrow = ncarc, ncol = nsim)
   Aj <- matrix(NA, nrow = ncarc, ncol = nsim)
   set.seed(seed_g)
   for (carci in 1:ncarc){
     if (carci %in% cleanoutCarcs){
-      g[carci, ] <- 0
+      ghat[carci, ] <- 0
       Aj[carci, ] <- 0
     } else{
       sc <- sizeclass[carci]
@@ -133,12 +133,12 @@ estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
                sim_CP[[sc]], preds_static[[sc]], preds_dynamic[[sc]], 
                unitCol, dateFoundCol, dateSearchedCol
              )
-      g[carci, ] <- est$g
+      ghat[carci, ] <- est$ghat
       Aj[carci, ] <- est$Aj
     }
   }
   rownames(Aj) <- data_CO[ , unitCol]
-  out <- list("g" = g, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
+  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
   return(out)
 }
 
@@ -222,7 +222,7 @@ estgCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
     Aj[oi, ] <- rowSums(rowCumsums(t(pAjgOi)) < runif(nsim)) + 1
   }
 
-  g <- rep(NA, length = nsim)
+  ghat <- rep(NA, length = nsim)
   Aj_specific <- Aj[nrow(Aj), ]
   Aj_unique <- unique(Aj_specific)
   for (aj in Aj_unique){
@@ -237,13 +237,13 @@ estgCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
     est_SE <- SEsi(days_j, params_SE[[aj]][included, ])
 
     if (aj < length(t0)){
-      g[included] <- colSums(est_SE * est_CP)
+      ghat[included] <- colSums(est_SE * est_CP)
     } else{
-      g[included] <- as.vector(est_SE) * as.vector(est_CP)
+      ghat[included] <- as.vector(est_SE) * as.vector(est_CP)
     }
   }  
   Aj <- Aj[nrow(Aj), ]
-  out <- list("g" = g, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
+  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
   return(out)
 }
 
@@ -325,22 +325,21 @@ estgGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
   data_CP <- model_CP$data
   preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
 
-
   sim_SE <- rpk(n, model_SE, seed_SE, kFill)
   sim_CP <- rcp(n, model_CP, seed_CP, type = "ppersist") 
   dist <- tolower(model_CP$dist)
 
   ncell <- nrow(preds)
-  g <- vector("list", ncell)
+  ghat <- vector("list", ncell)
   for (celli in 1:ncell){
     cell_SE <- preds$CellNames_SE[celli]
     cell_CP <- preds$CellNames_CP[celli]
     param_SE <- sim_SE[[cell_SE]]
     param_CP <- sim_CP[[cell_CP]]
-    g[[celli]] <- estgGenericCell(SS, param_SE, param_CP, dist, kFill)
+    ghat[[celli]] <- estgGenericCell(SS, param_SE, param_CP, dist, kFill)
   }  
-  names(g) <- preds$CellNames
-  out <- list("g" = g, "predictors" = preds)
+  names(ghat) <- preds$CellNames
+  out <- list("ghat" = ghat, "predictors" = preds)
   class(out) <- c("gGeneric", "list")
   return(out)
 }
@@ -536,21 +535,21 @@ estgGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
   }
   sizeclasses <- unique(c(sizeclasses_SE, sizeclasses_CP))
   nsizeclass <- length(sizeclasses)
-  gs <- vector("list", length = nsizeclass)
+  ghats <- vector("list", length = nsizeclass)
   for (sci in 1:nsizeclass){
     sc <- sizeclasses[sci]
     model_SEsci <- modelSizeSelections_SE[[sc]]
     model_SE <- modelSetSize_SE[[sc]][[model_SEsci]]
     model_CPsci <- modelSizeSelections_CP[[sc]]
     model_CP <- modelSetSize_CP[[sc]][[model_CPsci]]
-    gs[[sci]] <- estgGeneric(n, data_SS, model_SE, model_CP, 
+    ghats[[sci]] <- estgGeneric(n, data_SS, model_SE, model_CP, 
                       seed_SE, seed_CP, kFill[sc]
                     )
   }
-  names(gs) <- sizeclasses
-  class(gs) <- c("gGenericSize", "list")
+  names(ghats) <- sizeclasses
+  class(ghats) <- c("gGenericSize", "list")
 
-  return(gs)
+  return(ghats)
 }
 
 #' Tabulate an average search schedule from a multi-unit SS data table
@@ -614,9 +613,9 @@ averageSS <- function(data_SS, dateSearchedCol = "DateSearched",
 #'
 summary.gGeneric <- function(object, ..., CL = 0.9){
 
-  gs <- object$g
+  ghats <- object$ghat
   preds <- object$predictors
-  cells <- names(gs)
+  cells <- names(ghats)
   ncell <- length(cells)
   predsByCell <- strsplit(cells, "\\.")
   npred <- length(predsByCell[[1]])
@@ -632,7 +631,7 @@ summary.gGeneric <- function(object, ..., CL = 0.9){
 
   gTab <- matrix(NA, ncell, 2)
   for (celli in 1:ncell){
-    gspec <- gs[[celli]]
+    gspec <- ghats[[celli]]
     gmedian <- round(median(gspec), 3)
     gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
     gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
