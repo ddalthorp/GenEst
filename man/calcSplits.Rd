@@ -6,7 +6,7 @@
 \usage{
 calcSplits(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   split_SS = NULL, data_SS = NULL, split_time = NULL, unitCol = "Unit",
-  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched", ...)
+  dateFoundCol = "DateFound", datesSearchedCol = "DateSearched", ...)
 }
 \arguments{
 \item{M}{Numeric array (ncarc x nsim) of estimated mortalities, such as
@@ -49,7 +49,7 @@ is required.}
 
 \item{dateFoundCol}{Column name for the date found data}
 
-\item{dateSearchedCol}{Column name for the date searched data}
+\item{datesSearchedCol}{Column name for the date searched data}
 
 \item{...}{arguments to be passed down}
 }

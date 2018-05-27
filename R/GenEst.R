@@ -4,6 +4,7 @@
 #' @importFrom graphics axis mtext par plot points rect text lines polygon
 #' @importFrom grDevices rgb devAskNewPage
 #' @importFrom gsl hyperg_2F1
+#' @importFrom gtools mixedsort
 #' @importFrom htmltools div img br HTML a
 #' @importFrom matrixStats rowCumprods rowProds rowCumsums rowDiffs 
 #'   rowQuantiles
