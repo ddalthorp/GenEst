@@ -346,7 +346,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   if (is.vector(M)) M <- matrix(M, nrow = 1)
   x <- dim(M)[1] # total observed carcasses (assumes data_CO is error-checked)
   nsim <- dim(M)[2] # number of simulation draws (columns in M)
-  if (split_h$type %in% c("time", "SS")){
+    if (!is.null(split_h$type) && (split_h$type %in% c("time", "SS"))){
       days <- data_SS$days
       searches_carcass <- array(0, dim = c(x, length(days)))
       for (xi in 1:x){
