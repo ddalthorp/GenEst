@@ -281,7 +281,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     SSlevel <- data_SS[[split_SS]]
     uSSlevel <- unique(SSlevel)
     for (ui in 1:length(uSSlevel)){
-      if (length(unique(diff(SSlevel %in% uSSlevel[ui]))) > 1){
+      if (length(unique(diff(SSlevel %in% uSSlevel[ui]))) > 2){
         stop(
           "split_SS levels must be in contiguous blocks in data_SS.\n",
           "For example, c('spring', 'spring', 'fall', 'fall') would be OK, ",
