@@ -26,7 +26,7 @@ eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
                  seed_M = NULL, kFill = NA,  
                  unitCol = "Unit", dateFoundCol = "DateFound", 
-                 dateSearchedCol = "DateSearched", DWPCol = "S",
+                 datesSearchedCol = "DateSearched", DWPCol = "S",
                  sizeclassCol = NULL)
 
 M <- eM$M
@@ -93,23 +93,34 @@ for (sci in 1:nsizeclass){
 
 eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
                  model_SE = models_SE, model_CP = models_CP, 
-                 seed_SE = NULL, seed_CP = NULL, seed_ghat = NULL, 
+                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
                  seed_M = NULL, kFill = NULL,  
                  unitCol = "Unit", dateFoundCol = "DateFound", 
-                 dateSearchedCol = "DateSearched", DWPCol = sizeclasses,
+                 datesSearchedCol = "DateSearched", DWPCol = sizeclasses,
                  sizeclassCol = "Size")
 
 M <- eM$M
 Aj <- eM$Aj
 
 M_season <- calcSplits(M = M, Aj = Aj, split_SS = "Season", 
-                 split_CO = "Split",
+                 split_CO = "Unit",
                  data_SS = data_SS, data_CO = data_CO, unitCol = "Unit", 
                  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
                )
 
+summary(M_season)
+plot(M_season)
+
+splitSummary <- summary(M_season)
+
+x<-(summary(M_season))
 
 
+length(M_season)
+length(summary(M_season))
+class(summary(M_season))
 
+attr(M_season, "vars")
 
-
+(length(attr(M_season, "vars")) > 1)
+length(M_season)

@@ -64,8 +64,10 @@ rv <- reactiveValues(
         SEmodToUse = NULL, CPmodToUse = NULL, M = NULL,
         models_SE = NULL, models_CP = NULL, DWPCol = NULL, 
         CL = 0.9, n = 1000, SEmodToUse_g = NULL, CPmodToUse_g = NULL, 
-        gGeneric = NULL
-
+        gGeneric = NULL,
+        split_CO = NULL, split_SS = NULL,
+        nsplit_CO = NULL, nsplit_SS = NULL, Msplit = NULL,
+        figH_M = 800
       )
 
 msg_RunModSE <- NULL
@@ -80,6 +82,8 @@ msg_RunModg <- NULL
 msg_RunModM <- NULL
 msg_ModFailM <- NULL
 msg_ModFailg <- NULL
+msg_splitFail <- NULL
+
 
 output$SStext <- renderText(rv$SStext)
 
@@ -513,7 +517,7 @@ observeEvent(input$tabfig_sizeclassCP, {
   }
 })
 
-observeEvent(input$runModM, {
+observeEvent(input$runMod_M, {
   rv$M <- NULL
   clearNotifications(msg_ModFailM = msg_ModFailM)
   msg_RunModM <- msgModRun("M")
@@ -575,8 +579,66 @@ observeEvent(input$runModM, {
   if (is.null(rv$M)){
     msg_ModFailM <<- msgModFail(rv$M)
   } else{
+
+    rv$Msplit <- tryCatch(
+                   calcSplits(M = rv$M$M, Aj = rv$M$Aj, 
+                     split_SS = NULL, split_CO = NULL,
+                     data_SS = rv$data_SS, data_CO = rv$data_CO, 
+                     unitCol = rv$unitCol, 
+                     dateFoundCol = rv$dateFoundCol, 
+                     datesSearchedCol = rv$datesSearchedCol
+                   ), error = function(x){NULL}, warning = function(x){NULL}
+                 )
+
+
     output$fig_M <- renderPlot(plot(rv$M))
+    output$table_M <- renderDataTable(
+                        datatable(prettySplitTab(summary(rv$Msplit)))
+                      )
+    updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS)
+    updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
+
   }
+})
+
+observeEvent(input$splitM, {
+  rv$Msplit <- NULL
+  clearNotifications(msg_splitFail = msg_splitFail)
+
+  rv$split_CO <- input$split_CO
+  rv$split_SS <- input$split_SS
+  rv$nsplit_CO <- length(rv$split_CO)
+  rv$nsplit_SS <- length(rv$split_SS)
+  if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
+    msg_splitFail <<- msgsplitFail("setup")
+  }
+  rv$unitCol <- input$unitCol
+  rv$dateFoundCol <- input$dateFoundCol
+  rv$datesSearchedCol <- input$datesSearchedCol
+
+  rv$Msplit <- tryCatch(
+                 calcSplits(M = rv$M$M, Aj = rv$M$Aj, 
+                   split_SS = rv$split_SS, split_CO = rv$split_CO,
+                   data_SS = rv$data_SS, data_CO = rv$data_CO, 
+                   unitCol = rv$unitCol, 
+                   dateFoundCol = rv$dateFoundCol, 
+                   datesSearchedCol = rv$datesSearchedCol
+                 ), error = function(x){NULL}, warning = function(x){NULL}
+               )
+
+  if (is.null(rv$Msplit)){
+    msg_splitFail <<- msgsplitFail("run")
+  } else{
+    rv$figH_M <- 800
+    if (length(attr(rv$Msplit, "vars")) > 1){
+      rv$figH_M <- max(800, 300 * length(rv$Msplit))
+    }
+    output$fig_M <- renderPlot({plot(rv$Msplit)}, height = rv$figH_M)
+    output$table_M <- renderDataTable(
+                        datatable(prettySplitTab(summary(rv$Msplit)))
+                      )
+  }
+
 })
 
 observeEvent(input$useSSdata, {

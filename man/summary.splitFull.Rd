@@ -4,7 +4,7 @@
 \alias{summary.splitFull}
 \title{Summarize results of mortality estimate splits}
 \usage{
-\method{summary}{splitFull}(object, CL = 0.95, ...)
+\method{summary}{splitFull}(object, CL = 0.9, ...)
 }
 \arguments{
 \item{object}{A \code{splitFull} object (\code{\link{calcSplits}}) that 

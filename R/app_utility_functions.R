@@ -225,6 +225,28 @@ setkFillNeed <- function(obsCols){
   }
 }
 
+#' Creates the fail message for when splits aren't done correctly
+#' @param type "setup" or "run"
+#' @return a split fail warning
+#' @export
+#'
+msgsplitFail <- function(type = NULL){
+
+  if (is.null(type)){
+    return(NULL)
+  }
+  if (type == "setup"){
+    msg <- paste0(
+             "Improper splits setup. Maximum two splits, only one of which ",
+             "can be associated with the search schedule."
+           )
+  }
+  if (type == "run"){
+    msg <- "Splits calculation failed. Check split selections."
+  }
+  return(showNotification(msg, type = "error", duration = NULL))
+}
+
 #' @title Clear specific notifications
 #' @description Clear notifications within the app. 
 #'
@@ -236,6 +258,7 @@ setkFillNeed <- function(obsCols){
 #' @param msg_ModFailM Fail message for mortality estimation
 #' @param msg_ModFailg Fail message for generic g estimation
 #' @param msg_avgSSfail Fail message for averaging search schedule
+#' @param msg_splitFail Fail message for splitting M
 #' @return Nothing
 #' @export
 #'
@@ -243,7 +266,7 @@ clearNotifications <- function(msg_NobsSE = NULL, msg_SampleSizeSE = NULL,
                                msg_ModFailSE = NULL,
                                msg_ModFailCP = NULL, msg_SampleSizeCP = NULL,
                                msg_ModFailM = NULL, msg_ModFailg = NULL,
-                               msg_avgSSfail = NULL){
+                               msg_avgSSfail = NULL, msg_splitFail = NULL){
 
   if(!is.null(msg_ModFailSE)){
     removeNotification(msg_ModFailSE)
@@ -262,6 +285,9 @@ clearNotifications <- function(msg_NobsSE = NULL, msg_SampleSizeSE = NULL,
   }
   if(!is.null(msg_ModFailM)){
     removeNotification(msg_ModFailM)
+  }
+  if(!is.null(msg_splitFail)){
+    removeNotification(msg_splitFail)
   }
   if(!is.null(msg_ModFailg)){
     removeNotification(msg_ModFailg)
@@ -551,4 +577,71 @@ CPdistOptions <- function(){
   list("exponential" = "exponential", "weibull" = "weibull",
     "lognormal" = "lognormal", "loglogistic" = "loglogistic"
   )
+}
+
+#' Pretty a split summary table
+#' @param splitSummary a split summary
+#' @return split pretty table 
+#' @export
+#'
+prettySplitTab <- function(splitSummary){
+
+  vectored <- as.vector(splitSummary)
+
+  if ("splitSummary" %in% attr(vectored, "class")){
+
+    nspec <- length(splitSummary)
+    Out <- prettySplitSpecTab(splitSummary[[1]])
+    colnames(Out)[1] <- attr(splitSummary, "vars")[1]
+    extralev <- rep(names(splitSummary)[1], nrow(Out))
+    Out <- cbind(extralev, Out)    
+    colnames(Out)[1] <- attr(splitSummary, "vars")[2]
+
+    for (speci in 2:nspec){
+      specOut <- prettySplitSpecTab(splitSummary[[speci]])
+      colnames(specOut)[1] <- attr(splitSummary, "vars")[1]
+      extralev <- rep(names(splitSummary)[speci], nrow(specOut))
+      specOut <- cbind(extralev, specOut)    
+      colnames(specOut)[1] <- attr(splitSummary, "vars")[2]
+      Out <- rbind(Out, specOut)
+    }
+    return(Out)
+  } else{
+    return(prettySplitSpecTab(splitSummary))
+  }
+}
+
+#' Pretty a specific split summary table
+#' @param splitSummarySpec a specific split summary
+#' @return specific split pretty table 
+#' @export
+#'
+prettySplitSpecTab <- function(splitSummarySpec){
+  vectored <- as.vector(splitSummarySpec)
+  nrows <- nrow(splitSummarySpec)
+  ncols <- ncol(splitSummarySpec)
+  if (is.null(nrows)){
+    nrows <- 1
+    ncols <- length(splitSummarySpec)
+    rnames <- "all"
+    cnames <- names(splitSummarySpec)
+  } else{
+    rnames <- rownames(splitSummarySpec)
+    cnames <- colnames(splitSummarySpec)
+  }
+  prettyTab <- matrix(NA, nrow = nrows, ncol = ncols)
+  counter <- 0
+  for (ri in 1:nrows){
+    spots <- counter + 1:ncols
+    prettyTab[ri, ] <- round(vectored[spots], 2)
+    counter <- spots[ncols]
+  }     
+  colnames(prettyTab) <- cnames
+  varname <- attr(splitSummarySpec, "vars")
+  if (is.null(varname)){
+    return(prettyTab)
+  }
+  prettyTab <- cbind(rnames, prettyTab)
+  colnames(prettyTab)[1] <- varname
+  return(prettyTab)
 }

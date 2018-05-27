@@ -232,10 +232,34 @@ tabPanel("Analyses",
             "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
              output.sizeclassesSE == output.sizeclassesCP",
           br(), 
-          actionButton("runModM", "Estimate")
+          actionButton("runMod_M", "Estimate")
+        ),
+        conditionalPanel(
+          condition = "input.runMod_M > 0",
+
+          br(), br(), 
+          HTML("<big><strong><u> Splitting Mortality: 
+            </u></strong></big>"
+          ), br(), br(), 
+          HTML("<em>Max. two splits, of which only one can be 
+            search-based</em>"
+          ), br(), br(),
+          selectizeInput("split_SS", "Search Split:", 
+            " ", multiple = TRUE, options = list(maxItems = 1)
+          ),
+          selectizeInput("split_CO", "Carcass Splits:", 
+            " ", multiple = TRUE, options = list(maxItems = 2)
+          ),
+          br(),
+          actionButton("splitM", "Split Estimate")
         )
       ),
-      mainPanel(br(), br(), plotOutput("fig_M"))
+      mainPanel(
+        tabsetPanel(id = "analyses_M",
+          tabPanel("Figure", br(), plotOutput("fig_M")),
+          tabPanel("Summary", br(), br(), dataTableOutput("table_M"))
+        )
+      )
     ),
     tabPanel("Detection Probability", br(), br(),
       sidebarPanel(width = 3, 

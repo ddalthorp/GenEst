@@ -240,7 +240,8 @@ summary.estM <- function(object, ..., CL = 0.9){
   MCLhi <- round(quantile(Mtot, ph), 2) 
   Mmed <- round(median(Mtot), 2)
 
-  out <- paste0(Mmed, " [", MCLlow, " - ", MCLhi, "]")
-  names(out) <- paste0("Median [", names(MCLlow), " - " , names(MCLhi), "]")
+  out <- paste0("Median: ", Mmed, "; ", CL * 100, "% CI: [",
+           MCLlow, ", ", MCLhi, "]"
+         )
   return(out)         
 }
