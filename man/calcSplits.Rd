@@ -5,8 +5,7 @@
 \title{Estimate the number of fatalities by up to two splitting covariates}
 \usage{
 calcSplits(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
-  split_SS = NULL, data_SS = NULL, split_time = NULL, unitCol = "Unit",
-  dateFoundCol = "DateFound", datesSearchedCol = "DateSearched", ...)
+  split_SS = NULL, data_SS = NULL, split_time = NULL, ...)
 }
 \arguments{
 \item{M}{Numeric array (ncarc x nsim) of estimated mortalities, such as
@@ -45,13 +44,13 @@ Times must be numeric, strictly increasing, and span the monitoring period
 \code{split_time = NULL}. If \code{split_time} is NULL, \code{data_SS}
 is required.}
 
-\item{unitCol}{Column name for the unit indicator}
+\item{...}{arguments to be passed down}
 
 \item{dateFoundCol}{Column name for the date found data}
 
 \item{datesSearchedCol}{Column name for the date searched data}
 
-\item{...}{arguments to be passed down}
+\item{unitCol}{Column name for the unit indicator}
 }
 \value{
 An object of class \code{splitFull} is returned. If one splitting
