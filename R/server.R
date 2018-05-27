@@ -583,10 +583,7 @@ observeEvent(input$runMod_M, {
     rv$Msplit <- tryCatch(
                    calcSplits(M = rv$M$M, Aj = rv$M$Aj, 
                      split_SS = NULL, split_CO = NULL,
-                     data_SS = rv$data_SS, data_CO = rv$data_CO, 
-                     unitCol = rv$unitCol, 
-                     dateFoundCol = rv$dateFoundCol, 
-                     datesSearchedCol = rv$datesSearchedCol
+                     data_SS = rv$data_SS, data_CO = rv$data_CO
                    ), error = function(x){NULL}, warning = function(x){NULL}
                  )
 
@@ -619,10 +616,7 @@ observeEvent(input$splitM, {
   rv$Msplit <- tryCatch(
                  calcSplits(M = rv$M$M, Aj = rv$M$Aj, 
                    split_SS = rv$split_SS, split_CO = rv$split_CO,
-                   data_SS = rv$data_SS, data_CO = rv$data_CO, 
-                   unitCol = rv$unitCol, 
-                   dateFoundCol = rv$dateFoundCol, 
-                   datesSearchedCol = rv$datesSearchedCol
+                   data_SS = rv$data_SS, data_CO = rv$data_CO
                  ), error = function(x){NULL}, warning = function(x){NULL}
                )
 

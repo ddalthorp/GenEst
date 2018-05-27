@@ -56,8 +56,7 @@ list of SE parameters (pk), CP parameters (ab), g, Aj, and Mhat
 Given given fitted Searcher Efficiency and Carcass 
   Persistence models; Search Schedule, Density Weighted Proportion,
   and Carcass Observation data; and information about the fraction of the
-  the facility that was surveyed. This version of the function works for a
-  single size class
+  the facility that was surveyed.
 }
 \examples{
 NA
