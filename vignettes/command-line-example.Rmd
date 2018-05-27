@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include=FALSE}
+library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
 ```
@@ -269,7 +270,6 @@ cpModExp <- cpm(formula_l = l ~ Visibility*GroundCover, data = data_CP,
             )
 ```
 
-
 ### Set of Carcass Persistence Models
 
 The function `cpmSet` provides a simple wrapper on `cpm` that facilitates
@@ -351,7 +351,6 @@ cell-specific, rather than carcass-specific.
 For any estimation of detection probability ($\hat{g}$), we need to have 
 singular SE and CP models to use for each of the size classes. Here, we use
 the best-fit of the models for each size class:
-
 
 ```{r}
 pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
@@ -459,7 +458,7 @@ carcass observation data sets.
 #### First, a temporal split:  
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
-M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season", 
+M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO, 
                  unitCol = "Unit", dateFoundCol = "DateFound", 
                  datesSearchedCol = "DateSearched"
@@ -484,7 +483,7 @@ plot(M_class)
 expanded fully factorially:
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
-M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season", 
+M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
             unitCol = "Unit", dateFoundCol = "DateFound", 
             datesSearchedCol = "DateSearched"
