@@ -11,7 +11,7 @@ plot.estM <- function(x, ..., CL = 0.9){
 
 #' @title Plot total mortality estimation for a simple situation
 #' @description Hisogram and empirical PDF on top
-#' @param x Mortality object
+#' @param M Mortality object
 #' @param ... arguments to pass down
 #' @param CL confidence level
 #' @export
