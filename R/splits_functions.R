@@ -37,7 +37,8 @@
 #'
 #' @export
 #'
-calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL, data_SS = NULL){
+calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL, 
+                     data_SS = NULL){
   if (!is.null(data_SS) && ("SS" %in% class(data_SS))){
     days <- data_SS$days
     unit <- rownames(Aj)
@@ -164,9 +165,6 @@ calcTsplit <- function(rate, days, tsplit){
 #'  \code{split_time = NULL}. If \code{split_time} is NULL, \code{data_SS}
 #'  is required.
 #' @param ... arguments to be passed down
-#' @param dateFoundCol Column name for the date found data
-#' @param datesSearchedCol Column name for the date searched data
-#' @param unitCol Column name for the unit indicator
 #' @return An object of class \code{splitFull} is returned. If one splitting
 #'  covariate is given, then the output will be an array of estimated 
 #'  mortality in each level of the splitting covariate, with one row for each
@@ -250,8 +248,8 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       }
       if (maxspl > maxdays){
         warning(
-          "max(split_time) = ", maxspl, " < max(data_SS$days) = ", maxdays, ". ",
-          "Appending max(days) to split_time so last split is ",
+          "max(split_time) = ", maxspl, " < max(data_SS$days) = ", maxdays, 
+          ". ", "Appending max(days) to split_time so last split is ",
           "[", maxspl, ", ", max(data_SS$days),"]."
         )
       }
@@ -368,7 +366,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       }
     } else if (split_h$type %in% c("time", "SS")){
       days <- data_SS$days
-      rate <- calcRate(M, Aj, days = days, searches_carcass = searches_carcass)
+      rate <- calcRate(M, Aj, days = days,searches_carcass = searches_carcass)
       splits <- calcTsplit(rate, data_SS$days, split_h$vals)
     }
   } else if (nvar == 2){ # two split variables: split_h and split_v
@@ -443,7 +441,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
 #'  "t1", "t10", "t2").
 #' @export
 #'
-summary.splitFull <- function(object, CL = 0.95, ...){
+summary.splitFull <- function(object, CL = 0.90, ...){
   splits <- object
   alpha <- 1 - CL
   probs <- c(alpha / 2, 0.25, 0.5, 0.75, 1 - alpha / 2)
