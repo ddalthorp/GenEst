@@ -43,8 +43,10 @@ devtools::install_deps(paste0(.libPaths()[1], "/GenEst"))
 ### Windows Development-Savvy User
 
 Windows users who are familiar with R development should first ensure that
-they have [Rtools](https://cran.r-project.org/bin/windows/Rtools/) installed 
-on their machine and then can simply run
+they have the most recent version of
+[Rtools](https://cran.r-project.org/bin/windows/Rtools/) installed on their
+machine, and then can simply run
+
 ```
 install.packages("devtools")
 devtools::install_github("ddalthorp/GenEst")
