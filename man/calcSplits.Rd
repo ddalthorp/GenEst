@@ -45,12 +45,6 @@ Times must be numeric, strictly increasing, and span the monitoring period
 is required.}
 
 \item{...}{arguments to be passed down}
-
-\item{dateFoundCol}{Column name for the date found data}
-
-\item{datesSearchedCol}{Column name for the date searched data}
-
-\item{unitCol}{Column name for the unit indicator}
 }
 \value{
 An object of class \code{splitFull} is returned. If one splitting
