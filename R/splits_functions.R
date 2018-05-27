@@ -46,7 +46,7 @@ calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL, data_SS = NULL
     for (xi in 1:x){
        searches_carcass[xi, ] <- data_SS$searches_unit[unit[xi], ]
     }
-    searches_carcass[, 1] <- 1
+    searches_carcass[1, ] <- 1
   } else if (!is.null(data_SS)){
     stop(
       "In arg list, data_SS must be an SS object. Alternatively, user may ",
@@ -192,19 +192,28 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
                        ...){
   ##### read data and check for errors
+  cleanInd <- which(Aj[, 1] == 0)
   if ((!is.null(split_SS) || !is.null(split_time)) & is.null(data_SS)){
     stop("data_SS must be provided if ",
       ifelse(is.null(split_SS), "split_time ", "split_SS "), "is")
   }
-  if (!is.null(split_CO) + !is.null(split_SS) + !is.null(split_time) > 0){
+  if (!is.null(split_CO) || !is.null(split_SS) || !is.null(split_time) > 0){
     if (is.null(data_CO)){
       stop("data_CO must be provided to perform non-null splits")
+    } else if (length(cleanInd) > 0){
+      if (dim(data_CO)[1] == dim(Aj)[1]){
+        data_CO <- data_CO[-cleanInd,]
+      } else if (dim(data_CO)[1] != dim(Aj)[1] - length(cleanInd)){
+        stop("mismatch between carcass numbers in data_CO and Aj")
+      }
     }
   }
+  Aj <- Aj[-cleanInd, ]
+  unit <- rownames(Aj)
+  M <- M[-cleanInd, ]
   if (!is.null(split_SS) || !is.null(split_time)){
     if (!(class(data_SS) %in% "SS")) data_SS <- SS(data_SS)
   }
-  unit <- rownames(Aj)
   ### declare traffic directing variables (updated after parsing inputs)
   # number of valid split variables:
   nvar <- 0
@@ -341,6 +350,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       for (xi in 1:x){
         searches_carcass[xi, ] <- data_SS$searches_unit[unit[xi], ]
       }
+      searches_carcass[, 1] <- 1
   }
   # calculate splits
   if (nvar == 0){ # no splits...just calculate total M
