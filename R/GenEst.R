@@ -2,6 +2,7 @@
 #' @importFrom cbinom rcbinom
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics axis mtext par plot points rect text lines polygon
+#'   hist
 #' @importFrom grDevices rgb devAskNewPage
 #' @importFrom gsl hyperg_2F1
 #' @importFrom gtools mixedsort
