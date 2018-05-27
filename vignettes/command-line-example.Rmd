@@ -459,9 +459,7 @@ carcass observation data sets.
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = FALSE}
 M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
-                 split_CO = NULL, data_SS = data_SS, data_CO = data_CO, 
-                 unitCol = "Unit", dateFoundCol = "DateFound", 
-                 datesSearchedCol = "DateSearched"
+                 split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
 summary(M_season)
 plot(M_season)
@@ -471,9 +469,7 @@ plot(M_season)
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = FALSE}
 M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL, 
-             split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
-             unitCol = "Unit", dateFoundCol = "DateFound", 
-             datesSearchedCol = "DateSearched"
+             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
 summary(M_class)
 plot(M_class)
@@ -484,9 +480,7 @@ expanded fully factorially:
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = FALSE}
 M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
-            split_CO = "Split", data_SS = data_SS, data_CO = data_CO, 
-            unitCol = "Unit", dateFoundCol = "DateFound", 
-            datesSearchedCol = "DateSearched"
+            split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )
 summary(M_SbyC)
 plot(M_SbyC)
