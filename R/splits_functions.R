@@ -166,7 +166,7 @@ calcTsplit <- function(rate, days, tsplit){
 #'  is required.
 #' @param ... arguments to be passed down
 #' @param dateFoundCol Column name for the date found data
-#' @param dateSearchedCol Column name for the date searched data
+#' @param datesSearchedCol Column name for the date searched data
 #' @param unitCol Column name for the unit indicator
 #' @return An object of class \code{splitFull} is returned. If one splitting
 #'  covariate is given, then the output will be an array of estimated 
@@ -192,7 +192,7 @@ calcTsplit <- function(rate, days, tsplit){
 calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
                        unitCol = "Unit", dateFoundCol = "DateFound", 
-                       dateSearchedCol = "DateSearched", ...){
+                       datesSearchedCol = "DateSearched", ...){
 
   ##### read data and check for errors
   if ((!is.null(split_SS) || !is.null(split_time)) & is.null(data_SS)){
@@ -205,25 +205,25 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     }
   }
  
-  dateSearched <- data_SS[ , dateSearchedCol]
-  data_SS[ , dateSearchedCol] <- yyyymmdd(data_SS[ , dateSearchedCol])
+  dateSearched <- data_SS[ , datesSearchedCol]
+  data_SS[ , datesSearchedCol] <- yyyymmdd(data_SS[ , datesSearchedCol])
   data_CO[ , dateFoundCol] <- yyyymmdd(data_CO[ , dateFoundCol])
 
-  date0 <- min(data_SS[ , dateSearchedCol])
+  date0 <- min(data_SS[ , datesSearchedCol])
   data_CO[ , dateFoundCol] <- dateToDay(data_CO[ , dateFoundCol], date0)
-  data_SS[ , dateSearchedCol] <- dateToDay(data_SS[ , dateSearchedCol], date0)
+  data_SS[, datesSearchedCol] <- dateToDay(data_SS[, datesSearchedCol], date0)
 
-  which_day0 <- which(data_SS[ , dateSearchedCol] == 0)
+  which_day0 <- which(data_SS[ , datesSearchedCol] == 0)
   SSunitCols <- which(colnames(data_SS) %in% unique(data_CO[ , unitCol]))
   data_SS[which_day0, SSunitCols] <- 1
 
   cleanout <- cleanouts(data_CO, data_SS, unitCol, dateFoundCol,
-                dateSearchedCol
+                datesSearchedCol
               )  
   if (length(cleanout) > 0){
     data_CO <- data_CO[-cleanout, ]
   }
-  data_SS[ , dateSearchedCol] <- dateSearched
+  data_SS[ , datesSearchedCol] <- dateSearched
   data_SS <- SS(data_SS)
 
   unit <- rownames(Aj)
@@ -346,7 +346,8 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   if (is.vector(M)) M <- matrix(M, nrow = 1)
   x <- dim(M)[1] # total observed carcasses (assumes data_CO is error-checked)
   nsim <- dim(M)[2] # number of simulation draws (columns in M)
-  if (split_h$type %in% c("time", "SS")){
+  if (!is.null(split_h$type) && (split_h$type %in% c("time", "SS"))){
+
       days <- data_SS$days
       searches_carcass <- array(0, dim = c(x, length(days)))
       for (xi in 1:x){
@@ -401,10 +402,10 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     }
   }
   #protection against unintended loss of attr's
-  splits <- sticky::sticky(splits) 
+  splits <- sticky(splits) 
   attr(splits, "vars") <- c(split_h$name, split_v$name)
   attr(splits, "type") <- c(split_h$type, split_v$type)
-  if (split_h$type %in% c("time", "SS")){
+  if (!is.null(split_h$type) && (split_h$type %in% c("time", "SS"))){
     attr(splits, "times") <- split_h$vals
   }
   if (nvar == 1){
@@ -446,7 +447,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
 #'  "t1", "t10", "t2").
 #' @export
 #'
-summary.splitFull <- function(object, CL = 0.95, ...){
+summary.splitFull <- function(object, CL = 0.90, ...){
   splits <- object
   alpha <- 1 - CL
   probs <- c(alpha / 2, 0.25, 0.5, 0.75, 1 - alpha / 2)
@@ -455,13 +456,13 @@ summary.splitFull <- function(object, CL = 0.95, ...){
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
     sumry <- cbind(
-    mean = rowMeans(splits), matrixStats::rowQuantiles(splits, probs = probs))
+    mean = rowMeans(splits), rowQuantiles(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
       splits <- lapply(splits, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits, function(x){
-      cbind(mean = rowMeans(x), matrixStats::rowQuantiles(x, probs = probs))})
+      cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))})
   } else {
     stop(
       "length(attr(splits, 'vars')) > 2.",
@@ -470,20 +471,20 @@ summary.splitFull <- function(object, CL = 0.95, ...){
   }
   # order the non-temporal dimensions "alphabetically"
   if (!is.list(splits)){
-    if (attr(splits, "type") == "CO"){
-      sumry <- sumry[gtools::mixedsort(rownames(sumry)), ]
+    if (!is.null(attr(splits, "type")) && attr(splits, "type") == "CO"){
+      sumry <- sumry[mixedsort(rownames(sumry)), ]
     }
   } else {
     if (attr(splits, "type")[1] == "CO"){
       for (i in 1:length(splits)){
-        sumry[[i]] <- sumry[[i]][gtools::mixedsort(rownames(sumry[[i]])), ]
+        sumry[[i]] <- sumry[[i]][mixedsort(rownames(sumry[[i]])), ]
       }
     }
     if (attr(splits, "type")[2] == "CO"){
-      sumry <- sumry[gtools::mixedsort(names(sumry))]
+      sumry <- sumry[mixedsort(names(sumry))]
     }
   }
-  sumry <- sticky::sticky(sumry)
+  sumry <- sticky(sumry)
   attr(sumry, "CL") <- CL
   attr(sumry, "vars") <- attr(splits, "vars")
   attr(sumry, "type") <- attr(splits, "type")
@@ -491,7 +492,6 @@ summary.splitFull <- function(object, CL = 0.95, ...){
   class(sumry) <- "splitSummary"
   return(sumry)
 }
-
 
 #' Plot summary statistics for splits of mortality estimates
 #'

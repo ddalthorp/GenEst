@@ -6,7 +6,8 @@
 \usage{
 clearNotifications(msg_NobsSE = NULL, msg_SampleSizeSE = NULL,
   msg_ModFailSE = NULL, msg_ModFailCP = NULL, msg_SampleSizeCP = NULL,
-  msg_ModFailM = NULL, msg_ModFailg = NULL, msg_avgSSfail = NULL)
+  msg_ModFailM = NULL, msg_ModFailg = NULL, msg_avgSSfail = NULL,
+  msg_splitFail = NULL)
 }
 \arguments{
 \item{msg_NobsSE}{Number of search occasions message for SE}
@@ -24,6 +25,8 @@ clearNotifications(msg_NobsSE = NULL, msg_SampleSizeSE = NULL,
 \item{msg_ModFailg}{Fail message for generic g estimation}
 
 \item{msg_avgSSfail}{Fail message for averaging search schedule}
+
+\item{msg_splitFail}{Fail message for splitting M}
 }
 \value{
 Nothing
