@@ -7,11 +7,11 @@
 simpleMplot(M, ..., CL = 0.9)
 }
 \arguments{
+\item{M}{Mortality object}
+
 \item{...}{arguments to pass down}
 
 \item{CL}{confidence level}
-
-\item{x}{Mortality object}
 }
 \description{
 Hisogram and empirical PDF on top
