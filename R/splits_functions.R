@@ -344,7 +344,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   if (is.vector(M)) M <- matrix(M, nrow = 1)
   x <- dim(M)[1] # total observed carcasses (assumes data_CO is error-checked)
   nsim <- dim(M)[2] # number of simulation draws (columns in M)
-  if (!is.null(split_h) && split_h$type %in% c("time", "SS")){
+  if (!is.null(split_h) && (split_h$type %in% c("time", "SS"))){
       days <- data_SS$days
       searches_carcass <- array(0, dim = c(x, length(days)))
       for (xi in 1:x){
@@ -398,10 +398,10 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     }
   }
   #protection against unintended loss of attr's
-  splits <- sticky::sticky(splits)
+  splits <- sticky(splits)
   attr(splits, "vars") <- c(split_h$name, split_v$name)
   attr(splits, "type") <- c(split_h$type, split_v$type)
-  if (!is.null(split_h) && split_h$type %in% c("time", "SS")){
+  if (!is.null(split_h) && (split_h$type %in% c("time", "SS"))){
     attr(splits, "times") <- split_h$vals
   }
   if (nvar == 1){
@@ -469,20 +469,20 @@ summary.splitFull <- function(object, CL = 0.95, ...){
   if (!is.null(attr(splits, "type"))){
     if (!is.list(splits)){
       if (attr(splits, "type") == "CO"){
-        sumry <- sumry[gtools::mixedsort(rownames(sumry)), ]
+        sumry <- sumry[mixedsort(rownames(sumry)), ]
       }
     } else {
       if (attr(splits, "type")[1] == "CO"){
         for (i in 1:length(splits)){
-          sumry[[i]] <- sumry[[i]][gtools::mixedsort(rownames(sumry[[i]])), ]
+          sumry[[i]] <- sumry[[i]][mixedsort(rownames(sumry[[i]])), ]
         }
       }
       if (attr(splits, "type")[2] == "CO"){
-        sumry <- sumry[gtools::mixedsort(names(sumry))]
-      }
-    }
-  }
-  sumry <- sticky::sticky(sumry)
+        sumry <- sumry[mixedsort(names(sumry))]
+       }
+     }
+   }
+  sumry <- sticky(sumry)
   attr(sumry, "CL") <- CL
   attr(sumry, "vars") <- attr(splits, "vars")
   attr(sumry, "type") <- attr(splits, "type")
