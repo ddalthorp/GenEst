@@ -32,12 +32,12 @@ eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,
 M <- eM$M
 Aj <- eM$Aj
 
-M_season <- calcSplits(M = M, Aj = Aj, split_SS = NULL, 
+M_ <- calcSplits(M = M, Aj = Aj, split_SS = NULL, 
                  split_CO = NULL,
                  data_SS = data_SS, data_CO = data_CO, unitCol = "Unit", 
                  dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
                )
-
+plot(M_)
 
 
 

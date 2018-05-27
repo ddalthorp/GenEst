@@ -35,7 +35,6 @@ simpleMplot <- function(M, ..., CL = 0.9){
            MCLlow, ", ", MCLhi, "]"
          )
 
-  Mtot <- apply(M, 2, sum)
   minMtot <- min(Mtot)
   maxMtot <- max(Mtot)
   
