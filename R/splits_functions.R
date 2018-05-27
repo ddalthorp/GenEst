@@ -37,10 +37,8 @@
 #'
 #' @export
 #'
-calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL, 
-                     data_SS = NULL){
-
- if (!is.null(data_SS) && ("SS" %in% class(data_SS))){
+calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL, data_SS = NULL){
+  if (!is.null(data_SS) && ("SS" %in% class(data_SS))){
     days <- data_SS$days
     unit <- rownames(Aj)
     x <- nrow(Aj)
@@ -48,7 +46,7 @@ calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL,
     for (xi in 1:x){
        searches_carcass[xi, ] <- data_SS$searches_unit[unit[xi], ]
     }
-    searches_carcass[, 1] <- 1
+    searches_carcass[1, ] <- 1
   } else if (!is.null(data_SS)){
     stop(
       "In arg list, data_SS must be an SS object. Alternatively, user may ",
@@ -192,27 +190,30 @@ calcTsplit <- function(rate, days, tsplit){
 #'
 calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
-                       unitCol = "Unit", dateFoundCol = "DateFound", 
-                       datesSearchedCol = "DateSearched", ...){
-
+                       ...){
   ##### read data and check for errors
+  cleanInd <- which(Aj[, 1] == 0)
   if ((!is.null(split_SS) || !is.null(split_time)) & is.null(data_SS)){
     stop("data_SS must be provided if ",
       ifelse(is.null(split_SS), "split_time ", "split_SS "), "is")
   }
-  if (!is.null(split_CO) + !is.null(split_SS) + !is.null(split_time) > 0){
+  if (!is.null(split_CO) || !is.null(split_SS) || !is.null(split_time) > 0){
     if (is.null(data_CO)){
       stop("data_CO must be provided to perform non-null splits")
+    } else if (length(cleanInd) > 0){
+      if (dim(data_CO)[1] == dim(Aj)[1]){
+        data_CO <- data_CO[-cleanInd,]
+      } else if (dim(data_CO)[1] != dim(Aj)[1] - length(cleanInd)){
+        stop("mismatch between carcass numbers in data_CO and Aj")
+      }
     }
   }
- 
-  if (!is.null(split_SS) || !is.null(split_time)){
-    if (!(class(data_SS) %in% "SS")){
-      data_SS <- SS(data_SS)
-    }
-  }
-
+  Aj <- Aj[-cleanInd, ]
   unit <- rownames(Aj)
+  M <- M[-cleanInd, ]
+  if (!is.null(split_SS) || !is.null(split_time)){
+    if (!(class(data_SS) %in% "SS")) data_SS <- SS(data_SS)
+  }
   ### declare traffic directing variables (updated after parsing inputs)
   # number of valid split variables:
   nvar <- 0
@@ -249,8 +250,8 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       }
       if (maxspl > maxdays){
         warning(
-          "max(split_time) = ", maxspl, " < max(data_SS$days) = ", maxdays, 
-          ". ", "Appending max(days) to split_time so last split is ",
+          "max(split_time) = ", maxspl, " < max(data_SS$days) = ", maxdays, ". ",
+          "Appending max(days) to split_time so last split is ",
           "[", maxspl, ", ", max(data_SS$days),"]."
         )
       }
@@ -343,13 +344,13 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   if (is.vector(M)) M <- matrix(M, nrow = 1)
   x <- dim(M)[1] # total observed carcasses (assumes data_CO is error-checked)
   nsim <- dim(M)[2] # number of simulation draws (columns in M)
-
   if (!is.null(split_h) && (split_h$type %in% c("time", "SS"))){
       days <- data_SS$days
       searches_carcass <- array(0, dim = c(x, length(days)))
       for (xi in 1:x){
         searches_carcass[xi, ] <- data_SS$searches_unit[unit[xi], ]
       }
+      searches_carcass[, 1] <- 1
   }
   # calculate splits
   if (nvar == 0){ # no splits...just calculate total M
@@ -367,9 +368,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       }
     } else if (split_h$type %in% c("time", "SS")){
       days <- data_SS$days
-      rate <- calcRate(M, Aj, days = days, 
-                searches_carcass = searches_carcass
-              )
+      rate <- calcRate(M, Aj, days = days, searches_carcass = searches_carcass)
       splits <- calcTsplit(rate, data_SS$days, split_h$vals)
     }
   } else if (nvar == 2){ # two split variables: split_h and split_v
@@ -444,7 +443,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
 #'  "t1", "t10", "t2").
 #' @export
 #'
-summary.splitFull <- function(object, CL = 0.90, ...){
+summary.splitFull <- function(object, CL = 0.95, ...){
   splits <- object
   alpha <- 1 - CL
   probs <- c(alpha / 2, 0.25, 0.5, 0.75, 1 - alpha / 2)
@@ -453,13 +452,13 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
     sumry <- cbind(
-    mean = rowMeans(splits), rowQuantiles(splits, probs = probs))
+    mean = rowMeans(splits), matrixStats::rowQuantiles(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
       splits <- lapply(splits, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits, function(x){
-      cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))})
+      cbind(mean = rowMeans(x), matrixStats::rowQuantiles(x, probs = probs))})
   } else {
     stop(
       "length(attr(splits, 'vars')) > 2.",
@@ -467,7 +466,6 @@ summary.splitFull <- function(object, CL = 0.90, ...){
     )
   }
   # order the non-temporal dimensions "alphabetically"
-
   if (!is.null(attr(splits, "type"))){
     if (!is.list(splits)){
       if (attr(splits, "type") == "CO"){
@@ -484,7 +482,6 @@ summary.splitFull <- function(object, CL = 0.90, ...){
        }
      }
    }
-
   sumry <- sticky(sumry)
   attr(sumry, "CL") <- CL
   attr(sumry, "vars") <- attr(splits, "vars")
@@ -493,6 +490,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   class(sumry) <- "splitSummary"
   return(sumry)
 }
+
 
 #' Plot summary statistics for splits of mortality estimates
 #'
@@ -525,16 +523,14 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
   splits <- x
   nvar <- length(attr(splits, "vars"))
   vartype <- attr(splits, "type")
-  if (nvar == 0 || vartype[1] == "CO"){
-    rate <- FALSE
-  }
+  if (nvar == 0 || vartype[1] == "CO") rate <- FALSE
   vars <- attr(splits, "vars")
   alpha <- 1 - attr(splits, "CL")
   times <- attr(splits, "times")
   probs <- c(alpha/2, 0.25, 0.5, 0.75, 1 - alpha/2)
   deltaT <- diff(times)
   if (nvar == 0){
-    # split is for total...what kind of figure? Need to show Mtilde & Mhat
+    # split is for total...what kind of figure? Need to show Mhat
     hist(splits, main = "placeholder fig for Mhat w/ no splits")
     return(NULL)
   } else if (nvar == 1 & !is.list(splits)){
