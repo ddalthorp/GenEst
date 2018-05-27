@@ -628,6 +628,9 @@ observeEvent(input$splitM, {
       rv$figH_M <- max(800, 300 * length(rv$Msplit))
     }
     output$fig_M <- renderPlot({plot(rv$Msplit)}, height = rv$figH_M)
+    if (is.null(rv$split_CO) & is.null(rv$split_SS)){
+      output$fig_M <- renderPlot(plot(rv$M))
+    }
     output$table_M <- renderDataTable(
                         datatable(prettySplitTab(summary(rv$Msplit)))
                       )

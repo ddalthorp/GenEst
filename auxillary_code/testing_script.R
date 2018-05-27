@@ -34,8 +34,7 @@ Aj <- eM$Aj
 
 M_ <- calcSplits(M = M, Aj = Aj, split_SS = NULL, 
                  split_CO = NULL,
-                 data_SS = data_SS, data_CO = data_CO, unitCol = "Unit", 
-                 dateFoundCol = "DateFound", dateSearchedCol = "DateSearched"
+                 data_SS = data_SS, data_CO = data_CO
                )
 plot(M_)
 
