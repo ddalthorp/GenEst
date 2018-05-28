@@ -47,7 +47,7 @@ calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL,
     for (xi in 1:x){
        searches_carcass[xi, ] <- data_SS$searches_unit[unit[xi], ]
     }
-    searches_carcass[1, ] <- 1
+    searches_carcass[, 1] <- 1
   } else if (!is.null(data_SS)){
     stop(
       "In arg list, data_SS must be an SS object. Alternatively, user may ",
@@ -201,14 +201,19 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     } else if (length(cleanInd) > 0){
       if (dim(data_CO)[1] == dim(Aj)[1]){
         data_CO <- data_CO[-cleanInd,]
-      } else if (dim(data_CO)[1] != dim(Aj)[1] - length(cleanInd)){
+        Aj <- Aj[-cleanInd, ]
+        M <- M[-cleanInd, ]
+      } else {
+        # better to check carcass IDs? or input data as a class?
         stop("mismatch between carcass numbers in data_CO and Aj")
       }
     }
   }
-  Aj <- Aj[-cleanInd, ]
   unit <- rownames(Aj)
-  M <- M[-cleanInd, ]
+  # better than attaching units to rownames of Aj in estg would be to package
+  # the unit and carcass ID to the list returned by estg and include these in
+  # class estM
+
   if (!is.null(split_SS) || !is.null(split_time)){
     if (!(class(data_SS) %in% "SS")) data_SS <- SS(data_SS)
   }
@@ -286,15 +291,12 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       stop(split_SS, " not found in ", data_SS)
     }
     SSlevel <- data_SS[[split_SS]]
-    uSSlevel <- unique(SSlevel)
-    for (ui in 1:length(uSSlevel)){
-      if (length(unique(diff(SSlevel %in% uSSlevel[ui]))) > 2){
-        stop(
-          "split_SS levels must be in contiguous blocks in data_SS.\n",
-          "For example, c('spring', 'spring', 'fall', 'fall') would be OK, ",
-          "but c('spring', 'fall', 'fall', 'spring') is not."
-        )
-      }
+    if (min(diff(match(SSlevel, unique(SSlevel)))) < 0){
+      stop(
+        "split_SS levels must be in contiguous blocks in data_SS.\n",
+        "For example, c('spring', 'spring', 'fall', 'fall') would be OK, ",
+        "but c('spring', 'fall', 'fall', 'spring') is not."
+      )
     }
     split_h <- list()
     split_h[["name"]] <- split_SS
