@@ -180,8 +180,6 @@ M_unit <- calcSplits(
 plot(M_unit, rate = F)
 summary(M_unit)
 summary(M_unit, CL = 0.8)
-```
-```{r, eval = FALSE}
 
 M_unit_and_species <- calcSplits(
   M = Mest$M, Aj = Mest$Aj,
@@ -190,6 +188,8 @@ M_unit_and_species <- calcSplits(
   data_SS = SS_data
 )
 plot(M_unit_and_species, rate = F)
+```
+```{r, eval = FALSE}
 
 M_by_week_and_speciesgroup <- calcSplits(
   M = Mest$M, Aj = Mest$Aj,
