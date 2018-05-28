@@ -462,7 +462,7 @@ M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction",
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
 summary(M_season)
-plot(M_season)
+#plot(M_season)
 ```
 
 #### Next, a carcass split:  
@@ -472,7 +472,7 @@ M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL,
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
 summary(M_class)
-plot(M_class)
+#plot(M_class)
 ```
 
 #### And finally, if two splits are included, the mortality estimation is 
@@ -483,5 +483,5 @@ M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction",
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )
 summary(M_SbyC)
-plot(M_SbyC)
+#plot(M_SbyC)
 ```
