@@ -162,17 +162,16 @@ M_season <- calcSplits(
 summary(M_season)
 plot(M_season)
 
-```
-```{r, eval = FALSE}
-
 SSdat <- SS(SS_data)
 M_week <- calcSplits(
   M = Mest$M, Aj = Mest$Aj,
   split_time = seq(0, max(SSdat$days), by = 7), 
-  data_SS = SS_data,
+  data_SS = SSdat,
   data_CO = CO_data
 )
 plot(M_week, rate = T)
+```
+```{r, eval = FALSE}
 
 M_unit <- calcSplits(
   M = Mest$M, Aj = Mest$Aj,
