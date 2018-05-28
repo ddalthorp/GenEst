@@ -142,7 +142,7 @@ SE_model <- pkm(p ~ 1, k ~ 1, data = SE_data)
 CP_model <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
 
 
-nsim <- 1000
+nsim <- 100
 Mest <- estM(
   nsim = nsim, data_CO = CO_data, data_SS = SS_data,
   data_DWP = DWP_data, frac = 1, model_SE = SE_model, model_CP = CP_model,
