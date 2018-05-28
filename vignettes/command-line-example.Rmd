@@ -376,7 +376,7 @@ and will create the average search schedule across the units.
 ```{r}
 data_SS <- mock$SS
 avgSS <- averageSS(data_SS)
-gsGeneric <- estgGenericSize(n = 1000, avgSS, pkmModSetSize, 
+gsGeneric <- estgGenericSize(n = 100, avgSS, pkmModSetSize, 
                   cpmModSetSize, pkMods, cpMods, seed_SE = 1, seed_CP = 1,
                   kFill = NULL
                 )
