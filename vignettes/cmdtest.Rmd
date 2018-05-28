@@ -162,7 +162,6 @@ M_season <- calcSplits(
 summary(M_season)
 plot(M_season)
 
-SSdat <- SS(SS_data)
 M_week <- calcSplits(
   M = Mest$M, Aj = Mest$Aj,
   split_time = seq(0, max(SSdat$days), by = 7), 
@@ -188,15 +187,14 @@ M_unit_and_species <- calcSplits(
   data_SS = SS_data
 )
 plot(M_unit_and_species, rate = F)
-```
-```{r, eval = FALSE}
 
+SSdat <- SS(SS_data)
 M_by_week_and_speciesgroup <- calcSplits(
   M = Mest$M, Aj = Mest$Aj,
   split_CO = "SpeciesGroup",
   data_CO = CO_data,
-  split_time = SSdat$days,
-  data_SS = SS_data
+  split_time = seq(0, max(SSdat$days), by = 7)
+  data_SS = SSdat
 )
 plot(M_by_week_and_speciesgroup, rate = T)
 ```
