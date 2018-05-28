@@ -1,0 +1,125 @@
+---
+title: "Test command line tools with wind data"
+author: "Dan Dalthorp"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Test command line tools with wind data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, include=FALSE}
+library(GenEst)
+vers <- packageVersion("GenEst")
+today <- Sys.Date()
+```
+# Run-through of the "mock" set up with wind_cleared data
+
+```{r, eval = F}
+library(GenEst)
+data(wind_cleared)
+data_SE <- wind_cleared$SE
+pkModel <- pkm(formula_p = p ~ 1, formula_k = k ~ 1, data = data_SE)
+#plot(pkModel)
+rpk(n = 10, pkModel)
+pkm(formula_p = p ~ Visibility, formula_k = k ~ Season, data = data_SE)
+pkm(formula_p = p ~ Visibility, kFixed = 0.7, data = data_SE)
+
+pkmModSet <- pkmSet(formula_p = p ~ Visibility*Season, formula_k = k ~ Visibility, data = data_SE)
+names(pkmModSet)
+#plot(pkmModSet, specificModel = "p ~ Visibility + Season; k ~ 1")
+pkmSetAICcTab(pkmModSet)
+pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*Season,
+                   formula_k = k ~ Visibility, data = data_SE, sizeclassCol = "Size")
+names(pkmModSetSize)
+names(pkmModSetSize[[1]])
+data_CP <- wind_cleared$CP
+cpModel <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = data_CP,
+             left = "Left", right = "Right", dist = "weibull")
+#plot(cpModel)
+rcp(n = 10, cpModel)
+rcp(n = 10, cpModel, type = "ppersist")
+cpm(formula_l = l ~ Visibility*Season, formula_s = s ~ 1, data = data_CP,
+  left = "Left", right = "Right",
+  dist = "weibull"
+)
+cpmModSet <- cpmSet(formula_l = l ~ Visibility*Season,
+               formula_s = s ~ Visibility, data = data_CP,
+               left = "Left",
+               right = "Right",
+               dist = c("exponential", "lognormal")
+             )
+cpmSetAICcTab(cpmModSet)
+plot(cpmModSet,
+  specificModel = "dist: lognormal; l ~ Visibility; s ~ 1",
+)
+mtext(side = 3, line = 2.5, adj = 2, cex = 1.5, col = 2,
+  text = "looks like visibility x season?")
+
+cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility*Season,
+                   formula_s = s ~ Visibility, data = data_CP,
+                   left = "Left",
+                   right = "Right",
+                   dist = c("exponential", "lognormal"),
+                   sizeclassCol = "Size"
+                 )
+names(cpmModSetSize)
+names(cpmModSetSize[[1]])
+pkMods <- c(
+  "bat" = "p ~ 1; k ~ 1",
+  "sml" = "p ~ 1; k ~ 1",
+  "med" = "p ~ 1; k ~ 1",
+  "lrg" = "p ~ 1; k ~ Visibility"
+)
+
+cpMods <- c(
+  "bat" = "dist: exponential; l ~ Season; NULL",
+  "sml" = "dist: exponential; l ~ 1; NULL",
+  "med" = "dist: exponential; l ~ 1; NULL",
+  "lrg" = "dist: exponential; l ~ 1; NULL"
+)
+data_SS <- wind_cleared$SS
+avgSS <- averageSS(data_SS, dates = "SearchDate", unitPrefix = "t")
+gsGeneric <- estgGenericSize(n = 1000, avgSS, pkmModSetSize, 
+                  cpmModSetSize, pkMods, cpMods, seed_SE = 1, seed_CP = 1,
+                  kFill = NULL
+                )
+summary(gsGeneric)
+#plot(gsGeneric)
+pkmModSize <- trimSetSize(pkmModSetSize, pkMods)
+cpmModSize <- trimSetSize(cpmModSetSize, cpMods)
+data_CO <- wind_cleared$CO
+data_DWP <- wind_cleared$DWP
+head(data_DWP)
+DWPcolnames <- names(pkmModSize)
+eM <- estM(nsim = 100, data_CO, data_SS, data_DWP, frac = 1,
+        model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
+        seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
+        unitCol = "Turbine", dateFoundCol = "DateFound",
+        datesSearchedCol = "SearchDate", DWPCol = DWPcolnames,
+        sizeclassCol = "Size")
+summary(eM)
+plot(eM)
+
+M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season",
+                 split_CO = NULL, data_SS = data_SS, data_CO = data_CO)
+summary(M_season)
+plot(M_season)
+M_size <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL,
+             split_CO = "Size", data_SS = data_SS, data_CO = data_CO)
+summary(M_size)
+plot(M_size)
+M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season",
+            split_CO = "Species", data_SS = data_SS, data_CO = data_CO
+          )
+summary(M_SbyC)
+plot(transposeSplits(M_SbyC))
+```
