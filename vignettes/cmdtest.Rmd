@@ -137,89 +137,64 @@ head(DWP_data)
 head(CO_data)
 ```
 
-```{r, eval=FALSE}
+```{r}
 SE_model <- pkm(p ~ 1, k ~ 1, data = SE_data)
 CP_model <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
 
 
 nsim <- 1000
-gAj <- rghat(n = nsim,
-  data_CO = CO_data,
-  data_SS = SS_data,
-  model_SE = SE_model,
-  model_CP = CP_model,
-  unitCol = "Turbine",
-  dateFoundCol = "DateFound",
-  dateSearchedCol = "SearchDate"
+Mest <- estM(
+  nsim = nsim, data_CO = CO_data, data_SS = SS_data,
+  data_DWP = DWP_data, frac = 1, model_SE = SE_model, model_CP = CP_model,
+  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,
+  unitCol = "Turbine", dateFoundCol = "DateFound",
+  datesSearchedCol = "SearchDate", DWPCol = "bat"
 )
-ghat <- gAj$ghat
-Aj <- gAj$Aj
-proc.time() - tst # 7 minutes!
+summary(Mest)
+plot(Mest)
 
-DWP <- DWPbyCarcass(
-  data_DWP = DWP_data,
-  data_CO = CO_data,
-  unitCol = "Turbine",
-  DWPCol = "bat",
-  data_SS = SS_data,
-  dateFoundCol = "DateFound",
-  dateSearchedCol = "SearchDate"
+M_season <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_SS = "Season", data_SS = SS_data,
+  split_CO = NULL,  data_CO = CO_data
 )
-Mhat <- rMhat(n = 1, ghat = ghat, DWP, seed = 12)
 
-M_by_season <- calcSplits(
-  M = Mhat, Aj = Aj,
-  split_SS = "Season",
-  data_SS = SS_data,
-  data_CO = CO_data,
-  unitCol = "Turbine", 
-  dateFoundCol = "DateFound", 
-  dateSearchedCol = "SearchDate"
-)
-plot(M_by_season)
+summary(M_season)
+plot(M_season)
 
 SSdat <- SS(SS_data)
-M_by_week <- calcSplits(
-  M = Mhat, Aj = Aj,
+M_week <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
   split_time = seq(0, max(SSdat$days), by = 7), 
   data_SS = SS_data,
-  data_CO = CO_data,
-  unitCol = "Turbine", 
-  dateFoundCol = "DateFound", 
-  dateSearchedCol = "SearchDate")
-plot(M_by_week, rate = T)
+  data_CO = CO_data
+)
+plot(M_week, rate = T)
 
-M_by_unit <- calcSplits(
-  M = Mhat, Aj = Aj, 
+M_unit <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
   split_CO = "Turbine", 
   data_CO = CO_data, 
-  data_SS = SS_data,
-  unitCol = "Turbine", 
-  dateFoundCol = "DateFound", 
-  dateSearchedCol = "SearchDate")
-plot(M_by_unit, rate = F)
-summary(M_by_unit)
-summary(M_by_unit, CL = 0.8)
+  data_SS = SS_data
+)
+plot(M_unit, rate = F)
+summary(M_unit)
+summary(M_unit, CL = 0.8)
 
-M_by_unit_and_species <- calcSplits(
-  M = Mhat, Aj = Aj,
+M_unit_and_species <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
   split_CO = c("Turbine", "Species"),
   data_CO = CO_data,
-  data_SS = SS_data,
-  unitCol = "Turbine",
-  dateFoundCol = "DateFound",
-  dateSearchedCol = "SearchDate")
-plot(M_by_unit_and_species, rate = F)
+  data_SS = SS_data
+)
+plot(M_unit_and_species, rate = F)
 
 M_by_week_and_speciesgroup <- calcSplits(
-  M = Mhat, Aj = Aj,
+  M = Mest$M, Aj = Mest$Aj,
   split_CO = "SpeciesGroup",
   data_CO = CO_data,
   split_time = SSdat$days,
-  data_SS = SS_data,
-  unitCol = "Turbine",
-  dateFoundCol = "DateFound",
-  dateSearchedCol = "SearchDate")
+  data_SS = SS_data
+)
 plot(M_by_week_and_speciesgroup, rate = T)
-
 ```
