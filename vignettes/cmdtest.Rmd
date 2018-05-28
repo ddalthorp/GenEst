@@ -152,7 +152,8 @@ Mest <- estM(
 )
 summary(Mest)
 plot(Mest)
-
+```
+```{r, eval = FALSE}
 M_season <- calcSplits(
   M = Mest$M, Aj = Mest$Aj,
   split_SS = "Season", data_SS = SS_data,

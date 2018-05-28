@@ -23,7 +23,7 @@ today <- Sys.Date()
 ```
 # Run-through of the "mock" set up with wind_cleared data
 
-```{r}
+```{r, eval = F}
 library(GenEst)
 data(wind_cleared)
 data_SE <- wind_cleared$SE
