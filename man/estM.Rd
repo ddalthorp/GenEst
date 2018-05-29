@@ -7,7 +7,8 @@
 estM(nsim = 1, data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
   seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
   kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound",
-  datesSearchedCol = "DateSearched", DWPCol = NULL, sizeclassCol = NULL)
+  datesSearchedCol = "DateSearched", DWPCol = NULL, sizeclassCol = NULL,
+  max_intervals = NULL)
 }
 \arguments{
 \item{nsim}{the number of simulation draws}
@@ -16,7 +17,7 @@ estM(nsim = 1, data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
 
 \item{data_SS}{Search Schedule data}
 
-\item{data_DWP}{Survey unit (rows) by size (columns) density weighted 
+\item{data_DWP}{Survey unit (rows) by size (columns) density weighted
 proportion table}
 
 \item{frac}{fraction of facility (by units or by area) surveyed}
@@ -48,6 +49,9 @@ size class is used}
 
 \item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
 are recorded. Optional.}
+
+\item{max_intervals}{maximum number of arrival interval intervals to consider
+for each carcass}
 }
 \value{
 list of SE parameters (pk), CP parameters (ab), g, Aj, and Mhat
