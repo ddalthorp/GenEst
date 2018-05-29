@@ -29,11 +29,11 @@
 #' @examples NA
 #' @export
 
-estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
+estg <- function(nsim = 10, data_CO, data_SS, model_SE, model_CP,
                     seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                     kFill = NULL, unitCol = "Unit",
                     dateFoundCol = "DateFound",
-                    dateSearchedCol = "DateSearched", sizeclassCol = NULL,
+                    datesSearchedCol = "DateSearched", sizeclassCol = NULL,
                     cleanoutCarcs = NULL, max_intervals = NULL){
 # sizeclassCol not only identifies what the name of the size column is, it
 # also identifies that the model should include size as a segregating class
@@ -94,7 +94,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
   } else {
     pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
   }
-  cpsim <- lapply(model_CP, function(x) rcp(nsim, x, seed_CP, typ = "ppersist"))
+  cpsim <- lapply(model_CP, function(x) rcp(nsim, x, seed_CP, type = "ppersist"))
 
   X <- dim(COdat)[1]
   days <- list()
@@ -242,7 +242,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
         top <- min(aj + max_intervals, top)
       }
       # use an adjusted search schedule because we "know" when carcass arrived
-      cpi <- findInterval(aj, c(0, cumsum(cells[[xi]]$CPrep)), rightmost = T)
+      cpi <- findInterval(aj, c(0, cumsum(cells[[xi]]$CPrep)), rightmost.closed = T)
       pda <- cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][simInd , "pda"]
       pdb <- cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][simInd , "pdb"]
       ppersu <- ppersist(
@@ -253,7 +253,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
         t_arrive1 = rep(SSxi[aj + 1], top - aj),
         t_search = SSxi[(aj + 1):top]
       )
-      pki <- findInterval(aj, c(0, cumsum(cells[[xi]]$SErep)), rightmost = T)
+      pki <- findInterval(aj, c(0, cumsum(cells[[xi]]$SErep)), rightmost.closed = T)
       SE <- t(SEsi_right(
         min(max_intervals, length(SSxi) - aj),
         pksim[[sz]][[cells[[xi]]$SEcell[pki]]][simInd , ]
@@ -288,7 +288,7 @@ SEsi_left <- function (oi, pk, rng = NULL){
   # pk is nsim x 2 array of simulated p and k parameters
   # rng is the intervals for which to calculate answer
   if (is.null(rng)) rng <- 1:oi
-  if (is.null(dim(pk)) || nrow(pk) == 1) return(SEsi0(days, pk))
+  if (is.null(dim(pk)) || nrow(pk) == 1) return(SEsi0(0:oi, pk))
   npk <- nrow(pk)
   nmiss <- oi - rng
   maxmiss <- max(nmiss)

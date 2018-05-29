@@ -1,0 +1,275 @@
+---
+title: "vigcode"
+author: "xxx"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vigcode}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r}
+## MOCK
+library(GenEst)
+vers <- packageVersion("GenEst")
+today <- Sys.Date()
+data(mock)
+data_SE <- mock$SE
+data_CP <- mock$CP
+data_SS <- mock$SS
+data_CO <- mock$CO
+data_DWP<- mock$DWP
+pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType,
+                   formula_k = k ~ HabitatType, data = data_SE,
+                   obsCol = c("Search1", "Search2", "Search3", "Search4"),
+                   sizeclassCol = "Size"
+                 )
+cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility*Season,
+                   formula_s = s ~ Visibility, data = data_CP,
+                   left = "LastPresentDecimalDays",
+                   right = "FirstAbsentDecimalDays",
+                   dist = c("exponential", "lognormal"),
+                   sizeclassCol = "Size"
+                 )
+pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
+            "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ HabitatType"
+          )
+cpMods <- c("S" = "dist: exponential; l ~ Season; NULL",
+            "L" = "dist: exponential; l ~ 1; NULL",
+            "M" = "dist: exponential; l ~ 1; NULL",
+            "XL" = "dist: exponential; l ~ 1; NULL"
+          )
+pkmModSize <- trimSetSize(pkmModSetSize, pkMods)
+cpmModSize <- trimSetSize(cpmModSetSize, cpMods)
+DWPcolnames <- names(pkmModSize)
+```
+```{r}
+eM <- estM(nsim = 10, data_CO, data_SS, data_DWP, frac = 1,
+        model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL,
+        seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,
+        unitCol = "Unit", dateFoundCol = "DateFound",
+        datesSearchedCol = "DateSearched", DWPCol = DWPcolnames,
+        sizeclassCol = "Size")
+summary(eM)
+plot(eM)
+```
+```{r}
+M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction",
+                 split_CO = NULL, data_SS = data_SS, data_CO = data_CO
+             )
+summary(M_season)
+plot(M_season)
+```
+```{r}
+M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL,
+             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
+           )
+summary(M_class)
+plot(M_class)
+```
+```{r}
+M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction",
+            split_CO = "Split", data_SS = data_SS, data_CO = data_CO
+          )
+summary(M_SbyC)
+plot(M_SbyC)
+```
+```{r}
+## test
+library(GenEst)
+
+
+data(wind_cleared)
+data_SE <- wind_cleared$SE
+data_CP <- wind_cleared$CP
+data_SS <- wind_cleared$SS
+data_CO <- wind_cleared$CO
+data_DWP <- wind_cleared$DWP
+cpmModSet <- cpmSet(formula_l = l ~ Visibility*Season,
+               formula_s = s ~ Visibility * Season, data = data_CP,
+               left = "Left",
+               right = "Right",
+               dist = c("exponential", "lognormal", "loglogistic", "weibull")
+             )
+cpmSetAICcTab(cpmModSet)
+plot(cpmModSet, specificModel = "dist: lognormal; l ~ Visibility; s ~ 1")
+mtext(side = 3, line = 2.5, adj = 2, cex = 1.5, col = 2,
+  text = "looks like visibility x season?")
+
+cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility * Season,
+                   formula_s = s ~ Visibility, data = data_CP,
+                   left = "Left",
+                   right = "Right",
+               dist = c("exponential", "lognormal", "loglogistic", "weibull"),
+                   sizeclassCol = "Size"
+                 )
+cpmSetAICcTab(cpmModSetSize[["bat"]]) # weibull: l ~ Visibility; s ~ 1
+cpmSetAICcTab(cpmModSetSize[["lrg"]]) # weibull: l ~ 1; l ~ Visibility
+cpmSetAICcTab(cpmModSetSize[["med"]]) # lognormal: l ~ Visibility; l ~ Visibility
+cpmSetAICcTab(cpmModSetSize[["sml"]]) # weibull: l ~ 1; l ~ 1
+
+cpMods <- c(
+  bat = "dist: weibull; l ~ Visibility; s ~ 1",
+  lrg = "dist: weibull; l ~ 1; s ~ Visibility",
+  med = "dist: lognormal; l ~ Visibility; s ~ Visibility",
+  sml = "dist: weibull; l ~ 1; s ~ 1"
+)
+
+pkmModSetSize <- pkmSetSize(
+  formula_p = p ~ Visibility*Season,
+  formula_k = k ~ Visibility*Season,
+  data = data_SE, sizeclassCol = "Size"
+)
+pkmSetAICcTab(pkmModSetSize[["bat"]]) # p ~ Visibility * Season; k ~ 1
+pkmSetAICcTab(pkmModSetSize[["lrg"]]) # p ~ Visibility; k ~ Visibility
+pkmSetAICcTab(pkmModSetSize[["med"]]) # p ~ Visibility; k ~ 1
+pkmSetAICcTab(pkmModSetSize[["sml"]]) # p ~ Visibility; k ~ 1
+
+pkMods <- c(
+  bat = "p ~ Visibility * Season; k ~ 1",
+  lrg = "p ~ Visibility; k ~ Visibility",
+  med = "p ~ Visibility; k ~ 1",
+  sml = "p ~ Visibility; k ~ 1"
+)
+
+
+pkmModSize <- trimSetSize(pkmModSetSize, pkMods)
+cpmModSize <- trimSetSize(cpmModSetSize, cpMods)
+
+
+DWPcolnames <- names(pkmModSize)
+```
+```{r}
+#nsim = 100; data_CO = data_CO; data_SS = data_SS; data_DWP = data_DWP; frac = 0.23;
+#        model_SE = pkmModSize; model_CP = cpmModSize; seed_SE = NULL;
+#        seed_CP = NULL; seed_g = NULL; seed_M = NULL; kFill = NULL;
+#        unitCol = "Turbine"; dateFoundCol = "DateFound";
+#        datesSearchedCol = "SearchDate"; DWPCol = DWPcolnames;
+#        sizeclassCol = "Size";
+#max_intervals = NULL; seed_g = NULL; seed_ghat = NULL;
+
+eM <- estM(nsim = 100, data_CO, data_SS, data_DWP, frac = 0.23,
+        model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL,
+        seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,
+        unitCol = "Turbine", dateFoundCol = "DateFound",
+        datesSearchedCol = "SearchDate", DWPCol = DWPcolnames,
+        sizeclassCol = "Size")
+summary(eM)
+plot(eM)
+```
+```{r}
+
+M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season",
+                 split_CO = NULL, data_SS = data_SS, data_CO = data_CO)
+summary(M_season)
+plot(M_season)
+```
+```{r}
+
+M_size <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL,
+             split_CO = "Size", data_SS = data_SS, data_CO = data_CO)
+summary(M_size)
+plot(M_size)
+```
+```{r}
+
+M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Season",
+            split_CO = "Species", data_SS = data_SS, data_CO = data_CO
+          )
+summary(M_SbyC)
+plot(transposeSplits(M_SbyC))
+```
+```{r}
+
+M_by_species <- calcSplits(M = eM$M, Aj = eM$Aj, split_CO = "SpeciesGroup", data_CO = data_CO)
+summary(M_by_species)
+
+```
+```{r}
+data(wind_RPbat)
+SE_data <- wind_RPbat$SE
+CP_data <- wind_RPbat$CP
+SS_data <- wind_RPbat$SS
+DWP_data <- wind_RPbat$DWP
+CO_data <- wind_RPbat$CO
+daterange <- range(SS_data$SearchDate)
+seasons <- paste(unique(SS_data$Season), collapse = ', ')
+SE_model <- pkm(p ~ 1, k ~ 1, data = SE_data)
+CP_model <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
+
+
+nsim <- 1000
+#  nsim = nsim; data_CO = CO_data; data_SS = SS_data;
+#  data_DWP = DWP_data; frac = 1; model_SE = SE_model; model_CP = CP_model;
+#  seed_SE = NULL; seed_CP = NULL; seed_g = NULL; seed_M = NULL; kFill = NULL;
+#  unitCol = "Turbine"; dateFoundCol = "DateFound";
+#  datesSearchedCol = "SearchDate"; DWPCol = "bat"; max_intervals = NULL;
+#  sizeclassCol = NULL
+```
+```{r}
+Mest <- estM(
+  nsim = nsim, data_CO = CO_data, data_SS = SS_data,
+  data_DWP = DWP_data, frac = 1, model_SE = SE_model, model_CP = CP_model,
+  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,
+  unitCol = "Turbine", dateFoundCol = "DateFound",
+  datesSearchedCol = "SearchDate", DWPCol = "bat"
+)
+summary(Mest)
+plot(Mest)
+```
+```{r}
+
+M_season <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_SS = "Season", data_SS = SS_data,
+  split_CO = NULL,  data_CO = CO_data
+)
+
+summary(M_season)
+plot(M_season)
+```
+```{r}
+
+SSdat <- SS(SS_data)
+M_week <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_time = seq(0, max(SSdat$days), by = 7),
+  data_SS = SSdat,
+  data_CO = CO_data
+)
+plot(M_week, rate = T)
+```
+```{r}
+
+M_unit <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_CO = "Turbine",
+  data_CO = CO_data,
+  data_SS = SS_data
+)
+plot(M_unit, rate = F)
+summary(M_unit)
+summary(M_unit, CL = 0.8)
+```
+```{r}
+
+M_unit_and_species <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_CO = c("Turbine", "Species"),
+  data_CO = CO_data,
+  data_SS = SS_data
+)
+plot(M_unit_and_species, rate = F)
+```
+```{r}
+
+
+M_by_week_and_speciesgroup <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_CO = "SpeciesGroup",
+  data_CO = CO_data,
+  split_time = seq(0, max(SSdat$days), by = 7),
+  data_SS = SSdat
+)
+plot(M_by_week_and_speciesgroup, rate = T)
+```
