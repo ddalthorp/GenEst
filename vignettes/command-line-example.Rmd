@@ -225,7 +225,7 @@ cpModel
 
 and others available upon request (using `$` as `cpm` is an S3 class):
 
-```{r}
+```{r, eval = F}
 names(cpModel)
 cpModel$cells
 ```
