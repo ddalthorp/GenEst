@@ -2,13 +2,13 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estg}
 \alias{estg}
-\title{Estimate g values and arrival intervals for a set of carcasses 
+\title{Estimate g values and arrival intervals for a set of carcasses
   from fitted pk and cp models and search data}
 \usage{
-estg(nsim = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
+estg(nsim = 10, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, seed_g = NULL, kFill = NULL, unitCol = "Unit",
   dateFoundCol = "DateFound", datesSearchedCol = "DateSearched",
-  sizeclassCol = NULL, cleanoutCarcs = NULL)
+  sizeclassCol = NULL, cleanoutCarcs = NULL, max_intervals = NULL)
 }
 \arguments{
 \item{nsim}{the number of simulation draws}
@@ -17,10 +17,10 @@ estg(nsim = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
 
 \item{data_SS}{Search Schedule data}
 
-\item{model_SE}{Searcher Efficiency model (or list of models if there are 
+\item{model_SE}{Searcher Efficiency model (or list of models if there are
 multiple size classes)}
 
-\item{model_CP}{Carcass Persistence model (or list of models if there are 
+\item{model_CP}{Carcass Persistence model (or list of models if there are
 multiple size classes)}
 
 \item{seed_SE}{seed for random draws of the SE model}
@@ -29,7 +29,7 @@ multiple size classes)}
 
 \item{seed_g}{seed for random draws of the gs}
 
-\item{kFill}{value(s) to fill in for missing k when not existing in the 
+\item{kFill}{value(s) to fill in for missing k when not existing in the
 model(s)}
 
 \item{unitCol}{Column name for the unit indicator}
@@ -41,17 +41,20 @@ model(s)}
 \item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
 are recorded}
 
-\item{cleanoutCarcs}{of which carcasses (if any) were found on cleanout 
+\item{cleanoutCarcs}{of which carcasses (if any) were found on cleanout
 searches}
+
+\item{max_intervals}{maximum number of arrival interval intervals to consider
+for each carcass}
 }
 \value{
 list of [1] g estimates, [2] arrival interval (Aj) estimates,
-  [3]  estimates of SE parameters (pk), and [4] estimates CP parameters 
+  [3]  estimates of SE parameters (pk), and [4] estimates CP parameters
   (ab) for each of the carcasses. The row names of the Aj matrix are the
   names of the units where each carcass was found.
 }
 \description{
-Estimate g values and arrival intervals for a set of carcasses 
+Estimate g values and arrival intervals for a set of carcasses
   from fitted pk and cp models and search data
 }
 \examples{
