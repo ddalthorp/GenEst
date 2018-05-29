@@ -137,12 +137,12 @@ head(DWP_data)
 head(CO_data)
 ```
 
-```{r}
+```{r, eval = F}
 SE_model <- pkm(p ~ 1, k ~ 1, data = SE_data)
 CP_model <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
 
 
-nsim <- 100
+nsim <- 1000
   nsim = nsim; data_CO = CO_data; data_SS = SS_data;
   data_DWP = DWP_data; frac = 1; model_SE = SE_model; model_CP = CP_model;
   seed_SE = NULL; seed_CP = NULL; seed_g = NULL; seed_M = NULL; kFill = NULL;
