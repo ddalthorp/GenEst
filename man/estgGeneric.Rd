@@ -2,7 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estgGeneric}
 \alias{estgGeneric}
-\title{Generic g estimation for a combination of SE model and CP model 
+\title{Generic g estimation for a combination of SE model and CP model
   under a given search schedule}
 \usage{
 estgGeneric(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
