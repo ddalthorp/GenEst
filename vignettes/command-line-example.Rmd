@@ -441,7 +441,7 @@ detection parameters (`g`), arrival intervals (`Aj`), and associated total
 mortality (`M`) values for each simulation. These `M` values should be 
 considered in combination, and can be summarized and plotted simply:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 summary(eM)
 plot(eM)
 ```
@@ -454,7 +454,7 @@ carcass observation data sets.
 
 #### First, a temporal split:  
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
@@ -464,7 +464,7 @@ plot(M_season)
 
 #### Next, a carcass split:  
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL, 
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
@@ -475,7 +475,7 @@ plot(M_class)
 #### And finally, if two splits are included, the mortality estimation is 
 expanded fully factorially:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )
