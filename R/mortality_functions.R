@@ -8,7 +8,7 @@
 #' @param nsim the number of simulation draws
 #' @param data_CO Carcass Observation data
 #' @param data_SS Search Schedule data
-#' @param data_DWP Survey unit (rows) by size (columns) density weighted 
+#' @param data_DWP Survey unit (rows) by size (columns) density weighted
 #'   proportion table 
 #' @param frac fraction of facility (by units or by area) surveyed
 #' @param model_SE Searcher Efficiency model (or list of models if there are 
@@ -27,7 +27,9 @@
 #'   size class is used
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional.
-#' @return list of SE parameters (pk), CP parameters (ab), g, Aj, and Mhat 
+#' @param max_intervals maximum number of arrival interval intervals to consider
+#'  for each carcass
+#' @return list of SE parameters (pk), CP parameters (ab), g, Aj, and Mhat
 #' @examples NA
 #' @export 
 #'
@@ -37,18 +39,20 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
                  seed_M = NULL, kFill = NULL,  
                  unitCol = "Unit", dateFoundCol = "DateFound", 
                  datesSearchedCol = "DateSearched", DWPCol = NULL,
-                 sizeclassCol = NULL){
+                 sizeclassCol = NULL, max_intervals = NULL){
 
-  SSCO <- prepSSCO(data_SS, data_CO, datesSearchedCol, dateFoundCol, unitCol)  
-  data_CO <- SSCO$data_CO
-  data_SS <- SSCO$data_SS
-  c_outs <- SSCO$cleanout_carcasses
+  data_SS0 <- SS(data_SS)
+#  SSCO <- prepSSCO(data_SS, data_CO, datesSearchedCol, dateFoundCol, unitCol)
+  data_CO0 <- data_CO
+  data_CO0[, dateFoundCol] <- dateToDay(data_CO[, dateFoundCol], data_SS0$date0)
+  c_outs <- (data_CO0[ , dateFoundCol] == 0)
+
 
   if (!is.null(sizeclassCol)){
-    if (!(sizeclassCol %in% colnames(data_CO))){
+    if (!(sizeclassCol %in% colnames(data_CO0))){
       stop("size class column not in carcass data.")
     }
-    sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
+    sizeclasses <- as.character(unique(data_CO0[ , sizeclassCol]))
     nsizeclass <- length(sizeclasses)
 
     if (!all(sizeclasses %in% DWPCol)){
@@ -59,26 +63,25 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
     stop("multiple DWP columns provided, but no sizeclass column to use.")
   }
 
-  DWP <- DWPbyCarcass(data_DWP, data_CO, data_SS, dateFoundCol, 
-           datesSearchedCol, DWPCol, unitCol, sizeclassCol
-         )
+  DWP <- DWPbyCarcass(data_DWP, data_CO0, data_SS0, dateFoundCol,
+           datesSearchedCol, DWPCol, unitCol, sizeclassCol)
 
-  est <- estg(nsim, data_CO, data_SS, model_SE, model_CP, seed_SE,  
+  est <- estg(nsim, data_CO, data_SS, model_SE, model_CP, seed_SE,
            seed_CP, seed_g, kFill, unitCol, dateFoundCol, 
            datesSearchedCol, sizeclassCol, cleanoutCarcs = c_outs
          )
 
   gDWPf <- est$ghat * DWP * frac
-  c_out <- which(apply(gDWPf, 1, sum) == 0)
-  if (length(c_out) > 0){
-    gDWPf <- gDWPf[-c_out, ]
-  }
-  n <- length(gDWPf)
   set.seed(seed_M)
-  Mhat <- ((rcbinom(n, 1 / gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/(gDWPf)
-  if (length(c_out) > 0){
-    zeroes <- matrix(0, nrow = length(c_out), ncol = ncol(est$ghat))
-    Mhat <- rbind(zeroes, Mhat)
+  c_out <- which(rowSums(gDWPf) == 0)
+  if (length(c_out) == 0){
+    n <- length(gDWPf)
+    Mhat <- ((rcbinom(n, 1/gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/gDWPf
+  } else {
+    Mhat <- array(0, dim = c(dim(data_CO)[1], nsim))
+    gDWPf <- gDWPf[-c_out, ]
+    n <- length(gDWPf)
+    Mhat[-c_out,] <- ((rcbinom(n, 1/gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/gDWPf
   }
   out <- list(est$pk, est$ab, est$ghat, est$Aj, Mhat)
   names(out) <- c("pk", "ab", "ghat", "Aj", "M")
