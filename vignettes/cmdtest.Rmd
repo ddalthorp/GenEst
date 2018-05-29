@@ -1,0 +1,207 @@
+---
+title: "GenEst 101--Tutorial with Examples"
+author: "Dan Dalthorp"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GenEst 101--Tutorial with Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r, include=FALSE}
+library(GenEst)
+vers <- packageVersion("GenEst")
+today <- Sys.Date()
+```
+# Introduction: Tutorial with Examples
+This tutorial provides an introduction to the array of command line tools
+**GenEst** provides for estimating carcass arrivals and detection
+probabilities. The approach is to walk through analyses of realistic but 
+fictitious data sets representing studies of bird and bat mortality at a
+wind power facility.
+
+The tutorial was constructed using **GenEst** version `r vers` on `r today`.
+
+## Example 1: Estimating Bat Mortality from Searches on Roads and Pads
+
+Searcher efficiency and carcass persistence would be expected to vary with
+carcass size (sparrow, eagle, bat), ground characteristics (road & pad,
+cleared field, vegetation), season, etc. In this first example, we limit the
+basic mortality estimation to one carcass size (`bat`) and one ground 
+visibility class (`RP` = road and pad). Once the initial estimates have been 
+calculated, the total mortality can be parsed into any number of "splits", 
+estimating mortality by species, turbine, visibility class, season, search 
+interval, month, etc. or by combinations of splitting covariates, like species 
+by season, turbine by search interval, etc.
+
+Load the full data set into R:
+```{r}
+data(wind_RPbat)
+names(wind_RPbat)
+```
+`wind_RPbat` is a list of data frames that store results for searcher 
+efficiency (`SE`) and carcass persistence trials (`CP`), search schedules for 
+all turbines (`SS`), the density weighted proportion (`DWP`) of area searched
+at each turbine (i.e., the fraction of carcasses expected to fall in the 
+search plots), and a carcass observation (`CO`) data. To streamline the 
+notation, we will extract the data from the `wind_RPbat` list into its 
+components:
+```{r}
+SE_data <- wind_RPbat$SE
+CP_data <- wind_RPbat$CP
+SS_data <- wind_RPbat$SS
+DWP_data <- wind_RPbat$DWP
+CO_data <- wind_RPbat$CO
+```
+
+```{r, include = FALSE}
+daterange <- range(SS_data$SearchDate)
+seasons <- paste(unique(SS_data$Season), collapse = ', ')
+```
+
+### Searcher Efficiency (`SE`)
+Searcher efficiency trials were conducted on roads and pads, with a total of
+`r  dim(SE_data)[1]` fresh carcasses placed in the field over the course of 
+the entire monitoring period, evenly divided among seasons (`r seasons`). 
+Carcasses that were later discovered by search teams during the course of 
+normal carcass surveys were removed from the field. Carcasses were left in 
+the field for up to 5 searches after carcass placement.
+
+Results of the SE field trials are stored in the `SE_data` data frame:
+```{r}
+head(SE_data)
+```
+Columns `s1, s2,` ... show the fate of carcass `pkID` on the 1st, 2nd, ...
+searches after the carcass was placed. A 1 indicates that the carcass was
+discovered, a 0 indicates that the carcass was present but not discovered, and
+NA indicates that the carcass was not present (whether it was discovered in a
+previous search or removed by scavengers).
+
+### Carcass Persistence (`CP`)
+Carcass persistence trials were conducted on roads and pads, with a total of
+`r  dim(CP_data)[1]` fresh carcasses placed in the field over the course of 
+the entire monitoring period, evenly divided among seasons (`r seasons`). 
+Carcasses were checked (approximately) 1, 2, 3, 4, 7, 10, 14, 21, and 28 
+days after placement in the field (exact times were entered as decimal 
+fractions of days after placement).
+
+Results of the SE field trials are stored in the `CP_data` data frame:
+```{r}
+head(CP_data)
+```
+
+Exact scavenging times are not known, but a carcass that was present at one
+check and absent at the next check is assumed to have been scavenged at some
+point in the interval. The left endpoint of the interval is entered as `Left`
+and the right endpoint as `Right`. For carcasses that had not been scavenged
+by the end of the study, `Left` is the time of the last check and `Right` 
+is `Inf`. For carcasses whose scavenging time is known exactly (e.g., the 
+scavenging was recorded by camera), `Left = Right`.
+
+The `Season` column gives the season at the time the carcass was placed in the
+field.
+
+### Search Schedules (`SS`)
+Carcass searches were conducted on roads and pads within a 120 m radius from 
+all `r length(unique(SS_data$SearchDate))` turbines at a fictitious wind power
+facility. Monitoring began on `r daterange[1]` and continued through
+`r daterange[2]`. Searches spanned `r length(unique(SS_data$Season))` seasons:
+`r seasons`. Search intervals varied by turbine and by time of year, ranging 
+from daily searches at some turbines in the fall and searches once every 12 
+days in the spring at some other turbines. Search schedules for all turbines 
+are stored in `SS_data`, which is a data frame with a column for search dates 
+(including all dates that any turbine was searched); a column of 0s and 1s for 
+each turbine, indication whether it was searched on the given date; and zero 
+or more optional columns giving additional information about the date (e.g.,
+season).
+```{r}
+head(SS_data[, 1:10])
+print("NOTE: there are 100 turbine columns altogether (t1, ..., t100)")
+```
+
+### Density Weighted Proportion (`DWP`)
+```{r}
+head(DWP_data)
+```
+
+### Carcass Observations (`CO`)
+```{r}
+head(CO_data)
+```
+
+```{r, eval = F}
+SE_model <- pkm(p ~ 1, k ~ 1, data = SE_data)
+CP_model <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
+
+
+nsim <- 1000
+  nsim = nsim; data_CO = CO_data; data_SS = SS_data;
+  data_DWP = DWP_data; frac = 1; model_SE = SE_model; model_CP = CP_model;
+  seed_SE = NULL; seed_CP = NULL; seed_g = NULL; seed_M = NULL; kFill = NULL;
+  unitCol = "Turbine"; dateFoundCol = "DateFound";
+  datesSearchedCol = "SearchDate"; DWPCol = "bat"; max_intervals = NULL;
+  sizeclassCol = NULL
+Mest <- estM(
+  nsim = nsim, data_CO = CO_data, data_SS = SS_data,
+  data_DWP = DWP_data, frac = 1, model_SE = SE_model, model_CP = CP_model,
+  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,
+  unitCol = "Turbine", dateFoundCol = "DateFound",
+  datesSearchedCol = "SearchDate", DWPCol = "bat"
+)
+summary(Mest)
+plot(Mest)
+
+M_season <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_SS = "Season", data_SS = SS_data,
+  split_CO = NULL,  data_CO = CO_data
+)
+
+summary(M_season)
+plot(M_season)
+
+SSdat <- SS(SS_data)
+M_week <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_time = seq(0, max(SSdat$days), by = 7), 
+  data_SS = SSdat,
+  data_CO = CO_data
+)
+plot(M_week, rate = T)
+
+M_unit <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_CO = "Turbine", 
+  data_CO = CO_data, 
+  data_SS = SS_data
+)
+plot(M_unit, rate = F)
+summary(M_unit)
+summary(M_unit, CL = 0.8)
+
+M_unit_and_species <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_CO = c("Turbine", "Species"),
+  data_CO = CO_data,
+  data_SS = SS_data
+)
+plot(M_unit_and_species, rate = F)
+
+
+M_by_week_and_speciesgroup <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_CO = "SpeciesGroup",
+  data_CO = CO_data,
+  split_time = seq(0, max(SSdat$days), by = 7),
+  data_SS = SSdat
+)
+plot(M_by_week_and_speciesgroup, rate = T)
+```
