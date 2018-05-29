@@ -137,7 +137,7 @@ head(DWP_data)
 head(CO_data)
 ```
 
-```{r, eval = F}
+```{r}
 SE_model <- pkm(p ~ 1, k ~ 1, data = SE_data)
 CP_model <- cpm(l ~ 1, s ~ 1, data = CP_data, left = "Left", right = "Right")
 
