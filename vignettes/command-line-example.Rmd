@@ -130,8 +130,7 @@ And you can fix $k$ at a nominal value between 0 and 1 (inclusive) using the
 
 ```{r}
 pkm(formula_p = p ~ Visibility, kFixed = 0.7, data = data_SE,
-  obsCol = c("Search1", "Search2", "Search3", "Search4")
-)
+  obsCol = c("Search1", "Search2", "Search3", "Search4"))
 ```
 
 ### Set of Searcher Efficiency Models
@@ -427,10 +426,8 @@ data_CO <- mock$CO
 data_DWP <- mock$DWP
 head(data_DWP)
 DWPcolnames <- names(pkmModSize)
-```
 
-```{r, eval = FALSE}
-eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,
+eM <- estM(nsim = 10, data_CO, data_SS, data_DWP, frac = 1,
         model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
         seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
         unitCol = "Unit", dateFoundCol = "DateFound", 
@@ -444,7 +441,7 @@ detection parameters (`g`), arrival intervals (`Aj`), and associated total
 mortality (`M`) values for each simulation. These `M` values should be 
 considered in combination, and can be summarized and plotted simply:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 summary(eM)
 plot(eM)
 ```
@@ -457,7 +454,7 @@ carcass observation data sets.
 
 #### First, a temporal split:  
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
@@ -467,7 +464,7 @@ plot(M_season)
 
 #### Next, a carcass split:  
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL, 
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
@@ -478,7 +475,7 @@ plot(M_class)
 #### And finally, if two splits are included, the mortality estimation is 
 expanded fully factorially:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )
