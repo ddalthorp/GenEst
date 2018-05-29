@@ -1,254 +1,353 @@
-#' Estimate g values and arrival intervals for a set of carcasses 
+#' Estimate g values and arrival intervals for a set of carcasses
 #'   from fitted pk and cp models and search data
 #'
 #' @param nsim the number of simulation draws
 #' @param data_CO Carcass Observation data
 #' @param data_SS Search Schedule data
-#' @param model_SE Searcher Efficiency model (or list of models if there are 
+#' @param model_SE Searcher Efficiency model (or list of models if there are
 #'   multiple size classes)
-#' @param model_CP Carcass Persistence model (or list of models if there are 
+#' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param seed_g seed for random draws of the gs
-#' @param kFill value(s) to fill in for missing k when not existing in the 
+#' @param kFill value(s) to fill in for missing k when not existing in the
 #'   model(s)
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
 #' @param datesSearchedCol Column name for the date searched data
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'   are recorded
-#' @param cleanoutCarcs of which carcasses (if any) were found on cleanout 
+#' @param cleanoutCarcs of which carcasses (if any) were found on cleanout
 #'   searches
+#' @param max_intervals maximum number of arrival interval intervals to consider
+#'  for each carcass
 #' @return list of [1] g estimates, [2] arrival interval (Aj) estimates,
-#'   [3]  estimates of SE parameters (pk), and [4] estimates CP parameters 
+#'   [3]  estimates of SE parameters (pk), and [4] estimates CP parameters
 #'   (ab) for each of the carcasses. The row names of the Aj matrix are the
 #'   names of the units where each carcass was found.
 #' @examples NA
 #' @export
-#'
-estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP, 
-                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
-                 kFill = NULL, unitCol = "Unit", 
-                 dateFoundCol = "DateFound", 
-                 datesSearchedCol = "DateSearched", sizeclassCol = NULL,
-                 cleanoutCarcs = NULL){
 
-  if (is.null(sizeclassCol)){
-    sizeclassCol <- "placeholder"
-    data_CO$placeholder <- "value"
-    sizeclass <- data_CO$placeholder
-    sizeclasses <- "value"
-    nsizeclass <- 1
+estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
+                    seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
+                    kFill = NULL, unitCol = "Unit",
+                    dateFoundCol = "DateFound",
+                    dateSearchedCol = "DateSearched", sizeclassCol = NULL,
+                    cleanoutCarcs = NULL, max_intervals = NULL){
+# sizeclassCol not only identifies what the name of the size column is, it
+# also identifies that the model should include size as a segregating class
+  sizeCol <- sizeclassCol
+  SSdat <- SS(data_SS)
+  SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
+  t0date <- SSdat$date0
+  COdat <- data_CO
+  COdat[ , dateFoundCol] <- dateToDay(COdat[ , dateFoundCol], t0date)
+  names(COdat)[names(COdat) == dateFoundCol] <- "day" # to distinguish integers
+  if (is.null(sizeCol)){
+    sizeCol <- "placeholder"
+    COdat[ , sizeCol] <- "value"
     model_SE <- list("value" = model_SE)
     model_CP <- list("value" = model_CP)
-    if (!is.null(kFill)){
-      names(kFill) <- "value"
-    }
-  } else{
+    if (!is.null(kFill)) names(kFill) <- "value"
+  } else {
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not in carcass data.")
     }
-    sizeclass <- as.character(data_CO[ , sizeclassCol])
-    sizeclasses <- unique(sizeclass)
-    nsizeclass <- length(sizeclasses)
   }
+  sizeclass <- as.list(as.character(COdat[, sizeCol]))
+  sizeclasses <- unique(unlist(sizeclass))
+  nsizeclass <- length(sizeclasses)
 
+# step 3: create lists of arrays for SS, SE cells, CP cells for each carcass
   for (sci in 1:nsizeclass){
     sc <- sizeclasses[sci]
     if (is.na(model_SE[[sc]]$cellwiseTable[1, "k_median"])){
       if (is.null(kFill)){
         kFill[[sc]] <- kFillPropose(model_SE[[sc]])
         if (is.na(kFill[[sc]])){
-          msg <- paste("Searcher efficiency model does not include estimate ",
-                   "for k and kFill was not specified.", sep = ""
-                 )
-          stop(msg)
+          stop(
+            "Searcher efficiency model does not include estimate ",
+            "for k and kFill was not specified."
+          )
         }
       }
     }
   }
-
-  preds_SE <- vector("list", nsizeclass)
-  preds_CP <- vector("list", nsizeclass)
-  preds <- vector("list", nsizeclass)
-  data_SE <- vector("list", nsizeclass)
-  data_CP <- vector("list", nsizeclass)
-  dist <- rep(NA, nsizeclass)
-  preds_static <- vector("list", nsizeclass)
-  preds_dynamic <- vector("list", nsizeclass)
-
-  for (sci in 1:nsizeclass){
-    sc <- sizeclasses[sci]
-    preds_SE[[sci]] <- model_SE[[sc]]$predictors
-    preds_CP[[sci]] <- model_CP[[sc]]$predictors
-    preds[[sci]] <- unique(c(preds_SE[[sci]], preds_CP[[sci]]))
-    data_SE[[sci]] <- model_SE[[sc]]$data
-    data_CP[[sci]] <- model_CP[[sc]]$data
-    dist[sci] <- model_CP[[sc]]$dist
-    spreds <- preds[[sci]]
-    preds_static[[sci]] <- spreds[which(spreds %in% names(data_CO))]
-    preds_dynamic[[sci]] <- spreds[which(spreds %in% names(data_SS))]
+  SE_preds <- lapply(model_SE, function(x) x$predictors)
+  CP_preds <- lapply(model_CP, function(x) x$predictors)
+  preds <- mapply(function(x, y) unique(c(x, y)), SE_preds, CP_preds)
+  SE_data <- lapply(model_SE, function(x) x$data)
+  CP_data <- lapply(model_CP, function(x) x$data)
+  dist <- unlist(lapply(model_CP, function(x) x$dist))
+  COpreds <- lapply(preds, function(x) x[x %in% names(data_CO)])
+  SSpreds <- lapply(preds, function(x) x[!(x %in% names(data_CO))])
+  if (max(unlist(lapply(SSpreds, length))) > 1){
+    stop("At most 1 SS predictor is allowed per size class.")
   }
-  names(preds_SE) <- sizeclasses
-  names(preds_CP) <- sizeclasses
-  names(dist) <- sizeclasses
-  names(preds_static) <- sizeclasses
-  names(preds_dynamic) <- sizeclasses
-
-  preds_u <- unlist(preds)
-  preds_static_u <- unlist(preds_static)
-  preds_dynamic_u <- unlist(preds_dynamic)
-  if (!all(preds_u %in% c(preds_static_u, preds_dynamic_u))){
-    stop("Some model predictors required not in carcass or search data.")
+  if (!all(unlist(SSpreds) %in% names(SSdat))){
+    stop("Model predictor missing from both CO and SS data.")
   }
-  if (any(preds_u %in% preds_static_u & preds_u %in% preds_dynamic_u)) {
-    msg <- paste("Predictor(s) duplicated across both carcass and search ",
-             "data. Each predictor should be in only one data set.", sep = "") 
-    stop(msg)
+  if (!is.null(kFill)) {
+    k <- as.list(kFill)
+    pksim <- mapply(function(x, y) rpk(nsim, x, seed_SE, kFill = y), model_SE, k)
+  } else {
+    pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
+  }
+  cpsim <- lapply(model_CP, function(x) rcp(nsim, x, seed_CP, typ = "ppersist"))
+
+  X <- dim(COdat)[1]
+  days <- list()
+  for (xi in 1:X){
+    toi <- COdat$day[xi]
+    SSxi <- SSdat$searches_unit[COdat[xi, unitCol], ] * SSdat$days
+    SSxi <- c(0, SSxi[SSxi > 0])
+    days[[xi]] <- SSxi[SSxi <= toi]
+    if (!is.null(max_intervals)){
+      dlen <- length(days[[xi]])
+      if (dlen > max_intervals + 1) days[[xi]] <- days[[xi]][(dlen - max_intervals):dlen]
+    }
   }
 
-  sim_SE <- vector("list", nsizeclass)
-  sim_CP <- vector("list", nsizeclass)
-  for (sci in 1:nsizeclass){
-    sc <- sizeclasses[sci]
-    sim_SE[[sci]] <- rpk(nsim, model_SE[[sc]], seed_SE, kFill[sc])
-    sim_CP[[sci]] <- rcp(nsim, model_CP[[sc]], seed_CP, type = "ppersist") 
+  cells <- list()
+  # take care of the SS preds
+  if (sum(unlist(lapply(SSpreds, length))) == 0){
+    for (xi in 1:X){
+      cells[[xi]] <- list()
+      cells[[xi]][[sizeCol]] <- "value"
+      pcol <- SE_preds[[COdat[xi, sizeCol]]]
+      if (length(pcol) == 0) {
+        cells[[xi]]$SEcell <- "all"
+      } else {
+        cells[[xi]]$SEcell <- paste(COdat[xi, pcol], sep = ".")
+      }
+      cells[[xi]]$SErep <- length(days[[xi]]) - 1
+      pcol <- CP_preds[[COdat[xi, sizeCol]]]
+      if (length(pcol) == 0) {
+        cells[[xi]]$CPcell <- "all"
+      } else {
+        cells[[xi]]$CPcell <- paste(COdat[xi, pcol], sep = ".")
+      }
+      cells[[xi]]$CPrep <- length(days[[xi]]) - 1
+    }
+  } else {
+    for (xi in 1:X){
+      cells[[xi]] <- list()
+      SEc <- SEr <- CPc <- CPr <- NULL
+      sz <- as.character(COdat[xi, sizeCol])
+      cells[[xi]][[sizeCol]] <- sz
+      # interpret the SE predictors
+      nse <- length(SE_preds[[sz]])
+      if (nse == 0){
+        cells[[xi]]$SEcell <- "all"
+        cells[[xi]]$SErep <- length(days[[xi]]) - 1
+      } else {
+        for (sei in 1:nse){
+          predi <- SE_preds[[sz]][sei]
+          if (predi %in% SSpreds){
+            ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])[-1]
+            SEc <- paste(SEc, unique(ssvec),
+              sep = ifelse(is.null(SEc), "", "."))
+            SEr <- table(ssvec)[unique(ssvec)]
+          } else {
+            SEc <- paste(SEc, COdat[xi, predi],
+              sep = ifelse(is.null(SEc), "", "."))
+          }
+        }
+        cells[[xi]]$SEcell <- SEc
+        if (is.null(SEr)){
+          cells[[xi]]$SErep <- length(days[[xi]]) - 1
+        } else {
+          cells[[xi]]$SErep <- SEr
+        }
+      }
+      # interpret the CP predictors
+      nse <- length(CP_preds[[sz]])
+      if (nse == 0){
+        cells[[xi]]$CPcell <- "all"
+        cells[[xi]]$CPrep <- length(days[[xi]]) - 1
+      } else {
+        for (sei in 1:nse){
+          predi <- CP_preds[[sz]][sei]
+          if (predi %in% SSpreds){
+            ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])[-1]
+            CPc <- paste(CPc, unique(ssvec),
+              sep = ifelse(is.null(CPc), "", "."))
+            CPr <- table(ssvec)[unique(ssvec)]
+          } else {
+            CPc <- paste(CPc, COdat[xi, predi],
+              sep = ifelse(is.null(CPc), "", "."))
+          }
+        }
+        cells[[xi]]$CPcell <- CPc
+        if (is.null(CPr)){
+          cells[[xi]]$CPrep <- length(days[[xi]]) - 1
+        } else {
+          cells[[xi]]$CPrep <- CPr
+        }
+      }
+    }
   }
-  names(sim_SE) <- sizeclasses
-  names(sim_CP) <- sizeclasses
-
-  ncarc <- nrow(data_CO)
-  ghat <- matrix(NA, nrow = ncarc, ncol = nsim)
-  Aj <- matrix(NA, nrow = ncarc, ncol = nsim)
+  # the calculation
+  ghat <- matrix(0, nrow = X, ncol = nsim)
+  Aj <- matrix(0, nrow = X, ncol = nsim)
   set.seed(seed_g)
-  for (carci in 1:ncarc){
-    if (carci %in% cleanoutCarcs){
-      ghat[carci, ] <- 0
-      Aj[carci, ] <- 0
-    } else{
-      sc <- sizeclass[carci]
-      est <- estgCarcass(nsim, data_carc = data_CO[carci, ], dist[sc],  
-               data_SS, preds_SE[[sc]], preds_CP[[sc]], sim_SE[[sc]], 
-               sim_CP[[sc]], preds_static[[sc]], preds_dynamic[[sc]], 
-               unitCol, dateFoundCol, datesSearchedCol
-             )
-      ghat[carci, ] <- est$ghat
-      Aj[carci, ] <- est$Aj
+  for (xi in 1:X){
+    if (COdat$day[xi] == 0) next # cleanout
+
+    SSxi <- SSdat$searches_unit[COdat[xi, unitCol], ] * SSdat$days
+    SSxi <- c(0, SSxi[SSxi > 0])
+    # calculate SE
+    sz <- cells[[xi]][[sizeCol]]
+    SEr <- cells[[xi]]$SErep
+    oi <- length(days[[xi]]) - 1
+    rng <- 0
+    pOigAj <- NULL
+    for (sei in 1:length(SEr)){
+      rng <- max(rng) + 1:SEr[sei]
+      pOigAj <- cbind(pOigAj, SEsi_left(
+        oi = oi,
+        pk = pksim[[sz]][[cells[[xi]]$SEcell[sei]]],
+        rng = rng
+      ))
+    }
+    # multiply by ppersist
+    for (cpi in 1:length(cells[[xi]]$CPrep)){
+      CPr <- cells[[xi]]$CPrep
+      rng <- 0
+      for (cpi in 1:length(CPr)){
+        rng <- max(rng) + 1:CPr[cpi]
+        pOigAj[, rng] <- pOigAj[, rng] * t(ppersist(
+          pda = cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][ , "pda"],
+          pdb = cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][ , "pdb"],
+          dist = model_CP[[sz]]$distribution,
+          t_arrive0 = days[[xi]][rng],
+          t_arrive1 = days[[xi]][rng + 1],
+          t_search = rep(max(days[[xi]]), length(rng))
+        ))
+      }
+    }
+    parrive <- diff(days[[xi]][1:(oi+1)])/days[[xi]][oi+1]
+    pAjgOi <- t(pOigAj) * parrive; pAjgOi <- t(t(pAjgOi)/colSums(pAjgOi))
+    Aj[xi, ] <- # simulated arrival intervals (relative to cind's ss)
+       rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(nsim)) +
+         (sum(SSxi <= min(days[[xi]])))
+##########
+    xuint <- unique(Aj[xi, ]) # unique x intervals
+    for (aj in xuint){
+      # calculate simulated ghat associated with the given carcass and interval
+      simInd <- which(Aj[xi, ] == aj)
+      top <- length(SSxi)
+      if (!is.null(max_intervals)){
+        top <- min(aj + max_intervals, top)
+      }
+      # use an adjusted search schedule because we "know" when carcass arrived
+      cpi <- findInterval(aj, c(0, cumsum(cells[[xi]]$CPrep)), rightmost = T)
+      pda <- cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][simInd , "pda"]
+      pdb <- cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][simInd , "pdb"]
+      ppersu <- ppersist(
+        pda = pda,
+        pdb = pdb,
+        dist = model_CP[[sz]]$distribution,
+        t_arrive0 = rep(SSxi[aj], top - aj),
+        t_arrive1 = rep(SSxi[aj + 1], top - aj),
+        t_search = SSxi[(aj + 1):top]
+      )
+      pki <- findInterval(aj, c(0, cumsum(cells[[xi]]$SErep)), rightmost = T)
+      SE <- t(SEsi_right(
+        min(max_intervals, length(SSxi) - aj),
+        pksim[[sz]][[cells[[xi]]$SEcell[pki]]][simInd , ]
+      ))
+      if (aj < top - 1){
+        ghat[xi, simInd] <- colSums(SE * ppersu)
+      } else {
+        ghat[xi, simInd] <- as.vector(SE) * as.vector(ppersu)
+      }
     }
   }
   rownames(Aj) <- data_CO[ , unitCol]
-  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
+  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = pksim, "ab" = cpsim)
   return(out)
 }
-
-#' Estimate g values and arrival intervals for a carcass from fitted pk 
-#'   and cp models and search data
-#'
-#' @param nsim the number of simulation draws
-#' @param data_carc Carcass Observation data for the carcass
-#' @param dist distribution for the CP model
-#' @param data_SS Search Schedule data
-#' @param preds_SE Names of Searcher Efficiency predictors
-#' @param preds_CP Names of Carcass Persistence predictors
-#' @param sim_SE simulated Search Efficiency parameters
-#' @param sim_CP simulated Carcass Persistence parameters
-#' @param preds_static Names of predictors that don't change over time
-#' @param preds_dynamic Names of predictors that change over time
-#' @param unitCol Column name for the unit indicator
-#' @param timeFoundCol Column name for the time found data
-#' @param timeSearchedCol Column name for the time searched data
-#' @return list of [1] g estimates, [2] arrival interval (Aj) estimates,
-#'   [3]  estimates of SE parameters (pk), and [4] estimates CP parameters 
-#'   (ab) for the carcass
+#' Calculate the conditional probability of observing a carcass at search oi
+#' as a function arrival interval (assuming carcass is not removed by scavengers
+#' before the time of the final search)
+#'   
+#' @param oi number of searches after arrival
+#' @param pk numeric array of searcher efficiency p and k parameters
+#'  (p = pk[ , 1] and k = pk[ , 2])
+#' @param rng optional parameter giving the range of intervals to consider
+#' @return numeric array of probability of observing a carcass at oi for
+#'  given that it arrived in intervals 1:oi if rng = NULL (or in intervals rng),
+#'  assuming the carcass had not been previously discovered or removed by
+#'  scavengers
 #' @examples NA
 #' @export
-#'
-estgCarcass <- function(nsim = 1, data_carc, dist, data_SS, preds_SE,
-                           preds_CP, sim_SE, sim_CP, preds_static, 
-                           preds_dynamic, unitCol, timeFoundCol, 
-                           timeSearchedCol){
-  unit <- data_carc[, unitCol]
-  carc <- data_carc[, preds_static]
-  dateFound <- data_carc[ , timeFoundCol]
-  SS_unit <- data_SS[, c(timeSearchedCol, preds_dynamic, unit)]
-  SS_unit <- SS_unit[which(SS_unit[ , unit] == 1), ]
-  data_carc <- data.frame(SS_unit, carc)
-  colnames(data_carc) <- c(colnames(SS_unit), preds_static)
-  data_carc <- data_carc[data_carc[ , timeSearchedCol] <= dateFound, ]
-  data_SE <- data.frame(data_carc[ , preds_SE])
-  data_CP <- data.frame(data_carc[ , preds_CP])
-  names(data_SE) <- preds_SE
-  names(data_CP) <- preds_CP
-
-  cell_SE <- apply(data_SE, 1, paste, collapse = ".")
-  cell_CP <- apply(data_CP, 1, paste, collapse = ".")
-  if (all(cell_SE == "")){
-    cell_SE <- rep("all", length(cell_SE))
+SEsi_left <- function (oi, pk, rng = NULL){
+  # oi is the index for the search occasion (excluding t0)
+  # pk is nsim x 2 array of simulated p and k parameters
+  # rng is the intervals for which to calculate answer
+  if (is.null(rng)) rng <- 1:oi
+  if (is.null(dim(pk)) || nrow(pk) == 1) return(SEsi0(days, pk))
+  npk <- nrow(pk)
+  nmiss <- oi - rng
+  maxmiss <- max(nmiss)
+  if (maxmiss == 0){
+    pfind.si <- matrix(pk[, 1], ncol = 1)
   }
-  if (all(cell_CP == "")){
-    cell_CP <- rep("all", length(cell_CP))
+  else if (maxmiss == 1) {
+    pfind.si <- cbind(pk[, 1], (1 - pk[, 1]) * pk[, 2] * pk[, 1])
   }
-  params_SE <- sim_SE[cell_SE] 
-  params_CP <- sim_CP[cell_CP] 
-
-  t0 <- data_carc[-nrow(data_carc), timeSearchedCol]
-  t1 <- data_carc[-1, timeSearchedCol]
-  tS <- data_carc[-1, timeSearchedCol]
-
-  Aj <- matrix(NA, nrow = length(tS), ncol = nsim)
-
-  for (oi in 1:length(tS)){
-    pOigAj <- matrix(NA, nrow = oi, ncol = nsim)
-
-    for (aj in 1:oi){
-      pda <- params_CP[[aj]][ , "pda"]
-      pdb <- params_CP[[aj]][ , "pdb"]
-      persist <- ppersist(pda, pdb, dist, t0[aj], t1[aj], tS[oi])
-      p <- params_SE[[aj]][ , "p"]
-      k <- params_SE[[aj]][ , "k"]
-      kMat <- matrix(c(1 + numeric(nsim), rep(k, oi - aj)), nrow = nsim)
-      powk <- rowCumprods(kMat)
-      pRowProds <- rowProds(1 - p * powk)
-      pfind <-  pRowProds * p * k * powk[ , dim(powk)[2]]
-      if (aj == oi){
-        pfind <- p
-      }
-      pOigAj[aj, ] <- as.vector(persist) * pfind
-    }
-    parrive <- diff(c(t0[1], t1[1:oi])) / t1[oi]
-    pAjgOi <- pOigAj * parrive
-    pAjgOi <- t(t(pAjgOi) / colSums(pAjgOi))
-    Aj[oi, ] <- rowSums(rowCumsums(t(pAjgOi)) < runif(nsim)) + 1
+  else {
+    powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
+    powk[, 1] <- 1
+    powk <- matrixStats::rowCumprods(powk)
+    pfind.si <- pk[, 1] * powk * cbind(
+      rep(1, npk),
+      matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+    )
   }
-
-  ghat <- rep(NA, length = nsim)
-  Aj_specific <- Aj[nrow(Aj), ]
-  Aj_unique <- unique(Aj_specific)
-  for (aj in Aj_unique){
-    included <- which(Aj_specific == aj)
-    pda <- params_CP[[aj]][included, "pda"]
-    pdb <- params_CP[[aj]][included, "pdb"]
-    t0_j <- rep(t0[aj], length(tS) - aj + 1)
-    t1_j <- rep(t1[aj], length(tS) - aj + 1)
-    tS_j <- tS[aj:length(tS)]
-    est_CP <- ppersist(pda, pdb, dist, t0_j, t1_j, tS_j)
-    days_j <- c(t0[aj:length(t0)], tS[length(tS)])
-    est_SE <- SEsi(days_j, params_SE[[aj]][included, ])
-
-    if (aj < length(t0)){
-      ghat[included] <- colSums(est_SE * est_CP)
-    } else{
-      ghat[included] <- as.vector(est_SE) * as.vector(est_CP)
-    }
-  }  
-  Aj <- Aj[nrow(Aj), ]
-  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = sim_SE, "ab" = sim_CP)
-  return(out)
+  return(pfind.si[ , oi - rng + 1])
 }
 
+#' Calculate the conditional probability of observing a carcass after i = 1:nsi
+#' searches (assuming carcass is not previous discovered by searchers or removed
+#' by scavengers)
+#'
+#' @param nsi number of searches after arrival
+#' @param pk numeric array of searcher efficiency p and k parameters
+#'  (p = pk[ , 1] and k = pk[ , 2])
+#' @return numeric nsi x dim(pk)[1] array of probabilities of observing a
+#'  carcass after 1:nsi searches (assuming that the carcass had not been
+#' previously discovered or removed by scavengers
+#' @export
+SEsi_right <- function(nsi, pk){
+  # oi is the index for the search occasion (excluding t0)
+  # pk is nsim x 2 array of simulated p and k parameters
+  # rng is the intervals for which to calculate answer
+  if (is.null(dim(pk)) || nrow(pk) == 1) return(t(SEsi0(0:nsi, pk)))
+  npk <- nrow(pk)
+  nmiss <- 1:nsi - 1
+  maxmiss <- max(nmiss)
+  if (maxmiss == 0){
+    pfind.si <- matrix(pk[, 1], ncol = 1)
+  }
+  else if (maxmiss == 1) {
+    pfind.si <- cbind(pk[, 1], (1 - pk[, 1]) * pk[, 2] * pk[, 1])
+  }
+  else {
+    powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
+    powk[, 1] <- 1
+    powk <- matrixStats::rowCumprods(powk)
+    pfind.si <- pk[, 1] * powk * cbind(
+      rep(1, npk),
+      matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+    )
+  }
+  return(pfind.si)
+}
 
-#' Propose a k value if it is not in the model table 
+#' Propose a k value if it is not in the model table
 #'
 #' @description Based on the call to the pkm function
 #'
@@ -271,8 +370,7 @@ kFillPropose <- function(model){
   return(proposal)
 }
 
-
-#' Generic g estimation for a combination of SE model and CP model 
+#' Generic g estimation for a combination of SE model and CP model
 #'   under a given search schedule
 #'
 #' The g estimated by \code{estgGeneric} is a generic aggregate detection 
