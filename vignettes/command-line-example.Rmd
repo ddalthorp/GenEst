@@ -144,7 +144,7 @@ Consider the following model set analysis, where visibility and habitat type
 are included in the $p$ formula but only habitat type is in the $k$ formula,
 which generates a set of 10 models:
 
-```{r}
+```{r, eval = F}
 pkmModSet <- pkmSet(formula_p = p ~ Visibility*HabitatType,
                formula_k = k ~ HabitatType, data = data_SE,
                obsCol = c("Search1", "Search2", "Search3", "Search4")
@@ -157,13 +157,13 @@ creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 plot(pkmModSet, specificModel = "p ~ Visibility + HabitatType; k ~ 1")
 ```
 
 The resulting model outputs can be compared in an AICc table
 
-```{r}
+```{r, eval = F}
 pkmSetAICcTab(pkmModSet)
 ```
 
@@ -176,7 +176,7 @@ use the `pkmSetSize` function, which is a wrapper on `pkmSet` that runs
 the subfunction for each unique size class in the column identified by the
 `sizeclassCol` argument:
 
-```{r}
+```{r, eval = F}
 pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType,
                    formula_k = k ~ HabitatType, data = data_SE,
                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
@@ -188,7 +188,7 @@ The output from `pkmSetSize` is a list where each element corresponds to a
 different unique size class, and contains the associated `pkmSet`object, which
 itself is a list of `pkm` outputs:
 
-```{r}
+```{r, eval = F}
 names(pkmModSetSize)
 names(pkmModSetSize[[1]])
 ```
@@ -207,7 +207,7 @@ parameterization (using parameters $a$ and $b$, referred to as "`ab`" or
 "ppersist"). As a first example, we will ignore the size category, use 
 intercept-only models for both $l$ and $s$, and use the Weibull distribution:
 
-```{r}
+```{r, eval = F}
 data_CP <- mock$CP
 cpModel <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = data_CP,
              left = "LastPresentDecimalDays",
@@ -219,7 +219,7 @@ cpModel <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, data = data_CP,
 If successfully fit, a `cpm` model output contains a number of elements,
 some printed automatically:
 
-```{r}
+```{r, eval = F}
 cpModel
 ```
 
@@ -233,7 +233,7 @@ cpModel$cells
 The `plot` function has been defined for `cpm` objects, such that one can
 simply run
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 plot(cpModel)
 ```
 
@@ -245,14 +245,14 @@ cell grouping called "all") using the `cpk` function which, like other `r*`
 functions in **R** (*i.e.*, `rnorm`) takes the number of random draws (`n`)
 as the first argument:
 
-```{r}
+```{r, eval = F}
 rcp(n = 10, cpModel)
 rcp(n = 10, cpModel, type = "ppersist")
 ```
 
 You can complicate the $l$ and $s$ formulae independently
 
-```{r}
+```{r, eval = F}
 cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = data_CP,
   left = "LastPresentDecimalDays", right = "FirstAbsentDecimalDays",
   dist = "weibull"
@@ -262,7 +262,7 @@ cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = data_CP,
 Given that the exponential only has one parameter ($l$, location), a model
 for scale (`formula_s`) is not required:
 
-```{r}
+```{r, eval = F}
 cpModExp <- cpm(formula_l = l ~ Visibility*GroundCover, data = data_CP,
               left = "LastPresentDecimalDays",
               right = "FirstAbsentDecimalDays", dist = "exponential"
@@ -285,7 +285,7 @@ included in the $l$ formula but only visibility is in the $s$ formula, and
 all only the exponential and lognormal distributions are included, which
 generates a set of 15 models:
 
-```{r}
+```{r, eval = F}
 cpmModSet <- cpmSet(formula_l = l ~ Visibility*Season,
                formula_s = s ~ Visibility, data = data_CP,
                left = "LastPresentDecimalDays",
@@ -297,7 +297,7 @@ names(cpmModSet)
 
 The resulting model outputs can be compared in an AICc table
 
-```{r}
+```{r, eval = F}
 cpmSetAICcTab(cpmModSet)
 ```
 
@@ -306,7 +306,7 @@ creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 plot(cpmModSet,
   specificModel = "dist: lognormal; l ~ Visibility * Season; s ~ Visibility"
 )
@@ -320,7 +320,7 @@ use the `cpmSetSize` function, which is a wrapper on `cpmSet` that runs
 the subfunction for each unique size class in the column identified by the
 `sizeclassCol` argument:
 
-```{r}
+```{r, eval = F}
 cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility*Season,
                    formula_s = s ~ Visibility, data = data_CP,
                    left = "LastPresentDecimalDays",
@@ -334,7 +334,7 @@ The output from `cpmSetSize` is a list where each element corresponds to a
 different unique size class, and contains the associated `cpmSet`object, which
 itself is a list of `cpm` outputs:
 
-```{r}
+```{r, eval = F}
 names(cpmModSetSize)
 names(cpmModSetSize[[1]])
 ```
@@ -351,7 +351,7 @@ For any estimation of detection probability ($\hat{g}$), we need to have
 singular SE and CP models to use for each of the size classes. Here, we use
 the best-fit of the models for each size class:
 
-```{r}
+```{r, eval = F}
 pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
             "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ HabitatType"
           )
@@ -372,7 +372,7 @@ search schedule. When we pass `averageSS` a full `data_SS` table like we have
 here, it will assume the units are named as "unit" with a suffix indicator
 and will create the average search schedule across the units.
 
-```{r}
+```{r, eval = F}
 data_SS <- mock$SS
 avgSS <- averageSS(data_SS)
 gsGeneric <- estgGenericSize(n = 1000, avgSS, pkmModSetSize, 
@@ -382,13 +382,13 @@ gsGeneric <- estgGenericSize(n = 1000, avgSS, pkmModSetSize,
 ```
 
 The output from `estgGeneric` can be simply summarized
-```{r}
+```{r, eval = F}
 summary(gsGeneric)
 ```
 
 or plotted (not shown):
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 10}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 10, eval = F}
 plot(gsGeneric)
 ```
 
@@ -411,7 +411,7 @@ model per size class, corresponding to the `pkMods` and `cpMods` vectors
 given above. To reduce the model set complexity, we use the `trimSetSize`
 function:
 
-```{r}
+```{r, eval = F}
 pkmModSize <- trimSetSize(pkmModSetSize, pkMods)
 cpmModSize <- trimSetSize(cpmModSetSize, cpMods)
 ```
@@ -421,7 +421,7 @@ In addition to the models and search schedule data, `estM` requires DWP
 input is also the column names associated with the DWP value for each size
 class (argument `DWPCol` in `estM`):
 
-```{r}
+```{r, eval = F}
 data_CO <- mock$CO
 data_DWP <- mock$DWP
 head(data_DWP)
@@ -441,7 +441,7 @@ detection parameters (`g`), arrival intervals (`Aj`), and associated total
 mortality (`M`) values for each simulation. These `M` values should be 
 considered in combination, and can be summarized and plotted simply:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 summary(eM)
 plot(eM)
 ```
@@ -454,7 +454,7 @@ carcass observation data sets.
 
 #### First, a temporal split:  
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
@@ -464,7 +464,7 @@ plot(M_season)
 
 #### Next, a carcass split:  
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL, 
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
@@ -475,7 +475,7 @@ plot(M_class)
 #### And finally, if two splits are included, the mortality estimation is 
 expanded fully factorially:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, eval = F}
 M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )
