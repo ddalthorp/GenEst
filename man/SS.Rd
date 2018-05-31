@@ -5,7 +5,7 @@
 \title{Create search schedule data into an SS object for convenient splits 
  analyses}
 \usage{
-SS(data_SS, dateCol = NULL, preds = NULL)
+SS(data_SS, datesSearchedCol = NULL, preds = NULL)
 }
 \arguments{
 \item{data_SS}{data frame or matrix with search schedule parameters, 
@@ -13,10 +13,10 @@ including columns for search dates, covariates (describing characteristics
 of the search intervals), and each unit (with 0s and 1s in rows to 
 indicate whether the given unit was searched on the given date)}
 
-\item{dateCol}{name of the column with the search dates in it}
-
 \item{preds}{vector of character strings giving the names of columns to be
 interpreted as potential covariates.}
+
+\item{dateCol}{name of the column with the search dates in it}
 }
 \value{
 \code{SS} object that can be conveniently used in the splitting
