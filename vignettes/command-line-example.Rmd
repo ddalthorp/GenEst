@@ -369,8 +369,9 @@ models across the size classes. `estgGeneric` is a single-size-class
 version of function and `estgGenericSize` actually loops over 
 `estgGeneric`. The generic $\hat{g}$ is estimated according to a particular 
 search schedule. When we pass `averageSS` a full `data_SS` table like we have
-here, it will assume the units are named as "unit" with a suffix indicator
-and will create the average search schedule across the units.
+here, it will assume that columns filled exclusively with 0s and 1s represent
+search schedules for units and will create the average search schedule across
+the units.
 
 ```{r}
 data_SS <- mock$SS
@@ -431,8 +432,7 @@ eM <- estM(nsim = 10, data_CO, data_SS, data_DWP, frac = 1,
         model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
         seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
         unitCol = "Unit", dateFoundCol = "DateFound", 
-        datesSearchedCol = "DateSearched", DWPCol = DWPcolnames,
-        sizeclassCol = "Size")
+        datesSearchedCol = "DateSearched", sizeclassCol = "Size")
 ```
 
 `estM` returns an object that contains the random draws of `pkm` and `cpm`
