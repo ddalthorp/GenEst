@@ -571,8 +571,8 @@ observeEvent(input$runMod_M, {
               frac = rv$frac, model_SE = rv$models_SE, 
               model_CP = rv$models_CP, kFill = rv$kFill, 
               unitCol = rv$unitCol, dateFoundCol = rv$dateFoundCol, 
-              datesSearchedCol = rv$datesSearchedCol, DWPCol = rv$DWPCol,
-              sizeclassCol = rv$sizeclassCol_M
+              datesSearchedCol = rv$datesSearchedCol,
+              sizeclassCol = rv$sizeclassCol_M, max_intervals = 8
             ), error = function(x){NULL}, warning = function(x){NULL}
           )
   removeNotification(msg_RunModM)

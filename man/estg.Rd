@@ -5,10 +5,10 @@
 \title{Estimate g values and arrival intervals for a set of carcasses
   from fitted pk and cp models and search data}
 \usage{
-estg(nsim = 10, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
+estg(nsim = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, seed_g = NULL, kFill = NULL, unitCol = "Unit",
-  dateFoundCol = "DateFound", datesSearchedCol = "DateSearched",
-  sizeclassCol = NULL, cleanoutCarcs = NULL, max_intervals = NULL)
+  dateFoundCol = "DateFound", sizeclassCol = NULL,
+  datesSearchedCol = "DateSearched", max_intervals = NULL)
 }
 \arguments{
 \item{nsim}{the number of simulation draws}
@@ -36,16 +36,18 @@ model(s)}
 
 \item{dateFoundCol}{Column name for the date found data}
 
-\item{datesSearchedCol}{Column name for the date searched data}
+\item{sizeclassCol}{Name of column in \code{data_CO} where the size classes
+are recorded. Optional. If not provided, no distinctions are made among
+sizes.}
 
-\item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
-are recorded}
-
-\item{cleanoutCarcs}{of which carcasses (if any) were found on cleanout
-searches}
+\item{datesSearchedCol}{Column name for the date searched data. Optional. If
+not provided, \code{estg} will try to find the datesSearchedCol among the
+columns in data_SS. See \link{\code{SS}}.}
 
 \item{max_intervals}{maximum number of arrival interval intervals to consider
-for each carcass}
+for each carcass. Optional. Limiting the number of search intervals can
+greatly increase the speed of calculations with only a slight reduction in
+accuracy in most cases.}
 }
 \value{
 list of [1] g estimates, [2] arrival interval (Aj) estimates,

@@ -8,20 +8,23 @@
 #'   multiple size classes)
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
-#' @param seed_SE seed for random draws of the SE model
+#' @param seed_SE seed for random draws of the SE model 
 #' @param seed_CP seed for random draws of the CP model
 #' @param seed_g seed for random draws of the gs
 #' @param kFill value(s) to fill in for missing k when not existing in the
 #'   model(s)
 #' @param unitCol Column name for the unit indicator
 #' @param dateFoundCol Column name for the date found data
-#' @param datesSearchedCol Column name for the date searched data
-#' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
-#'   are recorded
-#' @param cleanoutCarcs of which carcasses (if any) were found on cleanout
-#'   searches
+#' @param datesSearchedCol Column name for the date searched data. Optional. If
+#'  not provided, \code{estg} will try to find the datesSearchedCol among the
+#'  columns in data_SS. See \link{\code{SS}}.
+#' @param sizeclassCol Name of column in \code{data_CO} where the size classes
+#'   are recorded. Optional. If not provided, no distinctions are made among
+#'   sizes.
 #' @param max_intervals maximum number of arrival interval intervals to consider
-#'  for each carcass
+#'  for each carcass. Optional. Limiting the number of search intervals can
+#'  greatly increase the speed of calculations with only a slight reduction in
+#'  accuracy in most cases.
 #' @return list of [1] g estimates, [2] arrival interval (Aj) estimates,
 #'   [3]  estimates of SE parameters (pk), and [4] estimates CP parameters
 #'   (ab) for each of the carcasses. The row names of the Aj matrix are the
@@ -29,16 +32,14 @@
 #' @examples NA
 #' @export
 
-estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
-                    seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-                    kFill = NULL, unitCol = "Unit",
-                    dateFoundCol = "DateFound",
-                    dateSearchedCol = "DateSearched", sizeclassCol = NULL,
-                    cleanoutCarcs = NULL, max_intervals = NULL){
+estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
+  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, kFill = NULL,
+  unitCol = "Unit", dateFoundCol = "DateFound",  sizeclassCol = NULL,
+  datesSearchedCol = "DateSearched", max_intervals = NULL){
 # sizeclassCol not only identifies what the name of the size column is, it
 # also identifies that the model should include size as a segregating class
-  sizeCol <- sizeclassCol
-  SSdat <- SS(data_SS)
+  sizeCol <- sizeclassCol # changed here simply for ease of typing and reading
+  SSdat <- SS(data_SS) # SSdat name distinguishes this as pre-formatted data
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
   COdat <- data_CO
@@ -51,7 +52,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
     model_CP <- list("value" = model_CP)
     if (!is.null(kFill)) names(kFill) <- "value"
   } else {
-    if (!(sizeclassCol %in% colnames(data_CO))){
+    if (!(sizeclassCol %in% colnames(COdat))){
       stop("size class column not in carcass data.")
     }
   }
@@ -59,7 +60,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
   sizeclasses <- unique(unlist(sizeclass))
   nsizeclass <- length(sizeclasses)
 
-# step 3: create lists of arrays for SS, SE cells, CP cells for each carcass
+# step 3: create lists of arrays for SS (days) and cells (SE and CP)
   for (sci in 1:nsizeclass){
     sc <- sizeclasses[sci]
     if (is.na(model_SE[[sc]]$cellwiseTable[1, "k_median"])){
@@ -74,14 +75,14 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
       }
     }
   }
-  SE_preds <- lapply(model_SE, function(x) x$predictors)
-  CP_preds <- lapply(model_CP, function(x) x$predictors)
-  preds <- mapply(function(x, y) unique(c(x, y)), SE_preds, CP_preds)
-  SE_data <- lapply(model_SE, function(x) x$data)
-  CP_data <- lapply(model_CP, function(x) x$data)
+  preds_SE <- lapply(model_SE, function(x) x$predictors)
+  preds_CP <- lapply(model_CP, function(x) x$predictors)
+  preds <- mapply(function(x, y) unique(c(x, y)), preds_SE, preds_CP)
+  #data_SE <- lapply(model_SE, function(x) x$data) # can't find where it's used
+  #data_CP <- lapply(model_CP, function(x) x$data)
   dist <- unlist(lapply(model_CP, function(x) x$dist))
-  COpreds <- lapply(preds, function(x) x[x %in% names(data_CO)])
-  SSpreds <- lapply(preds, function(x) x[!(x %in% names(data_CO))])
+  COpreds <- lapply(preds, function(x) x[x %in% names(COdat)])
+  SSpreds <- lapply(preds, function(x) x[!(x %in% names(COdat))])
   if (max(unlist(lapply(SSpreds, length))) > 1){
     stop("At most 1 SS predictor is allowed per size class.")
   }
@@ -94,7 +95,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
   } else {
     pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
   }
-  cpsim <- lapply(model_CP, function(x) rcp(nsim, x, seed_CP, typ = "ppersist"))
+  cpsim <- lapply(model_CP, function(x) rcp(nsim, x, seed_CP, type = "ppersist"))
 
   X <- dim(COdat)[1]
   days <- list()
@@ -105,7 +106,8 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
     days[[xi]] <- SSxi[SSxi <= toi]
     if (!is.null(max_intervals)){
       dlen <- length(days[[xi]])
-      if (dlen > max_intervals + 1) days[[xi]] <- days[[xi]][(dlen - max_intervals):dlen]
+      if (dlen > max_intervals + 1)
+        days[[xi]] <- days[[xi]][(dlen - max_intervals):dlen]
     }
   }
 
@@ -114,15 +116,15 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
   if (sum(unlist(lapply(SSpreds, length))) == 0){
     for (xi in 1:X){
       cells[[xi]] <- list()
-      cells[[xi]][[sizeCol]] <- "value"
-      pcol <- SE_preds[[COdat[xi, sizeCol]]]
+      cells[[xi]][[sizeCol]] <- COdat[xi, sizeCol]
+      pcol <- preds_SE[[COdat[xi, sizeCol]]]
       if (length(pcol) == 0) {
         cells[[xi]]$SEcell <- "all"
       } else {
         cells[[xi]]$SEcell <- paste(COdat[xi, pcol], sep = ".")
       }
       cells[[xi]]$SErep <- length(days[[xi]]) - 1
-      pcol <- CP_preds[[COdat[xi, sizeCol]]]
+      pcol <- preds_CP[[COdat[xi, sizeCol]]]
       if (length(pcol) == 0) {
         cells[[xi]]$CPcell <- "all"
       } else {
@@ -137,13 +139,13 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
       sz <- as.character(COdat[xi, sizeCol])
       cells[[xi]][[sizeCol]] <- sz
       # interpret the SE predictors
-      nse <- length(SE_preds[[sz]])
+      nse <- length(preds_SE[[sz]])
       if (nse == 0){
         cells[[xi]]$SEcell <- "all"
         cells[[xi]]$SErep <- length(days[[xi]]) - 1
       } else {
         for (sei in 1:nse){
-          predi <- SE_preds[[sz]][sei]
+          predi <- preds_SE[[sz]][sei]
           if (predi %in% SSpreds){
             ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])[-1]
             SEc <- paste(SEc, unique(ssvec),
@@ -162,13 +164,13 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
         }
       }
       # interpret the CP predictors
-      nse <- length(CP_preds[[sz]])
+      nse <- length(preds_CP[[sz]])
       if (nse == 0){
         cells[[xi]]$CPcell <- "all"
         cells[[xi]]$CPrep <- length(days[[xi]]) - 1
       } else {
         for (sei in 1:nse){
-          predi <- CP_preds[[sz]][sei]
+          predi <- preds_CP[[sz]][sei]
           if (predi %in% SSpreds){
             ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])[-1]
             CPc <- paste(CPc, unique(ssvec),
@@ -193,8 +195,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
   Aj <- matrix(0, nrow = X, ncol = nsim)
   set.seed(seed_g)
   for (xi in 1:X){
-    if (COdat$day[xi] == 0) next # cleanout
-
+    if (COdat$day[xi] == 0) next # cleanout: leaves initial 0s in ghat and Aj
     SSxi <- SSdat$searches_unit[COdat[xi, unitCol], ] * SSdat$days
     SSxi <- c(0, SSxi[SSxi > 0])
     # calculate SE
@@ -202,7 +203,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
     SEr <- cells[[xi]]$SErep
     oi <- length(days[[xi]]) - 1
     rng <- 0
-    pOigAj <- NULL
+    pOigAj <- NULL # virtually identical calcs done for pAjgOi, but in reverse
     for (sei in 1:length(SEr)){
       rng <- max(rng) + 1:SEr[sei]
       pOigAj <- cbind(pOigAj, SEsi_left(
@@ -229,20 +230,26 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
     }
     parrive <- diff(days[[xi]][1:(oi+1)])/days[[xi]][oi+1]
     pAjgOi <- t(pOigAj) * parrive; pAjgOi <- t(t(pAjgOi)/colSums(pAjgOi))
-    Aj[xi, ] <- # simulated arrival intervals (relative to cind's ss)
+    Aj[xi, ] <- # sim arrival intervals (relative to cind's ss)
        rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(nsim)) +
          (sum(SSxi <= min(days[[xi]])))
 ##########
-    xuint <- unique(Aj[xi, ]) # unique x intervals
+    xuint <- unique(Aj[xi, ]) # unique xi arrival intervals (in SSxi)
     for (aj in xuint){
       # calculate simulated ghat associated with the given carcass and interval
+      #   there is much redundant calculation here that could be sped up
+      #   substantially with clever bookkeeping
       simInd <- which(Aj[xi, ] == aj)
       top <- length(SSxi)
       if (!is.null(max_intervals)){
-        top <- min(aj + max_intervals, top)
+        # the calculations on RHS are more critical and less time consuming
+        # calculation-wise, so for now...
+        #top <- min(aj + max_intervals, top)
       }
       # use an adjusted search schedule because we "know" when carcass arrived
-      cpi <- findInterval(aj, c(0, cumsum(cells[[xi]]$CPrep)), rightmost = T)
+      # which cell is "active" for the given arrival interval?
+      cpi <- findInterval(aj, c(0, min(xuint) + cumsum(cells[[xi]]$CPrep)),
+        rightmost.closed = T)
       pda <- cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][simInd , "pda"]
       pdb <- cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][simInd , "pdb"]
       ppersu <- ppersist(
@@ -253,9 +260,10 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
         t_arrive1 = rep(SSxi[aj + 1], top - aj),
         t_search = SSxi[(aj + 1):top]
       )
-      pki <- findInterval(aj, c(0, cumsum(cells[[xi]]$SErep)), rightmost = T)
+      pki <- findInterval(aj, c(0, min(xuint) + cumsum(cells[[xi]]$SErep)),
+        rightmost.closed = T)
       SE <- t(SEsi_right(
-        min(max_intervals, length(SSxi) - aj),
+        top - aj,
         pksim[[sz]][[cells[[xi]]$SEcell[pki]]][simInd , ]
       ))
       if (aj < top - 1){
@@ -265,7 +273,7 @@ estg <- function(nsim = nsim, data_CO, data_SS, model_SE, model_CP,
       }
     }
   }
-  rownames(Aj) <- data_CO[ , unitCol]
+  rownames(Aj) <- COdat[ , unitCol]
   out <- list("ghat" = ghat, "Aj" = Aj, "pk" = pksim, "ab" = cpsim)
   return(out)
 }
@@ -288,7 +296,7 @@ SEsi_left <- function (oi, pk, rng = NULL){
   # pk is nsim x 2 array of simulated p and k parameters
   # rng is the intervals for which to calculate answer
   if (is.null(rng)) rng <- 1:oi
-  if (is.null(dim(pk)) || nrow(pk) == 1) return(SEsi0(days, pk))
+  if (is.null(dim(pk)) || nrow(pk) == 1) return(SEsi0(0:oi, pk))
   npk <- nrow(pk)
   nmiss <- oi - rng
   maxmiss <- max(nmiss)
@@ -653,49 +661,31 @@ estgGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
 #' Tabulate an average search schedule from a multi-unit SS data table
 #'
 #' @param data_SS a multi-unit SS data table, for which the average interval 
-#'   will be tabulated
-#' @param datesSearchedCol Column name for the date searched data
-#' @param unitPrefix prefix for the unit identifiers, which correspond to 
-#'   columns in \code{data_ss}
+#'   will be tabulated. It is assumed that \code{data_SS} is properly formatted,
+#'   with a column of search dates and a column of 1s and 0s for each unit
+#'   indicating whether the unit was searched on the given date). Other columns
+#'   are optional, but optional columns should not all contain at least on
+#'   value that is not a 1 or 0.
+#' @param datesSearchedCol Column name for the date searched data (optional).
+#'   if no \code{datesSearchedCol} is provided, \code{data_SS} will be parsed
+#'   to extract the dates automatically. If there is more than one column with
+#'   dates, then an error will be thrown and the user will be required to
+#'   provide the name of the desired dates column.
 #' @return vector of the average search schedule
 #' @export
 #'
-averageSS <- function(data_SS, datesSearchedCol = "DateSearched", 
-                      unitPrefix = "Unit"){
-
-  if (!datesSearchedCol %in% colnames(data_SS)){
-    stop("date searched column name provided not present in data.")
-  }
-  SS <- data_SS
-  SS[ , datesSearchedCol] <- yyyymmdd(SS[ , datesSearchedCol])
-  date1 <- min(SS[ , datesSearchedCol])
-  SS[ , datesSearchedCol] <- dateToDay(SS[ , datesSearchedCol], date1)
-  SScols <- colnames(SS)
-  prefixLength <- nchar(unitPrefix)
-  SScolPrefixes <- substr(SScols, 1, prefixLength)
-  
-  units <- colnames(SS)[which(SScolPrefixes == unitPrefix)]
-  nunits <- length(units)
-  
-  if (nunits == 0){
-    stop(paste0("No columns in data_SS include ", unitPrefix, " in the name"))
-  }
-  SSlist <- vector("list", nunits)
-
-  for (uniti in 1:nunits){
-    sample10 <- SS[ , units[uniti]]
-    sampleday <- SS[ , datesSearchedCol]
-    daysUnitSampled <- sampleday[sample10 == 1]
-    SSlist[[uniti]] <- daysUnitSampled - min(daysUnitSampled)
-  }
-    
-  avgInterval <- round(mean(unlist(lapply(lapply(SSlist, diff), mean))))
-  maxDay <- max(unlist(lapply(SSlist, max)))
-  SS <- seq(0, maxDay, by = avgInterval)
-  if (max(SS) != maxDay){
-    SS <- c(SS, maxDay)
-  }
-  return(SS)
+averageSS <- function(data_SS, datesSearchedCol = NULL){
+#   unitPrefix is a tough constraint on unit names and leads to potential for
+# conflict with other names. instead, the SS function does a good job of
+# parsing data_SS data by reading which columns contain only 0s and 1s and
+# taking those as the unit columns. The only constraint here would be that the
+# SS covariates cannot be coded strictly as 0/1.
+  SSdat <- SS(data_SS, datesSearchedCol = datesSearchedCol)
+  schedules <- t(SSdat$searches_unit) * SSdat$days
+  nintervals <- length(SSdat$days) - matrixStats::colCounts(schedules, value = 0)
+  maxdays <- matrixStats::colMaxs(schedules)
+  aveSS <- seq(0, max(maxdays), round(mean(maxdays/nintervals)))
+  return(aveSS)
 }
   
 #' Summarize the gGeneric list to a simple table

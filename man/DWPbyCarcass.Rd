@@ -4,9 +4,7 @@
 \alias{DWPbyCarcass}
 \title{Assign DWP Value to Each Carcass}
 \usage{
-DWPbyCarcass(data_DWP, data_CO, data_SS, dateFoundCol = "DateFound",
-  datesSearchedCol = "DateSearched", DWPCol = NULL, unitCol = "Unit",
-  sizeclassCol = NULL)
+DWPbyCarcass(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL)
 }
 \arguments{
 \item{data_DWP}{Survey unit (rows) by size (columns) density weighted 
@@ -14,19 +12,10 @@ proportion table}
 
 \item{data_CO}{Carcass observation data}
 
-\item{data_SS}{Search Schedule data}
-
-\item{dateFoundCol}{Column name for the date found data}
-
-\item{datesSearchedCol}{Column name for the date searched data}
-
-\item{DWPCol}{Column name(s) for the DWP values in the DWP table when no
-size class is used}
-
-\item{unitCol}{Column name for the unit indicator}
-
 \item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
 are recorded. Optional.}
+
+\item{unitCol}{Column name for the unit indicator (optional)}
 }
 \value{
 DWP value for each carcass

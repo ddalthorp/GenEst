@@ -355,17 +355,14 @@ combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
 #' @export
 #'
 trimSetSize <- function(modSetSize, mods){
-
   sizeclasses <- names(modSetSize)
   nsizeclass <- length(sizeclasses)
-  models <- vector("list", length = nsizeclass)
-  names(models) <- names(modSetSize)
-  
-  for (sci in 1:nsizeclass){
-    sizeclass <- names(models[sizeclasses[sci]])
-    classMatch <- which(names(models) == sizeclass)
-    mod <- mods[[sizeclass]]
-    models[[sizeclass]] <- modSetSize[[sizeclass]][[mod]]
+  models <- list()
+  for (sz in sizeclasses){
+    if (! (mods[[sz]] %in% names(modSetSize[[sz]]))){
+      stop("requested model for ", sz, " (",  mods[[sz]] , ") not found")
+    }
+    models[[sz]] <- modSetSize[[sz]][[mods[[sz]]]]
   }
   return(models)
 }
