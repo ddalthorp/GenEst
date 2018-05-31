@@ -525,7 +525,8 @@ summary.splitFull <- function(object, CL = 0.90, ...){
 #'
 #' @export
 #'
-SS <- function(data_SS, dateCol = NULL, preds = NULL){
+SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
+  dateCol <- datesSearchedCol
   if (! (class(data_SS) %in% c("data.frame", "matrix"))){
     stop("data_SS must be a data frame or matrix")
   } else if (is.null(colnames(data_SS))){

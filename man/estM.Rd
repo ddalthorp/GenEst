@@ -6,9 +6,8 @@
 \usage{
 estM(nsim = 1, data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
   seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-  kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound",
-  datesSearchedCol = "DateSearched", DWPCol = NULL, sizeclassCol = NULL,
-  max_intervals = NULL)
+  kFill = NULL, unitCol = NULL, dateFoundCol = "DateFound",
+  datesSearchedCol = NULL, sizeclassCol = NULL, max_intervals = 8)
 }
 \arguments{
 \item{nsim}{the number of simulation draws}
@@ -38,23 +37,24 @@ multiple size classes)}
 
 \item{kFill}{value to fill in for missing k when not existing in the model}
 
-\item{unitCol}{Column name for the unit indicator}
+\item{unitCol}{Column name for the unit indicator (optional)}
 
 \item{dateFoundCol}{Column name for the date found data}
 
 \item{datesSearchedCol}{Column name for the date searched data}
 
+\item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
+are recorded. Optional. If none provided, it is assumed there is no
+distinctions among size classes.}
+
+\item{max_intervals}{maximum number of arrival intervals to consider
+for each carcass}
+
 \item{DWPCol}{Column name for the DWP values in the DWP table when no
 size class is used}
-
-\item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
-are recorded. Optional.}
-
-\item{max_intervals}{maximum number of arrival interval intervals to consider
-for each carcass}
 }
 \value{
-list of SE parameters (pk), CP parameters (ab), g, Aj, and Mhat
+list of Mhat, Aj, ghat, SE parameters (pk), CP parameters (ab)
 }
 \description{
 Given given fitted Searcher Efficiency and Carcass 
