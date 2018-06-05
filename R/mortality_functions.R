@@ -65,21 +65,20 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   if (!is.null(sizeclassCol)){
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not in carcass data.")
+    } else {
+      sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
+      nsizeclass <- length(sizeclasses)
     }
-    sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
-    nsizeclass <- length(sizeclasses)
   }
 
   DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
     sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol)
 
-
-  est <- estg(nsim = nsim, data_CO = data_CO, data_SS = data_SS,
-    model_SE = model_SE, model_CP = model_CP,
-    seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g,
-    kFill = kFill, unitCol = unitCol, dateFoundCol = dateFoundCol,
+  est <- estg(data_CO = data_CO, data_SS = data_SS, dateFoundCol = dateFoundCol,
+    model_SE = model_SE, model_CP = model_CP, kFill = kFill, unitCol = unitCol,
     datesSearchedCol = datesSearchedCol, sizeclassCol = sizeclassCol,
-    max_intervals = max_intervals)
+    seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g,
+    nsim = nsim, max_intervals = max_intervals)
 
   gDWPf <- est$ghat * DWP * frac
   set.seed(seed_M)
@@ -93,8 +92,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     n <- length(gDWPf)
     Mhat[-c_out,] <- ((rcbinom(n, 1/gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/gDWPf
   }
-  out <- list(Mhat, est$Aj, est$ghat, est$pk, est$ab)
-  names(out) <- c("M", "Aj", "ghat", "pk", "ab")
+  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, pk = est$pk, ab = est$ab)
   class(out) <- c("estM", "list")
   return(out)
 }
@@ -169,13 +167,13 @@ DWPbyCarcass <- function(data_DWP, data_CO,
           stop(
             "data_DWP improperly formatted. Must have columns corresponding ",
             "to data_CO sizes or have a single column of DWP's to associate ",
-            "with units."
+            "with units. Alternatively, specify DWP column via DWPCol arg"
           )
         }
       }
     }
     rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-    DWPbyCarc <- data_DWP[rowind , DWPColumn]
+    DWPbyCarc <- data_DWP[rowind , DWPcolumn]
   }
   return(DWPbyCarc)
 }
@@ -250,20 +248,16 @@ prepSSCO <- function(data_SS, data_CO, datesSearchedCol = "DateSearched",
 #' @export
 #'
 summary.estM <- function(object, ..., CL = 0.9){
-  M <- object$M
-  Mtot <- apply(M, 2, sum)
-  minMtot <- min(Mtot)
-  maxMtot <- max(Mtot)
-  pl <- (1 - CL)/2
-  ph <- 1 - (1 - CL)/2
-  MCLlow <- round(quantile(Mtot, pl), 2)
-  MCLhi <- round(quantile(Mtot, ph), 2) 
-  Mmed <- round(median(Mtot), 2)
-
+  alpha <- 1 - CL
+  Mtot <- colSums(object$Mhat) # vectorized
 #  out <- paste0("Median: ", Mmed, "; ", CL * 100, "% CI: [",
 #           MCLlow, ", ", MCLhi, "]"
-#         ) # text output is burdensome for command line user.
-   out <- c("Median" = Mmed, "lwr" = MCLlow, "upr" = MCLhi)
-
-  return(out)         
+#         ) # text output is difficult for command line user to work with.
+   out <- c(
+    "Median" = round(median(Mtot), 2),
+    "lwr" = round(quantile(Mtot, alpha/2), 2), 
+    "upr" = round(quantile(Mtot, 1 - alpha/2), 2),
+    "CL" = CL
+   )
+  return(out)
 }
