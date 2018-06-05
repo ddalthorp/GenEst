@@ -4,14 +4,13 @@
 \alias{estM}
 \title{Estimate mortality}
 \usage{
-estM(nsim = 1, data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
+estM(data_CO, data_SS, data_DWP, frac = 1, dateFoundCol = "DateFound",
+  model_SE, model_CP, kFill = NULL, unitCol = NULL,
+  datesSearchedCol = NULL, sizeclassCol = NULL, DWPCol = NULL,
   seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-  kFill = NULL, unitCol = NULL, dateFoundCol = "DateFound",
-  datesSearchedCol = NULL, sizeclassCol = NULL, max_intervals = 8)
+  nsim = 1, max_intervals = 8)
 }
 \arguments{
-\item{nsim}{the number of simulation draws}
-
 \item{data_CO}{Carcass Observation data}
 
 \item{data_SS}{Search Schedule data}
@@ -21,11 +20,27 @@ proportion table}
 
 \item{frac}{fraction of facility (by units or by area) surveyed}
 
-\item{model_SE}{Searcher Efficiency model (or list of models if there are 
+\item{dateFoundCol}{Column name for the date found data}
+
+\item{model_SE}{Searcher Efficiency model (or list of models if there are
 multiple size classes)}
 
-\item{model_CP}{Carcass Persistence model (or list of models if there are 
+\item{model_CP}{Carcass Persistence model (or list of models if there are
 multiple size classes)}
+
+\item{kFill}{value to fill in for missing k when not existing in the model}
+
+\item{unitCol}{Column name for the unit indicator (optional)}
+
+\item{datesSearchedCol}{Column name for the date searched data}
+
+\item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
+are recorded. Optional. If none provided, it is assumed there is no
+distinctions among size classes.}
+
+\item{DWPCol}{Column name for the DWP values in the DWP table when no
+size class is used and there is more than one column in \code{data_DWP}
+that could be interpreted as DWP.}
 
 \item{seed_SE}{seed for random draws of the SE model}
 
@@ -35,23 +50,10 @@ multiple size classes)}
 
 \item{seed_M}{seed for the random draws of the Mhats}
 
-\item{kFill}{value to fill in for missing k when not existing in the model}
-
-\item{unitCol}{Column name for the unit indicator (optional)}
-
-\item{dateFoundCol}{Column name for the date found data}
-
-\item{datesSearchedCol}{Column name for the date searched data}
-
-\item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
-are recorded. Optional. If none provided, it is assumed there is no
-distinctions among size classes.}
+\item{nsim}{the number of simulation draws}
 
 \item{max_intervals}{maximum number of arrival intervals to consider
 for each carcass}
-
-\item{DWPCol}{Column name for the DWP values in the DWP table when no
-size class is used}
 }
 \value{
 list of Mhat, Aj, ghat, SE parameters (pk), CP parameters (ab)

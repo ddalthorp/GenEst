@@ -4,7 +4,8 @@
 \alias{DWPbyCarcass}
 \title{Assign DWP Value to Each Carcass}
 \usage{
-DWPbyCarcass(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL)
+DWPbyCarcass(data_DWP, data_CO, unitCol = NULL, sizeclassCol = NULL,
+  DWPCol = NULL)
 }
 \arguments{
 \item{data_DWP}{Survey unit (rows) by size (columns) density weighted 
@@ -12,10 +13,14 @@ proportion table}
 
 \item{data_CO}{Carcass observation data}
 
+\item{unitCol}{Column name for the unit indicator (optional)}
+
 \item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
 are recorded. Optional.}
 
-\item{unitCol}{Column name for the unit indicator (optional)}
+\item{DWPCol}{Name of column where DWP values are stored (optional). Used
+when there is more than one DWP column in \code{data_DWP} but analysis is
+intended for a single class (i.e., no "size" is specified in data_CO).}
 }
 \value{
 DWP value for each carcass
