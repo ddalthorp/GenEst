@@ -506,20 +506,22 @@ summary.splitFull <- function(object, CL = 0.90, ...){
 #'   the user must specify the desired dates as \code{dateColumn}. (2) If
 #'   there is a covariate column consisting entirely of 0s and 1s. In that
 #'   case, the user must specify the column(s) in \code{covars}.
-#' If no \code{dateColumn} is given, \code{SS} will attempt to find the date
-#'   column based on data formats. If there is exactly one column that can be
-#'   interpreted as dates, that column will be taken as the dates. Column 
-#'   names that are not listed as \code{covars} will be interpreted as 
-#'   "units" if their data consists solely of 0s and 1s. Otherwise, they will
-#'   be included in the catch-all category of "covariates".
 #'
 #' @param data_SS data frame or matrix with search schedule parameters, 
 #'  including columns for search dates, covariates (describing characteristics
-#'  of the search intervals), and each unit (with 0s and 1s in rows to 
-#'  indicate whether the given unit was searched on the given date)
-#' @param dateCol name of the column with the search dates in it
+#'  of the search intervals), and each unit (with 1s and 0s to indicate whether
+#'  the given unit was searched (= 1) or not (= 0) on the given date)
+#' @param datesSearchedCol name of the column with the search dates in it
+#'  (optional). If no \code{datesSearchedCol} is given, \code{SS} will attempt
+#'  to find the date column based on data formats. If there is exactly one
+#'  column that can be interpreted as dates, that column will be taken as the
+#'  dates searched. If more than one date column is found, \code{SS} exits with
+#'  an error message.
 #' @param preds vector of character strings giving the names of columns to be
-#'  interpreted as potential covariates.
+#'  interpreted as potential covariates (optional). Typically, it is not
+#'  necessary for a user to provide a value for \code{preds}. It is used only to
+#'  identify specific columns of 1s and 0s as covariates rather than as search
+#'  schedules.
 #' @return \code{SS} object that can be conveniently used in the splitting
 #'  functions.
 #'
@@ -538,7 +540,10 @@ SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
       tmp <- try(as.Date(data_SS[, coli]), silent = T)
       if (class(tmp) != "try-error"){
         if (!is.null(dateCol)){
-          stop("more than 1 date column in data_SS")
+          stop(
+            "more than 1 date column in data_SS, and ",
+            "datesSearchedCol does not specify which to use."
+          )
         } else {
           dateCol <- coli
         }
@@ -548,7 +553,10 @@ SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
       stop("no columns can be interpreted as dates")
     }
   } else {
-    tmp <- try(as.Date(data_SS[, coli]), silent = T)
+    if (length(dateCol) > 1 || !is.character(dateCol)){
+      stop("datesSearchedCol must be NULL or the name of a single column")
+    }
+    tmp <- try(as.Date(data_SS[, dateCol]), silent = T)
     if (class(tmp) == "try-error"){
       stop(paste(dateCol, "is not properly formatted as dates"))
     }

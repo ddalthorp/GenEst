@@ -567,12 +567,12 @@ observeEvent(input$runMod_M, {
   }
 
   rv$M <- tryCatch(
-            estM(nsim = rv$n, rv$data_CO, rv$data_SS, rv$data_DWP, 
+            estM(data_CO = rv$data_CO , data_SS = rv$data_SS, rv$data_DWP,
               frac = rv$frac, model_SE = rv$models_SE, 
               model_CP = rv$models_CP, kFill = rv$kFill, 
               unitCol = rv$unitCol, dateFoundCol = rv$dateFoundCol, 
-              datesSearchedCol = rv$datesSearchedCol,
-              sizeclassCol = rv$sizeclassCol_M, max_intervals = 8
+              datesSearchedCol = rv$datesSearchedCol, DWPCol = rv$DWPCol,
+              sizeclassCol = rv$sizeclassCol_M, nsim = rv$n, max_intervals = 8
             ), error = function(x){NULL}, warning = function(x){NULL}
           )
   removeNotification(msg_RunModM)
@@ -581,7 +581,7 @@ observeEvent(input$runMod_M, {
   } else{
 
     rv$Msplit <- tryCatch(
-                   calcSplits(M = rv$M$M, Aj = rv$M$Aj, 
+                   calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
                      split_SS = NULL, split_CO = NULL,
                      data_SS = rv$data_SS, data_CO = rv$data_CO
                    ), error = function(x){NULL}, warning = function(x){NULL}
@@ -614,7 +614,7 @@ observeEvent(input$splitM, {
   rv$datesSearchedCol <- input$datesSearchedCol
 
   rv$Msplit <- tryCatch(
-                 calcSplits(M = rv$M$M, Aj = rv$M$Aj, 
+                 calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
                    split_SS = rv$split_SS, split_CO = rv$split_CO,
                    data_SS = rv$data_SS, data_CO = rv$data_CO
                  ), error = function(x){NULL}, warning = function(x){NULL}
@@ -700,13 +700,12 @@ observeEvent(input$runMod_g, {
     }
     rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
 
-    rv$gGeneric[[sci]] <- tryCatch( 
-                                 estgGeneric(rv$n, rv$SS, 
-                                   rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
-                                   rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
-                                   kFill = rv$kFill
-                                 ), error = function(x){NULL}
-                               )
+    rv$gGeneric[[sci]] <- tryCatch(estgGeneric(
+      nsim = rv$n, days = rv$SS,
+      model_SE = rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
+      model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
+      kFill = rv$kFill
+    ), error = function(x){NULL})
   }
   names(rv$gGeneric) <- rv$sizeclasses_g
 

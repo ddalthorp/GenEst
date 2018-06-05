@@ -5,41 +5,42 @@
 #'   and Carcass Observation data; and information about the fraction of the
 #'   the facility that was surveyed. 
 #'
-#' @param nsim the number of simulation draws
 #' @param data_CO Carcass Observation data
 #' @param data_SS Search Schedule data
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted
-#'   proportion table 
+#'   proportion table
 #' @param frac fraction of facility (by units or by area) surveyed
-#' @param model_SE Searcher Efficiency model (or list of models if there are 
+#' @param dateFoundCol Column name for the date found data
+#' @param model_SE Searcher Efficiency model (or list of models if there are
 #'   multiple size classes)
-#' @param model_CP Carcass Persistence model (or list of models if there are 
+#' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
+#' @param kFill value to fill in for missing k when not existing in the model
+#' @param unitCol Column name for the unit indicator (optional)
+#' @param datesSearchedCol Column name for the date searched data
+#' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
+#'  are recorded. Optional. If none provided, it is assumed there is no
+#'  distinctions among size classes.
+#' @param DWPCol Column name for the DWP values in the DWP table when no
+#'   size class is used and there is more than one column in \code{data_DWP}
+#'   that could be interpreted as DWP.
 #' @param seed_SE seed for random draws of the SE model
 #' @param seed_CP seed for random draws of the CP model
 #' @param seed_g seed for random draws of the gs
 #' @param seed_M seed for the random draws of the Mhats
-#' @param kFill value to fill in for missing k when not existing in the model
-#' @param unitCol Column name for the unit indicator (optional)
-#' @param dateFoundCol Column name for the date found data
-#' @param datesSearchedCol Column name for the date searched data
-#' @param DWPCol Column name for the DWP values in the DWP table when no
-#'   size class is used and there is more than one column in \code{data_DWP}
-#'   that could be interpreted as DWP.
-#' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
-#'  are recorded. Optional. If none provided, it is assumed there is no
-#'  distinctions among size classes.
+#' @param nsim the number of simulation draws
 #' @param max_intervals maximum number of arrival intervals to consider
 #'  for each carcass
 #' @return list of Mhat, Aj, ghat, SE parameters (pk), CP parameters (ab)
 #' @examples NA
 #' @export 
 #'
-estM <- function(data_CO, data_SS, data_DWP, frac = 1,  
-    model_SE, model_CP, dateFoundCol = "DateFound", kFill = NULL,
-    seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-    unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL, DWPcol = NULL,
-    nsim = 1, max_intervals = 8){
+estM <- function(data_CO, data_SS, data_DWP, frac = 1,
+  dateFoundCol = "DateFound", model_SE, model_CP, kFill = NULL,
+  unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL, DWPCol = NULL,
+  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
+  nsim = 1, max_intervals = 8){
+
 
   if (!(dateFoundCol %in% colnames(data_CO))){
     stop("dateFoundCol not found in data_CO")
@@ -65,21 +66,20 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   if (!is.null(sizeclassCol)){
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not in carcass data.")
+    } else {
+      sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
+      nsizeclass <- length(sizeclasses)
     }
-    sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
-    nsizeclass <- length(sizeclasses)
   }
 
   DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
     sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol)
 
-
-  est <- estg(nsim = nsim, data_CO = data_CO, data_SS = data_SS,
-    model_SE = model_SE, model_CP = model_CP,
-    seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g,
-    kFill = kFill, unitCol = unitCol, dateFoundCol = dateFoundCol,
+  est <- estg(data_CO = data_CO, data_SS = data_SS, dateFoundCol = dateFoundCol,
+    model_SE = model_SE, model_CP = model_CP, kFill = kFill, unitCol = unitCol,
     datesSearchedCol = datesSearchedCol, sizeclassCol = sizeclassCol,
-    max_intervals = max_intervals)
+    seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g,
+    nsim = nsim, max_intervals = max_intervals)
 
   gDWPf <- est$ghat * DWP * frac
   set.seed(seed_M)
@@ -93,8 +93,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     n <- length(gDWPf)
     Mhat[-c_out,] <- ((rcbinom(n, 1/gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/gDWPf
   }
-  out <- list(Mhat, est$Aj, est$ghat, est$pk, est$ab)
-  names(out) <- c("M", "Aj", "ghat", "pk", "ab")
+  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, pk = est$pk, ab = est$ab)
   class(out) <- c("estM", "list")
   return(out)
 }
@@ -110,15 +109,15 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #' @param unitCol Column name for the unit indicator (optional)
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional.
-#' @param DWPcol Name of column where DWP values are stored (optional). Used
+#' @param DWPCol Name of column where DWP values are stored (optional). Used
 #'  when there is more than one DWP column in \code{data_DWP} but analysis is
 #'  intended for a single class (i.e., no "size" is specified in data_CO).
 #' @return DWP value for each carcass 
 #' @examples NA
 #' @export 
 #'
-DWPbyCarcass <- function(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL,
-  DWPCol = NULL){
+DWPbyCarcass <- function(data_DWP, data_CO,
+  unitCol = NULL, sizeclassCol = NULL, DWPCol = NULL){
   # unitCol is assumed to be the column that the two data sets share.
   # if none are in common, error is thrown with no remedy.
   # if data sets share more than one column, user is asked to input unitCol.
@@ -169,13 +168,13 @@ DWPbyCarcass <- function(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL,
           stop(
             "data_DWP improperly formatted. Must have columns corresponding ",
             "to data_CO sizes or have a single column of DWP's to associate ",
-            "with units."
+            "with units. Alternatively, specify DWP column via DWPCol arg"
           )
         }
       }
     }
     rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-    DWPbyCarc <- data_DWP[rowind , DWPColumn]
+    DWPbyCarc <- data_DWP[rowind , DWPcolumn]
   }
   return(DWPbyCarc)
 }
@@ -250,18 +249,16 @@ prepSSCO <- function(data_SS, data_CO, datesSearchedCol = "DateSearched",
 #' @export
 #'
 summary.estM <- function(object, ..., CL = 0.9){
-  M <- object$M
-  Mtot <- apply(M, 2, sum)
-  minMtot <- min(Mtot)
-  maxMtot <- max(Mtot)
-  pl <- (1 - CL)/2
-  ph <- 1 - (1 - CL)/2
-  MCLlow <- round(quantile(Mtot, pl), 2)
-  MCLhi <- round(quantile(Mtot, ph), 2) 
-  Mmed <- round(median(Mtot), 2)
-
-  out <- paste0("Median: ", Mmed, "; ", CL * 100, "% CI: [",
-           MCLlow, ", ", MCLhi, "]"
-         )
-  return(out)         
+  alpha <- 1 - CL
+  Mtot <- colSums(object$Mhat) # vectorized
+#  out <- paste0("Median: ", Mmed, "; ", CL * 100, "% CI: [",
+#           MCLlow, ", ", MCLhi, "]"
+#         ) # text output is difficult for command line user to work with.
+   out <- c(
+    "Median" = round(median(Mtot), 2),
+    "lwr" = round(quantile(Mtot, alpha/2), 2), 
+    "upr" = round(quantile(Mtot, 1 - alpha/2), 2),
+    "CL" = CL
+   )
+  return(out)
 }

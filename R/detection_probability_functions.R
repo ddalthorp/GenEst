@@ -1,41 +1,42 @@
 #' Estimate g values and arrival intervals for a set of carcasses
 #'   from fitted pk and cp models and search data
 #'
-#' @param nsim the number of simulation draws
 #' @param data_CO Carcass Observation data
 #' @param data_SS Search Schedule data
+#' @param dateFoundCol Column name for the date found data
 #' @param model_SE Searcher Efficiency model (or list of models if there are
 #'   multiple size classes)
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
-#' @param seed_SE seed for random draws of the SE model 
-#' @param seed_CP seed for random draws of the CP model
-#' @param seed_g seed for random draws of the gs
 #' @param kFill value(s) to fill in for missing k when not existing in the
 #'   model(s)
 #' @param unitCol Column name for the unit indicator
-#' @param dateFoundCol Column name for the date found data
 #' @param datesSearchedCol Column name for the date searched data. Optional. If
 #'  not provided, \code{estg} will try to find the datesSearchedCol among the
-#'  columns in data_SS. See \link{\code{SS}}.
+#'  columns in data_SS. See \code{\link{SS}}.
 #' @param sizeclassCol Name of column in \code{data_CO} where the size classes
 #'   are recorded. Optional. If not provided, no distinctions are made among
 #'   sizes.
+#' @param seed_SE seed for random draws of the SE model
+#' @param seed_CP seed for random draws of the CP model
+#' @param seed_g seed for random draws of the gs
+#' @param nsim the number of simulation draws
 #' @param max_intervals maximum number of arrival interval intervals to consider
 #'  for each carcass. Optional. Limiting the number of search intervals can
 #'  greatly increase the speed of calculations with only a slight reduction in
 #'  accuracy in most cases.
-#' @return list of [1] g estimates, [2] arrival interval (Aj) estimates,
-#'   [3]  estimates of SE parameters (pk), and [4] estimates CP parameters
-#'   (ab) for each of the carcasses. The row names of the Aj matrix are the
+#' @return list of [1] g estimates (ghat), [2] arrival interval estimates (Aj),
+#'   [3] simulated estimates of SE parameters (pk), and [4] simulated  estimates
+#'   CP parameters (ab) for each of the carcasses. The row names of the Aj matrix are the
 #'   names of the units where each carcass was found.
 #' @examples NA
 #' @export
 
-estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
-  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, kFill = NULL,
-  unitCol = "Unit", dateFoundCol = "DateFound",  sizeclassCol = NULL,
-  datesSearchedCol = "DateSearched", max_intervals = NULL){
+estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
+  model_SE, model_CP, kFill = NULL,
+  unitCol = "Unit", datesSearchedCol = "DateSearched", sizeclassCol = NULL,
+  seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
+  nsim = 1, max_intervals = 8){
 # sizeclassCol not only identifies what the name of the size column is, it
 # also identifies that the model should include size as a segregating class
   sizeCol <- sizeclassCol # changed here simply for ease of typing and reading
@@ -378,8 +379,8 @@ kFillPropose <- function(model){
   return(proposal)
 }
 
-#' Generic g estimation for a combination of SE model and CP model
-#'   under a given search schedule
+#' Generic g estimation by simulation from given SE model and CP models
+#'   under a specific search schedule
 #'
 #' The g estimated by \code{estgGeneric} is a generic aggregate detection 
 #'   probability and represents the probability of detecting a carcass that 
@@ -392,8 +393,8 @@ kFillPropose <- function(model){
 #'   "big picture" summary of detection probability, but would be difficult
 #'   to work with for estimating M with precision.
 #'
-#' @param n the number of simulation draws
-#' @param data_SS Search schedule data as a vector of days searched 
+#' @param nsim the number of simulation draws
+#' @param days Search schedule data as a vector of days searched
 #' @param model_SE Searcher Efficiency model
 #' @param model_CP Carcass Persistence model
 #' @param seed_SE seed for random draws of the SE model
@@ -405,13 +406,10 @@ kFillPropose <- function(model){
 #'    associated with the gs
 #' @export
 #'
-estgGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
+estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
-  
-  if (is.vector(data_SS)){
-    SS <- data_SS
-  } else{
-    msg <- paste0(class(data_SS), " is not a supported data type for data_SS")
+  if (!is.vector(days)){
+    msg <- paste0(" 'days' must be a numeric vector")
     stop(msg)
   }
 
@@ -431,8 +429,8 @@ estgGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
   data_CP <- model_CP$data
   preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
 
-  sim_SE <- rpk(n, model_SE, seed_SE, kFill)
-  sim_CP <- rcp(n, model_CP, seed_CP, type = "ppersist") 
+  sim_SE <- rpk(nsim, model_SE, seed_SE, kFill)
+  sim_CP <- rcp(nsim, model_CP, seed_CP, type = "ppersist")
   dist <- tolower(model_CP$dist)
 
   ncell <- nrow(preds)
@@ -442,7 +440,7 @@ estgGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
     cell_CP <- preds$CellNames_CP[celli]
     param_SE <- sim_SE[[cell_SE]]
     param_CP <- sim_CP[[cell_CP]]
-    ghat[[celli]] <- estgGenericCell(SS, param_SE, param_CP, dist, kFill)
+    ghat[[celli]] <- calcg(days, param_SE, param_CP, dist)
   }  
   names(ghat) <- preds$CellNames
   out <- list("ghat" = ghat, "predictors" = preds)
@@ -450,34 +448,30 @@ estgGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
   return(out)
 }
 
-#' Generic g estimation for a single cell of a combination of SE model and 
-#'   CP model under a given search schedule
+#' Calculate detection probability (g) given SE and CP parameters and a search
+#'  schedule
 #'
-#' The g estimated by \code{gGenericCell} is a generic aggregate detection 
-#'   probability and represents the probability of detecting a carcass that 
-#'   arrives at a (uniform) random time during the period monitored, for one 
-#'   cell across both the SE and CP models. This is somethat different from 
-#'   the GenEst estimation of g when the purpose is to estimate total
-#'   mortality (M), in which case the detection probability varies with 
-#'   carcass arrival interval and is difficult to summarize statistically.
-#'   The \code{gGenericCell} estimate is a useful "big picture" summary
-#'   of detection probability, but would be difficult to work with for 
-#'   estimating M with precision.
+#' The g given by \code{calcg} is a generic aggregate detection
+#'  probability and represents the probability of detecting a carcass that
+#'  arrives at a (uniform) random time during the time spanned by the search
+#'  schedule for the the given SE and CP parameters. This differs the GenEst
+#'  estimation of g when the purpose is to estimate total mortality (M), in
+#'  which case the detection probability varies with carcass arrival interval
+#'  and is difficult to summarize statistically. \code{calcg} provides a useful
+#'  "big picture" summary of detection probability, but would be difficult to
+#'  work with for estimating M with precision.
 #'
-#' @param SS Search schedule (vector of days searched)
-#' @param param_SE Searcher efficiency parameters (p and k
-#' @param param_CP Carcass persistence parameters (a and b)
+#' @param days Search schedule (vector of days searched)
+#' @param param_SE numeric array of searcher efficiency parameters (p and k)
+#' @param param_CP numeric array of carcass persistence parameters (a and b)
 #' @param dist distribution for the CP model
-#' @param kFill value to fill in for missing k when not existing in the model
 #'
 #' @export
 #'
-estgGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
-
-  samtype <- ifelse(length(unique(diff(SS))) == 1, "Formula", "Custom")
-  nsearch <- length(SS) - 1
+calcg <- function(days, param_SE, param_CP, dist){
+  samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
+  nsearch <- length(days) - 1
   n <- nrow(param_SE)
-
   if (dist == "exponential"){
     pdb <- param_CP[ , "pdb"]
 
@@ -501,7 +495,7 @@ estgGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
   ind2 <- ind1 + 1
   ind3 <- unlist(lapply(1:nsearch, function(x) x:nsearch)) + 1
   schedule.index <- cbind(ind1, ind2, ind3)
-  schedule <- cbind(SS[ind1], SS[ind2], SS[ind3])
+  schedule <- cbind(days[ind1], days[ind2], days[ind3])
 
   nmiss <- schedule.index[,3] - schedule.index[,2]
   maxmiss <- max(nmiss)
@@ -520,7 +514,7 @@ estgGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
               t_search = intxsearch[,1] + intxsearch[,2],
                pda = pda0, pdb = pdb0
             )
-  arrvec <- (schedule[,2] - schedule[,1]) / max(SS)
+  arrvec <- (schedule[,2] - schedule[,1]) / max(days)
   prob_obs <- numeric(dim(schedule)[1])
   for (i in 1:length(prob_obs)){
     match <- which(
@@ -576,7 +570,7 @@ estgGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
               pda = param_CP[ , 1], pdb = param_CP[ , 2]
             )
 
-  arrvec <- (schedule[ , 2] - schedule[ , 1]) / max(SS) 
+  arrvec <- (schedule[ , 2] - schedule[ , 1]) / max(days)
 
   prob_obs <- numeric(n)
 
@@ -604,7 +598,7 @@ estgGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 #' Generic g estimation for a combination of SE model and CP model 
 #'   under a given search schedule
 #'
-#' The g estimated by \code{estgGeneric} is a generic aggregate detection 
+#' The g estimated by \code{estgGenericSize} is a generic aggregate detection
 #'   probability and represents the probability of detecting a carcass that 
 #'   arrives at a (uniform) random time during the period monitored, for each
 #'   of the possible cell combinations, given the SE and CP models. This 
@@ -615,7 +609,7 @@ estgGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 #'   "big picture" summary of detection probability, but would be difficult
 #'   to work with for estimating M with precision.
 #'
-#' @param n the number of simulation draws
+#' @param nsim the number of simulation draws
 #' @param data_SS Search schedule data as a vector of days searched 
 #' @param modelSetSize_SE Searcher Efficiency model set for multiple sizes
 #' @param modelSetSize_CP Carcass Persistence model set for multiple sizes
@@ -628,7 +622,7 @@ estgGenericCell <- function(SS, param_SE, param_CP, dist, kFill){
 #'   to each of the cells from the cross-model combination
 #' @export
 #'
-estgGenericSize <- function(n = 1, data_SS, modelSetSize_SE, 
+estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
                                modelSetSize_CP, modelSizeSelections_SE, 
                                modelSizeSelections_CP, seed_SE = NULL, 
                                seed_CP = NULL, kFill = NULL){
@@ -648,7 +642,7 @@ estgGenericSize <- function(n = 1, data_SS, modelSetSize_SE,
     model_SE <- modelSetSize_SE[[sc]][[model_SEsci]]
     model_CPsci <- modelSizeSelections_CP[[sc]]
     model_CP <- modelSetSize_CP[[sc]][[model_CPsci]]
-    ghats[[sci]] <- estgGeneric(n, data_SS, model_SE, model_CP, 
+    ghats[[sci]] <- estgGeneric(nsim, days, model_SE, model_CP,
                       seed_SE, seed_CP, kFill[sc]
                     )
   }

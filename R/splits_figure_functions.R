@@ -67,9 +67,8 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
                 rowQuantiles(splits[[vi]], probs = c(alpha/2, 1 - alpha/2))
               )
     }
-    plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F, xlab = "", 
-      ylab = ""
-    )
+    plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F, xlab = "", ylab = "")
+    box() # easier to see which bars go in which panels when there are many
     if (vartype[1] == "CO" | !rate){
       xx <- 1:nlevel_h 
     } else {

@@ -12,6 +12,8 @@ estgGenericSize(nsim = 1, days, modelSetSize_SE, modelSetSize_CP,
 \arguments{
 \item{nsim}{the number of simulation draws}
 
+\item{days}{Search schedule data as a vector of days searched}
+
 \item{modelSetSize_SE}{Searcher Efficiency model set for multiple sizes}
 
 \item{modelSetSize_CP}{Carcass Persistence model set for multiple sizes}
