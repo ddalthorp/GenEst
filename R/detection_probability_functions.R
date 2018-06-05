@@ -35,7 +35,7 @@
 estg <- function(nsim = 1, data_CO, data_SS, model_SE, model_CP,
   seed_SE = NULL, seed_CP = NULL, seed_g = NULL, kFill = NULL,
   unitCol = "Unit", dateFoundCol = "DateFound",  sizeclassCol = NULL,
-  datesSearchedCol = "DateSearched", max_intervals = NULL){
+  datesSearchedCol = "DateSearched", max_intervals = 8){
 # sizeclassCol not only identifies what the name of the size column is, it
 # also identifies that the model should include size as a segregating class
   sizeCol <- sizeclassCol # changed here simply for ease of typing and reading
@@ -409,7 +409,7 @@ estgGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
   
   if (is.vector(data_SS)){
-    SS <- data_SS
+    SSdat <- data_SS
   } else{
     msg <- paste0(class(data_SS), " is not a supported data type for data_SS")
     stop(msg)
@@ -442,7 +442,7 @@ estgGeneric <- function(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
     cell_CP <- preds$CellNames_CP[celli]
     param_SE <- sim_SE[[cell_SE]]
     param_CP <- sim_CP[[cell_CP]]
-    ghat[[celli]] <- estgGenericCell(SS, param_SE, param_CP, dist, kFill)
+    ghat[[celli]] <- estgGenericCell(SSdat, param_SE, param_CP, dist, kFill)
   }  
   names(ghat) <- preds$CellNames
   out <- list("ghat" = ghat, "predictors" = preds)
