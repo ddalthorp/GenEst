@@ -12,6 +12,8 @@ estgGenericSize(nsim = 1, days, modelSetSize_SE, modelSetSize_CP,
 \arguments{
 \item{nsim}{the number of simulation draws}
 
+\item{days}{Search schedule data as a vector of days searched}
+
 \item{modelSetSize_SE}{Searcher Efficiency model set for multiple sizes}
 
 \item{modelSetSize_CP}{Carcass Persistence model set for multiple sizes}
@@ -25,8 +27,6 @@ estgGenericSize(nsim = 1, days, modelSetSize_SE, modelSetSize_CP,
 \item{seed_CP}{seed for random draws of the CP model}
 
 \item{kFill}{values to fill in for missing k when not existing in the model}
-
-\item{data_SS}{Search schedule data as a vector of days searched}
 }
 \value{
 list of g estimates, with one element in the list corresponding
