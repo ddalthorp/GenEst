@@ -18,7 +18,7 @@ are recorded. Optional.}
 
 \item{unitCol}{Column name for the unit indicator (optional)}
 
-\item{DWPcol}{Name of column where DWP values are stored (optional). Used
+\item{DWPCol}{Name of column where DWP values are stored (optional). Used
 when there is more than one DWP column in \code{data_DWP} but analysis is
 intended for a single class (i.e., no "size" is specified in data_CO).}
 }
