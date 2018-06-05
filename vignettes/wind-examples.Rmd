@@ -269,7 +269,7 @@ temporal split may be used (whether it is an SS split or a vector of times).
 ```{r}
 M_species_by_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_CO = "Species", data_CO = data_CO,
-  split_SS = "Season", data_SS = data_SS)
+  split_SS = "Season", data_SS = SSdat)
 plot(M_species_by_season)
 ```
 
