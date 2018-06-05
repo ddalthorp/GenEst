@@ -2,16 +2,16 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estgGeneric}
 \alias{estgGeneric}
-\title{Generic g estimation for a combination of SE model and CP model
-  under a given search schedule}
+\title{Generic g estimation by simulation from given SE model and CP models
+  under a specific search schedule}
 \usage{
-estgGeneric(n = 1, data_SS, model_SE, model_CP, seed_SE = NULL,
+estgGeneric(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, kFill = NULL)
 }
 \arguments{
-\item{n}{the number of simulation draws}
+\item{nsim}{the number of simulation draws}
 
-\item{data_SS}{Search schedule data as a vector of days searched}
+\item{days}{Search schedule data as a vector of days searched}
 
 \item{model_SE}{Searcher Efficiency model}
 
