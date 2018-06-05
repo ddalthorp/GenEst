@@ -376,10 +376,14 @@ the units.
 ```{r}
 data_SS <- mock$SS
 avgSS <- averageSS(data_SS)
-gsGeneric <- estgGenericSize(n = 1000, avgSS, pkmModSetSize, 
-                  cpmModSetSize, pkMods, cpMods, seed_SE = 1, seed_CP = 1,
-                  kFill = NULL
-                )
+
+gsGeneric <- estgGenericSize(
+  nsim = 1000, days = avgSS,
+  modelSetSize_SE = pkmModSetSize,
+  modelSetSize_CP = cpmModSetSize,
+  modelSizeSelections_SE = pkMods,
+  modelSizeSelections_CP = cpMods
+)
 ```
 
 The output from `estgGeneric` can be simply summarized
@@ -422,26 +426,26 @@ In addition to the models and search schedule data, `estM` requires DWP
 input is also the column names associated with the DWP value for each size
 class (argument `DWPCol` in `estM`):
 
-```{r, eval = F}
+```{r}
 data_CO <- mock$CO
 data_DWP <- mock$DWP
 head(data_DWP)
 DWPcolnames <- names(pkmModSize)
 
-eM <- estM(nsim = 10, data_CO, data_SS, data_DWP, frac = 1,
+eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP, frac = 1,
         model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
         seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
         unitCol = "Unit", dateFoundCol = "DateFound", 
-        datesSearchedCol = "DateSearched", sizeclassCol = "Size")
+        datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 10)
 ```
 
 `estM` returns an object that contains the random draws of `pkm` and `cpm`
 parameters (named `pk` and `ab`, respectively) and the estimated carcass-level 
 detection parameters (`g`), arrival intervals (`Aj`), and associated total
-mortality (`M`) values for each simulation. These `M` values should be 
+mortality (`Mhat`) values for each simulation. These `Mhat` values should be
 considered in combination, and can be summarized and plotted simply:
 
-```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 summary(eM)
 plot(eM)
 ```
@@ -455,7 +459,7 @@ carcass observation data sets.
 #### First, a temporal split:  
 
 ```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
-M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
+M_season <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
 summary(M_season)
@@ -465,7 +469,7 @@ plot(M_season)
 #### Next, a carcass split:  
 
 ```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
-M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL, 
+M_class <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = NULL,
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
 summary(M_class)
@@ -476,7 +480,7 @@ plot(M_class)
 expanded fully factorially:
 
 ```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
-M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction", 
+M_SbyC <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )
 summary(M_SbyC)
