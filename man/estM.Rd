@@ -7,7 +7,7 @@
 estM(data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
   dateFoundCol = "DateFound", kFill = NULL, seed_SE = NULL,
   seed_CP = NULL, seed_g = NULL, seed_M = NULL, unitCol = NULL,
-  datesSearchedCol = NULL, sizeclassCol = NULL, DWPcol = NULL, nsim = 1,
+  datesSearchedCol = NULL, sizeclassCol = NULL, DWPCol = NULL, nsim = 1,
   max_intervals = 8)
 }
 \arguments{
@@ -46,14 +46,14 @@ multiple size classes)}
 are recorded. Optional. If none provided, it is assumed there is no
 distinctions among size classes.}
 
+\item{DWPCol}{Column name for the DWP values in the DWP table when no
+size class is used and there is more than one column in \code{data_DWP}
+that could be interpreted as DWP.}
+
 \item{nsim}{the number of simulation draws}
 
 \item{max_intervals}{maximum number of arrival intervals to consider
 for each carcass}
-
-\item{DWPCol}{Column name for the DWP values in the DWP table when no
-size class is used and there is more than one column in \code{data_DWP}
-that could be interpreted as DWP.}
 }
 \value{
 list of Mhat, Aj, ghat, SE parameters (pk), CP parameters (ab)
