@@ -153,7 +153,11 @@ DWPbyCarcass <- function(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL,
   } else { # assume same DWP for all sizes, so matching is by unit only
     # which column is DWP?
     # if there's one numeric column with values in (0, 1], that the dwp column
-    if (is.null(DWPCol)) possibleNames <- colnames(data_DWP)
+    if (is.null(DWPCol)) {
+      possibleNames <- colnames(data_DWP)
+    } else {
+      possibleNames <- DWPCol
+    }
     for (coli in possibleNames){
       DWPcolumn <- NULL
       if (is.numeric(data_DWP[ , coli]) &&
