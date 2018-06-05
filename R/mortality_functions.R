@@ -24,7 +24,8 @@
 #' @param dateFoundCol Column name for the date found data
 #' @param datesSearchedCol Column name for the date searched data
 #' @param DWPCol Column name for the DWP values in the DWP table when no
-#'   size class is used
+#'   size class is used and there is more than one column in \code{data_DWP}
+#'   that could be interpreted as DWP.
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional. If none provided, it is assumed there is no
 #'  distinctions among size classes.
@@ -34,10 +35,11 @@
 #' @examples NA
 #' @export 
 #'
-estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,  
-    model_SE, model_CP, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-    seed_M = NULL, kFill = NULL, unitCol = NULL, dateFoundCol = "DateFound",
-    datesSearchedCol = NULL, sizeclassCol = NULL, max_intervals = 8){
+estM <- function(data_CO, data_SS, data_DWP, frac = 1,  
+    model_SE, model_CP, dateFoundCol = "DateFound", kFill = NULL,
+    seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
+    unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL, DWPcol = NULL,
+    nsim = 1, max_intervals = 8){
 
   if (!(dateFoundCol %in% colnames(data_CO))){
     stop("dateFoundCol not found in data_CO")
@@ -69,7 +71,7 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
   }
 
   DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
-    sizeclassCol = sizeclassCol, unitCol = unitCol)
+    sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol)
 
 
   est <- estg(nsim = nsim, data_CO = data_CO, data_SS = data_SS,
@@ -108,11 +110,15 @@ estM <- function(nsim = 1, data_CO, data_SS, data_DWP, frac = 1,
 #' @param unitCol Column name for the unit indicator (optional)
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional.
+#' @param DWPcol Name of column where DWP values are stored (optional). Used
+#'  when there is more than one DWP column in \code{data_DWP} but analysis is
+#'  intended for a single class (i.e., no "size" is specified in data_CO).
 #' @return DWP value for each carcass 
 #' @examples NA
 #' @export 
 #'
-DWPbyCarcass <- function(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL){
+DWPbyCarcass <- function(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL,
+  DWPCol = NULL){
   # unitCol is assumed to be the column that the two data sets share.
   # if none are in common, error is thrown with no remedy.
   # if data sets share more than one column, user is asked to input unitCol.
@@ -132,10 +138,8 @@ DWPbyCarcass <- function(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL)
     }
   }
   if (!all(data_CO[, unitCol] %in% data_DWP[ , unitCol])){
-    stop("Units present in carcass table not in DWP table")
+    stop("Some units present in carcass table not in DWP table")
   }
-  # DWPCol names MUST match the levels in data_CO[, sizeclassCol] if provided
-  # otherwise
   if (!is.null(sizeclassCol)){
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not found in carcass data.")
@@ -143,17 +147,24 @@ DWPbyCarcass <- function(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL)
     if (!all(unique(data_CO[,sizeclassCol]) %in% colnames(data_DWP))){
       stop("some sizes represented in data_CO are not represented in data_DWP.")
     }
+    rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+    colind <- match(data_CO[ , sizeclassCol], names(data_DWP))
+    DWPbyCarc <- as.numeric(data_DWP[cbind(rowind, colind)])
   } else { # assume same DWP for all sizes, so matching is by unit only
     # which column is DWP?
     # if there's one numeric column with values in (0, 1], that the dwp column
-    DWPbyCarc = NULL
-    for (coli in 1:ncol(data_DWP)){
+    if (is.null(DWPCol)) {
+      possibleNames <- colnames(data_DWP)
+    } else {
+      possibleNames <- DWPCol
+    }
+    for (coli in possibleNames){
+      DWPcolumn <- NULL
       if (is.numeric(data_DWP[ , coli]) &&
           all(data_DWP[ , coli] <= 1) && all(data_DWP[ , coli] > 0)){
         # candidate DWP has been discovered
-        if (is.null(DWPbyCarc)){
-          rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-          DWPbyCarc <- data_DWP[rowind , coli]
+        if (is.null(DWPcolumn)){
+          DWPcolumn <- coli
         } else { # it is the second one found => conflict
           stop(
             "data_DWP improperly formatted. Must have columns corresponding ",
@@ -163,14 +174,9 @@ DWPbyCarcass <- function(data_DWP, data_CO, sizeclassCol = NULL, unitCol = NULL)
         }
       }
     }
-    if (!is.null(DWPbyCarc)) return(DWPbyCarc)
-    stop("no DWP columns found in data_DWP")
+    rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+    DWPbyCarc <- data_DWP[rowind , DWPColumn]
   }
-
-  # calculation
-  rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-  colind <- match(data_CO[ , sizeclassCol], names(data_DWP))
-  DWPbyCarc <- as.numeric(data_DWP[cbind(rowind, colind)])
   return(DWPbyCarc)
 }
 
