@@ -4,14 +4,13 @@
 \alias{estM}
 \title{Estimate mortality}
 \usage{
-estM(nsim = 1, data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
-  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-  kFill = NULL, unitCol = NULL, dateFoundCol = "DateFound",
-  datesSearchedCol = NULL, sizeclassCol = NULL, max_intervals = 8)
+estM(data_CO, data_SS, data_DWP, frac = 1, model_SE, model_CP,
+  dateFoundCol = "DateFound", kFill = NULL, seed_SE = NULL,
+  seed_CP = NULL, seed_g = NULL, seed_M = NULL, unitCol = NULL,
+  datesSearchedCol = NULL, sizeclassCol = NULL, DWPcol = NULL, nsim = 1,
+  max_intervals = 8)
 }
 \arguments{
-\item{nsim}{the number of simulation draws}
-
 \item{data_CO}{Carcass Observation data}
 
 \item{data_SS}{Search Schedule data}
@@ -27,6 +26,10 @@ multiple size classes)}
 \item{model_CP}{Carcass Persistence model (or list of models if there are 
 multiple size classes)}
 
+\item{dateFoundCol}{Column name for the date found data}
+
+\item{kFill}{value to fill in for missing k when not existing in the model}
+
 \item{seed_SE}{seed for random draws of the SE model}
 
 \item{seed_CP}{seed for random draws of the CP model}
@@ -35,11 +38,7 @@ multiple size classes)}
 
 \item{seed_M}{seed for the random draws of the Mhats}
 
-\item{kFill}{value to fill in for missing k when not existing in the model}
-
 \item{unitCol}{Column name for the unit indicator (optional)}
-
-\item{dateFoundCol}{Column name for the date found data}
 
 \item{datesSearchedCol}{Column name for the date searched data}
 
@@ -47,11 +46,14 @@ multiple size classes)}
 are recorded. Optional. If none provided, it is assumed there is no
 distinctions among size classes.}
 
+\item{nsim}{the number of simulation draws}
+
 \item{max_intervals}{maximum number of arrival intervals to consider
 for each carcass}
 
 \item{DWPCol}{Column name for the DWP values in the DWP table when no
-size class is used}
+size class is used and there is more than one column in \code{data_DWP}
+that could be interpreted as DWP.}
 }
 \value{
 list of Mhat, Aj, ghat, SE parameters (pk), CP parameters (ab)

@@ -8,7 +8,7 @@
 estg(nsim = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, seed_g = NULL, kFill = NULL, unitCol = "Unit",
   dateFoundCol = "DateFound", sizeclassCol = NULL,
-  datesSearchedCol = "DateSearched", max_intervals = NULL)
+  datesSearchedCol = "DateSearched", max_intervals = 8)
 }
 \arguments{
 \item{nsim}{the number of simulation draws}
