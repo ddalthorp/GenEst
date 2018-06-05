@@ -5,14 +5,12 @@
 \title{Generic g estimation for a combination of SE model and CP model 
   under a given search schedule}
 \usage{
-estgGenericSize(n = 1, data_SS, modelSetSize_SE, modelSetSize_CP,
+estgGenericSize(nsim = 1, days, modelSetSize_SE, modelSetSize_CP,
   modelSizeSelections_SE, modelSizeSelections_CP, seed_SE = NULL,
   seed_CP = NULL, kFill = NULL)
 }
 \arguments{
-\item{n}{the number of simulation draws}
-
-\item{data_SS}{Search schedule data as a vector of days searched}
+\item{nsim}{the number of simulation draws}
 
 \item{modelSetSize_SE}{Searcher Efficiency model set for multiple sizes}
 
@@ -27,13 +25,15 @@ estgGenericSize(n = 1, data_SS, modelSetSize_SE, modelSetSize_CP,
 \item{seed_CP}{seed for random draws of the CP model}
 
 \item{kFill}{values to fill in for missing k when not existing in the model}
+
+\item{data_SS}{Search schedule data as a vector of days searched}
 }
 \value{
 list of g estimates, with one element in the list corresponding
   to each of the cells from the cross-model combination
 }
 \description{
-The g estimated by \code{estgGeneric} is a generic aggregate detection 
+The g estimated by \code{estgGenericSize} is a generic aggregate detection
   probability and represents the probability of detecting a carcass that 
   arrives at a (uniform) random time during the period monitored, for each
   of the possible cell combinations, given the SE and CP models. This 

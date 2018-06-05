@@ -5,17 +5,17 @@
 \title{Estimate g values and arrival intervals for a set of carcasses
   from fitted pk and cp models and search data}
 \usage{
-estg(nsim = 1, data_CO, data_SS, model_SE, model_CP, seed_SE = NULL,
-  seed_CP = NULL, seed_g = NULL, kFill = NULL, unitCol = "Unit",
-  dateFoundCol = "DateFound", sizeclassCol = NULL,
-  datesSearchedCol = "DateSearched", max_intervals = 8)
+estg(data_CO, data_SS, dateFoundCol = "DateFound", model_SE, model_CP,
+  kFill = NULL, unitCol = "Unit", datesSearchedCol = "DateSearched",
+  sizeclassCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
+  nsim = 1, max_intervals = 8)
 }
 \arguments{
-\item{nsim}{the number of simulation draws}
-
 \item{data_CO}{Carcass Observation data}
 
 \item{data_SS}{Search Schedule data}
+
+\item{dateFoundCol}{Column name for the date found data}
 
 \item{model_SE}{Searcher Efficiency model (or list of models if there are
 multiple size classes)}
@@ -23,26 +23,26 @@ multiple size classes)}
 \item{model_CP}{Carcass Persistence model (or list of models if there are
 multiple size classes)}
 
+\item{kFill}{value(s) to fill in for missing k when not existing in the
+model(s)}
+
+\item{unitCol}{Column name for the unit indicator}
+
+\item{datesSearchedCol}{Column name for the date searched data. Optional. If
+not provided, \code{estg} will try to find the datesSearchedCol among the
+columns in data_SS. See \code{\link{SS}}.}
+
+\item{sizeclassCol}{Name of column in \code{data_CO} where the size classes
+are recorded. Optional. If not provided, no distinctions are made among
+sizes.}
+
 \item{seed_SE}{seed for random draws of the SE model}
 
 \item{seed_CP}{seed for random draws of the CP model}
 
 \item{seed_g}{seed for random draws of the gs}
 
-\item{kFill}{value(s) to fill in for missing k when not existing in the
-model(s)}
-
-\item{unitCol}{Column name for the unit indicator}
-
-\item{dateFoundCol}{Column name for the date found data}
-
-\item{sizeclassCol}{Name of column in \code{data_CO} where the size classes
-are recorded. Optional. If not provided, no distinctions are made among
-sizes.}
-
-\item{datesSearchedCol}{Column name for the date searched data. Optional. If
-not provided, \code{estg} will try to find the datesSearchedCol among the
-columns in data_SS. See \link{\code{SS}}.}
+\item{nsim}{the number of simulation draws}
 
 \item{max_intervals}{maximum number of arrival interval intervals to consider
 for each carcass. Optional. Limiting the number of search intervals can
@@ -50,9 +50,9 @@ greatly increase the speed of calculations with only a slight reduction in
 accuracy in most cases.}
 }
 \value{
-list of [1] g estimates, [2] arrival interval (Aj) estimates,
-  [3]  estimates of SE parameters (pk), and [4] estimates CP parameters
-  (ab) for each of the carcasses. The row names of the Aj matrix are the
+list of [1] g estimates (ghat), [2] arrival interval estimates (Aj),
+  [3] simulated estimates of SE parameters (pk), and [4] simulated  estimates
+  CP parameters (ab) for each of the carcasses. The row names of the Aj matrix are the
   names of the units where each carcass was found.
 }
 \description{
