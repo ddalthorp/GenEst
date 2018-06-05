@@ -41,6 +41,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
   nsim = 1, max_intervals = 8){
 
+
   if (!(dateFoundCol %in% colnames(data_CO))){
     stop("dateFoundCol not found in data_CO")
   }
