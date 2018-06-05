@@ -167,7 +167,7 @@ CP field trials were conducted for one carcass size (bat) on one type of terrain
 predictor variable we have is `Season`, which is entered as a column in both
 `data_SE` and `data_CP`.
 
-```{r, eval = F}
+```{r}
 ?pkm
 model_SE <- pkm(p ~ Season, k ~ 1, data = data_SE)
 ?cpm
@@ -192,7 +192,7 @@ limited to a few key variables.
 Each carcass's contribution to the total mortality in each search search
 interval is estimated using the `estM`.
 
-```{r, eval = F}
+```{r}
 ?estM
 Mhat <- estM(nsim = 10, data_CO = data_CO, data_SS = data_SS,
   data_DWP = data_DWP, model_SE = model_SE, model_CP = model_CP,
@@ -211,30 +211,39 @@ they were found (e.g., season or other variable associated with search
 schedule and found in data_SS, or a list of times).
 
 
-```{r, eval = F}
+```{r}
 ?calcSplits
 ```
 
 Species (a CO split because it is a column in the CO file):
-```{r, eval = F}
-M_species <- calcSplits(M = Mhat$M, Aj = Mhat$Aj, split_CO = "Species",
+```{r}
+M_species <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
   data_CO = data_CO)
 summary(M_species)
 plot(M_species)
 ```
 
+Mortality estimates may also be split by temporal variables that are represented
+as columns in ``data_SS`` or as numeric vectors spanning the monitoring
+season (from day 0 to length of monitoring season). If several temporal splits
+are to be calculated, creating a specially formatted ``SS`` object for the
+search schedule can streamline the calculations.
+```{r}
+SSdat <- SS(data_SS)
+```
+
 Season (a SS split because it is a column in the SS file):
-```{r, eval = F}
-M_season <- calcSplits(M = Mhat$M, Aj = Mhat$Aj,
-  split_SS = "Season", data_SS = data_SS, split_CO = NULL,  data_CO = data_CO)
+```{r}
+M_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+  split_SS = "Season", data_SS = SSdat, split_CO = NULL,  data_CO = data_CO)
 summary(M_season)
 plot(M_season)
 ```
 
 Month (a temporal split that as a vector of times spanning monitoring season):
-```{r, eval = F}
-M_month <- calcSplits(M = Mhat$M, Aj = Mhat$Aj,
-  split_time = seq(0, max(SSdat$days), by = 30), 
+```{r}
+M_month <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+  split_time = seq(0, max(SSdat$days), by = 28),
   data_SS = SSdat, data_CO = data_CO)
 summary(M_month)
 plot(M_month)
@@ -243,8 +252,8 @@ Temporal splits that divide the monitoring season into separate time intervals
 (like season or month) can be plotted as the number per interval
 (`rate = FALSE`, which is the default arg in `calcSplits`) or the number per
 unit time (`rate = TRUE`).
-```{r, eval = F}
-M_various_times <- calcSplits(M = Mhat$M, Aj = Mhat$Aj,
+```{r}
+M_various_times <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_time = c(seq(0, 90, by = 15), 120, 150, seq(155, 200, by = 5)),
   data_SS = SSdat, data_CO = data_CO)
 summary(M_various_times)
@@ -257,14 +266,10 @@ like species by season or species group by turbine type. No more than two
 splitting covariates may be used in one call to `calcSplits` and at most one
 temporal split may be used (whether it is an SS split or a vector of times).
 
-```{r, eval = F}
-M_species_by_season <- calcSplits(M = Mhat$M, Aj = Mhat$Aj,
+```{r}
+M_species_by_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_CO = "Species", data_CO = data_CO,
   split_SS = "Season", data_SS = data_SS)
 plot(M_species_by_season)
-
-M_speciesgroup_and_turbinetype <- calcSplits( M = Mhat$M, Aj = Mhat$Aj,
-  split_CO = c("SpeciesGroup", "TurbineType"), data_CO = data_CO)
-plot(M_speciesgroup_and_turbinetype)
 ```
 
