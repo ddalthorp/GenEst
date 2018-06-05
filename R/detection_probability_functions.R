@@ -610,7 +610,7 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'   to work with for estimating M with precision.
 #'
 #' @param nsim the number of simulation draws
-#' @param data_SS Search schedule data as a vector of days searched 
+#' @param days Search schedule data as a vector of days searched 
 #' @param modelSetSize_SE Searcher Efficiency model set for multiple sizes
 #' @param modelSetSize_CP Carcass Persistence model set for multiple sizes
 #' @param modelSizeSelections_SE vector of SE models to use, one for each size
