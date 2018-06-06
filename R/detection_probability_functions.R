@@ -11,9 +11,9 @@
 #' @param kFill value(s) to fill in for missing k when not existing in the
 #'   model(s)
 #' @param unitCol Column name for the unit indicator
-#' @param datesSearchedCol Column name for the date searched data. Optional. If
-#'  not provided, \code{estg} will try to find the datesSearchedCol among the
-#'  columns in data_SS. See \code{\link{SS}}.
+#' @param datesSearchedCol Column name for the date searched data. Optional.
+#'  If not provided, \code{estg} will try to find the datesSearchedCol among
+#'  the columns in data_SS. See \code{\link{SS}}.
 #' @param sizeclassCol Name of column in \code{data_CO} where the size classes
 #'   are recorded. Optional. If not provided, no distinctions are made among
 #'   sizes.
@@ -21,22 +21,22 @@
 #' @param seed_CP seed for random draws of the CP model
 #' @param seed_g seed for random draws of the gs
 #' @param nsim the number of simulation draws
-#' @param max_intervals maximum number of arrival interval intervals to consider
-#'  for each carcass. Optional. Limiting the number of search intervals can
-#'  greatly increase the speed of calculations with only a slight reduction in
-#'  accuracy in most cases.
-#' @return list of [1] g estimates (ghat), [2] arrival interval estimates (Aj),
-#'   [3] simulated estimates of SE parameters (pk), and [4] simulated  estimates
-#'   CP parameters (ab) for each of the carcasses. The row names of the Aj matrix are the
+#' @param max_intervals maximum number of arrival interval intervals to 
+#'  consider for each carcass. Optional. Limiting the number of search 
+#'  intervals can greatly increase the speed of calculations with only a 
+#'  slight reduction in accuracy in most cases.
+#' @return list of [1] g estimates (ghat) and [2] arrival interval estimates 
+#'   (Aj) for each of the carcasses. The row names of the Aj matrix are the
 #'   names of the units where each carcass was found.
 #' @examples NA
 #' @export
-
+#'
 estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
-  model_SE, model_CP, kFill = NULL,
-  unitCol = "Unit", datesSearchedCol = "DateSearched", sizeclassCol = NULL,
-  seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-  nsim = 1, max_intervals = 8){
+                 model_SE, model_CP, kFill = NULL, unitCol = NULL, 
+                 datesSearchedCol = NULL, sizeclassCol = NULL,
+                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
+                 nsim = 1, max_intervals = 8){
+
 # sizeclassCol not only identifies what the name of the size column is, it
 # also identifies that the model should include size as a segregating class
   sizeCol <- sizeclassCol # changed here simply for ease of typing and reading
@@ -45,7 +45,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   t0date <- SSdat$date0
   COdat <- data_CO # format data_CO
   COdat[ , dateFoundCol] <- dateToDay(COdat[ , dateFoundCol], t0date)
-  names(COdat)[names(COdat) == dateFoundCol] <- "day" # to distinguish integers
+  names(COdat)[names(COdat) == dateFoundCol] <- "day" # distinguish integers
   if (is.null(sizeCol)){
     sizeCol <- "placeholder"
     COdat[ , sizeCol] <- "value"
@@ -94,11 +94,15 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   }
   if (!is.null(kFill)) {
     k <- as.list(kFill)
-    pksim <- mapply(function(x, y) rpk(nsim, x, seed_SE, kFill = y), model_SE, k)
+    pksim <- mapply(function(x, y) rpk(nsim, x, seed_SE, kFill = y), 
+               model_SE, k
+             )
   } else {
     pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
   }
-  cpsim <- lapply(model_CP, function(x) rcp(nsim, x, seed_CP, type = "ppersist"))
+  cpsim <- lapply(model_CP, 
+             function(x) rcp(nsim, x, seed_CP, type = "ppersist")
+           )
 
   X <- dim(COdat)[1]
   days <- list()
@@ -150,7 +154,8 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
         for (sei in 1:nse){
           predi <- preds_SE[[sz]][sei]
           if (predi %in% SSpreds){
-            ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])[-1]
+            ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])
+            ssvec <- ssvec[-1]
             SEc <- paste(SEc, unique(ssvec),
               sep = ifelse(is.null(SEc), "", "."))
             SEr <- table(ssvec)[unique(ssvec)]
@@ -175,7 +180,8 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
         for (sei in 1:nse){
           predi <- preds_CP[[sz]][sei]
           if (predi %in% SSpreds){
-            ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])[-1]
+            ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])
+            ssvec <- ssvec[-1]
             CPc <- paste(CPc, unique(ssvec),
               sep = ifelse(is.null(CPc), "", "."))
             CPr <- table(ssvec)[unique(ssvec)]
@@ -238,9 +244,9 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
          (sum(SSxi <= min(days[[xi]])))
     xuint <- unique(Aj[xi, ]) # unique xi arrival intervals (in SSxi)
     for (aj in xuint){
-      # calculate simulated ghat associated with the given carcass and interval
-      #   there is much redundant calculation here that could be sped up
-      #   substantially with clever bookkeeping
+      # calculate simulated ghat associated with the given carcass and 
+      #   interval there is much redundant calculation here that could be sped
+      #   up substantially with clever bookkeeping
       simInd <- which(Aj[xi, ] == aj)
       top <- length(SSxi)
       if (!is.null(max_intervals)){
@@ -279,20 +285,22 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   out <- list("ghat" = ghat, "Aj" = Aj) # ordered by relevance to user
   return(out)
 }
+
 #' Calculate the conditional probability of observing a carcass at search oi
-#' as a function arrival interval (assuming carcass is not removed by scavengers
-#' before the time of the final search)
+#' as a function arrival interval (assuming carcass is not removed by 
+#' scavengers before the time of the final search)
 #'   
 #' @param oi number of searches after arrival
 #' @param pk numeric array of searcher efficiency p and k parameters
 #'  (p = pk[ , 1] and k = pk[ , 2])
 #' @param rng optional parameter giving the range of intervals to consider
 #' @return numeric array of probability of observing a carcass at oi for
-#'  given that it arrived in intervals 1:oi if rng = NULL (or in intervals rng),
-#'  assuming the carcass had not been previously discovered or removed by
-#'  scavengers
+#'  given that it arrived in intervals 1:oi if rng = NULL (or in intervals
+#'  rng), assuming the carcass had not been previously discovered or removed 
+#'  by scavengers
 #' @examples NA
 #' @export
+#'
 SEsi_left <- function (oi, pk, rng = NULL){
   # oi is the index for the search occasion (excluding t0)
   # pk is nsim x 2 array of simulated p and k parameters
@@ -320,9 +328,9 @@ SEsi_left <- function (oi, pk, rng = NULL){
   return(pfind.si[ , oi - rng + 1])
 }
 
-#' Calculate the conditional probability of observing a carcass after i = 1:nsi
-#' searches (assuming carcass is not previous discovered by searchers or removed
-#' by scavengers)
+#' Calculate the conditional probability of observing a carcass after 
+#' i = 1:nsi searches (assuming carcass is not previous discovered by 
+#' searchers or removed by scavengers)
 #'
 #' @param nsi number of searches after arrival
 #' @param pk numeric array of searcher efficiency p and k parameters
@@ -407,13 +415,6 @@ kFillPropose <- function(model){
 #'    associated with the gs
 #' @export
 #'
-### In the code structure, data_SS, SS, and days all have different meanings.
-### In the estgGeneric family of functions, "days" is what is required, so the
-### arg list and internals have been edited to match that convention (i.e.,
-### data_SS is "raw" search schedule data
-### SS is a preprocessed search schedule class with a specific format
-### days is a numeric vector of times since t = 0
-
 estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
   if (!is.vector(days)){
@@ -465,9 +466,9 @@ estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
 #'  schedule for the the given SE and CP parameters. This differs the GenEst
 #'  estimation of g when the purpose is to estimate total mortality (M), in
 #'  which case the detection probability varies with carcass arrival interval
-#'  and is difficult to summarize statistically. \code{calcg} provides a useful
-#'  "big picture" summary of detection probability, but would be difficult to
-#'  work with for estimating M with precision.
+#'  and is difficult to summarize statistically. \code{calcg} provides a 
+#'  useful "big picture" summary of detection probability, but would be 
+#'  difficult to work with for estimating M with precision.
 #'
 #' @param days Search schedule (vector of days searched)
 #' @param param_SE numeric array of searcher efficiency parameters (p and k)
@@ -476,13 +477,6 @@ estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
 #'
 #' @export
 #'
-
-### calcg is qualitatively distinct from the estgGeneric family of functions
-### because it does not have a random component. The function calculates g
-### given a search schedule and set(s) of pk and cp parameters. The utility
-### extends beyond the context of cellwise integration into the estgGeneric
-### family; the name should reflect that. [Also, the kFill in the previous
-### version is superfluous and has been removed.]
 calcg <- function(days, param_SE, param_CP, dist){
   samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
   nsearch <- length(days) - 1
@@ -670,11 +664,11 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
 #' Tabulate an average search schedule from a multi-unit SS data table
 #'
 #' @param data_SS a multi-unit SS data table, for which the average interval 
-#'   will be tabulated. It is assumed that \code{data_SS} is properly formatted,
-#'   with a column of search dates and a column of 1s and 0s for each unit
-#'   indicating whether the unit was searched on the given date). Other columns
-#'   are optional, but optional columns should not all contain at least on
-#'   value that is not a 1 or 0.
+#'   will be tabulated. It is assumed that \code{data_SS} is properly 
+#'   formatted, with a column of search dates and a column of 1s and 0s for 
+#'   each unit indicating whether the unit was searched on the given date).
+#'   Other columns are optional, but optional columns should not all contain
+#'    at least on value that is not a 1 or 0.
 #' @param datesSearchedCol Column name for the date searched data (optional).
 #'   if no \code{datesSearchedCol} is provided, \code{data_SS} will be parsed
 #'   to extract the dates automatically. If there is more than one column with
@@ -684,14 +678,11 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
 #' @export
 #'
 averageSS <- function(data_SS, datesSearchedCol = NULL){
-# The unitPrefix in an earlier version is a tough constraint on unit names and
-# leads to potential for conflict with other names. Instead, use the SS function
-# to parse. Also, this version uses a simpler (and vectorized) calculation of
-# aveSS.
+
   SSdat <- SS(data_SS, datesSearchedCol = datesSearchedCol)
   schedules <- t(SSdat$searches_unit) * SSdat$days
-  nintervals <- length(SSdat$days) - matrixStats::colCounts(schedules, value = 0)
-  maxdays <- matrixStats::colMaxs(schedules)
+  nintervals <- length(SSdat$days) - colCounts(schedules, value = 0)
+  maxdays <- colMaxs(schedules)
   aveSS <- seq(0, max(maxdays), round(mean(maxdays/nintervals)))
   return(aveSS)
 }
@@ -707,7 +698,7 @@ averageSS <- function(data_SS, datesSearchedCol = NULL){
 #'   each cell combination within the gGeneric list
 #' @export
 #'
-summary.gGeneric <- function(object, ..., CL = 0.9){
+summary.gGeneric <- function(object, ..., CL = 0.95){
 
   ghats <- object$ghat
   preds <- object$predictors
@@ -758,7 +749,7 @@ summary.gGeneric <- function(object, ..., CL = 0.9){
 #'   bounds) for each cell combination within the gGeneric list
 #' @export
 #'
-summary.gGenericSize <- function(object, ..., CL = 0.9){
+summary.gGenericSize <- function(object, ..., CL = 0.95){
 
   nsizeclass <- length(object)
   out <- vector("list", length = nsizeclass)
@@ -787,35 +778,24 @@ summary.gGenericSize <- function(object, ..., CL = 0.9){
 #'
 #' @param data_SS data frame or matrix with search schedule parameters,
 #'  including columns for search dates, covariates (describing characteristics
-#'  of the search intervals), and each unit (with 1s and 0s to indicate whether
-#'  the given unit was searched (= 1) or not (= 0) on the given date)
+#'  of the search intervals), and each unit (with 1s and 0s to indicate 
+#'  whether the given unit was searched (= 1) or not (= 0) on the given date)
 #' @param datesSearchedCol name of the column with the search dates in it
 #'  (optional). If no \code{datesSearchedCol} is given, \code{SS} will attempt
 #'  to find the date column based on data formats. If there is exactly one
 #'  column that can be interpreted as dates, that column will be taken as the
-#'  dates searched. If more than one date column is found, \code{SS} exits with
-#'  an error message.
+#'  dates searched. If more than one date column is found, \code{SS} exits 
+#'  with an error message.
 #' @param preds vector of character strings giving the names of columns to be
 #'  interpreted as potential covariates (optional). Typically, it is not
-#'  necessary for a user to provide a value for \code{preds}. It is used only to
-#'  identify specific columns of 1s and 0s as covariates rather than as search
-#'  schedules.
+#'  necessary for a user to provide a value for \code{preds}. It is used only
+#'  to identify specific columns of 1s and 0s as covariates rather than as
+#'  search schedules.
 #' @return \code{SS} object that can be conveniently used in the splitting
 #'  functions.
 #'
 #' @export
 #'
-
-### Search schedule data format is highly structured and auto-parsible.
-### Especially, there is unlikely to be more than one date column, and
-### all the units columns must consist solely of 1s and 0s. SS takes advantage
-### of this and autoparses if possible, but allows the user override the
-### autoparsing if desired.
-
-### Most uses of SS data require "days" as numeric values measuring time since
-### the beginning of the inference period. Sometimes the beginning date (as
-### opposed to t = 0) is required, so that is included in the SS object.
-
 SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   dateCol <- datesSearchedCol # to make typing easier
   if ("SS" %in% class(data_SS)) return(data_SS)

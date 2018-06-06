@@ -377,13 +377,12 @@ the units.
 data_SS <- mock$SS
 avgSS <- averageSS(data_SS)
 
-gsGeneric <- estgGenericSize(
-  nsim = 1000, days = avgSS,
-  modelSetSize_SE = pkmModSetSize,
-  modelSetSize_CP = cpmModSetSize,
-  modelSizeSelections_SE = pkMods,
-  modelSizeSelections_CP = cpMods
-)
+gsGeneric <- estgGenericSize(nsim = 1000, days = avgSS,
+               modelSetSize_SE = pkmModSetSize,
+               modelSetSize_CP = cpmModSetSize,
+               modelSizeSelections_SE = pkMods,
+               modelSizeSelections_CP = cpMods
+             )
 ```
 
 The output from `estgGeneric` can be simply summarized
@@ -432,11 +431,11 @@ data_DWP <- mock$DWP
 head(data_DWP)
 DWPcolnames <- names(pkmModSize)
 
-eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP, frac = 1,
-        model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
-        seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
-        unitCol = "Unit", dateFoundCol = "DateFound", 
-        datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 10)
+eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP, 
+        frac = 1, model_SE = pkmModSize, model_CP = cpmModSize, 
+        seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL, 
+        kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound", 
+        datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 1000)
 ```
 
 `estM` returns an object that contains the random draws of `pkm` and `cpm`
@@ -459,7 +458,7 @@ carcass observation data sets.
 #### First, a temporal split:  
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
-M_season <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
+M_season <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction",
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
 summary(M_season)
@@ -469,7 +468,7 @@ plot(M_season)
 #### Next, a carcass split:  
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
-M_class <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = NULL,
+M_class <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = NULL,
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
 summary(M_class)
@@ -480,7 +479,7 @@ plot(M_class)
 expanded fully factorially:
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
-M_SbyC <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
+M_SbyC <- calcSplits(M = eM$M, Aj = eM$Aj, split_SS = "Construction",
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )
 summary(M_SbyC)

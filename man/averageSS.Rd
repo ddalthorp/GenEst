@@ -8,11 +8,11 @@ averageSS(data_SS, datesSearchedCol = NULL)
 }
 \arguments{
 \item{data_SS}{a multi-unit SS data table, for which the average interval 
-will be tabulated. It is assumed that \code{data_SS} is properly formatted,
-with a column of search dates and a column of 1s and 0s for each unit
-indicating whether the unit was searched on the given date). Other columns
-are optional, but optional columns should not all contain at least on
-value that is not a 1 or 0.}
+will be tabulated. It is assumed that \code{data_SS} is properly 
+formatted, with a column of search dates and a column of 1s and 0s for 
+each unit indicating whether the unit was searched on the given date).
+Other columns are optional, but optional columns should not all contain
+ at least on value that is not a 1 or 0.}
 
 \item{datesSearchedCol}{Column name for the date searched data (optional).
 if no \code{datesSearchedCol} is provided, \code{data_SS} will be parsed
