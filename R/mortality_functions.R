@@ -31,7 +31,7 @@
 #' @param nsim the number of simulation draws
 #' @param max_intervals maximum number of arrival intervals to consider
 #'  for each carcass
-#' @return list of Mhat, Aj, ghat, SE parameters (pk), CP parameters (ab)
+#' @return list of Mhat, Aj, ghat
 #' @examples NA
 #' @export 
 #'
@@ -45,7 +45,11 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   if (!(dateFoundCol %in% colnames(data_CO))){
     stop("dateFoundCol not found in data_CO")
   }
-  if (is.null(unitCol)){ # then find common cols in CO and DWP
+  # attempted auto-parsing for unitCol:
+  #  find common cols in CO and DWP as the candidate unitCol
+  #  if unique, then use that as unitCol
+  #  if not present or not unique, then error
+  if (is.null(unitCol)){ 
     unitCol <- intersect(colnames(data_CO), colnames(data_DWP))
     if (length(unitCol) == 0){
       stop(
@@ -60,9 +64,12 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
       )
     }
   }
-#  SSdat <- SS(data_SS, datesSearchedCol = datesSearchedCol) # not needed?
-
-  # error-checking for match b/t DWP and CO data is done in DWPbyCarcass
+  # if no sizeclassCol is provided, then the later analysis is done without
+  #   making distinctions between sizes; no error-checking here
+  # if sizeclassCol is provided, it must be present in CO. It's levels must also
+  #  all be present in DWP, but the check is done in the DWPbyCarcass function,
+  #  which allow DWPbyCarcass to more readily be used as a standalone function
+  #  if user wishes.
   if (!is.null(sizeclassCol)){
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not in carcass data.")
@@ -72,6 +79,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     }
   }
 
+  # error-checking for match b/t DWP and CO data is done in DWPbyCarcass
   DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
     sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol)
 
@@ -118,7 +126,12 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #'
 DWPbyCarcass <- function(data_DWP, data_CO,
   unitCol = NULL, sizeclassCol = NULL, DWPCol = NULL){
-  # unitCol is assumed to be the column that the two data sets share.
+  # if called by estM, unitCol is provided; if called from elsewhere, the
+  #   column can be autoparsed to find unitCol as is done in estM. [Extract
+  #   this into a standalone parsing function that both DWPbyCarcass and
+  #   and estM use? lower priority at this point]
+  # if unitCol = NULL, then is assumed to be the column that the two data sets
+  #   share.
   # if none are in common, error is thrown with no remedy.
   # if data sets share more than one column, user is asked to input unitCol.
   if (is.null(unitCol)){
@@ -136,9 +149,13 @@ DWPbyCarcass <- function(data_DWP, data_CO,
       stop(unitCol, " not found in data_DWP")
     }
   }
+  # length(unitCol) = 1 and has been found in both CO and DWP;
+  # are all units in data_CO also found in DWP?
   if (!all(data_CO[, unitCol] %in% data_DWP[ , unitCol])){
     stop("Some units present in carcass table not in DWP table")
-  }
+  } # error-checking on units is complete
+
+  # parse w.r.t. sizeclassCol arg and assign DWP to carcasses
   if (!is.null(sizeclassCol)){
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not found in carcass data.")
@@ -146,16 +163,27 @@ DWPbyCarcass <- function(data_DWP, data_CO,
     if (!all(unique(data_CO[,sizeclassCol]) %in% colnames(data_DWP))){
       stop("some sizes represented in data_CO are not represented in data_DWP.")
     }
+    # size classes and units have been error-checked, and assigning DWP to
+    #  carcasses is a simple extraction of DWP from the appropriate row and
+    #  column for each carcass in CO.
+    # unit in CO defines the desired row in DWP:
     rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+    # size in CO defines the desired column in DWP:
     colind <- match(data_CO[ , sizeclassCol], names(data_DWP))
+    # and DWPbyCarc falls out naturally
     DWPbyCarc <- as.numeric(data_DWP[cbind(rowind, colind)])
+
   } else { # assume same DWP for all sizes, so matching is by unit only
-    # which column is DWP?
-    # if there's one numeric column with values in (0, 1], that the dwp column
+    # which column has the DWP data?
+    # if DWPCol is provided, then that is the candidate DWP column (but still
+    #   needs to be error-checked)
+    # if no DWPCol is provided, then check for possible DWPCol's
+    #   if there is only one column with values in (0, 1], that's DWPCol
+    #   if there is not a unique column with values in (0, 1], error
     if (is.null(DWPCol)) {
       possibleNames <- colnames(data_DWP)
-    } else {
-      possibleNames <- DWPCol
+    } else { # DWPCol has been provided, but must be error-checked (as below)
+      possibleNames <- DWPCol 
     }
     for (coli in possibleNames){
       DWPcolumn <- NULL
@@ -173,8 +201,9 @@ DWPbyCarcass <- function(data_DWP, data_CO,
         }
       }
     }
+    # DWPCol and unitCol have been error-checked, so
     rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-    DWPbyCarc <- data_DWP[rowind , DWPcolumn]
+    DWPbyCarc <- as.numeric(data_DWP[rowind , DWPcolumn])
   }
   return(DWPbyCarc)
 }
@@ -190,6 +219,16 @@ DWPbyCarcass <- function(data_DWP, data_CO,
 #' @examples NA
 #' @export 
 #'
+
+### cleanouts is simply a matter of ignoring carcasses that are found on the
+### very first search of the season. This is done in the newer versions of the
+### code.
+
+### If users want to clean something else out, that's their prerogative, but
+### they then step out of our model, and they will need to accomplish their
+### custom cleanouts by editing their input files.
+
+### possible to delete this function?
 cleanouts <- function(data_CO, data_SS, unitCol, timeFoundCol, 
                         timeSearchedCol){
 
@@ -221,6 +260,13 @@ cleanouts <- function(data_CO, data_SS, unitCol, timeFoundCol,
 #' @examples NA
 #' @export 
 #'
+
+### parsing and formatting of SS data is done in SS(). data_CO parsing is simple
+### enough to do on demand without needing to separate it out from the "live"
+### code (which makes it easier to follow)
+
+### possible to delete this?
+
 prepSSCO <- function(data_SS, data_CO, datesSearchedCol = "DateSearched",
                      dateFoundCol = "DateFound", unitCol = "Unit"){
 
@@ -248,13 +294,20 @@ prepSSCO <- function(data_SS, data_CO, datesSearchedCol = "DateSearched",
 #' @param CL confidence level
 #' @export
 #'
+
+### the previous version returned a character string with summary statistics.
+### That format is not easy for command line users to use. I changed it to
+###   a numeric vector, which users can use without having to parse.
+
+### S3's for print() can profitably use text output because it allows
+###   some nice formatting for viewing, but summary() should have readily
+###   extractable data.
+
+
 summary.estM <- function(object, ..., CL = 0.9){
   alpha <- 1 - CL
-  Mtot <- colSums(object$Mhat) # vectorized
-#  out <- paste0("Median: ", Mmed, "; ", CL * 100, "% CI: [",
-#           MCLlow, ", ", MCLhi, "]"
-#         ) # text output is difficult for command line user to work with.
-   out <- c(
+  Mtot <- colSums(object$Mhat) # vectorized, and more transparent than "apply"
+  out <- c(
     "Median" = round(median(Mtot), 2),
     "lwr" = round(quantile(Mtot, alpha/2), 2), 
     "upr" = round(quantile(Mtot, 1 - alpha/2), 2),

@@ -56,7 +56,7 @@ that could be interpreted as DWP.}
 for each carcass}
 }
 \value{
-list of Mhat, Aj, ghat, SE parameters (pk), CP parameters (ab)
+list of Mhat, Aj, ghat
 }
 \description{
 Given given fitted Searcher Efficiency and Carcass 
