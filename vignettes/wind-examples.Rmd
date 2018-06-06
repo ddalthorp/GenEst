@@ -217,7 +217,7 @@ schedule and found in data_SS, or a list of times).
 
 Species (a CO split because it is a column in the CO file):
 ```{r}
-M_species <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
+M_species <- calcSplits(M = Mhat$M, Aj = Mhat$Aj, split_CO = "Species",
   data_CO = data_CO)
 summary(M_species)
 plot(M_species)
@@ -234,7 +234,7 @@ SSdat <- SS(data_SS)
 
 Season (a SS split because it is a column in the SS file):
 ```{r}
-M_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+M_season <- calcSplits(M = Mhat$M, Aj = Mhat$Aj,
   split_SS = "Season", data_SS = SSdat, split_CO = NULL,  data_CO = data_CO)
 summary(M_season)
 plot(M_season)
@@ -242,7 +242,7 @@ plot(M_season)
 
 Month (a temporal split that as a vector of times spanning monitoring season):
 ```{r}
-M_month <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+M_month <- calcSplits(M = Mhat$M, Aj = Mhat$Aj,
   split_time = seq(0, max(SSdat$days), by = 28),
   data_SS = SSdat, data_CO = data_CO)
 summary(M_month)
@@ -253,7 +253,7 @@ Temporal splits that divide the monitoring season into separate time intervals
 (`rate = FALSE`, which is the default arg in `calcSplits`) or the number per
 unit time (`rate = TRUE`).
 ```{r}
-M_various_times <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+M_various_times <- calcSplits(M = Mhat$M, Aj = Mhat$Aj,
   split_time = c(seq(0, 90, by = 15), 120, 150, seq(155, 200, by = 5)),
   data_SS = SSdat, data_CO = data_CO)
 summary(M_various_times)
@@ -267,7 +267,7 @@ splitting covariates may be used in one call to `calcSplits` and at most one
 temporal split may be used (whether it is an SS split or a vector of times).
 
 ```{r}
-M_species_by_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+M_species_by_season <- calcSplits(M = Mhat$M, Aj = Mhat$Aj,
   split_CO = "Species", data_CO = data_CO,
   split_SS = "Season", data_SS = SSdat)
 plot(M_species_by_season)
