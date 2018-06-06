@@ -5,7 +5,7 @@
 \title{Run a set of pkm models based on predictor inputs}
 \usage{
 pkmSet(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
-  kInit = 0.7, CL = 0.9, quiet = FALSE)
+  kInit = 0.7, CL = 0.95, quiet = FALSE)
 }
 \arguments{
 \item{formula_p}{Formula for p; an object of class "\code{\link{formula}}"
