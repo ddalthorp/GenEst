@@ -5,7 +5,7 @@
 #' @param CL confidence level
 #' @export
 #'
-plot.estM <- function(x, ..., CL = 0.9){
+plot.estM <- function(x, ..., CL = 0.95){
   simpleMplot(x$M, ..., CL = CL)
 }
 
@@ -16,7 +16,7 @@ plot.estM <- function(x, ..., CL = 0.9){
 #' @param CL confidence level
 #' @export
 #'
-simpleMplot <- function(M, ..., CL = 0.9){
+simpleMplot <- function(M, ..., CL = 0.95){
   
   if ("splitSummary" %in% class(M)){
     Mtot <- as.vector(M)

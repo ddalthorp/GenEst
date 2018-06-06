@@ -13,14 +13,22 @@ proportion table}
 
 \item{data_CO}{Carcass observation data}
 
-\item{unitCol}{Column name for the unit indicator (optional)}
+\item{unitCol}{Column name for the unit indicator (optional). If 
+\code{NULL}, then is assumed to be the column that \code{data_DWP} and
+\code{data_CO} share. If none are in common, error is thrown with no 
+remedy. If data sets share more than one column, user is asked to input 
+\code{unitCol}.}
 
 \item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
 are recorded. Optional.}
 
 \item{DWPCol}{Name of column where DWP values are stored (optional). Used
 when there is more than one DWP column in \code{data_DWP} but analysis is
-intended for a single class (i.e., no "size" is specified in data_CO).}
+intended for a single class (i.e., no "size" is specified in data_CO).
+If \code{sizeclassCol} is \code{NULL} and \code{DWPCol} is not provided, 
+there is a check for possible DWPCols. If there is only one column with 
+values in (0, 1], that's DWPCol. If there is not a unique column with 
+values in (0, 1], an error is returned.}
 }
 \value{
 DWP value for each carcass

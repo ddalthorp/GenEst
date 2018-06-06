@@ -5,7 +5,7 @@
 \title{Fit all possible searcher efficiency models across all size classes.}
 \usage{
 pkmSetSize(formula_p, formula_k = NULL, data, obsCol = NULL,
-  sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, CL = 0.9,
+  sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, CL = 0.95,
   quiet = FALSE)
 }
 \arguments{

@@ -4,7 +4,7 @@
 \alias{plot.gGeneric}
 \title{Plot results of a single generic ghat estimation}
 \usage{
-\method{plot}{gGeneric}(x, sizeclassName = NULL, CL = 0.9, ...)
+\method{plot}{gGeneric}(x, sizeclassName = NULL, CL = 0.95, ...)
 }
 \arguments{
 \item{x}{ghatGeneric output}

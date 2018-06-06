@@ -126,7 +126,7 @@
 #' @export
 #'
 cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
-                right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE){
+                right = NULL, dist = "weibull", CL = 0.95, quiet = FALSE){
 
 
   if (length(formula_s) != 0 & dist == "exponential" & quiet == FALSE){
@@ -557,7 +557,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #'
 cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL, 
                    right = NULL, dists = c("exponential", "weibull",
-                   "lognormal", "loglogistic"), CL = 0.9, quiet = FALSE){
+                   "lognormal", "loglogistic"), CL = 0.95, quiet = FALSE){
 
   if (length(formula_s) == 0){
     formula_s <- formula(s ~ 1)
@@ -719,7 +719,7 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
                        right = NULL, dists = c("exponential", "weibull", 
                        "lognormal", "loglogistic"), sizeclassCol = NULL, 
-                       CL = 0.9, quiet = FALSE){
+                       CL = 0.95, quiet = FALSE){
 
   if (length(sizeclassCol) == 0){
     out <- vector("list", length = 1)
