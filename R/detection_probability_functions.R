@@ -43,7 +43,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   SSdat <- SS(data_SS) # SSdat name distinguishes this as pre-formatted data
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
-  COdat <- data_CO
+  COdat <- data_CO # format data_CO
   COdat[ , dateFoundCol] <- dateToDay(COdat[ , dateFoundCol], t0date)
   names(COdat)[names(COdat) == dateFoundCol] <- "day" # to distinguish integers
   if (is.null(sizeCol)){
@@ -61,7 +61,8 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   sizeclasses <- unique(unlist(sizeclass))
   nsizeclass <- length(sizeclasses)
 
-# step 3: create lists of arrays for SS (days) and cells (SE and CP)
+# data pre-processing
+# create lists of arrays for SS (days) and cells (SE and CP)
   for (sci in 1:nsizeclass){
     sc <- sizeclasses[sci]
     if (is.na(model_SE[[sc]]$cellwiseTable[1, "k_median"])){
@@ -79,7 +80,8 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   preds_SE <- lapply(model_SE, function(x) x$predictors)
   preds_CP <- lapply(model_CP, function(x) x$predictors)
   preds <- mapply(function(x, y) unique(c(x, y)), preds_SE, preds_CP)
-  #data_SE <- lapply(model_SE, function(x) x$data) # can't find where it's used
+# I can't find where x$data is used. Can we cut the following two lines?
+  #data_SE <- lapply(model_SE, function(x) x$data) 
   #data_CP <- lapply(model_CP, function(x) x$data)
   dist <- unlist(lapply(model_CP, function(x) x$dist))
   COpreds <- lapply(preds, function(x) x[x %in% names(COdat)])
@@ -234,7 +236,6 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     Aj[xi, ] <- # sim arrival intervals (relative to cind's ss)
        rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(nsim)) +
          (sum(SSxi <= min(days[[xi]])))
-##########
     xuint <- unique(Aj[xi, ]) # unique xi arrival intervals (in SSxi)
     for (aj in xuint){
       # calculate simulated ghat associated with the given carcass and interval
@@ -275,7 +276,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     }
   }
   rownames(Aj) <- COdat[ , unitCol]
-  out <- list("ghat" = ghat, "Aj" = Aj, "pk" = pksim, "ab" = cpsim)
+  out <- list("ghat" = ghat, "Aj" = Aj) # ordered by relevance to user
   return(out)
 }
 #' Calculate the conditional probability of observing a carcass at search oi
@@ -468,6 +469,13 @@ estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
 #'
 #' @export
 #'
+
+### calcg is qualitatively distinct from the estgGeneric family of functions
+### because it does not have a random component. The function calculates g
+### given a search schedule and set(s) of pk and cp parameters. The utility
+### extends beyond the context of cellwise integration into the estgGeneric
+### family; the name should reflect that. [Also, the kFill in the previous
+### version is superfluous and has been removed.]
 calcg <- function(days, param_SE, param_CP, dist){
   samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
   nsearch <- length(days) - 1
@@ -669,11 +677,10 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
 #' @export
 #'
 averageSS <- function(data_SS, datesSearchedCol = NULL){
-#   unitPrefix is a tough constraint on unit names and leads to potential for
-# conflict with other names. instead, the SS function does a good job of
-# parsing data_SS data by reading which columns contain only 0s and 1s and
-# taking those as the unit columns. The only constraint here would be that the
-# SS covariates cannot be coded strictly as 0/1.
+# The unitPrefix in an earlier version is a tough constraint on unit names and
+# leads to potential for conflict with other names. Instead, use the SS function
+# to parse. Also, this version uses a simpler (and vectorized) calculation of
+# aveSS.
   SSdat <- SS(data_SS, datesSearchedCol = datesSearchedCol)
   schedules <- t(SSdat$searches_unit) * SSdat$days
   nintervals <- length(SSdat$days) - matrixStats::colCounts(schedules, value = 0)
@@ -753,4 +760,119 @@ summary.gGenericSize <- function(object, ..., CL = 0.9){
     out[[sci]] <- summary(object[[sci]], ..., CL = CL)
   }
   return(out)
+}
+
+#' Create search schedule data into an SS object for convenient splits
+#'  analyses
+#'
+#' @description Since data_SS columns largely have a specific, required
+#'   format, the \code{SS} function can often decipher the data automatically,
+#'   but the user may specify explicit instructions for parsing the data for
+#'   safety if desired. If the data are formatted properly, the automatic
+#'   parsing is reliable in most cases. There are two exceptions. (1) If
+#'   there is more than one column with possible dates (formatted as formal
+#'   dates (as class \code{Date}, \code{POSIXlt} or \code{POSIXct}) or
+#'   character strings or factors that can be unambiguously interpreted as
+#'   dates (with assumed format "2018-05-15" or "2018/5/15"). In that case,
+#'   the user must specify the desired dates as \code{dateColumn}. (2) If
+#'   there is a covariate column consisting entirely of 0s and 1s. In that
+#'   case, the user must specify the column(s) in \code{covars}.
+#'
+#' @param data_SS data frame or matrix with search schedule parameters,
+#'  including columns for search dates, covariates (describing characteristics
+#'  of the search intervals), and each unit (with 1s and 0s to indicate whether
+#'  the given unit was searched (= 1) or not (= 0) on the given date)
+#' @param datesSearchedCol name of the column with the search dates in it
+#'  (optional). If no \code{datesSearchedCol} is given, \code{SS} will attempt
+#'  to find the date column based on data formats. If there is exactly one
+#'  column that can be interpreted as dates, that column will be taken as the
+#'  dates searched. If more than one date column is found, \code{SS} exits with
+#'  an error message.
+#' @param preds vector of character strings giving the names of columns to be
+#'  interpreted as potential covariates (optional). Typically, it is not
+#'  necessary for a user to provide a value for \code{preds}. It is used only to
+#'  identify specific columns of 1s and 0s as covariates rather than as search
+#'  schedules.
+#' @return \code{SS} object that can be conveniently used in the splitting
+#'  functions.
+#'
+#' @export
+#'
+
+### Search schedule data format is highly structured and auto-parsible.
+### Especially, there is unlikely to be more than one date column, and
+### all the units columns must consist solely of 1s and 0s. SS takes advantage
+### of this and autoparses if possible, but allows the user override the
+### autoparsing if desired.
+
+### Most uses of SS data require "days" as numeric values measuring time since
+### the beginning of the inference period. Sometimes the beginning date (as
+### opposed to t = 0) is required, so that is included in the SS object.
+
+SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
+  dateCol <- datesSearchedCol # to make typing easier
+  if ("SS" %in% class(data_SS)) return(data_SS)
+  if (length(intesect(class(data_SS), c("data.frame", "matrix"))) == 0){
+    stop("data_SS must be a data frame or matrix")
+  } else if (is.null(colnames(data_SS))){
+    stop("data_SS columns must be named")
+  }
+  # if dateCol not provided, extract search dates (if possible)
+  if (is.null(dateCol)){
+    for (coli in colnames(data_SS)){
+      tmp <- try(as.Date(data_SS[, coli]), silent = T)
+      if (class(tmp) != "try-error"){
+        if (!is.null(dateCol)){
+          stop(
+            "more than 1 date column in data_SS, and ",
+            "datesSearchedCol does not specify which to use."
+          )
+        } else {
+          dateCol <- coli
+        }
+      }
+    }
+    if (is.null(dateCol)){
+      stop("no columns can be interpreted as dates")
+    }
+  } else {
+    if (length(dateCol) > 1 || !is.character(dateCol)){
+      stop("datesSearchedCol must be NULL or the name of a single column")
+    }
+    tmp <- try(as.Date(data_SS[, dateCol]), silent = T)
+    if (class(tmp) == "try-error"){
+      stop(paste(dateCol, "is not properly formatted as dates"))
+    }
+  }
+  # extract units
+  unitNames <- NULL
+  for (coli in colnames(data_SS)){
+    if (coli %in% c(preds, dateCol)) next
+    if (!is.numeric(data_SS[, coli])){
+      preds <- c(preds, coli)
+      next
+    }
+    if (sum(!(data_SS[, coli] %in% 0:1)) > 0){
+      preds <- c(preds, coli)
+      next
+    } else {
+      unitNames <- c(unitNames, coli)
+    }
+  }
+  dates <- as.Date(data_SS[, dateCol])
+  date0 <- min(dates)
+  ans <- list()
+  ans$date0 <- date0
+  ans$days <- as.numeric(difftime(dates, date0, units = "days"))
+  for (i in 1:length(preds)){
+    if (is.factor(data_SS[, preds[i]])){
+      ans[[preds[i]]] <- as.character(data_SS[,preds[i]])
+    } else {
+      ans[[preds[i]]] <- data_SS[,preds[i]]
+    }
+  }
+  ans$searches_unit <- t(as.matrix(data_SS[, unitNames]))
+  ans$unit <- unitNames
+  class(ans) <- "SS"
+  return(ans)
 }
