@@ -31,7 +31,7 @@
 #' @param nsim the number of simulation draws
 #' @param max_intervals maximum number of arrival intervals to consider
 #'  for each carcass
-#' @return list of Mhat, Aj, ghat, SE parameters (pk), CP parameters (ab)
+#' @return list of Mhat, Aj, ghat
 #' @examples NA
 #' @export 
 #'
