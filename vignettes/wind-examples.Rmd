@@ -172,6 +172,7 @@ predictor variable we have is `Season`, which is entered as a column in both
 ```
 ```{r}
 model_SE <- pkm(p ~ Season, k ~ 1, data = data_SE)
+```
 ```{r, eval = FALSE}
 ?cpm
 ```
