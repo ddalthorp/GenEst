@@ -266,7 +266,7 @@ like species by season or species group by turbine type. No more than two
 splitting covariates may be used in one call to `calcSplits` and at most one
 temporal split may be used (whether it is an SS split or a vector of times).
 
-```{r, eval = F}
+```{r}
 M_species_by_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_CO = "Species", data_CO = data_CO,
   split_SS = "Season", data_SS = SSdat)
