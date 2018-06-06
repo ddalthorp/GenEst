@@ -812,7 +812,7 @@ summary.gGenericSize <- function(object, ..., CL = 0.9){
 SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   dateCol <- datesSearchedCol # to make typing easier
   if ("SS" %in% class(data_SS)) return(data_SS)
-  if (length(intesect(class(data_SS), c("data.frame", "matrix"))) == 0){
+  if (length(intersect(class(data_SS), c("data.frame", "matrix"))) == 0){
     stop("data_SS must be a data frame or matrix")
   } else if (is.null(colnames(data_SS))){
     stop("data_SS columns must be named")
