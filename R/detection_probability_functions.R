@@ -407,6 +407,12 @@ kFillPropose <- function(model){
 #'    associated with the gs
 #' @export
 #'
+### In the code structure, data_SS, SS, and days all have different meanings.
+### In the estgGeneric family of functions, "days" is what is required, so the
+### arg list and internals have been edited to match that convention (i.e.,
+### data_SS is "raw" search schedule data
+### SS is a preprocessed search schedule class with a specific format
+### days is a numeric vector of times since t = 0
 estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
   if (!is.vector(days)){
