@@ -36,15 +36,16 @@
 #' @export 
 #'
 estM <- function(data_CO, data_SS, data_DWP, frac = 1,
-  dateFoundCol = "DateFound", model_SE, model_CP, kFill = NULL,
-  unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL, DWPCol = NULL,
-  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-  nsim = 1, max_intervals = 8){
+                 dateFoundCol = "DateFound", model_SE, model_CP, kFill = NULL,
+                 unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL,
+                 DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
+                 seed_M = NULL, nsim = 1, max_intervals = 8){
 
 
   if (!(dateFoundCol %in% colnames(data_CO))){
     stop("dateFoundCol not found in data_CO")
   }
+  data_CO[ , dateFoundCol] <- as.Date(yyyymmdd(data_CO[ , dateFoundCol]))
   # attempted auto-parsing for unitCol:
   #  find common cols in CO and DWP as the candidate unitCol
   #  if unique, then use that as unitCol
@@ -66,10 +67,10 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   }
   # if no sizeclassCol is provided, then the later analysis is done without
   #   making distinctions between sizes; no error-checking here
-  # if sizeclassCol is provided, it must be present in CO. It's levels must also
-  #  all be present in DWP, but the check is done in the DWPbyCarcass function,
-  #  which allow DWPbyCarcass to more readily be used as a standalone function
-  #  if user wishes.
+  # if sizeclassCol is provided, it must be present in CO. It's levels must 
+  #  also all be present in DWP, but the check is done in the DWPbyCarcass 
+  #  function, which allow DWPbyCarcass to more readily be used as a 
+  #  standalone function if user wishes.
   if (!is.null(sizeclassCol)){
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not in carcass data.")
@@ -81,30 +82,34 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 
   # error-checking for match b/t DWP and CO data is done in DWPbyCarcass
   DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
-    sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol)
+           sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol
+         )
 
-  est <- estg(data_CO = data_CO, data_SS = data_SS, dateFoundCol = dateFoundCol,
-    model_SE = model_SE, model_CP = model_CP, kFill = kFill, unitCol = unitCol,
-    datesSearchedCol = datesSearchedCol, sizeclassCol = sizeclassCol,
-    seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g,
-    nsim = nsim, max_intervals = max_intervals)
+  est <- estg(data_CO = data_CO, data_SS = data_SS, 
+           dateFoundCol = dateFoundCol, model_SE = model_SE, 
+           model_CP = model_CP, kFill = kFill, unitCol = unitCol,
+           datesSearchedCol = datesSearchedCol, sizeclassCol = sizeclassCol,
+           seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g,
+           nsim = nsim, max_intervals = max_intervals
+         )
 
-  gDWPf <- est$ghat * DWP * frac
+  gDf <- est$ghat * DWP * frac
   set.seed(seed_M)
-  c_out <- which(rowSums(gDWPf) == 0)
+  c_out <- which(rowSums(gDf) == 0)
   if (length(c_out) == 0){
-    n <- length(gDWPf)
-    Mhat <- ((rcbinom(n, 1/gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/gDWPf
+    n <- length(gDf)
+    Mhat <- ((rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   } else {
     Mhat <- array(0, dim = c(dim(data_CO)[1], nsim))
-    gDWPf <- gDWPf[-c_out, ]
-    n <- length(gDWPf)
-    Mhat[-c_out,] <- ((rcbinom(n, 1/gDWPf, gDWPf)) - (Ecbinom(gDWPf) - 1))/gDWPf
+    gDf <- gDf[-c_out, ]
+    n <- length(gDf)
+    Mhat[-c_out,] <- ((rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   }
-  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, pk = est$pk, ab = est$ab)
+  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat)
   class(out) <- c("estM", "list")
   return(out)
 }
+
 #' @title Assign DWP Value to Each Carcass
 #'
 #' @description Expand the density weighted proportion table to a value for 
@@ -114,26 +119,27 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted 
 #'   proportion table 
 #' @param data_CO Carcass observation data
-#' @param unitCol Column name for the unit indicator (optional)
+#' @param unitCol Column name for the unit indicator (optional). If 
+#'   \code{NULL}, then is assumed to be the column that \code{data_DWP} and
+#'   \code{data_CO} share. If none are in common, error is thrown with no 
+#'   remedy. If data sets share more than one column, user is asked to input 
+#'   \code{unitCol}.
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional.
 #' @param DWPCol Name of column where DWP values are stored (optional). Used
 #'  when there is more than one DWP column in \code{data_DWP} but analysis is
 #'  intended for a single class (i.e., no "size" is specified in data_CO).
+#'  If \code{sizeclassCol} is \code{NULL} and \code{DWPCol} is not provided, 
+#'  there is a check for possible DWPCols. If there is only one column with 
+#'  values in (0, 1], that's DWPCol. If there is not a unique column with 
+#'  values in (0, 1], an error is returned.
 #' @return DWP value for each carcass 
 #' @examples NA
 #' @export 
 #'
-DWPbyCarcass <- function(data_DWP, data_CO,
-  unitCol = NULL, sizeclassCol = NULL, DWPCol = NULL){
-  # if called by estM, unitCol is provided; if called from elsewhere, the
-  #   column can be autoparsed to find unitCol as is done in estM. [Extract
-  #   this into a standalone parsing function that both DWPbyCarcass and
-  #   and estM use? lower priority at this point]
-  # if unitCol = NULL, then is assumed to be the column that the two data sets
-  #   share.
-  # if none are in common, error is thrown with no remedy.
-  # if data sets share more than one column, user is asked to input unitCol.
+DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL, 
+                         sizeclassCol = NULL, DWPCol = NULL){
+
   if (is.null(unitCol)){
     unitCol <- colnames(data_DWP)[colnames(data_DWP) %in% colnames(data_CO)]
     if (length(unitCol) == 0){
@@ -161,7 +167,7 @@ DWPbyCarcass <- function(data_DWP, data_CO,
       stop("size class column not found in carcass data.")
     }
     if (!all(unique(data_CO[,sizeclassCol]) %in% colnames(data_DWP))){
-      stop("some sizes represented in data_CO are not represented in data_DWP.")
+      stop("not all sizes in data_CO are represented in data_DWP.")
     }
     # size classes and units have been error-checked, and assigning DWP to
     #  carcasses is a simple extraction of DWP from the appropriate row and
@@ -175,11 +181,6 @@ DWPbyCarcass <- function(data_DWP, data_CO,
 
   } else { # assume same DWP for all sizes, so matching is by unit only
     # which column has the DWP data?
-    # if DWPCol is provided, then that is the candidate DWP column (but still
-    #   needs to be error-checked)
-    # if no DWPCol is provided, then check for possible DWPCol's
-    #   if there is only one column with values in (0, 1], that's DWPCol
-    #   if there is not a unique column with values in (0, 1], error
     if (is.null(DWPCol)) {
       possibleNames <- colnames(data_DWP)
     } else { # DWPCol has been provided, but must be error-checked (as below)
@@ -208,85 +209,6 @@ DWPbyCarcass <- function(data_DWP, data_CO,
   return(DWPbyCarc)
 }
 
-#' Determine which carcasses were from cleanout searches
-#'
-#' @param data_CO Carcass observation data
-#' @param data_SS Search schedule data
-#' @param unitCol Column name for the unit indicator
-#' @param timeFoundCol Column name for the time found data
-#' @param timeSearchedCol Column name for the time searched data
-#' @return index values of which carcasses were taken on the first search
-#' @examples NA
-#' @export 
-#'
-
-### cleanouts is simply a matter of ignoring carcasses that are found on the
-### very first search of the season. This is done in the newer versions of the
-### code.
-
-### If users want to clean something else out, that's their prerogative, but
-### they then step out of our model, and they will need to accomplish their
-### custom cleanouts by editing their input files.
-
-### possible to delete this function?
-cleanouts <- function(data_CO, data_SS, unitCol, timeFoundCol, 
-                        timeSearchedCol){
-
-  ncarc <- nrow(data_CO)
-  cleanoutTF <- rep(NA, ncarc)
-  for (carci in 1:ncarc){
-    specificUnit <- data_CO[carci, unitCol]
-    times <- data_SS[data_SS[, specificUnit] == 1, timeSearchedCol]
-    time_cleanout <- min(times)
-    cleanoutTF[carci] <- data_CO[carci, timeFoundCol] == time_cleanout
-  }
-  return(which(cleanoutTF))
-}
-
-#' Prepare the SS and CO data
-#'
-#' @description Turns dates into days from the first day (cleanout search, set
-#'   as time 0) and removes any carcasses observed on the first days
-#'
-#' @param data_CO Carcass observation data
-#' @param data_SS Search Schedule data 
-#' @param unitCol Column name for the unit indicator
-#' @param dateFoundCol Column name for the date found data
-#' @param datesSearchedCol Column name for the date searched data
-#'
-#' @return list of [1] SS with days (starting with t = 0), [2] CO data with 
-#'   days (starting with t = 0), and [3] a vector of the CO_data rows 
-#'   indicating the carcasses found during cleanout searches. 
-#' @examples NA
-#' @export 
-#'
-
-### parsing and formatting of SS data is done in SS(). data_CO parsing is simple
-### enough to do on demand without needing to separate it out from the "live"
-### code (which makes it easier to follow)
-
-### possible to delete this?
-
-prepSSCO <- function(data_SS, data_CO, datesSearchedCol = "DateSearched",
-                     dateFoundCol = "DateFound", unitCol = "Unit"){
-
-  data_SS[ , datesSearchedCol] <- yyyymmdd(data_SS[ , datesSearchedCol])
-  data_CO[ , dateFoundCol] <- yyyymmdd(data_CO[ , dateFoundCol])
-  date0 <- min(data_SS[ , datesSearchedCol])
-  data_CO[ , dateFoundCol] <- dateToDay(data_CO[ , dateFoundCol], date0)
-  data_SS[, datesSearchedCol] <- dateToDay(data_SS[, datesSearchedCol], date0)
-
-  which_day0 <- which(data_SS[ , datesSearchedCol] == 0)
-  SSunitCols <- which(colnames(data_SS) %in% unique(data_CO[ , unitCol]))
-  data_SS[which_day0, SSunitCols] <- 1
-
-  c_out <- cleanouts(data_CO, data_SS, unitCol, dateFoundCol,datesSearchedCol)
-
-  out <- list(data_SS, data_CO, c_out)
-  names(out) <- c("data_SS", "data_CO", "cleanout_carcasses")
-  return(out)
-}
-
 #' @title Summarize total mortality estimation
 #' @description \code{summary} defined for class \code{estM} objects
 #' @param object \code{estM} object
@@ -294,19 +216,9 @@ prepSSCO <- function(data_SS, data_CO, datesSearchedCol = "DateSearched",
 #' @param CL confidence level
 #' @export
 #'
-
-### the previous version returned a character string with summary statistics.
-### That format is not easy for command line users to use. I changed it to
-###   a numeric vector, which users can use without having to parse.
-
-### S3's for print() can profitably use text output because it allows
-###   some nice formatting for viewing, but summary() should have readily
-###   extractable data.
-
-
-summary.estM <- function(object, ..., CL = 0.9){
+summary.estM <- function(object, ..., CL = 0.95){
   alpha <- 1 - CL
-  Mtot <- colSums(object$Mhat) # vectorized, and more transparent than "apply"
+  Mtot <- colSums(object$Mhat) 
   out <- c(
     "Median" = round(median(Mtot), 2),
     "lwr" = round(quantile(Mtot, alpha/2), 2), 

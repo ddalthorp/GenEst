@@ -4,7 +4,7 @@
 \alias{plot.estM}
 \title{Plot total mortality estimation}
 \usage{
-\method{plot}{estM}(x, ..., CL = 0.9)
+\method{plot}{estM}(x, ..., CL = 0.95)
 }
 \arguments{
 \item{x}{\code{estM} object}
