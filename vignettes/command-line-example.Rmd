@@ -432,11 +432,11 @@ data_DWP <- mock$DWP
 head(data_DWP)
 DWPcolnames <- names(pkmModSize)
 
-eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP, frac = 1,
-        model_SE = pkmModSize, model_CP = cpmModSize, seed_SE = NULL, 
-        seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
-        unitCol = "Unit", dateFoundCol = "DateFound", 
-        datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 10)
+eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP, 
+        frac = 1, model_SE = pkmModSize, model_CP = cpmModSize, 
+        seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL, 
+        kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound", 
+        datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 1000)
 ```
 
 `estM` returns an object that contains the random draws of `pkm` and `cpm`

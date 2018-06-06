@@ -4,7 +4,7 @@
 \alias{summary.gGenericSize}
 \title{Summarize the gGenericSize list to a list of simple tables}
 \usage{
-\method{summary}{gGenericSize}(object, ..., CL = 0.9)
+\method{summary}{gGenericSize}(object, ..., CL = 0.95)
 }
 \arguments{
 \item{object}{gGenericSize output list (each element is a size-named 

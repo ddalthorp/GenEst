@@ -23,7 +23,7 @@ The g given by \code{calcg} is a generic aggregate detection
  schedule for the the given SE and CP parameters. This differs the GenEst
  estimation of g when the purpose is to estimate total mortality (M), in
  which case the detection probability varies with carcass arrival interval
- and is difficult to summarize statistically. \code{calcg} provides a useful
- "big picture" summary of detection probability, but would be difficult to
- work with for estimating M with precision.
+ and is difficult to summarize statistically. \code{calcg} provides a 
+ useful "big picture" summary of detection probability, but would be 
+ difficult to work with for estimating M with precision.
 }

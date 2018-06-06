@@ -4,7 +4,7 @@
 \alias{plot.gGenericSize}
 \title{Plot results of a set of size-based generic g estimations}
 \usage{
-\method{plot}{gGenericSize}(x, CL = 0.9, ...)
+\method{plot}{gGenericSize}(x, CL = 0.95, ...)
 }
 \arguments{
 \item{x}{gGenericSize output}

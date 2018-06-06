@@ -7,8 +7,8 @@
 #' @importFrom gsl hyperg_2F1
 #' @importFrom gtools mixedsort
 #' @importFrom htmltools div img br HTML a
-#' @importFrom matrixStats rowCumprods rowProds rowCumsums rowDiffs 
-#'   rowQuantiles
+#' @importFrom matrixStats colCounts colMaxs rowCumprods rowProds rowCumsums 
+#'   rowDiffs rowQuantiles
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny shinyApp shinyAppDir navbarPage tabPanel tabsetPanel
