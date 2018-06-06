@@ -167,10 +167,15 @@ CP field trials were conducted for one carcass size (bat) on one type of terrain
 predictor variable we have is `Season`, which is entered as a column in both
 `data_SE` and `data_CP`.
 
-```{r}
+```{r, eval = FALSE}
 ?pkm
+```
+```{r}
 model_SE <- pkm(p ~ Season, k ~ 1, data = data_SE)
+```{r, eval = FALSE}
 ?cpm
+```
+```{r}
 model_CP <- cpm(l ~ Season, s ~ Season, data = data_CP,
   left = "Left", right = "Right")
 ```
@@ -192,8 +197,10 @@ limited to a few key variables.
 Each carcass's contribution to the total mortality in each search search
 interval is estimated using the `estM`.
 
-```{r}
+```{r, eval = FALSE}
 ?estM
+```
+```{r}
 Mhat <- estM(nsim = 10, data_CO = data_CO, data_SS = data_SS,
   data_DWP = data_DWP, model_SE = model_SE, model_CP = model_CP,
   unitCol = "Turbine", dateFoundCol = "DateFound")
@@ -211,7 +218,7 @@ they were found (e.g., season or other variable associated with search
 schedule and found in data_SS, or a list of times).
 
 
-```{r}
+```{r, eval = FALSE}
 ?calcSplits
 ```
 
