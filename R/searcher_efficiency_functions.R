@@ -135,7 +135,7 @@
 #' @export
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-                kFixed = NULL, kInit = 0.7, CL = 0.9, quiet = FALSE){
+                kFixed = NULL, kInit = 0.7, CL = 0.95, quiet = FALSE){
 
   if(sum(obsCol %in% colnames(data)) != length(obsCol)){
     stop("Observation column provided not in data.")
@@ -514,7 +514,7 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #' @export 
 #'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-                   kFixed = NULL, kInit = 0.7, CL = 0.9, quiet = FALSE){
+                   kFixed = NULL, kInit = 0.7, CL = 0.95, quiet = FALSE){
 
   if (length(kFixed) == 1 & length(formula_k) > 0 & quiet == FALSE){
     message("Formula and fixed value provided for k, fixed value used.")
@@ -707,7 +707,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
                        sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, 
-                       CL = 0.9, quiet = FALSE){
+                       CL = 0.95, quiet = FALSE){
 
   if (length(sizeclassCol) == 0){
     out <- vector("list", length = 1)

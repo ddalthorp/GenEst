@@ -4,7 +4,7 @@
 \alias{simpleMplot}
 \title{Plot total mortality estimation for a simple situation}
 \usage{
-simpleMplot(M, ..., CL = 0.9)
+simpleMplot(M, ..., CL = 0.95)
 }
 \arguments{
 \item{M}{Mortality object}

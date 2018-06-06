@@ -52,8 +52,8 @@ tabPanel("Analyses",
         numericInput("n", "Number of Iterations:", value = 1000, 
           min = 1, max = 10000, step = 1
         ),
-        numericInput("CL", "Confidence Level:", value = 0.9, min = 0, max = 1,
-          step = 0.001
+        numericInput("CL", "Confidence Level:", value = 0.95, min = 0, 
+          max = 1, step = 0.001
         ),
         selectizeInput("sizeclassCol", "Size Class Column (optional):", 
           c("No data input yet"), multiple = TRUE, 
@@ -197,14 +197,8 @@ tabPanel("Analyses",
         numericInput("frac", "Fraction of Facility Surveyed:", value = 1.0, 
           min = 0.01, max = 1.0, step = 0.01
         ),
-        selectizeInput("unitCol", "Units:", c("No data input yet"), 
-          multiple = FALSE
-        ),
         selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
           multiple = FALSE
-        ),
-        selectizeInput("datesSearchedCol", "Dates Searched:",  
-          c("No data input yet"), multiple = FALSE
         ),
         conditionalPanel(
           condition = "output.kFillNeed == 'yes'",
@@ -267,10 +261,6 @@ tabPanel("Analyses",
         br(), br(),
         HTML("<strong><u> Search Schedule Data: </u></strong>"),
         br(), br(),
-        selectizeInput("datesSearchedCol_g", 
-          "Dates Searched Column in Search Schedule Data (if applicable):",  
-          c("No data input yet"), multiple = FALSE
-        ),
         actionButton("useSSdata", "Create Schedule"),
         br(), br(),
         HTML("<strong><u> Generic Search Schedule Inputs: </u></strong>"),

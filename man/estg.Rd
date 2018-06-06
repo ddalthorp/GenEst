@@ -6,7 +6,7 @@
   from fitted pk and cp models and search data}
 \usage{
 estg(data_CO, data_SS, dateFoundCol = "DateFound", model_SE, model_CP,
-  kFill = NULL, unitCol = "Unit", datesSearchedCol = "DateSearched",
+  kFill = NULL, unitCol = NULL, datesSearchedCol = NULL,
   sizeclassCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
   nsim = 1, max_intervals = 8)
 }
@@ -28,9 +28,9 @@ model(s)}
 
 \item{unitCol}{Column name for the unit indicator}
 
-\item{datesSearchedCol}{Column name for the date searched data. Optional. If
-not provided, \code{estg} will try to find the datesSearchedCol among the
-columns in data_SS. See \code{\link{SS}}.}
+\item{datesSearchedCol}{Column name for the date searched data. Optional.
+If not provided, \code{estg} will try to find the datesSearchedCol among
+the columns in data_SS. See \code{\link{SS}}.}
 
 \item{sizeclassCol}{Name of column in \code{data_CO} where the size classes
 are recorded. Optional. If not provided, no distinctions are made among
@@ -44,15 +44,14 @@ sizes.}
 
 \item{nsim}{the number of simulation draws}
 
-\item{max_intervals}{maximum number of arrival interval intervals to consider
-for each carcass. Optional. Limiting the number of search intervals can
-greatly increase the speed of calculations with only a slight reduction in
-accuracy in most cases.}
+\item{max_intervals}{maximum number of arrival interval intervals to 
+consider for each carcass. Optional. Limiting the number of search 
+intervals can greatly increase the speed of calculations with only a 
+slight reduction in accuracy in most cases.}
 }
 \value{
-list of [1] g estimates (ghat), [2] arrival interval estimates (Aj),
-  [3] simulated estimates of SE parameters (pk), and [4] simulated  estimates
-  CP parameters (ab) for each of the carcasses. The row names of the Aj matrix are the
+list of [1] g estimates (ghat) and [2] arrival interval estimates 
+  (Aj) for each of the carcasses. The row names of the Aj matrix are the
   names of the units where each carcass was found.
 }
 \description{
