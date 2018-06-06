@@ -413,6 +413,7 @@ kFillPropose <- function(model){
 ### data_SS is "raw" search schedule data
 ### SS is a preprocessed search schedule class with a specific format
 ### days is a numeric vector of times since t = 0
+
 estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
   if (!is.vector(days)){
