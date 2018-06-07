@@ -94,7 +94,7 @@ simpleMplot <- function(M, ..., CL = 0.95){
   }
   points(Mmed, Mmedy, pch = 16, cex = 2, col = "white")
   points(Mmed, Mmedy, pch = 1, cex = 2, lwd = 2)
-  mtext(side = 1, "Mortalities", line = 2.75, cex = 1.5)
+  mtext(side = 1, "Mortality", line = 2.75, cex = 1.5)
   mtext(side = 2, "Probability", line = 3.5, cex = 1.5)
 
   text(minMtot, max(rectY) * 1.075, Mtext, adj = 0, xpd = T, cex = 0.85)
