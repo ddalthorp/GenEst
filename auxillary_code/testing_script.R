@@ -22,9 +22,7 @@ ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP,
                 )
 
 
-data_CO3 <- data_CO
-data_CO3[,8] <- ((data_CO2[,8]))
-eM <- estM(nsim = 1000, data_CO3, data_SS, data_DWP, frac = 1,  
+eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
                  model_SE = model_SE, model_CP = model_CP, 
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
                  seed_M = NULL, kFill = NULL,  
@@ -75,4 +73,11 @@ eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP,
         seed_CP = NULL, seed_g = NULL, seed_M = NULL, kFill = NULL,  
         unitCol = "Unit", dateFoundCol = "DateFound", 
         sizeclassCol = "Size", nsim = 1000)
+
+gsGeneric <- estgGenericSize(nsim = 1000, days = avgSS,
+               modelSetSize_SE = pkmModSetSize,
+               modelSetSize_CP = cpmModSetSize,
+               modelSizeSelections_SE = pkMods,
+               modelSizeSelections_CP = cpMods
+             )
 
