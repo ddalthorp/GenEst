@@ -123,7 +123,7 @@ msgModFail <- function(mods){
 msgModPartialFail <- function(){
   msg <- paste(
            "Some models were not successfully fit. Failed models were ",
-           "removed. Check inputs.", sep = " "
+           "removed.", sep = " "
          )
   return(showNotification(msg, type = "warning", duration = NULL))
 }
@@ -157,7 +157,7 @@ msgModRun <- function(modelType){
     msg <- ("Running Detection Probability Model")
   }
   if (modelType == "M"){
-    msg <- ("Estimating Fatalities")
+    msg <- ("Estimating Mortality")
   }
   if(!is.null(msg)){
     return(showNotification(msg, duration = NULL))
