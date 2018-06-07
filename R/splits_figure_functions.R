@@ -26,8 +26,8 @@
 #' @param ... additional arguments to be passed down
 #' @export
 #'
-plot.splitSummary <- function(x, rate = FALSE, ...){
-  splits <- x
+plot.splitSummary <- function(object, rate = FALSE, ...){
+  splits <- object
   nvar <- length(attr(splits, "vars"))
   vartype <- attr(splits, "type")
   if (nvar == 0 || vartype[1] == "CO") rate <- FALSE
@@ -68,7 +68,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
               )
     }
     plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F, xlab = "", ylab = "")
-    box() # easier to see which bars go in which panels when there are many
+    
     if (vartype[1] == "CO" | !rate){
       xx <- 1:nlevel_h 
     } else {
@@ -108,6 +108,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       axis(4, at = mean(par("usr")[c(3, 4)]), labels = vnames[vi],
         tck = 0, mgp = c(3, 0.5, 0), cex.axis = cex.axis)
     }
+    box()
   }
   mtext(side = 1, vars[1], line = 4.6, cex = 1.2)
   if (vartype[1] == "SS" & rate) {
@@ -153,6 +154,6 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
 #'
 #' @export
 #'
-plot.splitFull <- function(x, rate = FALSE, CL = 0.9, ...){
-  plot(summary(x, CL), rate)
+plot.splitFull <- function(object, rate = FALSE, CL = 0.9, ...){
+  plot(summary(object, CL), rate)
 }
