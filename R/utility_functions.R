@@ -323,11 +323,9 @@ combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
   }
   names(output) <- predNames
   CellNames <- apply(output, 1, paste0, collapse = ".")
-  which_SE <- which(colnames(output) %in% preds_SE)
-  which_CP <- which(colnames(output) %in% preds_CP)
-  output_SE <- data.frame(output[,which_SE])
+  output_SE <- data.frame(output[ , preds_SE])
   CellNames_SE <- apply(output_SE, 1, paste0, collapse = ".")
-  output_CP <- data.frame(output[,which_CP])
+  output_CP <- data.frame(output[ , preds_CP])
   CellNames_CP <- apply(output_CP, 1, paste0, collapse = ".")
   output$CellNames <- CellNames
   if (all(CellNames_SE == "")){
