@@ -109,7 +109,6 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
 
   modelSet <- x
   if (length(specificModel) == 0){
-    devAskNewPage(TRUE)
     nmod <- length(modelSet)
     modNames <- names(modelSet)
   }else{
@@ -118,15 +117,13 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
     }
     nmod <- length(specificModel)
     modNames <- specificModel
-    if (nmod == 1){
-      devAskNewPage(FALSE)
-    }else{
-      devAskNewPage(TRUE)
-    }
   }
 
   for (modi in 1:nmod){
 
+    if (modi == 2){
+      devAskNewPage(TRUE)
+    }
     specificModel <- modNames[modi]
     model_spec <- modelSet[[specificModel]]
     model_full <- modelSet[[1]]
