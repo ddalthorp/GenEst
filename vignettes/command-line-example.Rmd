@@ -103,7 +103,7 @@ pkModel$cells
 The `plot` function has been defined for `pkm` objects, such that one can
 simply run
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(pkModel)
 ```
 
@@ -235,7 +235,7 @@ cpModel$cells
 The `plot` function has been defined for `cpm` objects, such that one can
 simply run
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(cpModel)
 ```
 
@@ -308,7 +308,7 @@ creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(cpmModSet,
   specificModel = "dist: lognormal; l ~ Visibility * Season; s ~ Visibility"
 )
