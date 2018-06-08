@@ -7,7 +7,7 @@
 \method{plot}{splitFull}(x, rate = FALSE, CL = 0.9, ...)
 }
 \arguments{
-\item{x}{A \code{splitSummary} object (result of \code{\link{calcSplits}})
+\item{object}{A \code{splitSummary} object (result of \code{\link{calcSplits}})
 that includes summary statistics for simulated mortality estimates for all
 combinations of levels of 1 or 2 splitting covariates.}
 
