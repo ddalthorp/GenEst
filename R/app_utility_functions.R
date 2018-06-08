@@ -533,8 +533,8 @@ makeMenu <- function(mods, sizeclasses, type){
                      function(x){paste(rep(" ", x), collapse = "")}
                    )
 
-      modAICcs <- AICcTab[ , "AICc"]
-      modLabels <- paste0(modNames, " (AICc: ", modAICcs, ")")
+      modDeltaAICcs <- AICcTab[ , "Delta AICc"]
+      modLabels <- paste0(modNames, " (delta AICc: ", modDeltaAICcs, ")")
       names(modNames) <- modLabels
       labels_nchar <- nchar(modLabels)
       labels_maxchar <- max(labels_nchar)
