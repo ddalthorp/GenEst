@@ -199,7 +199,6 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
   distsIncluded <- gsub("dist: ", "", unique(modelSetNames_matrix[ , "dist"]))
 
   if (length(specificModel) == 0){
-    devAskNewPage(TRUE)
     nmod <- nmodelsInSet
     modNames_spec <- modelSetNames
     modNames <- modelSetNames
@@ -210,11 +209,6 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
     nmod <- length(specificModel)
     modNames_spec <- specificModel
     modNames <- modelSetNames
-    if (nmod == 1){
-      devAskNewPage(FALSE)
-    }else{
-      devAskNewPage(TRUE)
-    }
   }
 
   modelMatches <- vector("list", length = nmodelsInSet)
@@ -240,6 +234,9 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
 
   for (modi in 1:nmod){
 
+    if (modi == 2){
+      devAskNewPage(TRUE)
+    }
     specificModel <- modNames_spec[modi]
     whichSpecificModel <- which(names(modelSet) == specificModel)
     model_spec <- modelSet[[whichSpecificModel]]
