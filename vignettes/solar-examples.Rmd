@@ -41,7 +41,7 @@ There are five files in total which make up the example dataset, located in `\Ge
 available in R as a list, 
 
 ```{r}
-data(solar_pv) # (Note: fix pv to PV in folder structure.)
+data(solar_PV) # (Note: fix pv to PV in folder structure.)
 names(solar_PV)
 ```
 
