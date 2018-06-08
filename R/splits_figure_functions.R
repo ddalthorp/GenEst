@@ -15,7 +15,7 @@
 #' horizontally and the levels of the second variable are are arranged
 #' vertically.
 #'
-#' @param object A \code{splitSummary} object (result of \code{\link{calcSplits}})
+#' @param x A \code{splitSummary} object (result of \code{\link{calcSplits}})
 #'  that includes summary statistics for simulated mortality estimates for all
 #'  combinations of levels of 1 or 2 splitting covariates.
 #' @param rate \code{logical} scalar indicating whether the figures should be
@@ -26,8 +26,8 @@
 #' @param ... additional arguments to be passed down
 #' @export
 #'
-plot.splitSummary <- function(object, rate = FALSE, ...){
-  splits <- object
+plot.splitSummary <- function(x, rate = FALSE, ...){
+  splits <- x
   nvar <- length(attr(splits, "vars"))
   vartype <- attr(splits, "type")
   if (nvar == 0 || vartype[1] == "CO") rate <- FALSE
@@ -141,7 +141,7 @@ plot.splitSummary <- function(object, rate = FALSE, ...){
 #' \code{\link{summary.splitFull}} and plotting the result via
 #' \code{\link{plot.splitSummary}}.
 #'
-#' @param object A \code{splitSummary} object (result of \code{\link{calcSplits}})
+#' @param x A \code{splitSummary} object (result of \code{\link{calcSplits}})
 #'  that includes summary statistics for simulated mortality estimates for all
 #'  combinations of levels of 1 or 2 splitting covariates.
 #' @param rate \code{logical} scalar indicating whether the figures should be
@@ -154,6 +154,6 @@ plot.splitSummary <- function(object, rate = FALSE, ...){
 #'
 #' @export
 #'
-plot.splitFull <- function(object, rate = FALSE, CL = 0.9, ...){
-  plot(summary(object, CL), rate)
+plot.splitFull <- function(x, rate = FALSE, CL = 0.9, ...){
+  plot(summary(x, CL), rate)
 }
