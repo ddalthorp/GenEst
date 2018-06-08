@@ -143,15 +143,15 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
       ylab = "", ylim = c(0, 1), xlim = c(0, 1)
     )
 
-    rect(0.01, 0.2, 0.06, 0.45, lwd = 2, col = col_spec, border = NA)
-    text(x = 0.07, y = 0.35, "= Selected Model", adj = 0, cex = 0.9)
-    rect(0.3, 0.2, 0.35, 0.45, lwd = 2, col = col_full, border = NA)
-    text(x = 0.36, y = 0.35, "= Full Model", adj = 0, cex = 0.9)
+    rect(0.01, 0.325, 0.06, 0.525, lwd = 2, col = col_spec, border = NA)
+    text(x = 0.07, y = 0.45, "= Selected Model", adj = 0, cex = 0.9)
+    rect(0.3, 0.325, 0.35, 0.525, lwd = 2, col = col_full, border = NA)
+    text(x = 0.36, y = 0.45, "= Full Model", adj = 0, cex = 0.9)
 
     labelsText <- paste(model_full$predictors, collapse = ".")
     text_label <- paste("Labels: ", labelsText, sep = "")
     text_model <- paste("Model: ", specificModel, sep = "")
-    text(x = 0.52, y = 0.3, text_label, adj = 0, cex = 0.75)
+    text(x = 0.52, y = 0.45, text_label, adj = 0, cex = 0.75)
     text(x = 0.52, y = 0.7, text_model, adj = 0, cex = 0.75)
 
     if (!is.null(sizeclassName)){
@@ -159,16 +159,15 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
       text(x = 0.01, y = 0.8, text_sc, adj = 0, cex = 1, font = 1)
     }
 
-    par(mar = c(2,4,2,1))
-    par(fig = c(0, 0.45, 0.715, 0.965), new = TRUE)
+    par(fig = c(0, 0.45, 0.7, 0.965), new = TRUE)
     pkmSetSpecParamPlot(modelSet, specificModel, "p", n, seed_spec, seed_full,
       col_spec, col_full)
-    par(fig = c(0.45, 0.9, 0.715, 0.965), new = TRUE)
+    par(fig = c(0.45, 0.9, 0.7, 0.965), new = TRUE)
     pkmSetSpecParamPlot(modelSet, specificModel, "k", n, seed_spec, seed_full,
       col_spec, col_full)
 
     par(mar = c(2,0,2,0))
-    par(fig = c(0.92, 1, 0.715, 0.965), new = TRUE)
+    par(fig = c(0.92, 1, 0.725, 0.9), new = TRUE)
     plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = "", ylim = c(0, 1), xlim = c(0, 1)
     )
@@ -190,7 +189,7 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
     text_ex <- c("min", text_CL[1], "25%", "50%", "75%", text_CL[2], "max")
     text(x_s + 0.2, y_s, text_ex, cex = 0.65, adj = 0)
 
-    par(fig = c(0, 1, 0, 0.715), new = TRUE)
+    par(fig = c(0, 1, 0, 0.65), new = TRUE)
     par(mar = c(1, 1, 1, 1))
     plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
       ylab = ""
@@ -408,7 +407,7 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n,
   }
   maxy[is.na(maxy)] <- 1
 
-  par(mar = c(2,4,2,1))
+  par(mar = c(4,4,2,1))
   plot(1, type = "n", xlab = "", ylab = "", bty = "L", xaxt = 'n', yaxt = 'n',
     ylim = c(0, maxy), xlim = c(0.5, ncell_full + 0.5)
   )
@@ -519,7 +518,7 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 
   x_pts <- 1:nobs
   y_pts <- carcFound / carcAvail
-  plot(x_pts, y_pts, ylim = c(0, 1), xlim = c(0.5, nobs + 0.5), xlab = "", 
+  plot(x_pts, y_pts, ylim = c(0, 1.1), xlim = c(0.5, nobs + 0.5), xlab = "", 
     ylab = "", xaxt = "n", yaxt = "n", bty = "L", col = rgb(0.02, 0.02, 0.02),
     lwd = 2, pch = 1, cex = 1.5
   )
@@ -529,17 +528,17 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 
   for (obi in 1:nobs){
     x1 <- x_pts[obi] - 0.25
-    y1 <- y_pts[obi] + 0.06
+    y1 <- y_pts[obi] + 0.035
     x2 <- x_pts[obi] + 0.35
-    y2 <- y_pts[obi] + 0.15
+    y2 <- y_pts[obi] + 0.11
     rect(x1, y1, x2, y2, border = NA, col = "white")
   }
   obsLabels <- paste(carcFound, carcAvail, sep = "/") 
-  text(x_pts + 0.05, y_pts + 0.1, obsLabels, cex = 0.65)
+  text(x_pts + 0.05, y_pts + 0.075, obsLabels, cex = 0.65)
 
   axis(1, at = x_pts, las = 1, cex.axis = 0.75, labels = axis_x)
   axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axis_y)
-  text(0.5, 0.95, specificCell, adj = 0, cex = 0.75, font = 2)
+  text(0.5, 1.1, specificCell, adj = 0, cex = 0.75, font = 2, xpd = TRUE)
 
 }
  
