@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include=FALSE}
+rm(list = ls())
 library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
