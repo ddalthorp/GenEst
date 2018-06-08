@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
+set.seed(445)
 ```
 # Introduction: Tutorial with Examples
 This tutorial provides an introduction to the array of command line tools

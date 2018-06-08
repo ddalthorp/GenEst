@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
+set.seed(951)
 ```
 
 # Gen Est - A Solar Example with Carcass Size
@@ -141,12 +142,6 @@ pkmSetAICcTab(SE_size_model_set$lrg)
 SE_models$lrg <- SE_size_model_set$lrg[[1]]
 ```
 
-Size Bat: 
-```{r pk Size Bat}
-pkmSetAICcTab(SE_size_model_set$bat)
-SE_models$bat <- SE_size_model_set$bat[[2]]
-```
-
 
 ### Part 2: Carcass Persistence Modeling
 A carcass persistence model estimates the amount of time a carcass would persist
@@ -175,8 +170,8 @@ season by setting `l ~ season`, but scale only depends on the intercept using
 
 ```{r cp}
 CP_model <- cpm(l ~ Season, s ~ 1, data = CP_data, 
-                left = "LastPresentDecimalDays", 
-                right = "FirstAbsentDecimalDays",
+                left = "Left", 
+                right = "Right",
                 dist = "weibull")
 ```
 
@@ -184,8 +179,8 @@ Next, we try a CP model set considering whether the Season covaritate for
 location is necessary, by comparing the `l ~ season, s ~ 1` to `l ~ 1, s ~ 1`.
 ```{r cp set}
   CP_weibull_set <- cpmSet(l ~ Season, s ~ 1, data = CP_data, 
-                  left = "LastPresentDecimalDays", 
-                  right = "FirstAbsentDecimalDays",
+                  left = "Left", 
+                  right = "Right",
                   dist = "weibull")
 class(CP_weibull_set)
 length(CP_weibull_set)
@@ -205,8 +200,8 @@ cpmSet objects, one for each size class.
 ```{r cp Size Set}
 CP_size_model_set <- cpmSetSize(formula_l = l ~ Season, 
                            formula_s = s ~ 1, 
-                           left = "LastPresentDecimalDays",
-                           right = "FirstAbsentDecimalDays",
+                           left = "Left",
+                           right = "Right",
                            dists = c("exponential", "weibull"),
                            sizeclassCol = "Size", 
                            data = CP_data)
@@ -240,12 +235,6 @@ cpmSetAICcTab(CP_size_model_set$lrg)
 CP_models$lrg <- CP_size_model_set$lrg[[2]]
 ```
 
-Size Bat: 
-```{r cp Size Bat}
-cpmSetAICcTab(CP_size_model_set$bat)
-CP_models$bat <- CP_size_model_set$bat[[4]]
-```
-
 
 ### Part 3: Mortality Estimation
 Estimating mortality requires bringing together models, carcass observation 
@@ -265,13 +254,13 @@ Search schedule:
 SS_data <- solar_PV$SS
 SS_data[1:3 , 1:10]
 ```
-(Note that there are 100 turbine columns altogether, t1, ..., t100)
+(Note that there are 300 arrays columns altogether, Unit1, ..., Unit300)
 
 Density weighted proportion:
 ```{r DWP data}
 DWP_data <- solar_PV$DWP
 head(DWP_data, 3)
-names(DWP_data) <- c("Unit", "bat", "small", "med", "lrg")
+names(DWP_data) <- c("Unit", "small", "med", "lrg")
 ```
 
 These elements combine in the function `estM`, producing an object containing 
@@ -397,9 +386,9 @@ splitFull.   For those arrays which have at least one observation, we can create
 a summary.  In this case we will only create a summary for arrays 8 and 100.
 
 ```{r individual unit summary}
-dim(summary(M_unit))  # only 163 turbines had observations.
+dim(summary(M_unit))  # only 163 arrays had observations.
 
-# A list of the turbines without observations:
+# A list of the arrays without observations:
 which(!c(1:300) %in% sub(x = CO_data$Unit,
                          pattern = "Unit([0-9]+)",
                          replacement = "\\1"))
