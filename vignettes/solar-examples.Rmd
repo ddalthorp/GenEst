@@ -1,0 +1,436 @@
+---
+title: "Gen Est - A Solar Example with Carcass Size"
+author: "D Dalthorp, J Mintz, J Simonis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Gen Est - A Solar Example with Carcass Size}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(GenEst)
+vers <- packageVersion("GenEst")
+today <- Sys.Date()
+```
+
+# Gen Est - A Solar Example with Carcass Size
+## Introduction
+
+In this vignette we walk through an example illustrating how **GenEst** command 
+line utilities could be used to estimate mortality for different size birds at a
+large field of solar photovoltaic collectors.  Our objective is to estimate 
+overall mortality, as well as how mortality varies over time, whether it 
+constant over throughout the facility, and finally how different size classes of
+birds are affected.  
+
+The general steps in the analysis are:
+
+1. Construct a model for Searcher Efficiency
+2. Construct a model for Carcass Persistance
+3. Estimate mortality
+4. Specify the type of summary desired (for example, by season and species)
+
+There are five files in total which make up the example dataset, located in `\GenEst\inst\extdata\solar_PV`. For convenience, these files have been made 
+available in R as a list, 
+
+```{r}
+data(solar_pv) # (Note: fix pv to PV in folder structure.)
+names(solar_PV)
+```
+
+### Part 1: Searcher Efficiency Modeling
+
+Searcher efficiency (SE) is modeled as a function of the number of times a 
+carcass has been missed in previous searches and any number of covariates. 
+The probability of finding a carcass that is present at the time of search is p 
+on the first search after carcass arrival and is assumed to decrease by a factor
+of k each time the carcass is missed in searches.  (For further background on 
+field trials, and information about how to format the results for use with 
+GenEst, see User Manual appendices A1 and B1).
+
+Results of the SE field trials used in this example are stored in the `SE_data` 
+data frame:
+
+```{r pk data}
+SE_data <- solar_PV$SE
+head(SE_data, 3)
+```
+
+GenEst provides tools to construct and compare specific individual models, to 
+explore which subsets of variables are most useful, and to automatically 
+construct entire sets of models.  To start we will fit a basic model in which 
+the probability of detecting a carcass, `p`, and compounding difficulty to 
+detect, `k`, depend only on their respective intercepts (and not other factors 
+such as season or size).  The function `pkm` is used to create a searcher 
+efficiency model, which is stored as a PKM model object.  All PKM objects, 
+whether individual, or part of a set, can have their AICc and table of estimated
+`p`, `k` parameters extracted using `$AICc` and `$cellwiseTable`.
+
+```{r pk one model}
+SE_model <- pkm(p ~ 1, k ~ 1, data = SE_data)
+  SE_model$AICc
+  SE_model$cellwiseTable
+
+```
+To explore whether use of covariate is warranted, the `pkmSet` function fits the
+specific model, plus the set of models which can be created by simplifying the 
+orginal model.  For example, `p ~ Season` can be simplified into `p ~ 1`, our 
+original model in which `p` is independent of season.  
+
+```{r pk two models}
+SE_model_set <- pkmSet(p~Season, k~1, data = SE_data)
+class(SE_model_set)
+length(SE_model_set)
+names(SE_model_set)
+class(SE_model_set[[1]])
+```
+The set of models is contained in a `pkmSet` object.  We could inspect the two 
+models stored in the `pkmSet` individually, or for convenience we can view the 
+AICc values simultaneously for all models using pkmSetAICcTab.  Summary plots 
+can be obtained by plotting any of the individual objects or the set as well.
+
+```{r pk set AICc}
+pkmSetAICcTab(SE_model_set)
+```
+
+
+Rather than one searcher efficiency model for all birds, it is often preferable 
+to fit a seperate model for each size class.  The function `pkmSetSize` 
+automatically fits a new model for each size class, creating a list of pkm 
+objects, one for each size class.  The name of the column containing the size 
+class information must be specified and consistent across files.
+
+```{r pk size set}
+SE_size_model_set <- pkmSetSize(p ~ Season, 
+                           k ~ 1, 
+                           sizeclassCol = "Size", 
+                           data = SE_data)
+class(SE_size_model_set)
+names(SE_size_model_set)  # A list is created with a model set per size class.
+class(SE_size_model_set$small)
+names(SE_size_model_set$small) # Each model set contains one model in this case.
+
+
+```
+Once we have decided on which models to use for each size class, we store the 
+corresponding pkm objects in a list for future use.  In this case, we will 
+choose the models with the lower AICc.
+
+Size Small:
+```{r pk size Small}
+pkmSetAICcTab(SE_size_model_set$small)
+SE_models <- list(small = SE_size_model_set$med[[2]])
+```
+
+Size Medium:
+```{r pk size Medium}
+pkmSetAICcTab(SE_size_model_set$med)
+SE_models$med <- SE_size_model_set$med[[2]]
+```
+
+Size Large:
+```{r pk Size Large}
+pkmSetAICcTab(SE_size_model_set$lrg)
+SE_models$lrg <- SE_size_model_set$lrg[[1]]
+```
+
+Size Bat: 
+```{r pk Size Bat}
+pkmSetAICcTab(SE_size_model_set$bat)
+SE_models$bat <- SE_size_model_set$bat[[2]]
+```
+
+
+### Part 2: Carcass Persistence Modeling
+A carcass persistence model estimates the amount of time a carcass would persist
+for, given the conditions under which it arrived.  A number of carcasses have 
+been placed in the field and periodically checked for scavanging.  Results of 
+the CP field trials used in this example are stored in the `CP_data` data frame:
+
+```{r cp data}
+CP_data <- solar_PV$CP
+head(CP_data, 3)
+```
+
+Left and Right represent the left (start) and right (end) endpoints of the 
+interval over which a carcass went missing.  For further information about CP 
+trials and how to format results for use with GenEst, see User Manual Appendix 
+A2 and B2.
+
+Four classes of parameteric models may be used for carcass persistance: 
+Exponential, Weibull, Logistic, and LogNormal.  As with Searcher Efficiency we 
+can fit one specific model, test a set of covariates and choose our favorite 
+single model, or fit seperate models dependent on size class.   First we will 
+fit a single Weibull models for all birds.  Weibull distributions have two 
+parameters, location and scale.  We will specify that the location depends on 
+season by setting `l ~ season`, but scale only depends on the intercept using 
+`s ~ 1`.
+
+```{r cp}
+CP_model <- cpm(l ~ Season, s ~ 1, data = CP_data, 
+                left = "LastPresentDecimalDays", 
+                right = "FirstAbsentDecimalDays",
+                dist = "weibull")
+```
+
+Next, we try a CP model set considering whether the Season covaritate for 
+location is necessary, by comparing the `l ~ season, s ~ 1` to `l ~ 1, s ~ 1`.
+```{r cp set}
+  CP_weibull_set <- cpmSet(l ~ Season, s ~ 1, data = CP_data, 
+                  left = "LastPresentDecimalDays", 
+                  right = "FirstAbsentDecimalDays",
+                  dist = "weibull")
+class(CP_weibull_set)
+length(CP_weibull_set)
+names(CP_weibull_set)
+```
+
+```{r cp Set Table}
+  cpmSetAICcTab(CP_weibull_set)
+
+```
+
+Finally we will construct sets of CP models for each size class, however this 
+time we will also consider models based on both exponential and weibull 
+distributions.  To compare models for multiple distributions, set `dists` to a 
+vector of the distribution names to be considered.  cpmSetSize returns a list of
+cpmSet objects, one for each size class.
+```{r cp Size Set}
+CP_size_model_set <- cpmSetSize(formula_l = l ~ Season, 
+                           formula_s = s ~ 1, 
+                           left = "LastPresentDecimalDays",
+                           right = "FirstAbsentDecimalDays",
+                           dists = c("exponential", "weibull"),
+                           sizeclassCol = "Size", 
+                           data = CP_data)
+class(CP_size_model_set)
+length(CP_size_model_set)
+names(CP_size_model_set)
+class(CP_size_model_set$small)
+length(CP_size_model_set$small)
+names(CP_size_model_set$small)
+```
+
+We now have the flexibility to select models from different families for 
+different size classes.  We will choose to use the models with lower AICc, which
+requires storing the corresponding `cpm` objects in a list for later use.  
+
+Size Small:
+```{r cp Size Small}
+cpmSetAICcTab(CP_size_model_set$small)
+CP_models <- list(small = CP_size_model_set$med[[3]])
+```
+
+Size Medium:
+```{r cp size Medium}
+cpmSetAICcTab(CP_size_model_set$med)
+CP_models$med <- CP_size_model_set$med[[4]]
+```
+
+Size Large:
+```{r Size Large}
+cpmSetAICcTab(CP_size_model_set$lrg)
+CP_models$lrg <- CP_size_model_set$lrg[[2]]
+```
+
+Size Bat: 
+```{r cp Size Bat}
+cpmSetAICcTab(CP_size_model_set$bat)
+CP_models$bat <- CP_size_model_set$bat[[4]]
+```
+
+
+### Part 3: Mortality Estimation
+Estimating mortality requires bringing together models, carcass observation 
+data (CO), and information on how the data was gathered.  In particular the
+search schedule (SS) and proportion of carcasses in searchable areas (the 
+density weighted proportion, or DWP), are needed.  We will breifly inspect the 
+files.  Further information on the formatting of the CO, SS, and DWP files can 
+be found in Appendix A.
+
+Carcass observations:
+```{r Load CO SS and DWP}
+CO_data <- solar_PV$CO
+head(CO_data, 3)
+```
+Search schedule:
+```{r SS Data}
+SS_data <- solar_PV$SS
+SS_data[1:3 , 1:10]
+```
+(Note that there are 100 turbine columns altogether, t1, ..., t100)
+
+Density weighted proportion:
+```{r DWP data}
+DWP_data <- solar_PV$DWP
+head(DWP_data, 3)
+names(DWP_data) <- c("Unit", "bat", "small", "med", "lrg")
+```
+
+These elements combine in the function `estM`, producing an object containing 
+simulated arrival, detection, and mortality distributions.  We also have the 
+opportunity to provide the fraction of the facility being surveyed, `frac`, if 
+it happens to be less than 100\%.  Increasing the number of simulations, `nsim`, 
+will improve the accuracy of the estimates.  
+
+When estimating mortality, it is not currently possible to mix CP and SE models 
+which differ in their dependence on size.  Either both models depend on size 
+class, or both models must be independent of size class.  In this case we will 
+choose here to use size dependence.
+
+```{r Arrival Times, options}
+  Mest <- estM(
+    nsim = 100, frac = 1, 
+    data_CO = CO_data, data_SS = SS_data, data_DWP = DWP_data, 
+    model_SE = SE_models, model_CP = CP_models,
+    unitCol = "Unit", sizeclassCol = "Size",
+    dateFoundCol = "DateFound", datesSearchedCol = "DateSearched"
+  )
+```
+
+We are now able to get a confidence interval for estimated total mortality by
+taking summary of the estM object.  Plotting it shows us us the estimated 
+probability density for number of fatalities.
+
+
+```{r, fig.show = "hold", fig.height = 4, fig.width = 6, fig.align = 'center'}
+  plot(Mest)
+```
+A point estimate for overall sitewide mortality is listed at the top of the 
+plot, satisfying our first objective.  The period of inference only covers the 
+period over which we have have fatality monitoring data, which in this case is 
+from `r min(SS_data$DateSearched)` to `r max(SS_data$DateSearched)`.  
+
+
+### Part 4: Summaries
+
+Having calculated the estimated arrival densities for each of the carcases,
+we can now use them to create a variety of summaries.  Suppose that we are 
+interested in how mortality changes with respect to three kinds of variables:
+
+1. Temporally - by season, or finer resolutions
+2. Spatially - summaries by search unit
+3. Among Size classes, or other groups
+
+To create summaries, we split the data by differnt covariates, using a function 
+called `calcSplits`.  This requires the simulated mortality `$Mhat` and arrival 
+times `$Aj` stored in the `estM` object, plus the search schedule and carcass 
+observation data.
+
+Splits to the search schedule (splits in time) are specified by assigning a 
+covariate to `split_SS`.  These must be variables present in the Search Schedule
+file.  To investigate differences in mortality between season, we will set 
+`split_SS` to `Season`.
+
+```{r Summary - Season}
+SS_data[1, 2] <- "winter"
+
+M_season <- calcSplits(
+  M = Mest$Mhat, Aj = Mest$Aj, 
+  split_SS = "Season", data_SS = SS_data,
+  split_CO = NULL,  data_CO = CO_data
+)
+```
+
+Splitting the estM creates a splitFull object, a plot of which shows boxplots 
+for each season.
+
+```{r splitFull plot, fig.height = 4, fig.width = 4, fig.align = 'center'}
+plot(M_season)
+```
+
+Taking a summary of the splitFull gives us a confidence interval for each level 
+of the split covariate.  The size of the confidence interval can be specified 
+for both plots or summaries using the CL argument.  
+
+```{r SplitFull Summary}
+  summary(M_season, CL = 0.95)
+```
+
+To get a finer summary of mortality, we need to parse the search schedule, using
+the function SS.  This allows us to specify the exact time intervals over which 
+we will split, in this case we will create a weekly summary.
+
+```{r Summary - Weekly}
+
+SSdat <- SS(SS_data) # Creates an object of type SS.
+schedule <- seq(from = 0, to = max(SSdat$days), by = 7)
+tail(schedule)
+```
+
+When we plot the splitFull object for a split with a custom schedule, we must 
+specify that the rate is per split catagory by setting `rate = T`.
+```{r Summary - Weekly Part 2, fig.height = 4, fig.width = 7, fig.align = 'center'}
+M_week <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_time = schedule, 
+  data_SS = SSdat,
+  data_CO = CO_data
+)
+plot(x = M_week, rate = T)
+
+```
+
+Next we will look at at splitting by covariates present in the Carcass 
+Observation file.  We specify a CO split by assigning split_CO to the name (or 
+names) of the variables we wish to split on.  Suppose we would like a summary of
+estimated mortality by unit.  
+```{r Summary - Unit, fig.height = 4, fig.width = 7, fig.align = 'center'}
+
+M_unit <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_CO = "Unit", 
+  data_CO = CO_data, 
+  data_SS = SS_data
+)
+plot(M_unit, rate = F)
+```
+There are 300 units in this example, each one gets a boxplot when we plot the 
+splitFull.   For those arrays which have at least one observation, we can create
+a summary.  In this case we will only create a summary for arrays 8 and 100.
+
+```{r individual unit summary}
+dim(summary(M_unit))  # only 163 turbines had observations.
+
+# A list of the turbines without observations:
+which(!c(1:300) %in% sub(x = CO_data$Unit,
+                         pattern = "Unit([0-9]+)",
+                         replacement = "\\1"))
+
+# Only create summaries for Arrays Unit8 and Unit100.
+whichRow <- rownames(summary(M_unit))  %in% c("Unit12", "Unit100")
+summary(M_unit)[whichRow, ]
+
+```
+
+It is possible to create summaries that split on both Carcass Observation 
+variables and Search Schedule variables.  To do so, include both a split_SS and 
+split_CO argument.  
+
+```{r Summary - season and species, fig.height = 5, fig.width = 3, fig.align = 'center'}
+
+M_unit_and_species <- calcSplits(
+  M = Mest$M, Aj = Mest$Aj,
+  split_SS = c("Season"),
+  split_CO = c("Size"),
+  data_CO = CO_data,
+  data_SS = SS_data
+)
+plot(M_unit_and_species, rate = F)
+
+```
+
+Two CO variables can be compared simultaneously by specifying an ordered pair of
+covariates for `split_CO`, however currently there are a limited total number 
+(two) of splits which can be allocated among temporal or carcass covariates.
+
+
+
+
