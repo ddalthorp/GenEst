@@ -11,11 +11,16 @@ model_SE <- pkm(formula_p = p ~ 1 ,
              formula_k = k ~ 1,
              data = data_SE
             )
-model_CP <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, 
+model_CP <- cpmSet(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
              data = data_CP,
              left = "LastPresentDecimalDays", 
-             right = "FirstAbsentDecimalDays", dist = "exponential"
+             right = "FirstAbsentDecimalDays"
             )
+
+plot(model_CP, "dist: lognormal; l ~ Visibility; s ~ Visibility")
+
+
+
 avgSS <- averageSS(data_SS)
 ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
                   seed_SE = 1, seed_CP = 1, kFill = NULL
