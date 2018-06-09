@@ -253,6 +253,10 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
     specificModel <- modNames_spec[modi]
     whichSpecificModel <- which(names(modelSet) == specificModel)
     model_spec <- modelSet[[whichSpecificModel]]
+
+    if (grepl("Failed model fit", model_spec[1])){
+      next()
+    }
     dist_spec <- model_spec$dist
     maxcells <- max(ncellsInModel)
     whichFull <- which(ncellsInModel == maxcells & distOfModel == dist_spec) 
