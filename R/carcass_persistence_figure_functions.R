@@ -145,7 +145,8 @@ plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
 #' Plot results of a cp model set
 #'
 #' @param x pk model set of class pkmSet
-#' @param specificModel the name of specific model(s) to restrict the plot
+#' @param specificModel the name(s) or index number(s) of specific model(s) to 
+#'   restrict the plot
 #' @param n number of draws to use to characterize the distributions
 #' @param seed random number seed to use for the models
 #' @param col color to use for the specific model
@@ -165,6 +166,7 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
   modelSet <- x
   modelSetNames <- names(modelSet)
   nmodelsInSet <- length(modelSetNames)
+  nmodelsInSet_check <- nmodelsInSet
 
   modelSetNames_components <- unlist(strsplit(modelSetNames, "; "))
   modelSetNames_matrix <- matrix(modelSetNames_components, ncol = 3, 
@@ -203,11 +205,22 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
     modNames_spec <- modelSetNames
     modNames <- modelSetNames
   }else{
-    if (any(specificModel %in% names(modelSet)) == FALSE){
+    if (is.numeric(specificModel)){
+      if (any(specificModel > nmodelsInSet_check)){
+        stop(paste0("there are only ", nmodelsInSet, " model choices."))
+      }
+      specificModel_check <- names(x)[specificModel]
+      specificModel <- names(modelSet)[specificModel]
+      modNames_spec <- specificModel
+    } else{
+      specificModel_check <- specificModel
+      modNames_spec <- modelSetNames[which(names(x) %in% specificModel)]
+    }
+    if (any(specificModel_check %in% names(x)) == FALSE){
       stop("Selected model not in set. To see options use names(modelSet).")
     }
     nmod <- length(specificModel)
-    modNames_spec <- specificModel
+
     modNames <- modelSetNames
   }
 

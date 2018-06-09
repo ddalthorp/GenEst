@@ -91,7 +91,8 @@ plot.pkm <- function(x, n = 1000, seed = 1, col = "black", ...){
 #' Plot results of a pk model set
 #'
 #' @param x pk model set of class pkmSet
-#' @param specificModel the name(s) of specific model(s) to restrict the plot
+#' @param specificModel the name(s) or index number(s) of specific model(s) to 
+#'   restrict the plot
 #' @param n number of draws to use to characterize the distributions
 #' @param seed_spec random number seed to use for the specific model
 #' @param seed_full random number seed to use for the full model
@@ -112,6 +113,12 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
     nmod <- length(modelSet)
     modNames <- names(modelSet)
   }else{
+    if (is.numeric(specificModel)){
+      if (any(specificModel > length(modelSet))){
+        stop(paste0("there are only ", length(modelSet), " model choices."))
+      }
+      specificModel <- names(modelSet)[specificModel]
+    }
     if (any(specificModel %in% names(modelSet)) == FALSE){
       stop("Selected model not in set. To see options use names(modelSet).")
     }
