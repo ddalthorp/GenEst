@@ -2,7 +2,7 @@
 % Please edit documentation in R/carcass_persistence_figure_functions.R
 \name{plot.cpm}
 \alias{plot.cpm}
-\title{Plot results of a single cp model}
+\title{Plot results of a single CP model}
 \usage{
 \method{plot}{cpm}(x, n = 500, seed = 1, col = "black", ...)
 }
@@ -18,5 +18,13 @@
 \item{...}{to be passed down}
 }
 \description{
-Plot results of a single cp model
+Plot a single \code{\link{cpm}} model
+}
+\examples{
+  data(wind_RP)
+  mod <- cpm(formula_l = l ~ Season, formula_l = s ~ Season,  
+           data = wind_RP$CP, left = "Left", right = "Right"
+          )
+ plot(mod)
+
 }

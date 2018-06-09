@@ -2,16 +2,13 @@
 % Please edit documentation in R/carcass_persistence_functions.R
 \name{cpmSetSizeFailRemove}
 \alias{cpmSetSizeFailRemove}
-\title{Remove failed cpm models}
+\title{Remove failed cpm models from a \code{\link{cpmSetSize}} object}
 \usage{
 cpmSetSizeFailRemove(cpmSetSizeToTidy)
 }
 \arguments{
-\item{cpmSetSizeToTidy}{A list of \code{cpmSetSize} objects to tidy}
+\item{cpmSetSizeToTidy}{A list of \code{\link{cpmSetSize}} objects to tidy}
 }
 \value{
-A list of \code{cpmSet} objects with failed models removed
-}
-\description{
-Remove failed cpm models
+A list of \code{\link{cpmSet}} objects with failed models removed
 }

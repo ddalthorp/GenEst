@@ -2,21 +2,21 @@
 % Please edit documentation in R/carcass_persistence_functions.R
 \name{cpm}
 \alias{cpm}
-\title{Fit a single carcass persistence model.}
+\title{Fit a single carcass persistence model}
 \usage{
 cpm(formula_l, formula_s = NULL, data = NULL, left = NULL, right = NULL,
-  dist = "weibull", CL = 0.95, quiet = FALSE)
+  dist = "exponential", CL = 0.95, quiet = FALSE)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 
 "\code{\link{formula}}" (or one that can be coerced to that class):
 a symbolic description of the model to be fitted. Details of model 
-specification are given under 'Details'.}
+specification are given under "Details".}
 
 \item{formula_s}{Formula for scale; an object of class 
 "\code{\link{formula}}" (or one that can be coerced to that class):
 a symbolic description of the model to be fitted. Details of model 
-specification are given under 'Details'.}
+specification are given under "Details".}
 
 \item{data}{Dataframe with results from carcass persistence trials and any
 covariates included in \code{formula_l} or {formula_s} (required).}
@@ -101,15 +101,14 @@ via the \code{$} operator:
 }
 }
 \description{
-Carcass persistence is modeled as survival function where the one or both  
-  parameter(s) can depend on any number of covariates. Format and usage 
-  parallel that of common \code{R} functions such as \code{lm}, \code{glm},
-  and \code{gam}. However, the input data (\code{data}) are structured 
-  differently to accommodate the survival model approach (see "Details"),
-  and model formulas may be entered for both \code{l} ("location") and 
-  \code{s} ("scale").
-}
-\details{
+Carcass persistence is modeled as survival function where the 
+  one or both parameter(s) can depend on any number of covariates. Format 
+  and usage parallel that of common \code{R} functions such as \code{lm}, 
+  \code{glm}, and \code{gam}. However, the input data (\code{data}) are 
+  structured differently to accommodate the survival model approach (see 
+  "Details"), and model formulas may be entered for both \code{l} 
+  ("location") and \code{s} ("scale").
+
 The probability of a carcass persisting to a particular time is dictated
   by the specific distribution chosen and its underlying location (l) and 
   scale (s) parameters (for all models except the exponential, which only 
@@ -133,4 +132,9 @@ Carcass persistence \code{data} must be entered in a data frame with data
   carcass was always present). Additional columns with values for
   categorical covariates (e.g., visibility = E, M, or D) may also be 
   included.
+}
+\examples{
+  data(wind_RP)
+  cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "Left", right = "Right")
+
 }

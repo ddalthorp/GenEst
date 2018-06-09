@@ -29,5 +29,6 @@ cpmSetSpecCPCellPlot(modelSet, specificModel, fullModel, specificCell, col,
 \item{seed}{random number seed to use}
 }
 \description{
-Plot cell-specific decay curve for carcass persistence
+Produce the figure panel for a specific cell (factor 
+  level combination) including the specific fitted decay curves.
 }
