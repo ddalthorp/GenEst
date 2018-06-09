@@ -213,11 +213,12 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
       specificModel <- names(modelSet)[specificModel]
       modNames_spec <- specificModel
     } else{
-      specificModel_check <- specificModel
-      modNames_spec <- modelSetNames[which(names(x) %in% specificModel)]
+      specificModel <- gsub("NULL", "s ~ 1", specificModel)
+      specificModel_check <- names(x)[which(modelSetNames == specificModel)]
+      modNames_spec <- modelSetNames
     }
     if (any(specificModel_check %in% names(x)) == FALSE){
-      stop("Selected model not in set. To see options use names(modelSet).")
+      stop("Selected model not in set.")
     }
     nmod <- length(specificModel)
 
