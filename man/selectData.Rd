@@ -7,7 +7,7 @@
 selectData(data, cols)
 }
 \arguments{
-\item{data}{data table to selec from}
+\item{data}{data table to select from}
 
 \item{cols}{column names to select}
 }
@@ -15,5 +15,6 @@ selectData(data, cols)
 selected data
 }
 \description{
-Select particular columns from a data set
+Convenience function for selecting specific columns from a 
+  data table
 }

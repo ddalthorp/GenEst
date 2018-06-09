@@ -7,11 +7,12 @@
 countCarcs(mods)
 }
 \arguments{
-\item{mods}{model output from the _SetSize version of a function}
+\item{mods}{model output from the \code{_SetSize} version of a function}
 }
 \value{
 the minimum number of carcasses in the cells
 }
 \description{
-Count the minimum number of carcasses in the cells
+Count the minimum number of carcasses in all of the cells
+  within a \code{_SetSize} model complex
 }

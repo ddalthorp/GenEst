@@ -2,16 +2,18 @@
 % Please edit documentation in R/app_utility_functions.R
 \name{dateCols}
 \alias{dateCols}
-\title{Selects the date columns from a data table}
+\title{Select the date columns from a data table}
 \usage{
 dateCols(data)
 }
 \arguments{
-\item{data}{data table}
+\item{data}{data table potentially containing columns that could be 
+coerced (via \code{as.Date(yyyymmmdd())}) into a date}
 }
 \value{
 column names of columns that can be coerced to dates
 }
 \description{
-Simple function to facilitate selection of date columns
+Simple function to facilitate selection of date columns from
+  a data table
 }

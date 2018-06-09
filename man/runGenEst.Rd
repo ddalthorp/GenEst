@@ -7,5 +7,7 @@
 runGenEst()
 }
 \description{
-Launch the app
+Launches a local version of the GenEst application by running
+  \code{shinyAppDir} pointed to the \code{app} subdirectory in the 
+  local \code{GenEst} package folder.
 }
