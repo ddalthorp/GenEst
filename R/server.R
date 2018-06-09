@@ -28,7 +28,8 @@ showModal(modalDialog(title = disclaimer,
 
 rv <- reactiveValues(
 
-        data_SE = NULL, colNames_SE = NULL, obsCols_SE = NULL, 
+        data_SE = NULL, colNames_SE = NULL, colNames_SE_sel = NULL, 
+        colNames_SE_nosel = NULL, obsCols_SE = NULL, 
         preds_SE = NULL, kFixedChoice = 0, kFixed = NULL,  
         predictors_SE = NULL, formula_p = NULL, formula_k = NULL, 
         mods_SE = NULL, modNames_SE = NULL, modNames_SEp = NULL, 
@@ -37,7 +38,8 @@ rv <- reactiveValues(
         figH_SE = 800, figW_SE = 800,  
         sizeclasses_SE = NULL, tabfig_SEpk = NULL,
 
-        data_CP = NULL, colNames_CP = NULL, ltp = NULL, fta = NULL, 
+        data_CP = NULL, colNames_CP = NULL, colNames_CP_sel = NULL, 
+        colNames_CP_nosel = NULL, ltp = NULL, fta = NULL, 
         preds_CP = NULL, dists = NULL, mods_CP = NULL, predictors_CP = NULL,
         formula_l = NULL, formula_s = NULL, sizeclasses_CP = NULL, 
         AICcTab_CP = NULL,  modOrder_CP = NULL, modNames_CP = NULL, 
@@ -68,6 +70,7 @@ rv <- reactiveValues(
         split_CO = NULL, split_SS = NULL,
         nsplit_CO = NULL, nsplit_SS = NULL, Msplit = NULL,
         figH_M = 800
+ 
       )
 
 msg_RunModSE <- NULL
@@ -93,11 +96,13 @@ observeEvent(input$file_SE, {
   rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
                        rv$colNames_CO
                      )
-  rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
   output$data_SE <- renderDataTable(datatable(rv$data_SE))
   updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
-  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE)
-  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE)
+  rv$colNames_SE_sel <- c(rv$sizeclassCol)
+  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
+  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_nosel)
+  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_nosel)
   updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_all,
     selected = rv$sizeclassCol
   )
@@ -108,12 +113,14 @@ observeEvent(input$file_CP, {
   rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
                        rv$colNames_CO
                      )
-  rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
   output$data_CP <- renderDataTable(datatable(rv$data_CP))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
-  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP)
-  updateSelectizeInput(session, "ltp", choices = rv$colNames_CP)
-  updateSelectizeInput(session, "fta", choices = rv$colNames_CP)
+  rv$colNames_CP_sel <- c(rv$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_nosel)
+  updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_nosel)
+  updateSelectizeInput(session, "fta", choices = rv$colNames_CP_nosel)
   updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_all,
     selected = rv$sizeclassCol
   )
@@ -137,7 +144,7 @@ observeEvent(input$file_CO, {
   rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
                        rv$colNames_CO
                      )
-  rv$sizeclassCol <- updateSizeclassCol(rv$sizeclassCol, rv$colNames_all)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
   updateSelectizeInput(session, "splitCol", choices = rv$colNames_CO)
@@ -147,15 +154,46 @@ observeEvent(input$file_CO, {
   )
 })
 
+observeEvent(input$sizeclassCol, {
+  rv$colNames_SE_sel <- c(input$obsCols_SE, input$sizeclassCol)
+  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
+  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_nosel,
+    selected = input$preds_SE)
+  rv$colNames_SE_sel <- c(input$preds_SE, input$sizeclassCol)
+  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
+  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_nosel,
+    selected = input$obsCols_SE)
+  rv$colNames_CP_sel <- c(input$preds_CP, input$fta, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_nosel,
+    selected = input$ltp)
+  rv$colNames_CP_sel <- c(input$preds_CP, input$ltp, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "fta", choices = rv$colNames_CP_nosel,
+    selected = input$fta)
+  rv$colNames_CP_sel <- c(input$ltp, input$fta, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_nosel,
+    selected = input$preds_CP)
+})
+
 observeEvent(input$obsCols_SE, {
   selectedCols <- c(input$obsCols_SE, input$sizeclassCol, input$preds_SE)
   selectedData <- selectData(rv$data_SE, selectedCols)
   output$selected_SE <- renderDataTable(datatable(selectedData))
+  rv$colNames_SE_sel <- c(input$obsCols_SE, input$sizeclassCol)
+  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
+  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_nosel,
+    selected = input$preds_SE)
 })
 observeEvent(input$preds_SE, {
   selectedCols <- c(input$obsCols_SE, input$sizeclassCol, input$preds_SE)
   selectedData <- selectData(rv$data_SE, selectedCols)
   output$selected_SE <- renderDataTable(datatable(selectedData))
+  rv$colNames_SE_sel <- c(input$preds_SE, input$sizeclassCol)
+  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
+  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_nosel,
+    selected = input$obsCols_SE)
 })
 
 observeEvent(input$runMod_SE, {
@@ -318,19 +356,45 @@ observeEvent(input$ltp, {
   obsColsSelected <- c(input$ltp, input$fta)
   selectedCols <- c(obsColsSelected, input$sizeclassCol, input$preds_CP)
   selectedData <- selectData(rv$data_CP, selectedCols)
-  output$selected_CP <- renderDataTable(datatable(selectedData))
+  rv$colNames_CP_sel <- c(input$ltp, input$fta, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_nosel,
+    selected = input$preds_CP)
+
+  rv$colNames_CP_sel <- c(input$ltp, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "fta", choices = rv$colNames_CP_nosel,
+    selected = input$fta)
+
 })
 observeEvent(input$fta, {
   obsColsSelected <- c(input$ltp, input$fta)
   selectedCols <- c(obsColsSelected, input$sizeclassCol, input$preds_CP)
   selectedData <- selectData(rv$data_CP, selectedCols)
   output$selected_CP <- renderDataTable(datatable(selectedData))
+  rv$colNames_CP_sel <- c(input$ltp, input$fta, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_nosel,
+    selected = input$preds_CP)
+
+  rv$colNames_CP_sel <- c(input$fta, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_nosel,
+    selected = input$ltp)
 })
 observeEvent(input$preds_CP, {
   obsColsSelected <- c(input$ltp, input$fta)
   selectedCols <- c(obsColsSelected, input$sizeclassCol, input$preds_CP)
   selectedData <- selectData(rv$data_CP, selectedCols)
   output$selected_CP <- renderDataTable(datatable(selectedData))
+  rv$colNames_CP_sel <- c(input$preds_CP, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_nosel,
+    selected = input$ltp)
+  rv$colNames_CP_sel <- c(input$preds_CP, input$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  updateSelectizeInput(session, "fta", choices = rv$colNames_CP_nosel,
+    selected = input$fta)
 })
 
 observeEvent(input$runMod_CP, {
