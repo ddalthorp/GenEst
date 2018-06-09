@@ -1,3 +1,21 @@
+#' Removes selected columns from column names
+#'
+#' @description Simple function to facilitate removal of columns selected
+#' @param colNames column names
+#' @param selCols selected columns to be removed
+#' @return column names without selected columns
+#' @export
+#'
+removeSelCols <- function(colNames, selCols){
+  which_sel <- which(colNames %in% selCols)
+  if (length(which_sel) > 0){
+    out <- colNames[-which_sel]
+  } else{
+    out <- colNames
+  }
+  return(out)
+}
+
 #' Creates the pretty version of the Searcher Efficiency model table
 #'
 #' @description Based on confidence level of interest
