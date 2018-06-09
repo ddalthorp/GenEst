@@ -1,9 +1,14 @@
-#' Create the UI
+#' @title Create the UI
+#'
+#' @description Render the active UI for the GenEst application
+#'
 #' @param request request as required for bookmarking
+#'
 #' @return UI
+#'
 #' @export
 #'
-ui <- function(request) {
+ui <- function(request){
 
 navbarPage(
 

@@ -7,15 +7,16 @@
 makeMenu(mods, sizeclasses, type)
 }
 \arguments{
-\item{mods}{models}
+\item{mods}{size-indexed list of model sets}
 
 \item{sizeclasses}{size class names}
 
-\item{type}{"SE" or "CP"}
+\item{type}{model type, either "SE" or "CP"}
 }
 \value{
-rendered model menu object
+rendered HTML model selection menu object
 }
 \description{
-Make a model menu
+Produce a size-based model-selection menu object based on
+  model inputs
 }

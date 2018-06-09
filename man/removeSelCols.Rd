@@ -2,12 +2,12 @@
 % Please edit documentation in R/app_utility_functions.R
 \name{removeSelCols}
 \alias{removeSelCols}
-\title{Removes selected columns from column names}
+\title{Remove selected columns from column names}
 \usage{
 removeSelCols(colNames, selCols)
 }
 \arguments{
-\item{colNames}{column names}
+\item{colNames}{column names from which some could be removed}
 
 \item{selCols}{selected columns to be removed}
 }

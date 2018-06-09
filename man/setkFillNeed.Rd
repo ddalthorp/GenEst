@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utility_functions.R
 \name{setkFillNeed}
 \alias{setkFillNeed}
-\title{Creates the kFillNeed text}
+\title{Create the kFillNeed text}
 \usage{
 setkFillNeed(obsCols)
 }
@@ -10,8 +10,9 @@ setkFillNeed(obsCols)
 \item{obsCols}{vector of observation column names}
 }
 \value{
-kFillNeed
+kFillNeed character of "yes" or "no"
 }
 \description{
-Creates the kFillNeed text
+Based on the number of observation columns, create text output
+  of "yes" or "no"
 }

@@ -1,11 +1,18 @@
-#' Create the UI
+#' @title Server-side GenEst
+#'
+#' @description Run the active server-side code for the GenEst application
+#'
 #' @param input server input
+#'
 #' @param output server output
+#'
 #' @param session server session
-#' @return server setup
+#'
+#' @return server output
+#'
 #' @export
 #'
-server <- function(input, output, session) {
+server <- function(input, output, session){
 
 vnumber <- packageDescription("GenEst", fields = "Version")
 vdate <- packageDescription("GenEst", fields = "Date")
