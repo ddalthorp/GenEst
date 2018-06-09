@@ -166,7 +166,6 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
   modelSet <- x
   modelSetNames <- names(modelSet)
   nmodelsInSet <- length(modelSetNames)
-  nmodelsInSet_check <- nmodelsInSet
 
   modelSetNames_components <- unlist(strsplit(modelSetNames, "; "))
   modelSetNames_matrix <- matrix(modelSetNames_components, ncol = 3, 
@@ -206,21 +205,18 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
     modNames <- modelSetNames
   }else{
     if (is.numeric(specificModel)){
-      if (any(specificModel > nmodelsInSet_check)){
+      if (any(specificModel > nmodelsInSet)){
         stop(paste0("there are only ", nmodelsInSet, " model choices."))
       }
-      specificModel_check <- names(x)[specificModel]
-      specificModel <- names(modelSet)[specificModel]
-      modNames_spec <- specificModel
+      specificModel <- modelSetNames[specificModel]
     } else{
-      specificModel_check <- specificModel
-      modNames_spec <- modelSetNames[which(names(x) %in% specificModel)]
+      specificModel <- gsub("NULL", "s ~ 1", specificModel)
     }
-    if (any(specificModel_check %in% names(x)) == FALSE){
-      stop("Selected model not in set. To see options use names(modelSet).")
+    if (any(specificModel %in% modelSetNames) == FALSE){
+      stop("Selected model not in set.")
     }
     nmod <- length(specificModel)
-
+    modNames_spec <- specificModel
     modNames <- modelSetNames
   }
 
