@@ -14,7 +14,7 @@ server(input, output, session)
 \item{session}{server session}
 }
 \value{
-server setup
+server output
 }
 \description{
 Run the active server-side code for the GenEst application

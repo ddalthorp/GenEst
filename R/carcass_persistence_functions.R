@@ -1,12 +1,12 @@
-#' Fit a single carcass persistence model.
+#' @title Fit a single carcass persistence model
 #' 
-#' Carcass persistence is modeled as survival function where the one or both  
-#'   parameter(s) can depend on any number of covariates. Format and usage 
-#'   parallel that of common \code{R} functions such as \code{lm}, \code{glm},
-#'   and \code{gam}. However, the input data (\code{data}) are structured 
-#'   differently to accommodate the survival model approach (see "Details"),
-#'   and model formulas may be entered for both \code{l} ("location") and 
-#'   \code{s} ("scale").
+#' @description Carcass persistence is modeled as survival function where the 
+#'   one or both parameter(s) can depend on any number of covariates. Format 
+#'   and usage parallel that of common \code{R} functions such as \code{lm}, 
+#'   \code{glm}, and \code{gam}. However, the input data (\code{data}) are 
+#'   structured differently to accommodate the survival model approach (see 
+#'   "Details"), and model formulas may be entered for both \code{l} 
+#'   ("location") and \code{s} ("scale").
 #'
 #' The probability of a carcass persisting to a particular time is dictated
 #'   by the specific distribution chosen and its underlying location (l) and 
@@ -35,12 +35,12 @@
 #' @param formula_l Formula for location; an object of class 
 #'  "\code{\link{formula}}" (or one that can be coerced to that class):
 #'  a symbolic description of the model to be fitted. Details of model 
-#'  specification are given under 'Details'.
+#'  specification are given under "Details".
 #'
 #' @param formula_s Formula for scale; an object of class 
 #'   "\code{\link{formula}}" (or one that can be coerced to that class):
 #'   a symbolic description of the model to be fitted. Details of model 
-#'   specification are given under 'Details'.
+#'   specification are given under "Details".
 #'
 #' @param data Dataframe with results from carcass persistence trials and any
 #'   covariates included in \code{formula_l} or {formula_s} (required).
@@ -123,10 +123,14 @@
 #'  \item{\code{CL}}{the input \code{CL}}
 #'}
 #'
+#' @examples
+#'   data(wind_RP)
+#'   cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "Left", right = "Right")
+#'
 #' @export
 #'
 cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
-                right = NULL, dist = "weibull", CL = 0.95, quiet = FALSE){
+                right = NULL, dist = "exponential", CL = 0.95, quiet = FALSE){
 
 
   if (length(formula_s) != 0 & dist == "exponential" & quiet == FALSE){
@@ -368,6 +372,12 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   return(output)
 }
 
+#' @title Print a \code{\link{cpm}} model object
+#'
+#' @description Print a \code{\link{cpm}} model object
+#'
+#' @param x a \code{\link{cpm}} model object
+#'
 #' @export
 #'
 print.cpm <- function(x, ...){
@@ -376,19 +386,30 @@ print.cpm <- function(x, ...){
   print(x[notHid])
 }
  
-#' Calculate the negative log-likelihood of a carcass persistence model.
+#' @title Calculate the negative log-likelihood of a carcass persistence model
 #' 
+#' @description The function used to calculate the negative-loglikelihood of
+#'   a given carcass persistence model (\code{\link{cpm}} )with a given data
+#'   set
+#'
 #' @param t1 last times observed present
+#'
 #' @param t2 first times observed absent
+#'
 #' @param beta Parameters to be optimized.
+#'
 #' @param nbeta_l Number of parameters associated with l.
+#'
 #' @param cellByCarc Which cell each observation belongs to.
+#'
 #' @param cellMM Combined model matrix.
+#'
 #' @param dataMM Combined model matrix expanded to the data.
+#'
 #' @param dist Name of distribution. 
+#'
 #' @return Negative log likelihood of the observations, given the parameters.
-#' @examples
-#' NA
+#'
 #' @export 
 #'
 cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
@@ -419,12 +440,15 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
 }
 
 
-#' Simulate parameters from a fitted cp model.
+#' @title Simulate parameters from a fitted cp model
+#'
+#' @description Simulate parameters from a \code{\link{cpm}} model object, and 
+#'   format them as either type \code{"survreg"} or \code{"ppersist"}
 #'
 #' @param n the number of simulation draws
 #'
-#' @param model A \code{\link{cpm}} object (which is returned from 
-#'   \code{cpm()})
+#' @param model A \code{cpm} object (which is returned from 
+#'   \code{\link{cpm}})
 #'
 #' @param type The type of parameters requested. \code{"survreg"} or 
 #'   \code{"ppersist"}
@@ -436,7 +460,13 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
 #'   "ppersist"})for cells defined by the \code{model} object. 
 #'
 #' @examples
-#'  NA
+#'   data(wind_RP)
+#'   mod <- cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "Left", 
+#'            right = "Right"
+#'          )
+#'   rcp(n = 10, model = mod, type = "survreg")
+#'   rcp(n = 10, model = mod, type = "ppersist")
+#'
 #' @export
 #'
 rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
@@ -517,11 +547,12 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 }
 
 
-#' Run a set of cpm models based on predictor inputs
+#' @title Run a set of cpm models based on predictor inputs
 #'
-#' Function inputs generally follow \code{cpm}, with all simpler models being 
-#'   run for all included distributions and returned as a list of model 
-#'   objects
+#' @description Run a set of \code{\link{cpm}} models based on all possible 
+#'   models, given the predictor inputs. \code{cpmSet}'s inputs generally
+#'   follow \code{\link{cpm}}, with all simpler models being run for all 
+#'   included distributions and returned as a list of model objects
 #'
 #' @param formula_l Formula for location; an object of class 
 #'  "\code{\link{formula}}" (or one that can be coerced to that class):
@@ -552,6 +583,12 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #' @return \code{cpmSet} returns a class-\code{cpmSet} list of objects, each
 #'   of class "\code{cpm}", which each then a list whose components 
 #'   characterize the fit of the specific model.
+#'
+#' @examples
+#'   data(wind_RP)
+#'   mod <- cpmSet(formula_l = l ~ Season, formula_l = s ~ Season,  
+#'            data = wind_RP$CP, left = "Left", right = "Right"
+#'           )
 #'
 #' @export
 #'
@@ -672,12 +709,13 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
   return(output)
 }
 
-
-#' Fit all possible carcass persistence models across all size classes.
+#' @title Fit all possible carcass persistence models across all size classes
 #'
-#' Function inputs generally follow \code{cpmSet} and \code{cpm} but with an 
-#'   additional size column input and calculation of the set of cpm models for
-#'   each of the size classes
+#' @description Run a set of \code{\link{cpmSet}} model set runs based on all 
+#'   possible models for a suite of size classes. \code{cpmSetSize}'s inputs
+#'   generally follow \code{\link{cpmSet}} and \code{\link{cpm}} but with an 
+#'   additional size column input and calculation of the set of cpm models for 
+#'   each of the size classes.
 #'
 #' @param formula_l Formula for location; an object of class 
 #'  "\code{\link{formula}}" (or one that can be coerced to that class):
@@ -714,6 +752,13 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'   within the set of \code{cpm} models fit for the given size class), that
 #'   is of length equal to the total number of size classes
 #'
+#' @examples
+#'   data(wind_RP)
+#'   mod <- cpmSetSize(formula_l = l ~ Season, formula_l = s ~ Season,  
+#'            data = wind_RP$CP, left = "Left", right = "Right",
+#'            sizeclassCol = "Size"
+#'           )
+#'
 #' @export 
 #'
 cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
@@ -747,14 +792,25 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
   return(out)
 }
 
-#' Create the  AICc tables for a set of carcass persistence models
+#' @title Create the AICc tables for a set of carcass persistence models
 #' 
+#' @description Generates model comparison tables based on AICc values for
+#'   a set of CP models generated by \code{\link{cpmSet}}
+#'
 #' @param cpmset Set of carcass persistence models fit to the same
 #'   observations
+#'
 #' @param quiet Logical indicating if messages should be printed
+#'
 #' @return AICc table
+#'
 #' @examples
-#' NA
+#'   data(wind_RP)
+#'   mod <- cpmSet(formula_l = l ~ Season, formula_l = s ~ Season,  
+#'            data = wind_RP$CP, left = "Left", right = "Right"
+#'           )
+#'  cpmSetAICcTab(mod)
+#'
 #' @export 
 #'
 cpmSetAICcTab <- function(cpmset, quiet = FALSE){
@@ -808,18 +864,26 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE){
   return(output)
 }
 
-#' Calculate the probability of persistence to detection 
+#' @title Calculate the probability of persistence to detection 
+#' 
+#' @description Given a set of CP parameters (of \code{"ppersist"} type), 
+#'   calculate the probability of persistence to detection for a carcass.
 #' 
 #' @param pda parameter a.
+#' 
 #' @param pdb parameter b.
+#' 
 #' @param dist Distribution used.
+#' 
 #' @param t_arrive0 Beginning of arrival window.
+#' 
 #' @param t_arrive1 End of arrival window.
+#' 
 #' @param t_search Search time.
+#' 
 #' @return Probability of persistence of detection to at t_search, 
 #'          given arrival between t_arrive0 and t_arrive1
-#' @examples
-#' NA
+#' 
 #' @export 
 #'
 ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
@@ -870,9 +934,12 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
   return(probs)
 }
 
-#' Check if all of the cpm models fail
+#' @title Check if cpm models fail
+#' 
+#' @description Run a check on each model within a \code{\link{cpmSet}} object
+#'   to determine if it failed or not
 #'
-#' @param cpmSetToCheck A \code{cpmSet} object to test
+#' @param cpmSetToCheck A \code{\link{cpmSet}} object to test
 #'
 #' @return A vector of logical values indicating if each of the models failed
 #'
@@ -888,9 +955,12 @@ cpmSetFail <- function(cpmSetToCheck){
   return(out)
 }
 
-#' Check if all of the cpm models fail
+#' @title Check if all of the cpm models fail
 #'
-#' @param cpmSetSizeToCheck A \code{cpmSetSize} object to test
+#' @description Run a check on each model within a \code{\link{cpmSetSize}}
+#'   object to determine if they all failed or not
+#'
+#' @param cpmSetSizeToCheck A \code{\link{cpmSetSize}} object to test
 #'
 #' @return A list of vectors of logical values indicating if each of the 
 #'   models failed
@@ -908,11 +978,13 @@ cpmSetSizeFail <- function(cpmSetSizeToCheck){
 }
 
 
-#' Remove failed pkm models
+#' @title Remove failed cpm models from a \code{\link{cpmSet}} object
 #'
-#' @param cpmSetToTidy A \code{cpmSet} object to tidy
+#' @description Remove all failed models within a \code{\link{cpmSet}} object
 #'
-#' @return A \code{cpmSet} object with failed models removed
+#' @param cpmSetToTidy A \code{\link{cpmSet}} object to tidy
+#'
+#' @return A \code{\link{cpmSet}} object with failed models removed
 #'
 #' @export
 #'
@@ -932,11 +1004,11 @@ cpmSetFailRemove <- function(cpmSetToTidy){
   return(out)
 }
 
-#' Remove failed cpm models
+#' @title Remove failed cpm models from a \code{\link{cpmSetSize}} object
 #'
-#' @param cpmSetSizeToTidy A list of \code{cpmSetSize} objects to tidy
+#' @param cpmSetSizeToTidy A list of \code{\link{cpmSetSize}} objects to tidy
 #'
-#' @return A list of \code{cpmSet} objects with failed models removed
+#' @return A list of \code{\link{cpmSet}} objects with failed models removed
 #'
 #' @export
 #'
