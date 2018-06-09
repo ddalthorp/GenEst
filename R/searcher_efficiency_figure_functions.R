@@ -135,6 +135,9 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
     model_spec <- modelSet[[specificModel]]
     model_full <- modelSet[[1]]
 
+    if (grepl("Failed model fit", model_spec[1])){
+      next()
+    }
     if (model_spec[[1]] == "Failed model fit"){
       plot(1, 1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
         ylab = "", ylim = c(0, 1), xlim = c(0, 1)
