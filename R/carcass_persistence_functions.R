@@ -377,6 +377,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 #' @description Print a \code{\link{cpm}} model object
 #'
 #' @param x a \code{\link{cpm}} model object
+#' @param ... to be passed down
 #'
 #' @export
 #'
@@ -586,7 +587,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #'
 #' @examples
 #'   data(wind_RP)
-#'   mod <- cpmSet(formula_l = l ~ Season, formula_l = s ~ Season,  
+#'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
 #'            data = wind_RP$CP, left = "Left", right = "Right"
 #'           )
 #'
@@ -754,7 +755,7 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'
 #' @examples
 #'   data(wind_RP)
-#'   mod <- cpmSetSize(formula_l = l ~ Season, formula_l = s ~ Season,  
+#'   mod <- cpmSetSize(formula_l = l ~ Season, formula_s = s ~ Season,  
 #'            data = wind_RP$CP, left = "Left", right = "Right",
 #'            sizeclassCol = "Size"
 #'           )
@@ -806,7 +807,7 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'
 #' @examples
 #'   data(wind_RP)
-#'   mod <- cpmSet(formula_l = l ~ Season, formula_l = s ~ Season,  
+#'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
 #'            data = wind_RP$CP, left = "Left", right = "Right"
 #'           )
 #'  cpmSetAICcTab(mod)

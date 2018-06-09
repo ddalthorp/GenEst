@@ -188,7 +188,7 @@ plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
 #'
 #' @examples
 #'   data(wind_RP)
-#'   mod <- cpmSet(formula_l = l ~ Season, formula_l = s ~ Season,  
+#'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
 #'            data = wind_RP$CP, left = "Left", right = "Right"
 #'           )
 #'  plot(mod)

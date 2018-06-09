@@ -5,8 +5,6 @@
 #'
 #' @param splitSummary a split summary
 #'
-#' @param CL Confidence level
-#'
 #' @return split pretty table 
 #'
 #' @export

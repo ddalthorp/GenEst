@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{a \code{\link{cpm}} model object}
+
+\item{...}{to be passed down}
 }
 \description{
 Print a \code{\link{cpm}} model object
