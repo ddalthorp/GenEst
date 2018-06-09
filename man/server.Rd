@@ -2,7 +2,7 @@
 % Please edit documentation in R/server.R
 \name{server}
 \alias{server}
-\title{Create the UI}
+\title{Server-side GenEst}
 \usage{
 server(input, output, session)
 }
@@ -17,5 +17,5 @@ server(input, output, session)
 server setup
 }
 \description{
-Create the UI
+Run the active server-side code for the GenEst application
 }

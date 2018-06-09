@@ -10,5 +10,6 @@ CPdistOptions()
 list with named elements of the distributions
 }
 \description{
-Produce the options for the distributions in the CP model
+Simply make the named list for the disributions in the CP
+  model
 }

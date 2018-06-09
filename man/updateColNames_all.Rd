@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utility_functions.R
 \name{updateColNames_all}
 \alias{updateColNames_all}
-\title{Updates the string of column names that are in all the needed tables}
+\title{Update the string of column names that are in all the needed tables}
 \usage{
 updateColNames_all(colnames_SE, colnames_CP, colnames_CO)
 }
@@ -17,5 +17,6 @@ updateColNames_all(colnames_SE, colnames_CP, colnames_CO)
 possible column names
 }
 \description{
-Updates the string of column names that are in all the needed tables
+Determine the overlap between the column names in the SE, CP,
+   and CO data tables.
 }
