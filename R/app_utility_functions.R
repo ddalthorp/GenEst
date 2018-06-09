@@ -1,3 +1,25 @@
+#' Selects the date columns from a data table
+#'
+#' @description Simple function to facilitate selection of date columns 
+#' @param data data table
+#' @return column names of columns that can be coerced to dates
+#' @export
+#'
+dateCols <- function(data){
+
+  ncols <- ncol(data)
+  dateTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    temp <- tryCatch(
+              as.Date(yyyymmdd(data[ , coli])),
+              error = function(x){FALSE}
+            )
+    dateTF[coli] <- is.Date(temp)
+  }
+  out <- colnames(data)[dateTF]
+  return(out)
+}
+
 #' Removes selected columns from column names
 #'
 #' @description Simple function to facilitate removal of columns selected

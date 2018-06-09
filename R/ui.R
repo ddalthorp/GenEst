@@ -260,8 +260,16 @@ tabPanel("Analyses",
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
         br(), br(),
         HTML("<strong><u> Search Schedule Data: </u></strong>"),
-        br(), br(),
-        actionButton("useSSdata", "Create Schedule"),
+        conditionalPanel(    
+          condition = "output.data_SS == null",
+          br(), 
+          HTML("<center><em>Input search schedule data file</center></em>")
+        ),
+        conditionalPanel(    
+          condition = "output.data_SS != null",
+          br(), 
+          actionButton("useSSdata", "Create Schedule")
+        ),
         br(), br(),
         HTML("<strong><u> Generic Search Schedule Inputs: </u></strong>"),
         br(), br(),
