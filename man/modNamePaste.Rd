@@ -7,7 +7,7 @@
 modNamePaste(parts, type = "SE", tab = FALSE)
 }
 \arguments{
-\item{parts}{the parts}
+\item{parts}{the component parts of the model's name}
 
 \item{type}{"SE" or "CP"}
 
@@ -17,5 +17,6 @@ modNamePaste(parts, type = "SE", tab = FALSE)
 the pasted name
 }
 \description{
-Paste the parts of a model's name back together
+Paste the component parts of a model's name back together
+  for presentation
 }

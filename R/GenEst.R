@@ -35,8 +35,11 @@
 #' @description This package is designed to analyze searcher efficiency, 
 #'   carcass persistence, and carcass observation data for the estimation of
 #'   mortality.
+#'
 #' @name GenEst
+#'
 #' @docType package
+#'
 #' @keywords package
 #'
 NULL
