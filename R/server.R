@@ -781,9 +781,9 @@ observeEvent(input$runMod_g, {
   removeNotification(msg_RunModg)
 
   if (!is.null(rv$gGeneric[[1]])){
-    output$tab_g <- renderDataTable(
-                      summary(rv$gGeneric[[1]], CL = rv$CL)
-                    )
+    output$table_g <- renderDataTable(
+                        summary(rv$gGeneric[[1]], CL = rv$CL)
+                      )
     output$fig_g <- renderPlot(
                       tryCatch(
                         plot(rv$gGeneric[[1]], 
@@ -795,7 +795,7 @@ observeEvent(input$runMod_g, {
     updateSelectizeInput(session, "tabfig_sizeclassg", 
       choices = rv$sizeclasses_g
     )
-    updateTabsetPanel(session, "analyses_g", "Table")
+    updateTabsetPanel(session, "analyses_g", "Summary")
 
   } else{
     msg_ModFailg <<- msgModFail(rv$gGeneric)
@@ -807,11 +807,11 @@ observeEvent(input$tabfig_sizeclassg, {
   rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$tabfig_sizeclassg)
   rv$CL <- input$CL
   if (class(rv$gGeneric[[rv$sizeclass_g]])[1] == "gGeneric"){
-    output$tab_g <- renderDataTable(
-                      summary(rv$gGeneric[[rv$sizeclass_g]],
-                        CL = rv$CL
+    output$table_g <- renderDataTable(
+                        summary(rv$gGeneric[[rv$sizeclass_g]],
+                          CL = rv$CL
+                        )
                       )
-                    )
     output$fig_g <- renderPlot(
                       tryCatch(
                         plot(rv$gGeneric[[rv$sizeclass_g]],
