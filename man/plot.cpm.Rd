@@ -22,7 +22,7 @@ Plot a single \code{\link{cpm}} model
 }
 \examples{
   data(wind_RP)
-  mod <- cpm(formula_l = l ~ Season, formula_l = s ~ Season,  
+  mod <- cpm(formula_l = l ~ Season, formula_s = s ~ Season,  
            data = wind_RP$CP, left = "Left", right = "Right"
           )
  plot(mod)
