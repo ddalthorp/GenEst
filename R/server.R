@@ -625,7 +625,6 @@ observeEvent(input$runMod_M, {
     rv$models_CP <- rv$models_CP[[1]]
   }
 
-
   rv$M <- tryCatch(
             estM(data_CO = rv$data_CO, data_SS = rv$data_SS, rv$data_DWP,
               frac = rv$frac, model_SE = rv$models_SE, 
@@ -653,7 +652,14 @@ observeEvent(input$runMod_M, {
     output$table_M <- renderDataTable(
                         datatable(prettySplitTab(summary(rv$Msplit)))
                       )
-    updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS)
+
+
+    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)
+    
+    rv$colNames_SS_sel <- colnames(rv$data_SS) %in% rv$data_CO[ , rv$unitCol]
+    rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]
+    updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
+
     updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
 
   }
@@ -681,15 +687,23 @@ observeEvent(input$splitM, {
 
   if (is.null(rv$Msplit)){
     msg_splitFail <<- msgsplitFail("run")
+    output$fig_M <- renderPlot(plot(rv$M))
   } else{
     rv$figH_M <- 800
     if (length(attr(rv$Msplit, "vars")) > 1){
       rv$figH_M <- max(800, 300 * length(rv$Msplit))
     }
-    output$fig_M <- renderPlot({plot(rv$Msplit)}, height = rv$figH_M)
+    output$fig_M <-  renderPlot({
+                       tryCatch(plot(rv$Msplit), 
+                         error = function(x){plot(1, 1)}, 
+                         warning = function(x){plot(1, 1)}
+                       )                     
+                     }, height = rv$figH_M)
+
     if (is.null(rv$split_CO) & is.null(rv$split_SS)){
       output$fig_M <- renderPlot(plot(rv$M))
     }
+
     output$table_M <- renderDataTable(
                         datatable(prettySplitTab(summary(rv$Msplit)))
                       )
