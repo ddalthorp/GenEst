@@ -55,8 +55,7 @@ rv <- reactiveValues(
         gSearchInterval = NULL, gSearchMax = NULL, 
 
         data_DWP = NULL, colNames_DWP = NULL,
-        data_CO = NULL, colNames_CO = NULL, 
-
+        data_CO = NULL, colNames_CO = NULL, colNames_COdates = NULL, 
 
         sizeclassCol = NULL, sizeclasses = NULL, sizeclass = NULL,
         colNames_all = NULL, nsizeclasses = NULL,
@@ -141,6 +140,7 @@ observeEvent(input$file_DWP, {
 observeEvent(input$file_CO, {
   rv$data_CO <- read.csv(input$file_CO$datapath, stringsAsFactors = FALSE)
   rv$colNames_CO <- colnames(rv$data_CO)
+  rv$colNames_COdates <- dateCols(rv$data_CO)
   rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
                        rv$colNames_CO
                      )
@@ -148,7 +148,7 @@ observeEvent(input$file_CO, {
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
   updateSelectizeInput(session, "splitCol", choices = rv$colNames_CO)
-  updateSelectizeInput(session, "dateFoundCol", choices = rv$colNames_CO)
+  updateSelectizeInput(session, "dateFoundCol", choices = rv$colNames_COdates)
   updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_all,
     selected = rv$sizeclassCol
   )
