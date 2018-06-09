@@ -7,6 +7,7 @@
 #' @importFrom gsl hyperg_2F1
 #' @importFrom gtools mixedsort
 #' @importFrom htmltools div img br HTML a
+#' @importFrom lubridate is.Date
 #' @importFrom matrixStats colCounts colMaxs rowCumprods rowProds rowCumsums 
 #'   rowDiffs rowQuantiles
 #' @importFrom mvtnorm rmvnorm
