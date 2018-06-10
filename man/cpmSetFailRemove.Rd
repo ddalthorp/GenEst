@@ -2,16 +2,16 @@
 % Please edit documentation in R/carcass_persistence_functions.R
 \name{cpmSetFailRemove}
 \alias{cpmSetFailRemove}
-\title{Remove failed pkm models}
+\title{Remove failed cpm models from a \code{\link{cpmSet}} object}
 \usage{
 cpmSetFailRemove(cpmSetToTidy)
 }
 \arguments{
-\item{cpmSetToTidy}{A \code{cpmSet} object to tidy}
+\item{cpmSetToTidy}{A \code{\link{cpmSet}} object to tidy}
 }
 \value{
-A \code{cpmSet} object with failed models removed
+A \code{\link{cpmSet}} object with failed models removed
 }
 \description{
-Remove failed pkm models
+Remove all failed models within a \code{\link{cpmSet}} object
 }
