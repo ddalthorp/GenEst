@@ -1,11 +1,18 @@
-#' Plot results of a single generic ghat estimation
+#' @title Plot results of a single generic ghat estimation
 #'
-#' @param x ghatGeneric output
+#' @description Plot method for a single generic \code{ghat} estimation
+#'
+#' @param x \code{\link{ghatGeneric}} output
+#'
 #' @param CL confidence level to use
+#'
 #' @param sizeclassName name of the size class if it is to be added to the
 #'   figure
+#'
 #' @param ... to be passed down
-#' @return a plot
+#'
+#' @return generic detection probability plot
+#'
 #' @export
 #'
 plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.95, ...){
@@ -91,12 +98,18 @@ plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.95, ...){
   text(x_s + 0.2, y_s, text_ex, cex = 0.65, adj = 0)
 }
 
-#' Plot results of a set of size-based generic g estimations
+#' @title Plot results of a set of size-based generic ghat estimations
 #'
-#' @param x gGenericSize output
+#' @description Plot method for a size-based generic \code{ghat} estimation
+#'
+#' @param x \code{\link{gGenericSize}} output
+#'
 #' @param CL confidence level to use
+#'
 #' @param ... to be passed down
-#' @return a plot
+#'
+#' @return size-based detection probability plot
+#'
 #' @export
 #'
 plot.gGenericSize <- function(x, CL = 0.95, ...){

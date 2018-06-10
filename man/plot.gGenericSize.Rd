@@ -2,20 +2,20 @@
 % Please edit documentation in R/detection_probability_figure_functions.R
 \name{plot.gGenericSize}
 \alias{plot.gGenericSize}
-\title{Plot results of a set of size-based generic g estimations}
+\title{Plot results of a set of size-based generic ghat estimations}
 \usage{
 \method{plot}{gGenericSize}(x, CL = 0.95, ...)
 }
 \arguments{
-\item{x}{gGenericSize output}
+\item{x}{\code{\link{gGenericSize}} output}
 
 \item{CL}{confidence level to use}
 
 \item{...}{to be passed down}
 }
 \value{
-a plot
+size-based detection probability plot
 }
 \description{
-Plot results of a set of size-based generic g estimations
+Plot method for a size-based generic \code{ghat} estimation
 }

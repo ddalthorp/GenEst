@@ -1,34 +1,52 @@
-#' Estimate g values and arrival intervals for a set of carcasses
+#' @title Estimate all carcass-level detection rates and arrival intervals
+#'
+#' @description Estimate g values and arrival intervals for a set of carcasses
 #'   from fitted pk and cp models and search data
 #'
 #' @param data_CO Carcass Observation data
+#'
 #' @param data_SS Search Schedule data
+#'
 #' @param dateFoundCol Column name for the date found data
+#'
 #' @param model_SE Searcher Efficiency model (or list of models if there are
 #'   multiple size classes)
+#'
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
+#'
 #' @param kFill value(s) to fill in for missing k when not existing in the
 #'   model(s)
+#'
 #' @param unitCol Column name for the unit indicator
+#'
 #' @param datesSearchedCol Column name for the date searched data. Optional.
-#'  If not provided, \code{estg} will try to find the datesSearchedCol among
-#'  the columns in data_SS. See \code{\link{SS}}.
+#'   If not provided, \code{estg} will try to find the datesSearchedCol among
+#'   the columns in data_SS. See \code{\link{SS}}.
+#'
 #' @param sizeclassCol Name of column in \code{data_CO} where the size classes
 #'   are recorded. Optional. If not provided, no distinctions are made among
-#'   sizes.
+#'   sizes. \code{sizeclassCol} not only identifies what the name of the size 
+#    column is, it also identifies that the model should include size as a 
+#'   segregating class
+#'
 #' @param seed_SE seed for random draws of the SE model
+#'
 #' @param seed_CP seed for random draws of the CP model
+#'
 #' @param seed_g seed for random draws of the gs
+#'
 #' @param nsim the number of simulation draws
+#'
 #' @param max_intervals maximum number of arrival interval intervals to 
-#'  consider for each carcass. Optional. Limiting the number of search 
-#'  intervals can greatly increase the speed of calculations with only a 
-#'  slight reduction in accuracy in most cases.
+#'   consider for each carcass. Optional. Limiting the number of search 
+#'   intervals can greatly increase the speed of calculations with only a 
+#'   slight reduction in accuracy in most cases.
+#'
 #' @return list of [1] g estimates (ghat) and [2] arrival interval estimates 
 #'   (Aj) for each of the carcasses. The row names of the Aj matrix are the
 #'   names of the units where each carcass was found.
-#' @examples NA
+#'
 #' @export
 #'
 estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
@@ -37,8 +55,6 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  nsim = 1, max_intervals = 8){
 
-# sizeclassCol not only identifies what the name of the size column is, it
-# also identifies that the model should include size as a segregating class
   sizeCol <- sizeclassCol # changed here simply for ease of typing and reading
   SSdat <- SS(data_SS) # SSdat name distinguishes this as pre-formatted data
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
@@ -80,9 +96,6 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   preds_SE <- lapply(model_SE, function(x) x$predictors)
   preds_CP <- lapply(model_CP, function(x) x$predictors)
   preds <- mapply(function(x, y) unique(c(x, y)), preds_SE, preds_CP)
-# I can't find where x$data is used. Can we cut the following two lines?
-  #data_SE <- lapply(model_SE, function(x) x$data) 
-  #data_CP <- lapply(model_CP, function(x) x$data)
   dist <- unlist(lapply(model_CP, function(x) x$dist))
   COpreds <- lapply(preds, function(x) x[x %in% names(COdat)])
   SSpreds <- lapply(preds, function(x) x[!(x %in% names(COdat))])
@@ -286,19 +299,24 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   return(out)
 }
 
-#' Calculate the conditional probability of observing a carcass at search oi
-#' as a function arrival interval (assuming carcass is not removed by 
-#' scavengers before the time of the final search)
+#' @title Calculate conditional probability of observation at a search
+#'
+#' @description Calculate the conditional probability of observing a carcass 
+#'   at search oi as a function arrival interval (assuming carcass is not
+#'   removed by scavengers before the time of the final search)
 #'   
 #' @param oi number of searches after arrival
+#'
 #' @param pk numeric array of searcher efficiency p and k parameters
 #'  (p = pk[ , 1] and k = pk[ , 2])
+#'
 #' @param rng optional parameter giving the range of intervals to consider
+#'
 #' @return numeric array of probability of observing a carcass at oi for
-#'  given that it arrived in intervals 1:oi if rng = NULL (or in intervals
-#'  rng), assuming the carcass had not been previously discovered or removed 
-#'  by scavengers
-#' @examples NA
+#'   given that it arrived in intervals 1:oi if rng = NULL (or in intervals
+#'   \code{rng}), assuming the carcass had not been previously discovered or
+#'   removed by scavengers
+#'
 #' @export
 #'
 SEsi_left <- function (oi, pk, rng = NULL){
@@ -328,17 +346,24 @@ SEsi_left <- function (oi, pk, rng = NULL){
   return(pfind.si[ , oi - rng + 1])
 }
 
-#' Calculate the conditional probability of observing a carcass after 
-#' i = 1:nsi searches (assuming carcass is not previous discovered by 
-#' searchers or removed by scavengers)
+#' @title Calculate conditional probability of observation after a series of 
+#'   searches
+#'
+#' @description Calculate the conditional probability of observing a carcass 
+#'   after i = 1:nsi searches (assuming carcass is not previous discovered by 
+#'   searchers or removed by scavengers)
 #'
 #' @param nsi number of searches after arrival
+#'
 #' @param pk numeric array of searcher efficiency p and k parameters
 #'  (p = pk[ , 1] and k = pk[ , 2])
+#'
 #' @return numeric nsi x dim(pk)[1] array of probabilities of observing a
 #'  carcass after 1:nsi searches (assuming that the carcass had not been
 #' previously discovered or removed by scavengers
+#'
 #' @export
+#'
 SEsi_right <- function(nsi, pk){
   # oi is the index for the search occasion (excluding t0)
   # pk is nsim x 2 array of simulated p and k parameters
@@ -365,13 +390,14 @@ SEsi_right <- function(nsi, pk){
   return(pfind.si)
 }
 
-#' Propose a k value if it is not in the model table
+#' @title Propose a k value if it is not in the model table
 #'
-#' @description Based on the call to the pkm function
+#' @description Based on the call to \code{pkm}
 #'
 #' @param model searcher efficiency model
+#'
 #' @return proposed k value
-#' @examples NA
+#'
 #' @export 
 #'
 kFillPropose <- function(model){
@@ -388,8 +414,10 @@ kFillPropose <- function(model){
   return(proposal)
 }
 
-#' Generic g estimation by simulation from given SE model and CP models
-#'   under a specific search schedule
+#' @title Estimate generic g
+#'
+#' @description Generic g estimation by simulation from given SE model and CP 
+#'   models under a specific search schedule.
 #'
 #' The g estimated by \code{estgGeneric} is a generic aggregate detection 
 #'   probability and represents the probability of detecting a carcass that 
@@ -403,12 +431,19 @@ kFillPropose <- function(model){
 #'   to work with for estimating M with precision.
 #'
 #' @param nsim the number of simulation draws
+#'
 #' @param days Search schedule data as a vector of days searched
+#'
 #' @param model_SE Searcher Efficiency model
+#'
 #' @param model_CP Carcass Persistence model
+#'
 #' @param seed_SE seed for random draws of the SE model
+#'
 #' @param seed_CP seed for random draws of the CP model
+#'
 #' @param kFill value to fill in for missing k when not existing in the model
+#'
 #' @return gGeneric object that is a list of [1] a list of g estimates,
 #'    with one element in the list corresponding to each of the cells from the 
 #'    cross-model combination and [2] a table of predictors and cell names 
@@ -457,8 +492,10 @@ estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
   return(out)
 }
 
-#' Calculate detection probability (g) given SE and CP parameters and a search
-#'  schedule
+#' @title Calculate cell-level generic detection probability
+#'
+#' @description Calculate detection probability (g) given SE and CP parameters 
+#'  and a search schedule.
 #'
 #' The g given by \code{calcg} is a generic aggregate detection
 #'  probability and represents the probability of detecting a carcass that
@@ -471,8 +508,11 @@ estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
 #'  difficult to work with for estimating M with precision.
 #'
 #' @param days Search schedule (vector of days searched)
+#'
 #' @param param_SE numeric array of searcher efficiency parameters (p and k)
+#'
 #' @param param_CP numeric array of carcass persistence parameters (a and b)
+#'
 #' @param dist distribution for the CP model
 #'
 #' @export
@@ -604,8 +644,10 @@ calcg <- function(days, param_SE, param_CP, dist){
   return(prob_obs)
 }
 
-#' Generic g estimation for a combination of SE model and CP model 
-#'   under a given search schedule
+#' @title Estimate generic detection probability for multiple size classes
+#'
+#' @description Generic g estimation for a combination of SE model and CP
+#'   model under a given search schedule
 #'
 #' The g estimated by \code{estgGenericSize} is a generic aggregate detection
 #'   probability and represents the probability of detecting a carcass that 
@@ -619,16 +661,26 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'   to work with for estimating M with precision.
 #'
 #' @param nsim the number of simulation draws
+#'
 #' @param days Search schedule data as a vector of days searched 
+#'
 #' @param modelSetSize_SE Searcher Efficiency model set for multiple sizes
+#'
 #' @param modelSetSize_CP Carcass Persistence model set for multiple sizes
+#'
 #' @param modelSizeSelections_SE vector of SE models to use, one for each size
+#'
 #' @param modelSizeSelections_CP vector of CP models to use, one for each size
+#'
 #' @param seed_SE seed for random draws of the SE model
+#'
 #' @param seed_CP seed for random draws of the CP model
+#'
 #' @param kFill values to fill in for missing k when not existing in the model
+#'
 #' @return list of g estimates, with one element in the list corresponding
 #'   to each of the cells from the cross-model combination
+#'
 #' @export
 #'
 estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
@@ -661,20 +713,27 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
   return(ghats)
 }
 
-#' Tabulate an average search schedule from a multi-unit SS data table
+#' @title Tabulate an average search schedule from a multi-unit SS data table
+#'
+#' @description Given a multi-unit Search Schedule data table, produce an 
+#'   average search schedule for use in generic detection probability 
+#'   estimation. 
 #'
 #' @param data_SS a multi-unit SS data table, for which the average interval 
 #'   will be tabulated. It is assumed that \code{data_SS} is properly 
 #'   formatted, with a column of search dates and a column of 1s and 0s for 
 #'   each unit indicating whether the unit was searched on the given date).
 #'   Other columns are optional, but optional columns should not all contain
-#'    at least on value that is not a 1 or 0.
+#'   at least on value that is not a 1 or 0.
+#'
 #' @param datesSearchedCol Column name for the date searched data (optional).
 #'   if no \code{datesSearchedCol} is provided, \code{data_SS} will be parsed
 #'   to extract the dates automatically. If there is more than one column with
 #'   dates, then an error will be thrown and the user will be required to
 #'   provide the name of the desired dates column.
+#'
 #' @return vector of the average search schedule
+#'
 #' @export
 #'
 averageSS <- function(data_SS, datesSearchedCol = NULL){
@@ -687,15 +746,20 @@ averageSS <- function(data_SS, datesSearchedCol = NULL){
   return(aveSS)
 }
   
-#' Summarize the gGeneric list to a simple table
+#' @title Summarize the gGeneric list to a simple table
+#'
+#' @description methods for \code{summary} applied to a \code{gGeneric} list
 #'
 #' @param object gGeneric output list (each element is a named vector of 
 #'   gGeneric values for a cell in the model combinations)
+#'
 #' @param ... arguments to be passed down
+#'
 #' @param CL confidence level
 #'
 #' @return a summary table of g values (medians and confidence bounds) for 
 #'   each cell combination within the gGeneric list
+#'
 #' @export
 #'
 summary.gGeneric <- function(object, ..., CL = 0.95){
@@ -737,16 +801,22 @@ summary.gGeneric <- function(object, ..., CL = 0.95){
 
 }
 
-#' Summarize the gGenericSize list to a list of simple tables
+#' @title Summarize the gGenericSize list to a list of simple tables
+#'
+#' @description methods for \code{summary} applied to a \code{gGenericSize}
+#'   list
 #'
 #' @param object gGenericSize output list (each element is a size-named 
 #'   list of named vectors of gGeneric values for a cell in the model 
 #'   combinations)
+#'
 #' @param ... arguments to be passed down
+#'
 #' @param CL confidence level
 #'
 #' @return a list of summary tables of g values (medians and confidence 
 #'   bounds) for each cell combination within the gGeneric list
+#'
 #' @export
 #'
 summary.gGenericSize <- function(object, ..., CL = 0.95){
@@ -760,7 +830,7 @@ summary.gGenericSize <- function(object, ..., CL = 0.95){
   return(out)
 }
 
-#' Create search schedule data into an SS object for convenient splits
+#' @title Create search schedule data into an SS object for convenient splits
 #'  analyses
 #'
 #' @description Since data_SS columns largely have a specific, required
@@ -780,17 +850,20 @@ summary.gGenericSize <- function(object, ..., CL = 0.95){
 #'  including columns for search dates, covariates (describing characteristics
 #'  of the search intervals), and each unit (with 1s and 0s to indicate 
 #'  whether the given unit was searched (= 1) or not (= 0) on the given date)
+#'
 #' @param datesSearchedCol name of the column with the search dates in it
 #'  (optional). If no \code{datesSearchedCol} is given, \code{SS} will attempt
 #'  to find the date column based on data formats. If there is exactly one
 #'  column that can be interpreted as dates, that column will be taken as the
 #'  dates searched. If more than one date column is found, \code{SS} exits 
 #'  with an error message.
+#'
 #' @param preds vector of character strings giving the names of columns to be
 #'  interpreted as potential covariates (optional). Typically, it is not
 #'  necessary for a user to provide a value for \code{preds}. It is used only
 #'  to identify specific columns of 1s and 0s as covariates rather than as
 #'  search schedules.
+#'
 #' @return \code{SS} object that can be conveniently used in the splitting
 #'  functions.
 #'

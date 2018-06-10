@@ -12,7 +12,7 @@ will be tabulated. It is assumed that \code{data_SS} is properly
 formatted, with a column of search dates and a column of 1s and 0s for 
 each unit indicating whether the unit was searched on the given date).
 Other columns are optional, but optional columns should not all contain
- at least on value that is not a 1 or 0.}
+at least on value that is not a 1 or 0.}
 
 \item{datesSearchedCol}{Column name for the date searched data (optional).
 if no \code{datesSearchedCol} is provided, \code{data_SS} will be parsed
@@ -24,5 +24,7 @@ provide the name of the desired dates column.}
 vector of the average search schedule
 }
 \description{
-Tabulate an average search schedule from a multi-unit SS data table
+Given a multi-unit Search Schedule data table, produce an 
+  average search schedule for use in generic detection probability 
+  estimation.
 }

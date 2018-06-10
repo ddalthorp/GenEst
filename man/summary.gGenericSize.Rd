@@ -20,5 +20,6 @@ a list of summary tables of g values (medians and confidence
   bounds) for each cell combination within the gGeneric list
 }
 \description{
-Summarize the gGenericSize list to a list of simple tables
+methods for \code{summary} applied to a \code{gGenericSize}
+  list
 }

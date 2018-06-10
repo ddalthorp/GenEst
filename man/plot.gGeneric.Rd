@@ -7,7 +7,7 @@
 \method{plot}{gGeneric}(x, sizeclassName = NULL, CL = 0.95, ...)
 }
 \arguments{
-\item{x}{ghatGeneric output}
+\item{x}{\code{\link{ghatGeneric}} output}
 
 \item{sizeclassName}{name of the size class if it is to be added to the
 figure}
@@ -17,8 +17,8 @@ figure}
 \item{...}{to be passed down}
 }
 \value{
-a plot
+generic detection probability plot
 }
 \description{
-Plot results of a single generic ghat estimation
+Plot method for a single generic \code{ghat} estimation
 }
