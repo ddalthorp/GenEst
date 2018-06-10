@@ -2,9 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{SEsi_left}
 \alias{SEsi_left}
-\title{Calculate the conditional probability of observing a carcass at search oi
-as a function arrival interval (assuming carcass is not removed by 
-scavengers before the time of the final search)}
+\title{Calculate conditional probability of observation at a search}
 \usage{
 SEsi_left(oi, pk, rng = NULL)
 }
@@ -18,15 +16,12 @@ SEsi_left(oi, pk, rng = NULL)
 }
 \value{
 numeric array of probability of observing a carcass at oi for
- given that it arrived in intervals 1:oi if rng = NULL (or in intervals
- rng), assuming the carcass had not been previously discovered or removed 
- by scavengers
+  given that it arrived in intervals 1:oi if rng = NULL (or in intervals
+  \code{rng}), assuming the carcass had not been previously discovered or
+  removed by scavengers
 }
 \description{
-Calculate the conditional probability of observing a carcass at search oi
-as a function arrival interval (assuming carcass is not removed by 
-scavengers before the time of the final search)
-}
-\examples{
-NA
+Calculate the conditional probability of observing a carcass 
+  at search oi as a function arrival interval (assuming carcass is not
+  removed by scavengers before the time of the final search)
 }
