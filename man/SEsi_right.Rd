@@ -2,9 +2,8 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{SEsi_right}
 \alias{SEsi_right}
-\title{Calculate the conditional probability of observing a carcass after 
-i = 1:nsi searches (assuming carcass is not previous discovered by 
-searchers or removed by scavengers)}
+\title{Calculate conditional probability of observation after a series of 
+  searches}
 \usage{
 SEsi_right(nsi, pk)
 }
@@ -20,7 +19,7 @@ numeric nsi x dim(pk)[1] array of probabilities of observing a
 previously discovered or removed by scavengers
 }
 \description{
-Calculate the conditional probability of observing a carcass after 
-i = 1:nsi searches (assuming carcass is not previous discovered by 
-searchers or removed by scavengers)
+Calculate the conditional probability of observing a carcass 
+  after i = 1:nsi searches (assuming carcass is not previous discovered by 
+  searchers or removed by scavengers)
 }

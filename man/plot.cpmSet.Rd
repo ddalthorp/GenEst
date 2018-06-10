@@ -2,7 +2,7 @@
 % Please edit documentation in R/carcass_persistence_figure_functions.R
 \name{plot.cpmSet}
 \alias{plot.cpmSet}
-\title{Plot results of a cp model set}
+\title{Plot results of a set of CP models}
 \usage{
 \method{plot}{cpmSet}(x, specificModel = NULL, n = 500, seed = 1,
   col = c(exponential = rgb(0.8, 0.38, 0.56), weibull = rgb(1, 0.76, 0.15),
@@ -12,7 +12,8 @@
 \arguments{
 \item{x}{pk model set of class pkmSet}
 
-\item{specificModel}{the name of specific model(s) to restrict the plot}
+\item{specificModel}{the name(s) or index number(s) of specific model(s) to 
+restrict the plot}
 
 \item{n}{number of draws to use to characterize the distributions}
 
@@ -26,5 +27,14 @@ figure}
 \item{...}{to be passed down}
 }
 \description{
-Plot results of a cp model set
+Produce a set of figures for a set of CP models, as fit by
+  \code{\link{cpmSet}}
+}
+\examples{
+  data(wind_RP)
+  mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
+           data = wind_RP$CP, left = "Left", right = "Right"
+          )
+ plot(mod)
+
 }

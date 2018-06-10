@@ -2,7 +2,8 @@
 % Please edit documentation in R/app_utility_functions.R
 \name{modNameSplit}
 \alias{modNameSplit}
-\title{Split model names into their components and remove only a desired one}
+\title{Split model names into their components and remove only a desired 
+  one}
 \usage{
 modNameSplit(modNames, pos)
 }
@@ -15,5 +16,6 @@ modNameSplit(modNames, pos)
 vector of split-off model names
 }
 \description{
-Splitting is done based on the semicolon
+Split a model name to return a specific component. Splitting 
+  is done based on the semicolon in the name
 }

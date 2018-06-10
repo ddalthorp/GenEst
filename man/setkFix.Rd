@@ -15,5 +15,5 @@ setkFix(kFixedChoice, kFixed)
 new kFixed value
 }
 \description{
-Update the fixed k value
+Update the value for \code{kFixed} is chosen and available
 }

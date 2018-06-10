@@ -2,8 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estg}
 \alias{estg}
-\title{Estimate g values and arrival intervals for a set of carcasses
-  from fitted pk and cp models and search data}
+\title{Estimate all carcass-level detection rates and arrival intervals}
 \usage{
 estg(data_CO, data_SS, dateFoundCol = "DateFound", model_SE, model_CP,
   kFill = NULL, unitCol = NULL, datesSearchedCol = NULL,
@@ -34,7 +33,8 @@ the columns in data_SS. See \code{\link{SS}}.}
 
 \item{sizeclassCol}{Name of column in \code{data_CO} where the size classes
 are recorded. Optional. If not provided, no distinctions are made among
-sizes.}
+sizes. \code{sizeclassCol} not only identifies what the name of the size 
+segregating class}
 
 \item{seed_SE}{seed for random draws of the SE model}
 
@@ -59,5 +59,18 @@ Estimate g values and arrival intervals for a set of carcasses
   from fitted pk and cp models and search data
 }
 \examples{
-NA
+ data(mock)
+ model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+              data = mock$SE
+             )
+ model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+               data = mock$CP, dist = "weibull",
+               left = "LastPresentDecimalDays", 
+               right = "FirstAbsentDecimalDays"
+             )
+ ghat <- estg(data_CO = mock$CO, data_SS = mock$SS, 
+           dateFoundCol = "DateFound", unitCol = "Unit", 
+           model_SE = model_SE, model_CP = model_CP, nsim = 10 
+         )
+
 }
