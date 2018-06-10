@@ -2,15 +2,15 @@
 % Please edit documentation in R/carcass_persistence_functions.R
 \name{rcp}
 \alias{rcp}
-\title{Simulate parameters from a fitted cp model.}
+\title{Simulate parameters from a fitted cp model}
 \usage{
 rcp(n = 1, model, seed = NULL, type = "survreg")
 }
 \arguments{
 \item{n}{the number of simulation draws}
 
-\item{model}{A \code{\link{cpm}} object (which is returned from 
-\code{cpm()})}
+\item{model}{A \code{cpm} object (which is returned from 
+\code{\link{cpm}})}
 
 \item{seed}{optional input to set the seed of the RNG}
 
@@ -23,8 +23,15 @@ list of two matrices of \code{n} simulated \code{l} and \code{s}
   "ppersist"})for cells defined by the \code{model} object.
 }
 \description{
-Simulate parameters from a fitted cp model.
+Simulate parameters from a \code{\link{cpm}} model object, and 
+  format them as either type \code{"survreg"} or \code{"ppersist"}
 }
 \examples{
- NA
+  data(wind_RP)
+  mod <- cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "Left", 
+           right = "Right"
+         )
+  rcp(n = 10, model = mod, type = "survreg")
+  rcp(n = 10, model = mod, type = "ppersist")
+
 }

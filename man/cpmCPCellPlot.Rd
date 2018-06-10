@@ -25,5 +25,6 @@ cpmCPCellPlot(model, specificCell, col, lwd, n, seed, axis_y = TRUE,
 \item{axis_x}{logical of whether or not to plot the x axis}
 }
 \description{
-Plot cell-specific decay curve for carcass persistence
+Produce the figure panel for a specific cell (factor 
+  level combination) including the specific fitted decay curves.
 }

@@ -2,16 +2,17 @@
 % Please edit documentation in R/carcass_persistence_functions.R
 \name{cpmSetFail}
 \alias{cpmSetFail}
-\title{Check if all of the cpm models fail}
+\title{Check if cpm models fail}
 \usage{
 cpmSetFail(cpmSetToCheck)
 }
 \arguments{
-\item{cpmSetToCheck}{A \code{cpmSet} object to test}
+\item{cpmSetToCheck}{A \code{\link{cpmSet}} object to test}
 }
 \value{
 A vector of logical values indicating if each of the models failed
 }
 \description{
-Check if all of the cpm models fail
+Run a check on each model within a \code{\link{cpmSet}} object
+  to determine if it failed or not
 }

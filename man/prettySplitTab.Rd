@@ -8,8 +8,6 @@ prettySplitTab(splitSummary)
 }
 \arguments{
 \item{splitSummary}{a split summary}
-
-\item{CL}{Confidence level}
 }
 \value{
 split pretty table

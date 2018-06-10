@@ -1,12 +1,22 @@
-#' Plot cell-specific decay curve for carcass persistence
+#' @title Plot cell-specific decay curve for carcass persistence
+#'
+#' @description Produce the figure panel for a specific cell (factor 
+#'   level combination) including the specific fitted decay curves.
 #'
 #' @param model model of class cpm
+#'
 #' @param specificCell name of the specific cell to plot
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed random number seed to use
+#'
 #' @param col color to use
+#'
 #' @param lwd line width to use
+#'
 #' @param axis_x logical of whether or not to plot the x axis
+#'
 #' @param axis_y logical of whether or not to plot the y axis
 #'
 #' @export
@@ -67,13 +77,26 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
   text(max_x, 1.02, specificCell, adj = 1, cex = 0.75, font = 2)
 }
 
-#' Plot results of a single cp model
+#' @title Plot results of a single CP model
+#'
+#' @description Plot a single \code{\link{cpm}} model
 #'
 #' @param x model of class cpm
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed random number seed to use
+#'
 #' @param col color to use
+#'
 #' @param ... to be passed down
+#'
+#' @examples
+#'   data(wind_RP)
+#'   mod <- cpm(formula_l = l ~ Season, formula_s = s ~ Season,  
+#'            data = wind_RP$CP, left = "Left", right = "Right"
+#'           )
+#'  plot(mod)
 #'
 #' @export
 #'
@@ -142,17 +165,33 @@ plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
   }
 }
 
-#' Plot results of a cp model set
+#' @title Plot results of a set of CP models
+#'
+#' @description Produce a set of figures for a set of CP models, as fit by
+#'   \code{\link{cpmSet}}
 #'
 #' @param x pk model set of class pkmSet
+#'
 #' @param specificModel the name(s) or index number(s) of specific model(s) to 
 #'   restrict the plot
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed random number seed to use for the models
+#'
 #' @param col color to use for the specific model
+#'
 #' @param sizeclassName name of the size class if it is to be added to the
 #'   figure
+#'
 #' @param ... to be passed down
+#'
+#' @examples
+#'   data(wind_RP)
+#'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
+#'            data = wind_RP$CP, left = "Left", right = "Right"
+#'           )
+#'  plot(mod)
 #'
 #' @export
 #'
@@ -362,17 +401,29 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
   devAskNewPage(FALSE)
 }
 
-#' Plot cell-specific decay curve for carcass persistence
+#' @title Plot cell-specific decay curve for carcass persistence
+#'
+#' @description Produce the figure panel for a specific cell (factor 
+#'   level combination) including the specific fitted decay curves.
 #'
 #' @param modelSet model set of class cpmSet
+#'
 #' @param specificModel name of the specific model to plot and emphasize
+#'
 #' @param fullModel name of the full model to create the cell structure
+#'
 #' @param specificCell name of the specific cell to plot
+#'
 #' @param modelMatches list of matching models for the modelSet
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed random number seed to use
+#'
 #' @param col color to use
+#'
 #' @param axis_x logical of whether or not to plot the x axis
+#'
 #' @param axis_y logical of whether or not to plot the y axis
 #'
 #' @export

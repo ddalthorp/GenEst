@@ -2,7 +2,7 @@
 % Please edit documentation in R/carcass_persistence_functions.R
 \name{cpLogLik}
 \alias{cpLogLik}
-\title{Calculate the negative log-likelihood of a carcass persistence model.}
+\title{Calculate the negative log-likelihood of a carcass persistence model}
 \usage{
 cpLogLik(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist)
 }
@@ -27,8 +27,7 @@ cpLogLik(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist)
 Negative log likelihood of the observations, given the parameters.
 }
 \description{
-Calculate the negative log-likelihood of a carcass persistence model.
-}
-\examples{
-NA
+The function used to calculate the negative-loglikelihood of
+  a given carcass persistence model (\code{\link{cpm}} )with a given data
+  set
 }
