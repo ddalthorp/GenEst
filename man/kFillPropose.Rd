@@ -13,8 +13,5 @@ kFillPropose(model)
 proposed k value
 }
 \description{
-Based on the call to the pkm function
-}
-\examples{
-NA
+Based on the call to \code{pkm}
 }

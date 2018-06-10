@@ -2,8 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estgGeneric}
 \alias{estgGeneric}
-\title{Generic g estimation by simulation from given SE model and CP models
-  under a specific search schedule}
+\title{Estimate generic g}
 \usage{
 estgGeneric(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, kFill = NULL)
@@ -30,6 +29,9 @@ gGeneric object that is a list of [1] a list of g estimates,
    associated with the gs
 }
 \description{
+Generic g estimation by simulation from given SE model and CP 
+  models under a specific search schedule.
+
 The g estimated by \code{estgGeneric} is a generic aggregate detection 
   probability and represents the probability of detecting a carcass that 
   arrives at a (uniform) random time during the period monitored, for each

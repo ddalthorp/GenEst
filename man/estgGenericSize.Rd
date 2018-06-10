@@ -2,8 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estgGenericSize}
 \alias{estgGenericSize}
-\title{Generic g estimation for a combination of SE model and CP model 
-  under a given search schedule}
+\title{Estimate generic detection probability for multiple size classes}
 \usage{
 estgGenericSize(nsim = 1, days, modelSetSize_SE, modelSetSize_CP,
   modelSizeSelections_SE, modelSizeSelections_CP, seed_SE = NULL,
@@ -33,6 +32,9 @@ list of g estimates, with one element in the list corresponding
   to each of the cells from the cross-model combination
 }
 \description{
+Generic g estimation for a combination of SE model and CP
+  model under a given search schedule
+
 The g estimated by \code{estgGenericSize} is a generic aggregate detection
   probability and represents the probability of detecting a carcass that 
   arrives at a (uniform) random time during the period monitored, for each

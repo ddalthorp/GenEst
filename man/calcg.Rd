@@ -2,8 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{calcg}
 \alias{calcg}
-\title{Calculate detection probability (g) given SE and CP parameters and a search
- schedule}
+\title{Calculate cell-level generic detection probability}
 \usage{
 calcg(days, param_SE, param_CP, dist)
 }
@@ -17,6 +16,9 @@ calcg(days, param_SE, param_CP, dist)
 \item{dist}{distribution for the CP model}
 }
 \description{
+Calculate detection probability (g) given SE and CP parameters 
+ and a search schedule.
+
 The g given by \code{calcg} is a generic aggregate detection
  probability and represents the probability of detecting a carcass that
  arrives at a (uniform) random time during the time spanned by the search
