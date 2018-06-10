@@ -12,3 +12,6 @@ cpmSetSizeFailRemove(cpmSetSizeToTidy)
 \value{
 A list of \code{\link{cpmSet}} objects with failed models removed
 }
+\description{
+Remove failed models from a \code{\link{cpmSetSize}} object
+}
