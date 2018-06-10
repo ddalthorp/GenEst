@@ -1007,6 +1007,8 @@ cpmSetFailRemove <- function(cpmSetToTidy){
 
 #' @title Remove failed cpm models from a \code{\link{cpmSetSize}} object
 #'
+#' @description Remove failed models from a \code{\link{cpmSetSize}} object
+#'
 #' @param cpmSetSizeToTidy A list of \code{\link{cpmSetSize}} objects to tidy
 #'
 #' @return A list of \code{\link{cpmSet}} objects with failed models removed
