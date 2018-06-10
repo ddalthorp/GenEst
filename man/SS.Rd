@@ -44,3 +44,8 @@ Since data_SS columns largely have a specific, required
   there is a covariate column consisting entirely of 0s and 1s. In that
   case, the user must specify the column(s) in \code{covars}.
 }
+\examples{
+ data(mock)
+ SS(mock$SS)
+
+}
