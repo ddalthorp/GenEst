@@ -28,3 +28,8 @@ Given a multi-unit Search Schedule data table, produce an
   average search schedule for use in generic detection probability 
   estimation.
 }
+\examples{
+  data(mock)
+  avgSS <- averageSS(mock$SS)
+
+}

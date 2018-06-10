@@ -444,10 +444,25 @@ kFillPropose <- function(model){
 #'
 #' @param kFill value to fill in for missing k when not existing in the model
 #'
-#' @return gGeneric object that is a list of [1] a list of g estimates,
+#' @return \code{gGeneric} object that is a list of [1] a list of g estimates,
 #'    with one element in the list corresponding to each of the cells from the 
 #'    cross-model combination and [2] a table of predictors and cell names 
 #'    associated with the gs
+#'
+#' @examples
+#'   data(mock)
+#'   model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+#'                 data = mock$SE
+#'               )
+#'   model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+#'                 data = mock$CP, left = "LastPresentDecimalDays", 
+#'                 right = "FirstAbsentDecimalDays"
+#'               )
+#'   avgSS <- averageSS(mock$SS)
+#'   ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+#'                     seed_SE = 1, seed_CP = 1, kFill = NULL
+#'                   )
+#'
 #' @export
 #'
 estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
@@ -734,6 +749,10 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
 #'
 #' @return vector of the average search schedule
 #'
+#' @examples 
+#'   data(mock)
+#'   avgSS <- averageSS(mock$SS)
+#'
 #' @export
 #'
 averageSS <- function(data_SS, datesSearchedCol = NULL){
@@ -759,6 +778,21 @@ averageSS <- function(data_SS, datesSearchedCol = NULL){
 #'
 #' @return a summary table of g values (medians and confidence bounds) for 
 #'   each cell combination within the gGeneric list
+#'
+#' @examples 
+#'   data(mock)
+#'   model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+#'                 data = mock$SE
+#'               )
+#'   model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+#'                 data = mock$CP, left = "LastPresentDecimalDays", 
+#'                 right = "FirstAbsentDecimalDays"
+#'               )
+#'   avgSS <- averageSS(mock$SS)
+#'   ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+#'                     seed_SE = 1, seed_CP = 1, kFill = NULL
+#'                   )
+#'   summary(ghatsGeneric)
 #'
 #' @export
 #'
