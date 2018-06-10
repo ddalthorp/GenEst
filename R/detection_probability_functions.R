@@ -47,6 +47,21 @@
 #'   (Aj) for each of the carcasses. The row names of the Aj matrix are the
 #'   names of the units where each carcass was found.
 #'
+#' @examples
+#'  data(mock)
+#'  model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+#'               data = mock$SE
+#'              )
+#'  model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+#'                data = mock$CP, dist = "weibull",
+#'                left = "LastPresentDecimalDays", 
+#'                right = "FirstAbsentDecimalDays"
+#'              )
+#'  ghat <- estg(data_CO = mock$CO, data_SS = mock$SS, 
+#'            dateFoundCol = "DateFound", unitCol = "Unit", 
+#'            model_SE = model_SE, model_CP = model_CP, nsim = 10 
+#'          )
+#'
 #' @export
 #'
 estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
@@ -696,6 +711,36 @@ calcg <- function(days, param_SE, param_CP, dist){
 #' @return list of g estimates, with one element in the list corresponding
 #'   to each of the cells from the cross-model combination
 #'
+#' @examples
+#'   data(mock)
+#'   pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+#'                    formula_k = k ~ HabitatType, data = mock$SE,
+#'                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
+#'                    sizeclassCol = "Size"
+#'                  )
+#'   cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+#'                    formula_s = s ~ Visibility, data = mock$CP,
+#'                    left = "LastPresentDecimalDays",
+#'                    right = "FirstAbsentDecimalDays",
+#'                    dist = c("exponential", "lognormal"),
+#'                    sizeclassCol = "Size"
+#'                    )
+#'   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
+#'              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
+#'             )
+#'   cpMods <- c("S" = "dist: exponential; l ~ 1; NULL", 
+#'               "L" = "dist: exponential; l ~ 1; NULL",
+#'               "M" = "dist: exponential; l ~ 1; NULL",
+#'               "XL" = "dist: exponential; l ~ 1; NULL"
+#'             )
+#'   avgSS <- averageSS(mock$SS)
+#'   gsGeneric <- estgGenericSize(nsim = 1000, days = avgSS,
+#'                  modelSetSize_SE = pkmModsSize,
+#'                  modelSetSize_CP = cpmModsSize,
+#'                  modelSizeSelections_SE = pkMods,
+#'                  modelSizeSelections_CP = cpMods
+#'                )
+#'
 #' @export
 #'
 estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
@@ -851,6 +896,37 @@ summary.gGeneric <- function(object, ..., CL = 0.95){
 #' @return a list of summary tables of g values (medians and confidence 
 #'   bounds) for each cell combination within the gGeneric list
 #'
+#' @examples
+#'   data(mock)
+#'   pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+#'                    formula_k = k ~ HabitatType, data = mock$SE,
+#'                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
+#'                    sizeclassCol = "Size"
+#'                  )
+#'   cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+#'                    formula_s = s ~ Visibility, data = mock$CP,
+#'                    left = "LastPresentDecimalDays",
+#'                    right = "FirstAbsentDecimalDays",
+#'                    dist = c("exponential", "lognormal"),
+#'                    sizeclassCol = "Size"
+#'                    )
+#'   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
+#'              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
+#'             )
+#'   cpMods <- c("S" = "dist: exponential; l ~ 1; NULL", 
+#'               "L" = "dist: exponential; l ~ 1; NULL",
+#'               "M" = "dist: exponential; l ~ 1; NULL",
+#'               "XL" = "dist: exponential; l ~ 1; NULL"
+#'             )
+#'   avgSS <- averageSS(mock$SS)
+#'   gsGeneric <- estgGenericSize(nsim = 1000, days = avgSS,
+#'                  modelSetSize_SE = pkmModsSize,
+#'                  modelSetSize_CP = cpmModsSize,
+#'                  modelSizeSelections_SE = pkMods,
+#'                  modelSizeSelections_CP = cpMods
+#'                )
+#'  summary(gsGeneric)
+#'
 #' @export
 #'
 summary.gGenericSize <- function(object, ..., CL = 0.95){
@@ -900,6 +976,10 @@ summary.gGenericSize <- function(object, ..., CL = 0.95){
 #'
 #' @return \code{SS} object that can be conveniently used in the splitting
 #'  functions.
+#'
+#' @examples
+#'  data(mock)
+#'  SS(mock$SS)
 #'
 #' @export
 #'

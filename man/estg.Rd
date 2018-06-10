@@ -58,3 +58,19 @@ list of [1] g estimates (ghat) and [2] arrival interval estimates
 Estimate g values and arrival intervals for a set of carcasses
   from fitted pk and cp models and search data
 }
+\examples{
+ data(mock)
+ model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+              data = mock$SE
+             )
+ model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+               data = mock$CP, dist = "weibull",
+               left = "LastPresentDecimalDays", 
+               right = "FirstAbsentDecimalDays"
+             )
+ ghat <- estg(data_CO = mock$CO, data_SS = mock$SS, 
+           dateFoundCol = "DateFound", unitCol = "Unit", 
+           model_SE = model_SE, model_CP = model_CP, nsim = 10 
+         )
+
+}

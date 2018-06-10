@@ -46,3 +46,34 @@ The g estimated by \code{estgGenericSize} is a generic aggregate detection
   "big picture" summary of detection probability, but would be difficult
   to work with for estimating M with precision.
 }
+\examples{
+  data(mock)
+  pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+                   formula_k = k ~ HabitatType, data = mock$SE,
+                   obsCol = c("Search1", "Search2", "Search3", "Search4"),
+                   sizeclassCol = "Size"
+                 )
+  cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+                   formula_s = s ~ Visibility, data = mock$CP,
+                   left = "LastPresentDecimalDays",
+                   right = "FirstAbsentDecimalDays",
+                   dist = c("exponential", "lognormal"),
+                   sizeclassCol = "Size"
+                   )
+  pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
+             "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
+            )
+  cpMods <- c("S" = "dist: exponential; l ~ 1; NULL", 
+              "L" = "dist: exponential; l ~ 1; NULL",
+              "M" = "dist: exponential; l ~ 1; NULL",
+              "XL" = "dist: exponential; l ~ 1; NULL"
+            )
+  avgSS <- averageSS(mock$SS)
+  gsGeneric <- estgGenericSize(nsim = 1000, days = avgSS,
+                 modelSetSize_SE = pkmModsSize,
+                 modelSetSize_CP = cpmModsSize,
+                 modelSizeSelections_SE = pkMods,
+                 modelSizeSelections_CP = cpMods
+               )
+
+}
