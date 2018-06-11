@@ -10,8 +10,6 @@
 modalWelcome <- function(){  
   vnumber <- packageDescription("GenEst", fields = "Version")
   vdate <- packageDescription("GenEst", fields = "Date")
-  vtext <- paste("This is version ", vnumber, " (", vdate, ")", sep = "")
-
   disclaimer <- paste("GenEst v", vnumber, " (", vdate, ")", sep = "")
   showModal(modalDialog(title = disclaimer, 
     "This software is preliminary or provisional and is subject to revision. 
@@ -25,4 +23,19 @@ modalWelcome <- function(){
     authorized or unauthorized use of the software.",  
     easyClose = FALSE, footer = modalButton("OK"))
   )
+}
+
+#' @title Create the version text for GenEst 
+#'
+#' @description Create a text string of the version number and date
+#'
+#' @return version text
+#'
+#' @export
+#'
+createvtext <- function(){
+  vnumber <- packageDescription("GenEst", fields = "Version")
+  vdate <- packageDescription("GenEst", fields = "Date")
+  vtext <- paste("This is version ", vnumber, " (", vdate, ")", sep = "")
+  return(vtext)
 }

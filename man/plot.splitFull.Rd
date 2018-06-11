@@ -8,13 +8,13 @@
 }
 \arguments{
 \item{x}{A \code{splitSummary} object (result of \code{\link{calcSplits}})
-that includes summary statistics for simulated mortality estimates for all
-combinations of levels of 1 or 2 splitting covariates.}
+that includes summary statistics for simulated mortality estimates for
+all combinations of levels of 1 or 2 splitting covariates.}
 
 \item{rate}{\code{logical} scalar indicating whether the figures should be
-plotted as number of fatalities per split category (\code{rate = TRUE}) or
-fatality rates per unit time (\code{rate = TRUE}). If the splits do not
-include either a \code{split_SS} or \code{split_time} variable, the
+plotted as number of fatalities per split category (\code{rate = TRUE})
+or fatality rates per unit time (\code{rate = TRUE}). If the splits do
+not include either a \code{split_SS} or \code{split_time} variable, the
 \code{rate} arg is ignored.}
 
 \item{CL}{desired confidence level to show in box plots}
@@ -22,10 +22,10 @@ include either a \code{split_SS} or \code{split_time} variable, the
 \item{...}{to be passed down}
 }
 \description{
-The S3 \code{plot} method for \code{splitFull} objects constructs boxplots
-of the mortality estimates for all combinations of splitting covariates
-summarized in the \code{splits} variable. This is a simple wrapper function
-for creating a \code{splitSummary} object by calling
-\code{\link{summary.splitFull}} and plotting the result via
-\code{\link{plot.splitSummary}}.
+The S3 \code{plot} method for \code{splitFull} objects 
+  constructs boxplots of the mortality estimates for all combinations of 
+  splitting covariates summarized in the \code{splits} variable. This is a
+  simple wrapper function for creating a \code{splitSummary} object by 
+  calling \code{\link{summary.splitFull}} and plotting the result via
+  \code{\link{plot.splitSummary}}.
 }

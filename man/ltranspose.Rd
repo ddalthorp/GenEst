@@ -13,7 +13,7 @@ ltranspose(M)
 a list of \code{m} \code{n} x \code{k} arrays
 }
 \description{
-A list of \code{n} arrays, each with dimension \code{m} x \code{k} is
-redimensioned to a list of \code{m} arrays, each with dimension \code{m} x
-\code{k}. NOTE: Attributes are not preserved.
+A list of \code{n} arrays, each with dimension \code{m} x 
+  \code{k} is redimensioned to a list of \code{m} arrays, each with 
+  dimension \code{m} x \code{k}. NOTE: Attributes are not preserved.
 }
