@@ -493,17 +493,18 @@
 #' }
 #' 
 #' @section Density Weighted Proportion (\code{DWP}):
-#'  \code{$DWP} is a data frame with a row for each transect and columns for each carcass size 
-#'  class (labels must match those of the class factors in the carcass observation file). Values 
-#'  represent the density-weighted proportion of the searched area for each size (or the fraction
-#'  of carcasses that fall in the searched area).  In this example, observers travel along 
-#'  transects separated by 150 meters, so distance sampling is applied per size class.  Viewshed 
-#'  limits, or the point beyond which an observer has a low chance to observe carcasses were used 
-#'  to define DWP.  (Low is defined as average probability to detect carcasses in the region as 
-#'  less than 5\%.)
+#'  \code{$DWP} is a data frame with a row for each transect and columns for 
+#'  each carcass size class (labels must match those of the class factors in the
+#'   carcass observation file). Values represent the density-weighted proportion
+#'    of the searched area for each size (or the fractionof carcasses that fall 
+#'    in the searched area).  In this example, observers travel along transects 
+#'    separated by 150 meters, so distance sampling is applied per size class.  
+#'    Viewshed limits, or the point beyond which an observer has a low chance to
+#'     observe carcasses were used to define DWP.  (Low is defined as average 
+#'     probability to detect carcasses in the region as less than 5\%.)
 #' \describe{
-#'   \item{\code{Unit}}{unique ID for each transect.  IDs match those used in the \code{$CO} data 
-#'   frame and the column names in the \code{$SS} data.}
+#'   \item{\code{Unit}}{unique ID for each transect.  IDs match those used in 
+#'   the \code{$CO} data frame and the column names in the \code{$SS} data.}
 #'   \item{\code{bat}}{DWP associated with size class Bat}
 #'   \item{\code{sml}}{DWP associated with size class Small}
 #'   \item{\code{med}}{DWP associated with size class Medium}
