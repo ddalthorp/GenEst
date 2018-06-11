@@ -15,7 +15,11 @@ NumericMatrix calcRateC(NumericMatrix M, NumericMatrix Aj,
   const int nsearch = days.size() - 1;
   int xi, i, i0, i1;
 // di = index into days for carcass xi [so c(1, 0, 1, 1, 0) -> c(0, 2, 3, 0, 0)]
-  int di[x][nsearch + 1]; // search schedules for each carcass
+  int **di;
+  di = new int *[x];
+  for (xi = 0; xi < x; xi++) {
+    di[xi] = new int [nsearch + 1];
+  }
   for (xi = 0; xi < x; xi++){
     i = 0;
     for (int si = 0; si < days.size(); si++){
