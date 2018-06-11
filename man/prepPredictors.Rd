@@ -2,16 +2,17 @@
 % Please edit documentation in R/app_utility_functions.R
 \name{prepPredictors}
 \alias{prepPredictors}
-\title{Prepares predictors based on inputs}
+\title{Prepare predictors based on inputs}
 \usage{
 prepPredictors(preds = NULL)
 }
 \arguments{
-\item{preds}{input predictors}
+\item{preds}{predictors, as input to the app}
 }
 \value{
 prepared predictors (or 1 if no predictors)
 }
 \description{
-Prepares predictors based on inputs
+Prepare predictor inputs from the app for use in the model
+  function
 }

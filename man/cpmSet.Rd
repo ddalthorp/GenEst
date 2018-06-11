@@ -41,7 +41,15 @@ observation is stored.}
   characterize the fit of the specific model.
 }
 \description{
-Function inputs generally follow \code{cpm}, with all simpler models being 
-  run for all included distributions and returned as a list of model 
-  objects
+Run a set of \code{\link{cpm}} models based on all possible 
+  models, given the predictor inputs. \code{cpmSet}'s inputs generally
+  follow \code{\link{cpm}}, with all simpler models being run for all 
+  included distributions and returned as a list of model objects
+}
+\examples{
+  data(wind_RP)
+  mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
+           data = wind_RP$CP, left = "Left", right = "Right"
+          )
+
 }

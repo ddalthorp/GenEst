@@ -24,8 +24,6 @@ Probability of persistence of detection to at t_search,
          given arrival between t_arrive0 and t_arrive1
 }
 \description{
-Calculate the probability of persistence to detection
-}
-\examples{
-NA
+Given a set of CP parameters (of \code{"ppersist"} type), 
+  calculate the probability of persistence to detection for a carcass.
 }

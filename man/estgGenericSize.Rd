@@ -2,8 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estgGenericSize}
 \alias{estgGenericSize}
-\title{Generic g estimation for a combination of SE model and CP model 
-  under a given search schedule}
+\title{Estimate generic detection probability for multiple size classes}
 \usage{
 estgGenericSize(nsim = 1, days, modelSetSize_SE, modelSetSize_CP,
   modelSizeSelections_SE, modelSizeSelections_CP, seed_SE = NULL,
@@ -33,6 +32,9 @@ list of g estimates, with one element in the list corresponding
   to each of the cells from the cross-model combination
 }
 \description{
+Generic g estimation for a combination of SE model and CP
+  model under a given search schedule
+
 The g estimated by \code{estgGenericSize} is a generic aggregate detection
   probability and represents the probability of detecting a carcass that 
   arrives at a (uniform) random time during the period monitored, for each
@@ -43,4 +45,35 @@ The g estimated by \code{estgGenericSize} is a generic aggregate detection
   summarize statistically. The \code{estgGeneric} estimate is a useful 
   "big picture" summary of detection probability, but would be difficult
   to work with for estimating M with precision.
+}
+\examples{
+  data(mock)
+  pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+                   formula_k = k ~ HabitatType, data = mock$SE,
+                   obsCol = c("Search1", "Search2", "Search3", "Search4"),
+                   sizeclassCol = "Size"
+                 )
+  cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+                   formula_s = s ~ Visibility, data = mock$CP,
+                   left = "LastPresentDecimalDays",
+                   right = "FirstAbsentDecimalDays",
+                   dist = c("exponential", "lognormal"),
+                   sizeclassCol = "Size"
+                   )
+  pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
+             "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
+            )
+  cpMods <- c("S" = "dist: exponential; l ~ 1; NULL", 
+              "L" = "dist: exponential; l ~ 1; NULL",
+              "M" = "dist: exponential; l ~ 1; NULL",
+              "XL" = "dist: exponential; l ~ 1; NULL"
+            )
+  avgSS <- averageSS(mock$SS)
+  gsGeneric <- estgGenericSize(nsim = 1000, days = avgSS,
+                 modelSetSize_SE = pkmModsSize,
+                 modelSetSize_CP = cpmModsSize,
+                 modelSizeSelections_SE = pkMods,
+                 modelSizeSelections_CP = cpMods
+               )
+
 }
