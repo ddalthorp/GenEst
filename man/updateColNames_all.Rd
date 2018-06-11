@@ -4,14 +4,11 @@
 \alias{updateColNames_all}
 \title{Update the string of column names that are in all the needed tables}
 \usage{
-updateColNames_all(colnames_SE, colnames_CP, colnames_CO)
+updateColNames_all(rv)
 }
 \arguments{
-\item{colnames_SE}{column names for the searcher efficiency}
-
-\item{colnames_CP}{column names for the carcass persistence}
-
-\item{colnames_CO}{column names for the carcass observations}
+\item{rv}{reactive values list with elements named \code{colnames_SE},
+\code{colnames_CP}, and \code{colnames_CO}}
 }
 \value{
 possible column names
