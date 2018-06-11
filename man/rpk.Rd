@@ -2,7 +2,7 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{rpk}
 \alias{rpk}
-\title{Simulate p and k parameters from a fitted pk model.}
+\title{Simulate parameters from a fitted pk model}
 \usage{
 rpk(n = 1, model, seed = NULL, kFill = NA)
 }
@@ -21,8 +21,11 @@ list of two matrices of \code{n} simulated \code{p} and \code{k}
   for cells defined by the \code{model} object.
 }
 \description{
-Simulate p and k parameters from a fitted pk model.
+Simulate parameters from a \code{\link{pkm}} model object
 }
 \examples{
-  NA
+  data(wind_RP)
+  mod <- pkm(formula_p = p ~ 1, formula_k = k ~ Season, data = wind_RP$SE)
+  rpk(n = 10, model = mod)
+
 }

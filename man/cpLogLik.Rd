@@ -28,6 +28,6 @@ Negative log likelihood of the observations, given the parameters.
 }
 \description{
 The function used to calculate the negative-loglikelihood of
-  a given carcass persistence model (\code{\link{cpm}} )with a given data
+  a given carcass persistence model (\code{\link{cpm}}) with a given data
   set
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{pkmSetSize}
 \alias{pkmSetSize}
-\title{Fit all possible searcher efficiency models across all size classes.}
+\title{Fit all possible searcher efficiency models across all size classes}
 \usage{
 pkmSetSize(formula_p, formula_k = NULL, data, obsCol = NULL,
   sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, CL = 0.95,
@@ -55,7 +55,16 @@ the assumption that the \code{k} parameter is fixed and known to be
   is of length equal to the total number of size classes
 }
 \description{
-Function inputs generally follow \code{pkmSet} and \code{pkm} but with an 
-  additional size column input and calculation of the set of pkm models for
-  each of the size classes
+Run a set of \code{\link{pkmSet}} model set runs based on all 
+  possible models for a suite of size classes. \code{cpmSetSize}'s inputs
+  generally follow \code{\link{pkmSet}} and \code{\link{pkm}} but with an 
+  additional size column input and calculation of the set of cpm models for 
+  each of the size classes.
+}
+\examples{
+  data(wind_RP)
+  mod <- pkmSetSize(formula_p = p ~ Season, formula_k = k ~ Season, 
+           data = wind_RP$SE, sizeclassCol = "Size"
+          )
+
 }

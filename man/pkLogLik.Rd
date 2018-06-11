@@ -2,7 +2,7 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{pkLogLik}
 \alias{pkLogLik}
-\title{Calculate the negative log-likelihood of a searcher efficiency model.}
+\title{Calculate the negative log-likelihood of a searcher efficiency model}
 \usage{
 pkLogLik(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, cellMM,
   kFixed = NULL)
@@ -29,8 +29,7 @@ not found.}
 Negative log likelihood of the observations, given the parameters.
 }
 \description{
-Calculate the negative log-likelihood of a searcher efficiency model.
-}
-\examples{
-NA
+The function used to calculate the negative-loglikelihood of
+  a given searcher efficiency model (\code{\link{pkm}}) with a given data
+  set
 }
