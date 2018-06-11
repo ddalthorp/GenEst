@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{isNeverDecreasing}
 \alias{isNeverDecreasing}
-\title{Check if a vector is never decreasing}
+\title{Is a vector never decreasing?}
 \usage{
 isNeverDecreasing(x, tiesOK = TRUE, na.rm = TRUE)
 }

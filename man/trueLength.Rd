@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{trueLength}
 \alias{trueLength}
-\title{Length of non-missing values in a vector}
+\title{Get the length of real things}
 \usage{
 trueLength(x)
 }
@@ -14,4 +14,10 @@ integer of how many non-NA values in x
 }
 \description{
 Length of non-missing values in a vector
+}
+\examples{
+  x <- c(1, 2, NA, 3)
+  length(x)
+  trueLength(x)
+
 }

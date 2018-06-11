@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{dateToDay}
 \alias{dateToDay}
-\title{Convert calendar date to day from reference}
+\title{Calculate day of study from calendar date}
 \usage{
 dateToDay(date, ref = NULL)
 }
@@ -18,5 +18,7 @@ converted days from reference
 Convert calendar date to day from reference
 }
 \examples{
-NA
+  x <- c("2018-01-01", "2018-02-01")
+  dateToDay(x, x[1])
+
 }
