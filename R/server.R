@@ -75,8 +75,7 @@ rv <- reactiveValues(
         gGeneric = NULL,
         split_CO = NULL, split_SS = NULL,
         nsplit_CO = NULL, nsplit_SS = NULL, Msplit = NULL,
-        figH_M = 800
- 
+        figH_M = 600, figW_M = 800, figH_g = 600, figW_g = 800
       )
 
 msg_RunModSE <- NULL
@@ -295,6 +294,7 @@ observeEvent(input$runMod_SE, {
     outputOptions(output, "DWPNeed", suspendWhenHidden = FALSE)
     output$sizeclass_SE1 <-  renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_SE2 <-  renderText(paste0("Size class: ", rv$sizeclass))
+
   }
 })
 
@@ -359,6 +359,35 @@ observeEvent(input$tabfig_sizeclassSE, {
     output$AICcTab_SE <- renderDataTable(datatable(rv$AICcTab_SE))
     output$sizeclass_SE1 <- renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
+
+    output$downloadSEest <- downloadHandler(
+                              filename = "SE_estimates.csv",
+                              content = function(file){
+                                          write.csv(rv$modTab_SE, file, 
+                                          row.names = FALSE)
+                                        }
+                            )
+    output$downloadSEAICc <- downloadHandler(
+                               filename = "SE_AICc.csv",
+                               content = function(file){
+                                           write.csv(rv$AICcTab_SE, file, 
+                                           row.names = FALSE)
+                                         }
+                             )
+    output$downloadSEfig <- downloadHandler(
+                              filename = "SE_fig.png",
+                              content = function(file){
+                                          png(file, width = rv$figW_SE,
+                                            height = rv$figH_SE, units = "px"
+                                          )
+                                          plot(rv$modSet_SE, 
+                                            specificModel = rv$tabfig_SEpk,
+                                            sizeclassName = rv$sizeclass
+                                          )
+                                          dev.off()
+                                        }
+                            )
+
   }
 })
 
@@ -588,6 +617,34 @@ observeEvent(input$tabfig_sizeclassCP, {
     output$AICcTab_CP <- renderDataTable(datatable(rv$AICcTab_CP))
     output$sizeclass_CP1 <-  renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
+
+    output$downloadCPest <- downloadHandler(
+                              filename = "CP_estimates.csv",
+                              content = function(file){
+                                          write.csv(rv$modTab_CP, file, 
+                                          row.names = FALSE)
+                                        }
+                            )
+    output$downloadCPAICc <- downloadHandler(
+                               filename = "CP_AICc.csv",
+                               content = function(file){
+                                           write.csv(rv$AICcTab_CP, file, 
+                                           row.names = FALSE)
+                                         }
+                             )
+    output$downloadCPfig <- downloadHandler(
+                              filename = "CP_fig.png",
+                              content = function(file){
+                                          png(file, width = rv$figW_CP,
+                                            height = rv$figH_CP, units = "px"
+                                          )
+                                          plot(rv$modSet_CP, 
+                                           specificModel = rv$tabfig_CPdlsfig,
+                                           sizeclassName = rv$sizeclass
+                                          )
+                                          dev.off()
+                                        }
+                            )
   }
 })
 
@@ -663,11 +720,33 @@ observeEvent(input$runMod_M, {
     output$MModDone <- renderText("OK")
     outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
-    output$fig_M <- renderPlot(plot(rv$M))
+    output$fig_M <- renderPlot({plot(rv$M)},
+                      height = rv$figH_M, width = rv$figW_M
+                    )
     output$table_M <- renderDataTable(
                         datatable(prettySplitTab(summary(rv$Msplit)))
                       )
 
+    output$downloadMtab <- downloadHandler(
+                             filename = "M_table.csv",
+                             content = function(file){
+                                         write.csv(
+                                           prettySplitTab(summary(rv$Msplit)), 
+                                           file, 
+                                           row.names = FALSE
+                                         )
+                                       }
+                           )
+    output$downloadMfig <- downloadHandler(
+                             filename = "M_fig.png",
+                             content = function(file){
+                                         png(file, width = rv$figW_M, 
+                                           height = rv$figH_M, units = "px"
+                                         )
+                                         plot(rv$M)
+                                         dev.off()
+                                       }
+                           )
 
     rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)
     
@@ -701,12 +780,25 @@ observeEvent(input$splitM, {
                )
 
   if (is.null(rv$Msplit)){
+
     msg_splitFail <<- msgsplitFail("run")
-    output$fig_M <- renderPlot(plot(rv$M))
+    output$fig_M <- renderPlot({plot(rv$M)},
+                      height = rv$figH_M, width = rv$figW_M
+                    )
+    output$downloadMfig <- downloadHandler(
+                             filename = "M_fig.png",
+                             content = function(file){
+                                         png(file, width = rv$figW_M, 
+                                           height = rv$figH_M, units = "px"
+                                         )
+                                         plot(rv$M)
+                                         dev.off()
+                                       }
+                           )
   } else{
-    rv$figH_M <- 800
+    rv$figH_M <- 600
     if (length(attr(rv$Msplit, "vars")) > 1){
-      rv$figH_M <- max(800, 300 * length(rv$Msplit))
+      rv$figH_M <- max(600, 300 * length(rv$Msplit))
     }
     output$fig_M <-  renderPlot({
                        tryCatch(plot(rv$Msplit), 
@@ -716,12 +808,36 @@ observeEvent(input$splitM, {
                      }, height = rv$figH_M)
 
     if (is.null(rv$split_CO) & is.null(rv$split_SS)){
-      output$fig_M <- renderPlot(plot(rv$M))
+
+      output$fig_M <- renderPlot({plot(rv$M)},
+                        height = rv$figH_M, width = rv$figW_M
+                      )
     }
 
     output$table_M <- renderDataTable(
                         datatable(prettySplitTab(summary(rv$Msplit)))
                       )
+
+    output$downloadMtab <- downloadHandler(
+                             filename = "M_table.csv",
+                             content = function(file){
+                                         write.csv(
+                                           prettySplitTab(summary(rv$Msplit)), 
+                                           file, 
+                                           row.names = FALSE
+                                         )
+                                       }
+                           )
+    output$downloadMfig <- downloadHandler(
+                             filename = "M_fig.png",
+                             content = function(file){
+                                         png(file, width = rv$figW_M, 
+                                           height = rv$figH_M, units = "px"
+                                         )
+                                         plot(rv$Msplit) 
+                                         dev.off()
+                                       }
+                           )
   }
 
 })
@@ -838,6 +954,29 @@ observeEvent(input$tabfig_sizeclassg, {
                            warning = function(x){plot(1,1)}
                       )
                     )
+    output$downloadgtab <- downloadHandler(
+                             filename = "g_table.csv",
+                             content = function(file){
+                                        write.csv(
+                                        summary(rv$gGeneric[[rv$sizeclass_g]],
+                                        CL = rv$CL
+                                        ), file, 
+                                        row.names = FALSE)
+                                       }
+                           )
+    output$downloadgfig <- downloadHandler(
+                             filename = "g_fig.png",
+                             content = function(file){
+                                         png(file, width = rv$figW_g, 
+                                           height = rv$figH_g, units = "px"
+                                         )
+                                         plot(rv$gGeneric[[rv$sizeclass_g]],
+                                           sizeclassName = rv$sizeclass_g,
+                                           CL = rv$CL
+                                         )
+                                         dev.off()
+                                       }
+                           )
   }
 })
 
