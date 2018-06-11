@@ -448,17 +448,16 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   alpha <- 1 - CL
   probs <- c(alpha / 2, 0.25, 0.5, 0.75, 1 - alpha / 2)
   if (length(attr(splits, "vars")) == 0){
-    sumry <- c(mean = mean(splits), quantile(splits, probs = probs))
+    sumry <- c(quantile(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
-    sumry <- cbind(
-    mean = rowMeans(splits), matrixStats::rowQuantiles(splits, probs = probs))
+    sumry <- cbind(rowQuantiles(splits, probs = probs))
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
       splits <- lapply(splits, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits, function(x){
-      cbind(mean = rowMeans(x), matrixStats::rowQuantiles(x, probs = probs))})
+      cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))})
   } else {
     stop(
       "length(attr(splits, 'vars')) > 2.",
