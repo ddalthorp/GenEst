@@ -106,16 +106,15 @@ via the \code{$} operator:
 }
 }
 \description{
-Searcher efficiency is modeled as a function of the number of times a 
-  carcass has been missed in previous searches and any number of 
+Searcher efficiency is modeled as a function of the number of
+  times a  carcass has been missed in previous searches and any number of 
   such as covariates. Format and usage parallel that of common \code{R} 
   functions \code{lm}, \code{glm}, and \code{gam}. However, the input data 
   (\code{data}) is structured differently to accommodate the 
   multiple-search searcher efficiency trials (see 'Details'), and model 
   formulas may be entered for both \code{p} (akin to an intercept) and  
   \code{k} (akin to aslope).
-}
-\details{
+
 The probability of finding a carcass that is present at the time of search
   is \code{p} on the first search after carcass arrival and is assumed to
   decrease by a factor of \code{k} each time the carcass is missed in 
@@ -142,6 +141,7 @@ Search trial \code{data} must be entered in a data frame with data in
   (e.g., visibility = E, M, or D) may also be included.
 }
 \examples{
-NA
+  data(wind_RP)
+  pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
 
 }

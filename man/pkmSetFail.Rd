@@ -2,16 +2,17 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{pkmSetFail}
 \alias{pkmSetFail}
-\title{Check if all of the pkm models fail}
+\title{Check if pkm models fail}
 \usage{
 pkmSetFail(pkmSetToCheck)
 }
 \arguments{
-\item{pkmSetToCheck}{A \code{pkmSet} object to test}
+\item{pkmSetToCheck}{A \code{\link{pkmSet}} object to test}
 }
 \value{
 A vector of logical values indicating if each of the models failed
 }
 \description{
-Check if all of the pkm models fail
+Run a check on each model within a \code{\link{pkmSet}} object
+  to determine if it failed or not
 }

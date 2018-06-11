@@ -2,16 +2,16 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{pkmSetFailRemove}
 \alias{pkmSetFailRemove}
-\title{Remove failed pkm models}
+\title{Remove failed pkm models from a \code{\link{pkmSet}} object}
 \usage{
 pkmSetFailRemove(pkmSetToTidy)
 }
 \arguments{
-\item{pkmSetToTidy}{A \code{pkmSet} object to tidy}
+\item{pkmSetToTidy}{A \code{\link{pkmSet}} object to tidy}
 }
 \value{
-A \code{pkmSet} object with failed models removed
+A \code{\link{pkmSet}} object with failed models removed
 }
 \description{
-Remove failed pkm models
+Remove all failed models within a \code{\link{pkmSet}} object
 }

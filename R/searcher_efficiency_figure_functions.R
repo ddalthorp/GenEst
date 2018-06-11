@@ -1,11 +1,24 @@
-#' Plot results of a single pk model
+#' @title Plot results of a single pk model
+#'
+#' @description Plot a single \code{\link{pkm}} model
 #'
 #' @param x model of class pkm
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed random number seed to use
+#'
 #' @param col color to use
+#'
 #' @param ... arguments to be passed to sub functions
+#'
 #' @return a plot
+#'
+#' @examples 
+#'   data(wind_RP)
+#'   mod <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+#'   plot(mod)
+#'
 #' @export
 #'
 plot.pkm <- function(x, n = 1000, seed = 1, col = "black", ...){
@@ -87,21 +100,40 @@ plot.pkm <- function(x, n = 1000, seed = 1, col = "black", ...){
   }
 }
 
-
-#' Plot results of a pk model set
+#' @title Plot results of a set of SE models
+#'
+#' @description Produce a set of figures for a set of SE models, as fit by
+#'   \code{\link{pkmSet}}
 #'
 #' @param x pk model set of class pkmSet
+#'
 #' @param specificModel the name(s) or index number(s) of specific model(s) to 
 #'   restrict the plot
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed_spec random number seed to use for the specific model
+#'
 #' @param seed_full random number seed to use for the full model
+#'
 #' @param col_spec color to use for the specific model
+#'
 #' @param col_full color to use for the specific model
+#'
 #' @param sizeclassName name of the size class if it is to be added to the
 #'   figure
+#'
 #' @param ... to be sent to subfunctions
+#'
 #' @return a set of plots
+#'
+#' @examples
+#'   data(wind_RP)
+#'   mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, 
+#'            data = wind_RP$SE
+#'          )
+#'   plot(mod)
+#'
 #' @export
 #'
 plot.pkmSet <- function(x, specificModel = NULL, n = 1000, 
@@ -245,11 +277,17 @@ plot.pkmSet <- function(x, specificModel = NULL, n = 1000,
 #' Plot parameter box plots for each cell for either p or k
 #'
 #' @param model model of class pkm
+#'
 #' @param pk character of "p" or "k" to delineate between parameter graphed
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed random number seed to use
+#'
 #' @param col color to use
+#'
 #' @return a parameter plot panel
+#'
 #' @export
 #'
 pkmParamPlot <- function(model, pk = "p", n, seed, col){
@@ -304,13 +342,21 @@ pkmParamPlot <- function(model, pk = "p", n, seed, col){
 #' Plot cell-specific decay curve for searcher efficiency
 #'
 #' @param model model of class pkm
+#'
 #' @param specificCell name of the specific cell to plot
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed random number seed to use
+#'
 #' @param col color to use
+#'
 #' @param axis_x logical of whether or not to plot the x axis
+#'
 #' @param axis_y logical of whether or not to plot the y axis
+#'
 #' @return a cell plot panel
+#'
 #' @export
 #'
 pkmSECellPlot <- function(model, specificCell, col, n, seed, 
@@ -376,14 +422,23 @@ pkmSECellPlot <- function(model, specificCell, col, n, seed,
 #'   with comparison to the cellwise model
 #'
 #' @param modelSet modelSet of class pkmSet
+#'
 #' @param specificModel name of the specific submodel to plot
+#'
 #' @param pk character of "p" or "k" to delineate between parameter graphed
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed_spec random number seed to use for the specific model
+#'
 #' @param seed_full random number seed to use for the full model
+#'
 #' @param col_spec color to use for the specific model
+#'
 #' @param col_full color to use for the specific model
+#'
 #' @return a specific parameter plot panel
+#'
 #' @export
 #' 
 pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n, 
@@ -468,16 +523,27 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", n,
 #'   with comparison to the cellwise model
 #'
 #' @param modelSet modelSet of class pkmSet
+#'
 #' @param specificModel name of the specific submodel to plot
+#'
 #' @param specificCell name of the specific cell to plot
+#'
 #' @param n number of draws to use to characterize the distributions
+#'
 #' @param seed_spec random number seed to use for the specific model
+#'
 #' @param seed_full random number seed to use for the full model
+#'
 #' @param col_spec color to use for the specific model
+#'
 #' @param col_full color to use for the specific model
+#'
 #' @param axis_x logical of whether or not to plot the x axis
+#'
 #' @param axis_y logical of whether or not to plot the y axis
+#'
 #' @return a specific cell plot panel
+#'
 #' @export
 #' 
 pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell, 
