@@ -16,9 +16,11 @@ knitr::opts_chunk$set(
 ```
 
 ```{r, include=FALSE}
+rm(list = ls())
 library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
+set.seed(242)
 ```
 
 This vignette walks through an example of **GenEst** at the command line and
@@ -101,7 +103,7 @@ pkModel$cells
 The `plot` function has been defined for `pkm` objects, such that one can
 simply run
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r,  fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(pkModel)
 ```
 
@@ -157,7 +159,7 @@ creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r,  fig.width = 7, fig.height = 7}
 plot(pkmModSet, specificModel = "p ~ Visibility + HabitatType; k ~ 1")
 ```
 
@@ -233,7 +235,7 @@ cpModel$cells
 The `plot` function has been defined for `cpm` objects, such that one can
 simply run
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(cpModel)
 ```
 
@@ -306,7 +308,7 @@ creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(cpmModSet,
   specificModel = "dist: lognormal; l ~ Visibility * Season; s ~ Visibility"
 )
@@ -350,20 +352,20 @@ cell-specific, rather than carcass-specific.
 For any estimation of detection probability ($\hat{g}$), we need to have 
 singular SE and CP models to use for each of the size classes. Here, we use
 the best-fit of the models for each size class:
-
+  
 ```{r}
 pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
             "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ HabitatType"
-          )
+)
 cpMods <- c("S" = "dist: exponential; l ~ Season; NULL", 
             "L" = "dist: exponential; l ~ 1; NULL",
             "M" = "dist: exponential; l ~ 1; NULL",
             "XL" = "dist: exponential; l ~ 1; NULL"
-          )
+)
 ```
 
 The `estgGenericSize` function produces `n` random draws of generic (i.e., 
-cell-specific, not carcass-sepecific) detection probabilities for
+                                                                     cell-specific, not carcass-sepecific) detection probabilities for
 each of the possible carcass cell combinations across the selected SE and CP 
 models across the size classes. `estgGeneric` is a single-size-class
 version of function and `estgGenericSize` actually loops over 
@@ -378,11 +380,11 @@ data_SS <- mock$SS
 avgSS <- averageSS(data_SS)
 
 gsGeneric <- estgGenericSize(nsim = 1000, days = avgSS,
-               modelSetSize_SE = pkmModSetSize,
-               modelSetSize_CP = cpmModSetSize,
-               modelSizeSelections_SE = pkMods,
-               modelSizeSelections_CP = cpMods
-             )
+                             modelSetSize_SE = pkmModSetSize,
+                             modelSetSize_CP = cpmModSetSize,
+                             modelSizeSelections_SE = pkMods,
+                             modelSizeSelections_CP = cpMods
+)
 ```
 
 The output from `estgGeneric` can be simply summarized
@@ -390,11 +392,12 @@ The output from `estgGeneric` can be simply summarized
 summary(gsGeneric)
 ```
 
-or plotted (not shown):
-
-```{r, fig.show = "hold", fig.width = 7, fig.height = 10}
-plot(gsGeneric)
+or plotted (not shown).
+  
+```{r, fig.width = 6, fig.height = 6, fig.align = 'center', include = F}
+# plot(gsGeneric)
 ```
+
 
 
 ## Mortality Estimation
@@ -414,7 +417,7 @@ we need to reduce the model-set-size complexed to just a single chosen
 model per size class, corresponding to the `pkMods` and `cpMods` vectors 
 given above. To reduce the model set complexity, we use the `trimSetSize`
 function:
-
+  
 ```{r}
 pkmModSize <- trimSetSize(pkmModSetSize, pkMods)
 cpmModSize <- trimSetSize(cpmModSetSize, cpMods)
@@ -424,7 +427,7 @@ In addition to the models and search schedule data, `estM` requires DWP
 (Density Weighted Proportion) and CO (Carcass Observation) data. A required
 input is also the column names associated with the DWP value for each size
 class (argument `DWPCol` in `estM`):
-
+  
 ```{r}
 data_CO <- mock$CO
 data_DWP <- mock$DWP
@@ -432,10 +435,10 @@ head(data_DWP)
 DWPcolnames <- names(pkmModSize)
 
 eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP, 
-        frac = 1, model_SE = pkmModSize, model_CP = cpmModSize, 
-        seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL, 
-        kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound", 
-        datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 1000)
+           frac = 1, model_SE = pkmModSize, model_CP = cpmModSize, 
+           seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL, 
+           kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound", 
+           datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 1000)
 ```
 
 `estM` returns an object that contains the random draws of `pkm` and `cpm`
@@ -443,8 +446,8 @@ parameters (named `pk` and `ab`, respectively) and the estimated carcass-level
 detection parameters (`g`), arrival intervals (`Aj`), and associated total
 mortality (`Mhat`) values for each simulation. These `Mhat` values should be
 considered in combination, and can be summarized and plotted simply:
-
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+  
+  ```{r,  fig.width = 7, fig.height = 7}
 summary(eM)
 plot(eM)
 ```
@@ -457,31 +460,34 @@ carcass observation data sets.
 
 #### First, a temporal split:  
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r,  fig.width = 4, fig.height = 4, fig.aling = 'center'}
 M_season <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
-                 split_CO = NULL, data_SS = data_SS, data_CO = data_CO
-             )
+                       split_CO = NULL, data_SS = data_SS, data_CO = data_CO
+)
 summary(M_season)
 plot(M_season)
 ```
 
+
 #### Next, a carcass split:  
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r,  fig.width = 3, fig.height = 3, fig.align = 'center'}
 M_class <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = NULL,
-             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
-           )
+                      split_CO = "Split", data_SS = data_SS, data_CO = data_CO
+)
 summary(M_class)
 plot(M_class)
 ```
 
-#### And finally, if two splits are included, the mortality estimation is 
-expanded fully factorially:
+#### And finally, if two splits are included, the mortality estimation is expanded fully factorially:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r,  fig.width = 4, fig.height = 4}
+# data_CO <- mock$CO
+# data_SS <- mock$SS
 M_SbyC <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
-            split_CO = "Split", data_SS = data_SS, data_CO = data_CO
-          )
+                     split_CO = "Split", data_SS = data_SS, data_CO = data_CO
+)
 summary(M_SbyC)
 plot(M_SbyC)
 ```
+
