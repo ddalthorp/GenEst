@@ -2,7 +2,7 @@
 % Please edit documentation in R/mortality_figure_functions.R
 \name{simpleMplot}
 \alias{simpleMplot}
-\title{Plot total mortality estimation for a simple situation}
+\title{Plot a total mortality estimation for a simple situation}
 \usage{
 simpleMplot(M, ..., CL = 0.95)
 }
@@ -14,5 +14,7 @@ simpleMplot(M, ..., CL = 0.95)
 \item{CL}{confidence level}
 }
 \description{
-Hisogram and empirical PDF on top
+Function underneath \code{\link{plot.estM}}, which 
+  defines the plot method for a mortality object, composed of a hisogram 
+  with the empirical PDF and summary statistics
 }

@@ -1,19 +1,50 @@
 #' @title Plot total mortality estimation
+#'
 #' @description \code{plot} defined for class \code{estM} objects
+#'
 #' @param x \code{estM} object
+#'
 #' @param ... arguments to pass down
+#'
 #' @param CL confidence level
+#'
+#' @examples 
+#'  \dontrun{
+#'  data(mock)
+#'  model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+#'               data = mock$SE
+#'              )
+#'  model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+#'                data = mock$CP, dist = "weibull",
+#'                left = "LastPresentDecimalDays", 
+#'                right = "FirstAbsentDecimalDays"
+#'              )
+#'  eM <- estM(nsim = 1000, data_CO = mock$CO, data_SS = mock$SS, 
+#'          data_DWP = mock$DWP, frac = 1, model_SE = model_SE, 
+#'          model_CP = model_CP, dateFoundCol = "DateFound", 
+#'          DWPCol = "S", sizeclassCol = NULL
+#'        )
+#'  plot(eM)
+#'  }
+#'
 #' @export
 #'
 plot.estM <- function(x, ..., CL = 0.95){
   simpleMplot(x$M, ..., CL = CL)
 }
 
-#' @title Plot total mortality estimation for a simple situation
-#' @description Hisogram and empirical PDF on top
+#' @title Plot a total mortality estimation for a simple situation
+#'
+#' @description Function underneath \code{\link{plot.estM}}, which 
+#'   defines the plot method for a mortality object, composed of a hisogram 
+#'   with the empirical PDF and summary statistics
+#'
 #' @param M Mortality object
+#'
 #' @param ... arguments to pass down
+#'
 #' @param CL confidence level
+#'
 #' @export
 #'
 simpleMplot <- function(M, ..., CL = 0.95){
