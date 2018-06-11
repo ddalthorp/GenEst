@@ -2,8 +2,8 @@
 #' @importFrom cbinom rcbinom
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics axis mtext par plot points rect text lines polygon
-#'   hist
-#' @importFrom grDevices rgb devAskNewPage png
+#'   hist 
+#' @importFrom grDevices rgb devAskNewPage png dev.off
 #' @importFrom gsl hyperg_2F1
 #' @importFrom gtools mixedsort
 #' @importFrom htmltools div img br HTML a
@@ -27,7 +27,7 @@
 #'   density
 #' @importFrom sticky sticky
 #' @importFrom survival Surv survfit survreg psurvreg dsurvreg
-#' @importFrom utils combn packageDescription read.csv
+#' @importFrom utils combn packageDescription read.csv write.csv
 #'
 
 #' @title Generalized estimation of mortality
