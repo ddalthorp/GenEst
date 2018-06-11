@@ -2,8 +2,8 @@
 % Please edit documentation in R/splits_functions.R
 \name{calcRate}
 \alias{calcRate}
-\title{Estimate the number of fatalities in each search interval throughout the
-monitoring period.}
+\title{Estimate the number of fatalities in each search interval throughout 
+  the monitoring period.}
 \usage{
 calcRate(M, Aj, days = NULL, searches_carcass = NULL, data_SS = NULL)
 }
@@ -35,17 +35,17 @@ calculating splits. Optional argument. Alternatively, user may provide
 }
 \value{
 Numeric array (nsim x nsearch) of estimated fatalities in each
- search interval. NOTE: The search at time t = 0 does not correspond to an
- interval, and all carcasses found at that time are assumed to have arrived
- prior to the monitoring period and are not included in mortality estimates
- so \code{nsearch = length(days) - 1}.
+  search interval. NOTE: The search at time t = 0 does not correspond to an
+  interval, and all carcasses found at that time are assumed to have 
+  arrived prior to the monitoring period and are not included in mortality 
+  estimates so \code{nsearch = length(days) - 1}.
 }
 \description{
-A carcass that is observed in a given search may have arrived at any time
-prior to that search, so carcass discovery time is often not a reliable
-estimate of carcass arrival time. For each observed carcass, 
-\code{calcRate} takes into account the estimated probability of arrival
-in each possible arrival interval, adjusts by detection probability, and 
-sums to estimate the estimated number of carcass arrivals in every search
-interval.
+A carcass that is observed in a given search may have arrived 
+  at any time prior to that search, so carcass discovery time is often not
+  a reliable estimate of carcass arrival time. For each observed carcass, 
+  \code{calcRate} takes into account the estimated probability of arrival
+  in each possible arrival interval, adjusts by detection probability, and 
+  sums to estimate the estimated number of carcass arrivals in every search
+  interval.
 }

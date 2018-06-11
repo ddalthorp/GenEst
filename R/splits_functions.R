@@ -1,39 +1,44 @@
-#' Estimate the number of fatalities in each search interval throughout the
-#' monitoring period.
+#' @title Estimate the number of fatalities in each search interval throughout 
+#'   the monitoring period.
 #'
-#' A carcass that is observed in a given search may have arrived at any time
-#' prior to that search, so carcass discovery time is often not a reliable
-#' estimate of carcass arrival time. For each observed carcass, 
-#' \code{calcRate} takes into account the estimated probability of arrival
-#' in each possible arrival interval, adjusts by detection probability, and 
-#' sums to estimate the estimated number of carcass arrivals in every search
-#' interval.
+#' @description A carcass that is observed in a given search may have arrived 
+#'   at any time prior to that search, so carcass discovery time is often not
+#'   a reliable estimate of carcass arrival time. For each observed carcass, 
+#'   \code{calcRate} takes into account the estimated probability of arrival
+#'   in each possible arrival interval, adjusts by detection probability, and 
+#'   sums to estimate the estimated number of carcass arrivals in every search
+#'   interval.
 #'
 #' @param M Numeric array (ncarc x nsim) of estimated number of fatalities
-#'  by observed carcass and simulation rep
+#'   by observed carcass and simulation rep
+#'
 #' @param Aj Integer array (ncarc x nsim) of simulated arrival intervals for
-#'  each observed carcass. Arrival intervals are given as integers j, 
-#'  indicating that the given carcass (indexed by row) arrived in the jth
-#'  search interval in the given simulation rep (indexed by column). Arrival 
-#'  interval indices (j) are relative to indexed carcasses' search schedules.
+#'   each observed carcass. Arrival intervals are given as integers j, 
+#'   indicating that the given carcass (indexed by row) arrived in the jth
+#'   search interval in the given simulation rep (indexed by column). Arrival 
+#'   interval indices (j) are relative to indexed carcasses' search schedules.
+#'
 #' @param data_SS \code{\link{SS}} object that contains formatted data for 
-#'  calculating splits. Optional argument. Alternatively, user may provide 
-#'  \code{days} and \code{searches_carcass}.
+#'   calculating splits. Optional argument. Alternatively, user may provide 
+#'   \code{days} and \code{searches_carcass}.
+#'
 #' @param days Vector of all dates that at least one unit was searched. Format
-#'  is the number of days since the first search. For example, days = c(0, 7,
-#'  14, 28, 35) for a simple 7-day search schedule in which searches were
-#'  conducted every once per week on the same day for 5 weeks. Not all units
-#'  need be searched on every search date.
+#'   is the number of days since the first search. For example, days = c(0, 7,
+#'   14, 28, 35) for a simple 7-day search schedule in which searches were
+#'   conducted every once per week on the same day for 5 weeks. Not all units
+#'   need be searched on every search date.
+#'
 #' @param searches_carcass An ncarc x length(days) array of 0s and 1s to 
-#'  indicate searches in which the indexed carcass could have been found. 
-#'  For example, row i = \code{c(1, 0, 1, 0, 1)} indicates that the search 
-#'  schedule for the location (unit) where carcass i was found would be 
-#'  \code{days[c(1, 3, 5)]}.
+#'   indicate searches in which the indexed carcass could have been found. 
+#'   For example, row i = \code{c(1, 0, 1, 0, 1)} indicates that the search 
+#'   schedule for the location (unit) where carcass i was found would be 
+#'   \code{days[c(1, 3, 5)]}.
+#'
 #' @return Numeric array (nsim x nsearch) of estimated fatalities in each
-#'  search interval. NOTE: The search at time t = 0 does not correspond to an
-#'  interval, and all carcasses found at that time are assumed to have arrived
-#'  prior to the monitoring period and are not included in mortality estimates
-#'  so \code{nsearch = length(days) - 1}.
+#'   search interval. NOTE: The search at time t = 0 does not correspond to an
+#'   interval, and all carcasses found at that time are assumed to have 
+#'   arrived prior to the monitoring period and are not included in mortality 
+#'   estimates so \code{nsearch = length(days) - 1}.
 #'
 #' @export
 #'
@@ -62,25 +67,28 @@ calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL,
   calcRateC(M, Aj, days, searches_carcass)
 }
 
-#' Estimate the number of fatalities by time interval
+#' @title Estimate the number of fatalities by time interval
 #'
-#' \code{calcTsplit()} is a lower-level function that requires the output
-#' of \code{calcRate} as input. See \code{\link{calcSplits}} for a more 
-#' powerful, convenient, and flexible alternative.
+#' @description \code{calcTsplit()} is a lower-level function that requires 
+#'   the output of \code{calcRate} as input. See \code{\link{calcSplits}} 
+#'   for a more powerful, convenient, and flexible alternative.
 #'
 #' @param rate Array (nsim x nsearch) of arrival rates as number of fatalities
-#'  per search interval. Typically, \code{rate} will be the return value of 
-#'  the \code{calcRate} function. 
+#'   per search interval. Typically, \code{rate} will be the return value of 
+#'   the \code{calcRate} function. 
+#'
 #' @param days A vector of times representing search dates when at least one
-#'  unit was searched. Times are formatted as number of days since the first
-#'  search, e.g., c(0, 7, 14, 28, 35) would indicate a schedule in at least 
-#'  one unit was searched every 7 days.
+#'   unit was searched. Times are formatted as number of days since the first
+#'   search, e.g., c(0, 7, 14, 28, 35) would indicate a schedule in at least 
+#'   one unit was searched every 7 days.
+#'
 #' @param tsplit A vector of times that splits the monitoring period into a
-#'  set of time intervals for which \code{calcTsplit} will estimate the number
-#'  of fatalities. For example, if \code{tsplit = c(0, 14, 19, 35)}, then
-#'  \code{calcTsplit} estimates the number of fatalities occuring in intervals
-#'  (0, 14], (14, 19], and (19, 35]. Times in \code{tsplit} must be increasing
-#'  and between 0 and max(days), inclusive.
+#'   set of time intervals for which \code{calcTsplit} will estimate the 
+#'   number of fatalities. For example, if \code{tsplit = c(0, 14, 19, 35)}, 
+#'   then \code{calcTsplit} estimates the number of fatalities occuring in 
+#'   interval (0, 14], (14, 19], and (19, 35]. Times in \code{tsplit} must be 
+#'   increasing and between 0 and max(days), inclusive.
+#'
 #' @return A numeric array with dimensions
 #'  \code{dim = c(length(tsplit) - 1, nsim)} giving the estimated number of
 #'  fatalities that occured in each time interval.
@@ -94,95 +102,104 @@ calcTsplit <- function(rate, days, tsplit){
   calcTsplitC(rate, days, tsplit)
 }
 
-#' Estimate the number of fatalities by up to two splitting covariates
+#' @title Estimate the number of fatalities by up to two splitting covariates
 #'
-#' Total mortality can be split into sub-categories, according to various
-#' splitting covariates such as species, visibility class, season, site, unit,
-#' etc. Given the carcass search data, estimated mortalities, and splitting
-#' covariates, \code{calcSplits()} gives the "splits" or summaries the 
-#' estimated mortalities by levels of the splitting covariates. For example,
-#' user may specify \code{"season"} and \code{"species"} as splitting 
-#' variables to see estimated mortalities by season and species. Input would
-#' be arrays of estimated mortalities and arrival intervals when \code{ncarc}
-#' carcass have been discovered and uncertainty in mortality estimates is 
-#' captured via simulation with \code{nsim} simulation draws.
+#' @description Total mortality can be split into sub-categories, according to
+#'   various splitting covariates such as species, visibility class, season, 
+#'   site, unit, etc. Given the carcass search data, estimated mortalities, 
+#'   and splitting covariates, \code{calcSplits()} gives the "splits" or 
+#'   summaries the estimated mortalities by levels of the splitting 
+#'   covariates. For example, user may specify \code{"season"} and 
+#'   \code{"species"} as splitting variables to see estimated mortalities by
+#'   season and species. Input would be arrays of estimated mortalities and
+#'   arrival intervals when \code{ncarc} carcass have been discovered and 
+#'   uncertainty in mortality estimates is captured via simulation with 
+#'   \code{nsim} simulation draws.
 #'
 #' Arrival intervals (\code{Aj}) are given as integers, j, that indicate which
-#' search interval the given carcass (indexed by row) arrived in in the given
-#' simulation draw (indexed by column). Arrival interval indices (j) are
-#' relative to indexed carcasses' search schedules.
+#'   search interval the given carcass (indexed by row) arrived in in the
+#'   given simulation draw (indexed by column). Arrival interval indices 
+#'   (j) are relative to indexed carcasses' search schedules.
 #'
 #' No more than two splitting variables (\code{split_CO}, \code{split_SS}, and
-#' \code{split_time}) in total may be used. \code{split_CO} variables describe
-#' qualitative characteristics of the observed carcasses or where they were
-#' found. Some examples include searcher (DHD, JPS, MMH), carcass size 
-#' (S, M, L), species, age (fresh/dry or immature/mature), unit, visibility 
-#' class (easy, moderate, difficult), etc.
+#'   \code{split_time}) in total may be used. \code{split_CO} variables 
+#'   describe qualitative characteristics of the observed carcasses or where 
+#'   they were found. Some examples include searcher (DHD, JPS, MMH), carcass 
+#'   size (S, M, L), species, age (fresh/dry or immature/mature), unit, 
+#'   visibility class (easy, moderate, difficult), etc.
 #'
 #' \code{split_SS} variables describe characteristics of the search intervals,
-#' such as season (spring, summer, fall, winter) or treatment
-#' (pre- or post-minimization). Each search interval is assigned a level of 
-#' the \code{split_SS} variable. For example, for a search schedule with
-#' 5 searches (including a search at t = 0), and the \code{split_SS} variable
-#' would have values for each of the 4 search intervals. The levels of the
-#' \code{split_SS} must be in contiguous blocks. For example,
-#' \code{season = c("S", "S", "F", "F")} would be acceptable, but
-#' \code{season = c("S", "F", "S", "F")} would not be.
+#'   such as season (spring, summer, fall, winter) or treatment
+#'   (pre- or post-minimization). Each search interval is assigned a level of 
+#'   the \code{split_SS} variable. For example, for a search schedule with
+#'   5 searches (including a search at t = 0), and the \code{split_SS} 
+#'   variable would have values for each of the 4 search intervals. The
+#'   levels of the \code{split_SS} must be in contiguous blocks. For example,
+#'   \code{season = c("S", "S", "F", "F")} would be acceptable, but
+#'   \code{season = c("S", "F", "S", "F")} would not be.
 #'
 #' \code{split_time} variables are numeric vectors that split the monitoring
-#' period into distinct time intervals. For example,
-#' \code{split_time = c(0, 30, 60, 90, 120)} would split the 120 monitoring
-#' period into 30-day intervals, and \code{calcSplits()} would return 
-#' mortality estimates for each of the intervals.
+#'   period into distinct time intervals. For example,
+#'   \code{split_time = c(0, 30, 60, 90, 120)} would split the 120 monitoring
+#'   period into 30-day intervals, and \code{calcSplits()} would return 
+#'   mortality estimates for each of the intervals.
 #'
 #' @param M Numeric array (ncarc x nsim) of estimated mortalities, such as
-#'  those returned by the function xxx.
+#'   those returned by the function xxx.
+#'   
 #' @param Aj Integer array (ncarc x nsim) of simulated arrival intervals for
-#'  each observed carcass. Typically, the \code{Aj}
-#'  array will be the return value of function xxx.
+#'   each observed carcass. Typically, the \code{Aj}
+#'   array will be the return value of function xxx.
+#'   
 #' @param split_CO Character vector of names of splitting covariates to be 
-#'  found in the \code{data_CO} data frame. No more than two \code{split_CO} 
-#'  variables are allowed. Use \code{split_CO = NULL} if no CO splits are 
-#'  desired. 
+#'   found in the \code{data_CO} data frame. No more than two \code{split_CO} 
+#'   variables are allowed. Use \code{split_CO = NULL} if no CO splits are 
+#'   desired. 
+#'   
 #' @param data_CO data frame that summarizes the carcass search data and must
-#'  include columns specified by the \code{split_CO} arg. Each row includes
-#'  search and discovery parameters associated with a single observed carcass.
-#'  Columns include carcass ID, carcass discovery date, unit, and any number 
-#'  of covariates. \code{data_CO} is required if and only if \code{split_CO} 
-#'  is non-NULL.
+#'   include columns specified by the \code{split_CO} arg. Each row includes
+#'   search and discovery parameters associated with a single observed 
+#'   carcass. Columns include carcass ID, carcass discovery date, unit, and 
+#'   any number of covariates. \code{data_CO} is required if and only if 
+#'   \code{split_CO} is non-NULL.
+#'   
 #' @param split_SS Character string giving the name of a splitting covariate 
-#'  in the \code{data_SS} list, with \code{data_SS[[split_SS]]} describing
-#'  characteristics of the search intervals (e.g., "season"). Note that
-#'  \code{length(data_SS[[split_SS]]} must equal 
-#'  \code{length(data_SS$days) - 1} becasue no inference is made about 
-#'  carcass arrivals prior to time t = 0, and the "interval" prior to t = 0 
-#'  is not taken as a "search interval." If no \code{split_SS} split is 
-#'  desired, use \code{split_SS = NULL}.
+#'   in the \code{data_SS} list, with \code{data_SS[[split_SS]]} describing
+#'   characteristics of the search intervals (e.g., "season"). Note that
+#'   \code{length(data_SS[[split_SS]]} must equal 
+#'   \code{length(data_SS$days) - 1} becasue no inference is made about 
+#'   carcass arrivals prior to time t = 0, and the "interval" prior to t = 0 
+#'   is not taken as a "search interval." If no \code{split_SS} split is 
+#'   desired, use \code{split_SS = NULL}.
+#'   
 #' @param data_SS Search schedule data
+#'   
 #' @param split_time Numeric vector that defines time intervals for splits.
 #'  Times must be numeric, strictly increasing, and span the monitoring period
 #'  [0, \code{max(data_SS$days)}]. If no \code{split_time} is desired, use
 #'  \code{split_time = NULL}. If \code{split_time} is NULL, \code{data_SS}
 #'  is required.
+#'   
 #' @param ... arguments to be passed down
+#'   
 #' @return An object of class \code{splitFull} is returned. If one splitting
-#'  covariate is given, then the output will be an array of estimated 
-#'  mortality in each level of the splitting covariate, with one row for each
-#'  covariate level and one column for each simulation draw. If two splitting
-#'  covariates are given, output will be a list of arrays. Each array gives 
-#'  the estimated mortalities for one level of the second splitting covariate
-#'  and all levels of the first splitting covariate.
+#'   covariate is given, then the output will be an array of estimated 
+#'   mortality in each level of the splitting covariate, with one row for each
+#'   covariate level and one column for each simulation draw. If two splitting
+#'   covariates are given, output will be a list of arrays. Each array gives 
+#'   the estimated mortalities for one level of the second splitting covariate
+#'   and all levels of the first splitting covariate.
 #'
 #' Objects of class \code{splitFull} have attributes \code{vars} (which gives
-#' the name of the splitting covariate(s)) and \code{type} (which specifies
-#' whether the covariate(s) are of type \code{split_CO}, \code{split_SS}, or
-#' \code{split_time}). A summary of a resulting \code{splitFull} object
-#' is returned from the S3 function \code{summary(splits, CL = 0.95, ...)},
-#' which gives the mean and a 5-number summary for each level of each 
-#' covariate. The 5-number summary includes the alpha/2, 0.25, 0.5, 0.75, and
-#' 1 - alpha/2 quantiles, where alpha = 1 - CL. A graph summarizing the
-#' results can be drawn using \code{plot(splits, CL, ...)}, which gives
-#' a graphical representation of the \code{summary}.
+#'   the name of the splitting covariate(s)) and \code{type} (which specifies
+#'   whether the covariate(s) are of type \code{split_CO}, \code{split_SS}, or
+#'   \code{split_time}). A summary of a resulting \code{splitFull} object
+#'   is returned from the S3 function \code{summary(splits, CL = 0.95, ...)},
+#'   which gives the mean and a 5-number summary for each level of each 
+#'   covariate. The 5-number summary includes the alpha/2, 0.25, 0.5, 0.75,
+#'   and 1 - alpha/2 quantiles, where alpha = 1 - CL. A graph summarizing the
+#'   results can be drawn using \code{plot(splits, CL, ...)}, which gives
+#'   a graphical representation of the \code{summary}.
 #'
 #' @export
 #'
@@ -417,30 +434,34 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   return(splits)
 }
 
-#' Summarize results of mortality estimate splits
+#' @title Summarize results of mortality estimate splits
 #'
-#' Mortality estimates can be calculated for the various levels of splitting
-#' covariates such as season, species, or visibility class using
-#' \code{\link{calcSplits}}, which gives full arrays of simulated M estimates
-#' (i.e., for each level of each splitting covariate, each discovered carcass,
-#' and each simulation draw). summary(splits, CL = 0.95, ...) gives
-#' summary statistics of the estimates.
+#' @description Mortality estimates can be calculated for the various levels 
+#'   of splitting covariates such as season, species, or visibility class
+#'   using \code{\link{calcSplits}}, which gives full arrays of simulated M 
+#'   estimates (i.e., for each level of each splitting covariate, each 
+#'   discovered carcass, and each simulation draw). summary(splits, CL = 0.95,
+#'   ...) gives summary statistics of the estimates.
 #'
 #' @param object A \code{splitFull} object (\code{\link{calcSplits}}) that 
-#'  gives simulated mortality estimates for all combinations of levels of 1 
-#'  or 2 splitting covariates.
+#'   gives simulated mortality estimates for all combinations of levels of 1 
+#'   or 2 splitting covariates.
+#'   
 #' @param CL desired confidence level for summary CIs (numeric scalar in 
 #'  (0, 1))
+#'   
 #' @param ... to be passed down
+#'   
 #' @return an object of class \code{splitSummary}, which gives 5-number
-#'  summaries for all combinations of levels among the splitting covariates 
-#'  in the \code{splits}. The 5-number summaries include the mean and alpha/2,
-#'  0.25, 0.5, 0.75, and 1 - alpha/2 quantiles of mortality estimates, where
-#'  alpha = 1 - CL. A graphical representation of the results can be
-#'  produced using \code{plot(splits, CL, ...)}. For splits along CO 
-#'  covariates, the levels are organized alphabetically (but with numeric
-#'  suffixes appearing in numeric order, e.g., "t1", "t2", "t10" rather than
-#'  "t1", "t10", "t2").
+#'   summaries for all combinations of levels among the splitting covariates 
+#'   in the \code{splits}. The 5-number summaries include the mean and 
+#'   alpha/2, 0.25, 0.5, 0.75, and 1 - alpha/2 quantiles of mortality 
+#'   estimates, where alpha = 1 - CL. A graphical representation of the 
+#'   results can be produced using \code{plot(splits, CL, ...)}. For splits
+#'   along CO covariates, the levels are organized alphabetically (but with 
+#'   numeric suffixes appearing in numeric order, e.g., "t1", "t2", "t10" 
+#'   rather than "t1", "t10", "t2").
+#'   
 #' @export
 #'
 summary.splitFull <- function(object, CL = 0.90, ...){
@@ -490,14 +511,14 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   return(sumry)
 }
 
-
-#' Transpose a list of arrays
+#' @title Transpose a list of arrays
 #'
-#' A list of \code{n} arrays, each with dimension \code{m} x \code{k} is
-#' redimensioned to a list of \code{m} arrays, each with dimension \code{m} x
-#' \code{k}. NOTE: Attributes are not preserved.
+#' @description A list of \code{n} arrays, each with dimension \code{m} x 
+#'   \code{k} is redimensioned to a list of \code{m} arrays, each with 
+#'   dimension \code{m} x \code{k}. NOTE: Attributes are not preserved.
 #'
 #' @param M a list of \code{n} \code{m} x \code{k} arrays
+#'   
 #' @return a list of \code{m} \code{n} x \code{k} arrays
 #'
 #' @export
@@ -523,15 +544,19 @@ ltranspose <- function(M){
   return(ans)
 }
 
-#' Transpose a \code{splitFull} array (preserving attributes)
+#' @title Transpose a \code{splitFull} array (preserving attributes)
 #'
+#' @description Transpose a \code{splitFull} array (preserving attributes)
+#'   
 #' @param splits a \code{splitFull} object, which is a list of \code{n}
-#'  \code{m} x \code{k} arrays with attributes describing characteristics of 
-#'  the splits
+#'   \code{m} x \code{k} arrays with attributes describing characteristics of 
+#'   the splits
+#'   
 #' @return a list of \code{m} \code{n} x \code{k} arrays as a \code{splitFull}
 #'  object
+#'   
 #' @export
-
+#'   
 transposeSplits <- function(splits){
   if (!(class(splits) %in% "splitFull")){
     stop(

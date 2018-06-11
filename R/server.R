@@ -15,10 +15,10 @@
 server <- function(input, output, session){
 
 modalWelcome()
-output$versionInfo <- renderText(vtext)
+rv <- createReactiveValues()
+output$versionInfo <- renderText(createvtext())
 output$SStext <- renderText(rv$SStext)
 
-rv <- createReactiveValues()
 
 msg_RunModSE <- NULL
 msg_NobsSE <- NULL

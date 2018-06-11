@@ -18,20 +18,20 @@ or 2 splitting covariates.}
 }
 \value{
 an object of class \code{splitSummary}, which gives 5-number
- summaries for all combinations of levels among the splitting covariates 
- in the \code{splits}. The 5-number summaries include the mean and alpha/2,
- 0.25, 0.5, 0.75, and 1 - alpha/2 quantiles of mortality estimates, where
- alpha = 1 - CL. A graphical representation of the results can be
- produced using \code{plot(splits, CL, ...)}. For splits along CO 
- covariates, the levels are organized alphabetically (but with numeric
- suffixes appearing in numeric order, e.g., "t1", "t2", "t10" rather than
- "t1", "t10", "t2").
+  summaries for all combinations of levels among the splitting covariates 
+  in the \code{splits}. The 5-number summaries include the mean and 
+  alpha/2, 0.25, 0.5, 0.75, and 1 - alpha/2 quantiles of mortality 
+  estimates, where alpha = 1 - CL. A graphical representation of the 
+  results can be produced using \code{plot(splits, CL, ...)}. For splits
+  along CO covariates, the levels are organized alphabetically (but with 
+  numeric suffixes appearing in numeric order, e.g., "t1", "t2", "t10" 
+  rather than "t1", "t10", "t2").
 }
 \description{
-Mortality estimates can be calculated for the various levels of splitting
-covariates such as season, species, or visibility class using
-\code{\link{calcSplits}}, which gives full arrays of simulated M estimates
-(i.e., for each level of each splitting covariate, each discovered carcass,
-and each simulation draw). summary(splits, CL = 0.95, ...) gives
-summary statistics of the estimates.
+Mortality estimates can be calculated for the various levels 
+  of splitting covariates such as season, species, or visibility class
+  using \code{\link{calcSplits}}, which gives full arrays of simulated M 
+  estimates (i.e., for each level of each splitting covariate, each 
+  discovered carcass, and each simulation draw). summary(splits, CL = 0.95,
+  ...) gives summary statistics of the estimates.
 }
