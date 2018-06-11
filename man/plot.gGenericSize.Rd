@@ -7,7 +7,7 @@
 \method{plot}{gGenericSize}(x, CL = 0.95, ...)
 }
 \arguments{
-\item{x}{\code{\link{gGenericSize}} output}
+\item{x}{\code{\link{estgGenericSize}} output}
 
 \item{CL}{confidence level to use}
 

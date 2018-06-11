@@ -7,7 +7,7 @@
 \method{plot}{gGeneric}(x, sizeclassName = NULL, CL = 0.95, ...)
 }
 \arguments{
-\item{x}{\code{\link{ghatGeneric}} output}
+\item{x}{\code{\link{estgGeneric}} output}
 
 \item{sizeclassName}{name of the size class if it is to be added to the
 figure}
