@@ -6,33 +6,69 @@
 #'   the facility that was surveyed. 
 #'
 #' @param data_CO Carcass Observation data
+#'
 #' @param data_SS Search Schedule data
+#'
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted
 #'   proportion table
+#'
 #' @param frac fraction of facility (by units or by area) surveyed
+#'
 #' @param dateFoundCol Column name for the date found data
+#'
 #' @param model_SE Searcher Efficiency model (or list of models if there are
 #'   multiple size classes)
+#'
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
+#'
 #' @param kFill value to fill in for missing k when not existing in the model
+#'
 #' @param unitCol Column name for the unit indicator (optional)
+#'
 #' @param datesSearchedCol Column name for the date searched data
+#'
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional. If none provided, it is assumed there is no
 #'  distinctions among size classes.
+#'
 #' @param DWPCol Column name for the DWP values in the DWP table when no
 #'   size class is used and there is more than one column in \code{data_DWP}
 #'   that could be interpreted as DWP.
+#'
 #' @param seed_SE seed for random draws of the SE model
+#'
 #' @param seed_CP seed for random draws of the CP model
+#'
 #' @param seed_g seed for random draws of the gs
+#'
 #' @param seed_M seed for the random draws of the Mhats
+#'
 #' @param nsim the number of simulation draws
+#'
 #' @param max_intervals maximum number of arrival intervals to consider
 #'  for each carcass
+#'
 #' @return list of Mhat, Aj, ghat
-#' @examples NA
+#'
+#' @examples 
+#'  \dontrun{
+#'  data(mock)
+#'  model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+#'               data = mock$SE
+#'              )
+#'  model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+#'                data = mock$CP, dist = "weibull",
+#'                left = "LastPresentDecimalDays", 
+#'                right = "FirstAbsentDecimalDays"
+#'              )
+#'  eM <- estM(nsim = 1000, data_CO = mock$CO, data_SS = mock$SS, 
+#'          data_DWP = mock$DWP, frac = 1, model_SE = model_SE, 
+#'          model_CP = model_CP, dateFoundCol = "DateFound", 
+#'          DWPCol = "S", sizeclassCol = NULL
+#'        )
+#'  }
+#'
 #' @export 
 #'
 estM <- function(data_CO, data_SS, data_DWP, frac = 1,
@@ -110,7 +146,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   return(out)
 }
 
-#' @title Assign DWP Value to Each Carcass
+#' @title Assign DWP value to each carcass
 #'
 #' @description Expand the density weighted proportion table to a value for 
 #'   each carcass (across multiple classes if desired) based on the unit where 
@@ -118,14 +154,18 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #'
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted 
 #'   proportion table 
+#'
 #' @param data_CO Carcass observation data
+#'
 #' @param unitCol Column name for the unit indicator (optional). If 
 #'   \code{NULL}, then is assumed to be the column that \code{data_DWP} and
 #'   \code{data_CO} share. If none are in common, error is thrown with no 
 #'   remedy. If data sets share more than one column, user is asked to input 
 #'   \code{unitCol}.
+#'
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional.
+#'
 #' @param DWPCol Name of column where DWP values are stored (optional). Used
 #'  when there is more than one DWP column in \code{data_DWP} but analysis is
 #'  intended for a single class (i.e., no "size" is specified in data_CO).
@@ -133,8 +173,16 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #'  there is a check for possible DWPCols. If there is only one column with 
 #'  values in (0, 1], that's DWPCol. If there is not a unique column with 
 #'  values in (0, 1], an error is returned.
+#'
 #' @return DWP value for each carcass 
-#' @examples NA
+#'
+#' @examples 
+#'  data(mock)
+#'  DWP <- DWPbyCarcass(data_DWP = mock$DWP, data_CO = mock$CO,
+#'           sizeclassCol = "Size", unitCol = "Unit")
+#'  DWP <- DWPbyCarcass(data_DWP = mock$DWP, data_CO = mock$CO,
+#'           unitCol = "Unit", DWPCol = "S")
+#'
 #' @export 
 #'
 DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL, 
@@ -210,10 +258,15 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
 }
 
 #' @title Summarize total mortality estimation
+#'
 #' @description \code{summary} defined for class \code{estM} objects
+#'
 #' @param object \code{estM} object
+#'
 #' @param ... arguments to pass down
+#'
 #' @param CL confidence level
+#'
 #' @export
 #'
 summary.estM <- function(object, ..., CL = 0.95){
