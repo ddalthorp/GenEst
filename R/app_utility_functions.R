@@ -113,22 +113,20 @@ removeSelCols <- function(colNames, selCols){
 #' @description Determine the overlap between the column names in the SE, CP,
 #'    and CO data tables.
 #'
-#' @param colnames_SE column names for the searcher efficiency
-#'
-#' @param colnames_CP column names for the carcass persistence
-#'
-#' @param colnames_CO column names for the carcass observations
+#' @param rv reactive values list with elements named \code{colnames_SE},
+#'    \code{colnames_CP}, and \code{colnames_CO}
 #'
 #' @return possible column names
 #'
 #' @export
 #'
-updateColNames_all <- function(colnames_SE, colnames_CP, colnames_CO){
+updateColNames_all <- function(rv){
 
+ 
   SECPCO <- NULL
-  SE <- colnames_SE
-  CP <- colnames_CP
-  CO <- colnames_CO
+  SE <- rv$colNames_SE
+  CP <- rv$colNames_CP
+  CO <- rv$colNames_CO
 
   SECP <- which(SE %in% CP)
   SECO <- which(SE %in% CO)
