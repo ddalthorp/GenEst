@@ -1,9 +1,14 @@
-#' Create the UI
+#' @title Create the UI
+#'
+#' @description Render the active UI for the GenEst application
+#'
 #' @param request request as required for bookmarking
+#'
 #' @return UI
+#'
 #' @export
 #'
-ui <- function(request) {
+ui <- function(request){
 
 navbarPage(
 
@@ -103,22 +108,38 @@ tabPanel("Analyses",
       ),
       mainPanel(
         tabsetPanel(id = "analyses_SE",
-          tabPanel("Selected Data", br(), br(), dataTableOutput("selected_SE")
+          tabPanel("Selected Data", br(), 
+            conditionalPanel(condition = "input.obsCols_SE == null",
+              HTML("<em>Select observation columns to view data</em>")
+            ), br(), 
+            dataTableOutput("selected_SE")
           ),
-          tabPanel("Figures", br(), plotOutput("fig_SE")),
-          tabPanel("Estimates", 
-            br(),  
-            textOutput("sizeclass_SE1"),
-            br(), 
+          tabPanel("Figures", br(), 
+            conditionalPanel(condition = "output.fig_SE == null",
+              HTML("<em>Run model to view figures</em>")
+            ),
+            plotOutput("fig_SE")
+          ),
+          tabPanel("Estimates", br(),  
+            conditionalPanel(condition = "output.modTab_SE == null",
+              HTML("<em>Run model to view model estimates</em>")
+            ),
+            textOutput("sizeclass_SE1"), br(), 
             dataTableOutput("modTab_SE")
           ),
-          tabPanel("Model Comparison",
-            br(), 
-            textOutput("sizeclass_SE2"),
-            br(), 
+          tabPanel("Model Comparison", br(), 
+            conditionalPanel(condition = "output.AICcTab_SE == null",
+              HTML("<em>Run models to view model comparison</em>")
+            ),
+            textOutput("sizeclass_SE2"), br(), 
             dataTableOutput("AICcTab_SE")
           ),
-          tabPanel("Model Selection", br(), htmlOutput("modelMenu_SE"))
+          tabPanel("Model Selection", br(), 
+            conditionalPanel(condition = "output.modelMenu_SE == null",
+              HTML("<em>Run models to select models</em>")
+            ),
+            htmlOutput("modelMenu_SE")
+            )
         )
       )
     ),
@@ -171,22 +192,38 @@ tabPanel("Analyses",
       ),
       mainPanel(
         tabsetPanel(id = "analyses_CP",
-          tabPanel("Selected Data", br(), br(),
+          tabPanel("Selected Data", br(),
+            conditionalPanel(
+              condition = "input.ltp == null | input.fta == null",
+              HTML("<em>Select observation columns to view data</em>")
+            ), br(), 
             dataTableOutput("selected_CP")),
-          tabPanel("Figures", br(), plotOutput("fig_CP")),
-          tabPanel("Estimates",
-            br(),  
-            textOutput("sizeclass_CP1"),
-            br(), 
+          tabPanel("Figures", br(),
+            conditionalPanel(condition = "output.fig_CP == null",
+              HTML("<em>Run model to view figures</em>")
+            ),
+            plotOutput("fig_CP")
+          ),
+          tabPanel("Estimates", br(), 
+            conditionalPanel(condition = "output.modTab_CP == null",
+              HTML("<em>Run model to view model estimates</em>")
+            ), 
+            textOutput("sizeclass_CP1"), br(), 
             dataTableOutput("modTab_CP")
           ),
-          tabPanel("Model Comparison", 
-            br(),  
-            textOutput("sizeclass_CP2"),
-            br(), 
+          tabPanel("Model Comparison", br(), 
+            conditionalPanel(condition = "output.AICcTab_CP == null",
+              HTML("<em>Run models to view model comparison</em>")
+            ), 
+            textOutput("sizeclass_CP2"), br(), 
             dataTableOutput("AICcTab_CP")
           ),
-          tabPanel("Model Selection", br(), htmlOutput("modelMenu_CP"))
+          tabPanel("Model Selection", br(), 
+            conditionalPanel(condition = "output.modelMenu_CP == null",
+              HTML("<em>Run models to select models</em>")
+            ),
+            htmlOutput("modelMenu_CP")
+          )
         )
       )
     ),
@@ -250,8 +287,18 @@ tabPanel("Analyses",
       ),
       mainPanel(
         tabsetPanel(id = "analyses_M",
-          tabPanel("Figure", br(), plotOutput("fig_M")),
-          tabPanel("Summary", br(), br(), dataTableOutput("table_M"))
+          tabPanel("Figure", br(), 
+            conditionalPanel(condition = "output.fig_M == null",
+              HTML("<em>Run estimate to view figure</em>")
+            ), 
+            plotOutput("fig_M")
+          ),
+          tabPanel("Summary", br(), 
+            conditionalPanel(condition = "output.table_M == null",
+              HTML("<em>Run estimate to view summary</em>")
+            ), 
+            br(), dataTableOutput("table_M")
+          )
         )
       )
     ),
@@ -260,8 +307,16 @@ tabPanel("Analyses",
         HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
         br(), br(),
         HTML("<strong><u> Search Schedule Data: </u></strong>"),
-        br(), br(),
-        actionButton("useSSdata", "Create Schedule"),
+        conditionalPanel(    
+          condition = "output.data_SS == null",
+          br(), 
+          HTML("<center><em>Input search schedule data file</center></em>")
+        ),
+        conditionalPanel(    
+          condition = "output.data_SS != null",
+          br(), 
+          actionButton("useSSdata", "Create Schedule")
+        ),
         br(), br(),
         HTML("<strong><u> Generic Search Schedule Inputs: </u></strong>"),
         br(), br(),
@@ -311,8 +366,18 @@ tabPanel("Analyses",
             br(), br(), 
             box(textOutput("SStext"))
           ),
-          tabPanel("Table", br(), br(), dataTableOutput("tab_g")),
-          tabPanel("Figure", br(), plotOutput("fig_g"))
+          tabPanel("Figure", br(), 
+            conditionalPanel(condition = "output.fig_g == null",
+              HTML("<em>Run estimate to view figure</em>")
+            ), 
+            plotOutput("fig_g")
+          ),
+          tabPanel("Summary", br(), 
+            conditionalPanel(condition = "output.table_g == null",
+              HTML("<em>Run estimate to view summary</em>")
+            ), 
+            br(), dataTableOutput("table_g")
+          )
         )
       )
     )

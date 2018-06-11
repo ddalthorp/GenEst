@@ -2,7 +2,7 @@
 % Please edit documentation in R/carcass_persistence_functions.R
 \name{cpmSetSize}
 \alias{cpmSetSize}
-\title{Fit all possible carcass persistence models across all size classes.}
+\title{Fit all possible carcass persistence models across all size classes}
 \usage{
 cpmSetSize(formula_l, formula_s = NULL, data, left = NULL, right = NULL,
   dists = c("exponential", "weibull", "lognormal", "loglogistic"),
@@ -46,7 +46,17 @@ are recorded}
   is of length equal to the total number of size classes
 }
 \description{
-Function inputs generally follow \code{cpmSet} and \code{cpm} but with an 
-  additional size column input and calculation of the set of cpm models for
-  each of the size classes
+Run a set of \code{\link{cpmSet}} model set runs based on all 
+  possible models for a suite of size classes. \code{cpmSetSize}'s inputs
+  generally follow \code{\link{cpmSet}} and \code{\link{cpm}} but with an 
+  additional size column input and calculation of the set of cpm models for 
+  each of the size classes.
+}
+\examples{
+  data(wind_RP)
+  mod <- cpmSetSize(formula_l = l ~ Season, formula_s = s ~ Season,  
+           data = wind_RP$CP, left = "Left", right = "Right",
+           sizeclassCol = "Size"
+          )
+
 }

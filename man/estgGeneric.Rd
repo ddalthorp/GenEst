@@ -2,8 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estgGeneric}
 \alias{estgGeneric}
-\title{Generic g estimation by simulation from given SE model and CP models
-  under a specific search schedule}
+\title{Estimate generic g}
 \usage{
 estgGeneric(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, kFill = NULL)
@@ -24,12 +23,15 @@ estgGeneric(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
 \item{kFill}{value to fill in for missing k when not existing in the model}
 }
 \value{
-gGeneric object that is a list of [1] a list of g estimates,
+\code{gGeneric} object that is a list of [1] a list of g estimates,
    with one element in the list corresponding to each of the cells from the 
    cross-model combination and [2] a table of predictors and cell names 
    associated with the gs
 }
 \description{
+Generic g estimation by simulation from given SE model and CP 
+  models under a specific search schedule.
+
 The g estimated by \code{estgGeneric} is a generic aggregate detection 
   probability and represents the probability of detecting a carcass that 
   arrives at a (uniform) random time during the period monitored, for each
@@ -40,4 +42,19 @@ The g estimated by \code{estgGeneric} is a generic aggregate detection
   summarize statistically. The \code{estgGeneric} estimate is a useful 
   "big picture" summary of detection probability, but would be difficult
   to work with for estimating M with precision.
+}
+\examples{
+  data(mock)
+  model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+                data = mock$SE
+              )
+  model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+                data = mock$CP, left = "LastPresentDecimalDays", 
+                right = "FirstAbsentDecimalDays"
+              )
+  avgSS <- averageSS(mock$SS)
+  ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+                    seed_SE = 1, seed_CP = 1, kFill = NULL
+                  )
+
 }

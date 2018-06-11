@@ -13,5 +13,5 @@ prepSizeclassText(sizeclasses)
 prepared and render name text
 }
 \description{
-Prepare text for size classes
+Prepare and render text of the size class names
 }

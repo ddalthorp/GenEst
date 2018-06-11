@@ -13,5 +13,5 @@ ui(request)
 UI
 }
 \description{
-Create the UI
+Render the active UI for the GenEst application
 }

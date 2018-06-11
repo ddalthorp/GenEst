@@ -7,7 +7,7 @@
 \method{plot}{gGeneric}(x, sizeclassName = NULL, CL = 0.95, ...)
 }
 \arguments{
-\item{x}{ghatGeneric output}
+\item{x}{\code{\link{ghatGeneric}} output}
 
 \item{sizeclassName}{name of the size class if it is to be added to the
 figure}
@@ -17,8 +17,24 @@ figure}
 \item{...}{to be passed down}
 }
 \value{
-a plot
+generic detection probability plot
 }
 \description{
-Plot results of a single generic ghat estimation
+Plot method for a single generic \code{ghat} estimation
+}
+\examples{
+  data(mock)
+  model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+                data = mock$SE
+              )
+  model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+                data = mock$CP, left = "LastPresentDecimalDays", 
+                right = "FirstAbsentDecimalDays"
+              )
+  avgSS <- averageSS(mock$SS)
+  ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+                    seed_SE = 1, seed_CP = 1, kFill = NULL
+                  )
+  plot(ghatsGeneric)
+
 }

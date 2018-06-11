@@ -1,11 +1,33 @@
-#' Plot results of a single generic ghat estimation
+#' @title Plot results of a single generic ghat estimation
 #'
-#' @param x ghatGeneric output
+#' @description Plot method for a single generic \code{ghat} estimation
+#'
+#' @param x \code{\link{ghatGeneric}} output
+#'
 #' @param CL confidence level to use
+#'
 #' @param sizeclassName name of the size class if it is to be added to the
 #'   figure
+#'
 #' @param ... to be passed down
-#' @return a plot
+#'
+#' @return generic detection probability plot
+#'
+#' @examples 
+#'   data(mock)
+#'   model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+#'                 data = mock$SE
+#'               )
+#'   model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+#'                 data = mock$CP, left = "LastPresentDecimalDays", 
+#'                 right = "FirstAbsentDecimalDays"
+#'               )
+#'   avgSS <- averageSS(mock$SS)
+#'   ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+#'                     seed_SE = 1, seed_CP = 1, kFill = NULL
+#'                   )
+#'   plot(ghatsGeneric)
+#'
 #' @export
 #'
 plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.95, ...){
@@ -91,12 +113,49 @@ plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.95, ...){
   text(x_s + 0.2, y_s, text_ex, cex = 0.65, adj = 0)
 }
 
-#' Plot results of a set of size-based generic g estimations
+#' @title Plot results of a set of size-based generic ghat estimations
 #'
-#' @param x gGenericSize output
+#' @description Plot method for a size-based generic \code{ghat} estimation
+#'
+#' @param x \code{\link{gGenericSize}} output
+#'
 #' @param CL confidence level to use
+#'
 #' @param ... to be passed down
-#' @return a plot
+#'
+#' @return size-based detection probability plot
+#'
+#' @examples
+#'   data(mock)
+#'   pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+#'                    formula_k = k ~ HabitatType, data = mock$SE,
+#'                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
+#'                    sizeclassCol = "Size"
+#'                  )
+#'   cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+#'                    formula_s = s ~ Visibility, data = mock$CP,
+#'                    left = "LastPresentDecimalDays",
+#'                    right = "FirstAbsentDecimalDays",
+#'                    dist = c("exponential", "lognormal"),
+#'                    sizeclassCol = "Size"
+#'                    )
+#'   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
+#'              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
+#'             )
+#'   cpMods <- c("S" = "dist: exponential; l ~ 1; NULL", 
+#'               "L" = "dist: exponential; l ~ 1; NULL",
+#'               "M" = "dist: exponential; l ~ 1; NULL",
+#'               "XL" = "dist: exponential; l ~ 1; NULL"
+#'             )
+#'   avgSS <- averageSS(mock$SS)
+#'   gsGeneric <- estgGenericSize(nsim = 1000, days = avgSS,
+#'                  modelSetSize_SE = pkmModsSize,
+#'                  modelSetSize_CP = cpmModsSize,
+#'                  modelSizeSelections_SE = pkMods,
+#'                  modelSizeSelections_CP = cpMods
+#'                )
+#'  plot(gsGeneric)
+#'
 #' @export
 #'
 plot.gGenericSize <- function(x, CL = 0.95, ...){
