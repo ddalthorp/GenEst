@@ -2,7 +2,7 @@
 % Please edit documentation in R/searcher_efficiency_figure_functions.R
 \name{plot.pkmSet}
 \alias{plot.pkmSet}
-\title{Plot results of a pk model set}
+\title{Plot results of a set of SE models}
 \usage{
 \method{plot}{pkmSet}(x, specificModel = NULL, n = 1000, seed_spec = 1,
   seed_full = 1, col_spec = "black", col_full = "grey",
@@ -33,5 +33,14 @@ figure}
 a set of plots
 }
 \description{
-Plot results of a pk model set
+Produce a set of figures for a set of SE models, as fit by
+  \code{\link{pkmSet}}
+}
+\examples{
+  data(wind_RP)
+  mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, 
+           data = wind_RP$SE
+         )
+  plot(mod)
+
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{kSuggest}
 \alias{kSuggest}
-\title{Suggest a value for k based on a weighted mean of the observed decay}
+\title{Suggest a k}
 \usage{
 kSuggest(obsData)
 }
@@ -13,5 +13,6 @@ kSuggest(obsData)
 the weighted mean of the observed proportional decay in p
 }
 \description{
-Suggest a value for k based on a weighted mean of the observed decay
+Suggest a value for k based on a weighted mean of the 
+  observed decay
 }

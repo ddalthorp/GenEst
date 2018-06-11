@@ -21,5 +21,11 @@
 a plot
 }
 \description{
-Plot results of a single pk model
+Plot a single \code{\link{pkm}} model
+}
+\examples{
+  data(wind_RP)
+  mod <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+  plot(mod)
+
 }
