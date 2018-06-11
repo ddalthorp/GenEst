@@ -3,7 +3,7 @@
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics axis mtext par plot points rect text lines polygon
 #'   hist
-#' @importFrom grDevices rgb devAskNewPage
+#' @importFrom grDevices rgb devAskNewPage png
 #' @importFrom gsl hyperg_2F1
 #' @importFrom gtools mixedsort
 #' @importFrom htmltools div img br HTML a
@@ -18,8 +18,8 @@
 #'   reactiveValues fileInput numericInput radioButtons conditionalPanel
 #'   plotOutput htmlOutput sidebarPanel sidebarLayout mainPanel
 #'   removeNotification outputOptions isolate updateTabsetPanel renderPlot
-#'   updateNumericInput actionButton checkboxGroupInput
-#'   column fluidRow textOutput
+#'   updateNumericInput actionButton checkboxGroupInput downloadButton
+#'   downloadHandler column fluidRow textOutput
 #' @importFrom shinydashboard box
 #' @importFrom stats .getXlevels approxfun delete.response formula median
 #'   model.matrix na.omit optim pgamma pnorm qnorm quantile reformulate
