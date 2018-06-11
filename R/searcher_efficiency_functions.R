@@ -343,11 +343,11 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
   cellTable_p <- apply(probs, 1, qnorm, mean = cellMean_p, sd = cellSD_p)
   cellTable_p <- matrix(cellTable_p, nrow = ncell, ncol = 3)
-  cellTable_p <- round(alogit(cellTable_p), 5)
+  cellTable_p <- round(alogit(cellTable_p), 3)
   colnames(cellTable_p) <- c("p_median", "p_lower", "p_upper")
   cellTable_k <- apply(probs, 1, qnorm, mean = cellMean_k, sd = cellSD_k)
   cellTable_k <- matrix(cellTable_k, nrow = ncell, ncol = 3)
-  cellTable_k <- round(alogit(cellTable_k), 5)
+  cellTable_k <- round(alogit(cellTable_k), 3)
   colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
   if (nsearch == 1){
     for (rowi in 1:nrow(cellTable_k)){
