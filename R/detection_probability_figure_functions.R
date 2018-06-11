@@ -2,7 +2,7 @@
 #'
 #' @description Plot method for a single generic \code{ghat} estimation
 #'
-#' @param x \code{\link{ghatGeneric}} output
+#' @param x \code{\link{estgGeneric}} output
 #'
 #' @param CL confidence level to use
 #'
@@ -117,7 +117,7 @@ plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.95, ...){
 #'
 #' @description Plot method for a size-based generic \code{ghat} estimation
 #'
-#' @param x \code{\link{gGenericSize}} output
+#' @param x \code{\link{estgGenericSize}} output
 #'
 #' @param CL confidence level to use
 #'
