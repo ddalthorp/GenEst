@@ -30,7 +30,7 @@ In this vignette we walk through an example illustrating how **GenEst** command
 line utilities could be used to estimate mortality for different size birds at a
 large field of solar photovoltaic collectors.  Our objective is to estimate 
 overall mortality, as well as how mortality varies over time, whether it 
-constant over throughout the facility, and finally how different size classes of
+constant throughout the facility, and finally how different size classes of
 birds are affected.  
 
 The general steps in the analysis are:
