@@ -259,6 +259,9 @@ observeEvent(input$runMod_SE, {
     rv$figH_SE <- setFigH(rv$modSet_SE, 800)
     rv$figW_SE <- setFigW(rv$modSet_SE)
 
+    output$SEModDone <- renderText("OK")
+    outputOptions(output, "SEModDone", suspendWhenHidden = FALSE)
+
     output$kFillNeed <- setkFillNeed(rv$obsCols_SE)
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
     output$modTab_SE <- renderDataTable({rv$modTab_SE})
@@ -462,6 +465,9 @@ observeEvent(input$runMod_CP, {
     rv$figH_CP <- setFigH(rv$modSet_CP, 700, "CP")
     rv$figW_CP <- setFigW(rv$modSet_CP)
 
+    output$CPModDone <- renderText("OK")
+    outputOptions(output, "CPModDone", suspendWhenHidden = FALSE)
+
     output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})    
     output$modTab_CP <- renderDataTable({rv$modTab_CP})
     rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
@@ -654,6 +660,8 @@ observeEvent(input$runMod_M, {
                    ), error = function(x){NULL}, warning = function(x){NULL}
                  )
 
+    output$MModDone <- renderText("OK")
+    outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
     output$fig_M <- renderPlot(plot(rv$M))
     output$table_M <- renderDataTable(
@@ -803,6 +811,9 @@ observeEvent(input$runMod_g, {
       choices = rv$sizeclasses_g
     )
     updateTabsetPanel(session, "analyses_g", "Summary")
+
+    output$gModDone <- renderText("OK")
+    outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
 
   } else{
     msg_ModFailg <<- msgModFail(rv$gGeneric)

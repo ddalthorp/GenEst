@@ -94,7 +94,7 @@ tabPanel("Analyses",
           br(), 
           actionButton("runMod_SE", "Run Model")          
         ),
-        conditionalPanel(condition = "input.runMod_SE > 0", 
+        conditionalPanel(condition = "output.SEModDone == 'OK'", 
           br(), br(),
           HTML("<big><strong><u> Table & Figure Selection:
           </u></strong></big>"), 
@@ -173,7 +173,7 @@ tabPanel("Analyses",
           br(),
           actionButton("runMod_CP", "Run Model")
         ),
-        conditionalPanel(condition = "input.runMod_CP > 0", 
+        conditionalPanel(condition = "output.CPModDone == 'OK'", 
           br(), br(), 
           HTML("<big><strong><u> Table & Figure Selection: 
             </u></strong></big>"
@@ -266,7 +266,7 @@ tabPanel("Analyses",
           actionButton("runMod_M", "Estimate")
         ),
         conditionalPanel(
-          condition = "input.runMod_M > 0",
+          condition = "output.MModDone == 'OK'",
 
           br(), br(), 
           HTML("<big><strong><u> Splitting Mortality: 
@@ -348,7 +348,7 @@ tabPanel("Analyses",
           br(), br(),
           actionButton("runMod_g", "Estimate")
         ),
-        conditionalPanel(condition = "input.runMod_g > 0", 
+        conditionalPanel(condition = "output.gModDone == 'OK'", 
           br(), br(), 
           HTML("<big><strong><u> Table & Figure Selection: 
             </u></strong></big>"
