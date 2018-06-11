@@ -118,21 +118,30 @@ tabPanel("Analyses",
             conditionalPanel(condition = "output.fig_SE == null",
               HTML("<em>Run model to view figures</em>")
             ),
-            plotOutput("fig_SE")
+            conditionalPanel(condition = "output.SEModDone == 'OK'",
+              plotOutput("fig_SE", inline = TRUE), br(), br(),
+              downloadButton("downloadSEfig", "Download")
+            )
           ),
           tabPanel("Estimates", br(),  
             conditionalPanel(condition = "output.modTab_SE == null",
               HTML("<em>Run model to view model estimates</em>")
             ),
-            textOutput("sizeclass_SE1"), br(), 
-            dataTableOutput("modTab_SE")
+            conditionalPanel(condition = "output.SEModDone == 'OK'",
+                textOutput("sizeclass_SE1"), br(), 
+              dataTableOutput("modTab_SE"), br(),
+              downloadButton("downloadSEest", "Download")
+            )
           ),
           tabPanel("Model Comparison", br(), 
             conditionalPanel(condition = "output.AICcTab_SE == null",
               HTML("<em>Run models to view model comparison</em>")
             ),
-            textOutput("sizeclass_SE2"), br(), 
-            dataTableOutput("AICcTab_SE")
+            conditionalPanel(condition = "output.SEModDone == 'OK'",
+              textOutput("sizeclass_SE2"), br(), 
+              dataTableOutput("AICcTab_SE"), br(),
+              downloadButton("downloadSEAICc", "Download")
+            )
           ),
           tabPanel("Model Selection", br(), 
             conditionalPanel(condition = "output.modelMenu_SE == null",
@@ -202,21 +211,30 @@ tabPanel("Analyses",
             conditionalPanel(condition = "output.fig_CP == null",
               HTML("<em>Run model to view figures</em>")
             ),
-            plotOutput("fig_CP")
+            conditionalPanel(condition = "output.CPModDone == 'OK'",
+              plotOutput("fig_CP", inline = TRUE), br(), br(),
+              downloadButton("downloadCPfig", "Download")
+            )
           ),
           tabPanel("Estimates", br(), 
             conditionalPanel(condition = "output.modTab_CP == null",
               HTML("<em>Run model to view model estimates</em>")
             ), 
-            textOutput("sizeclass_CP1"), br(), 
-            dataTableOutput("modTab_CP")
+            conditionalPanel(condition = "output.CPModDone == 'OK'",
+              textOutput("sizeclass_CP1"), br(), 
+              dataTableOutput("modTab_CP"), br(),
+              downloadButton("downloadCPest", "Download")
+            )
           ),
           tabPanel("Model Comparison", br(), 
             conditionalPanel(condition = "output.AICcTab_CP == null",
               HTML("<em>Run models to view model comparison</em>")
             ), 
-            textOutput("sizeclass_CP2"), br(), 
-            dataTableOutput("AICcTab_CP")
+            conditionalPanel(condition = "output.CPModDone == 'OK'",
+              textOutput("sizeclass_CP2"), br(), 
+              dataTableOutput("AICcTab_CP"), br(),
+              downloadButton("downloadCPAICc", "Download")
+            )
           ),
           tabPanel("Model Selection", br(), 
             conditionalPanel(condition = "output.modelMenu_CP == null",
@@ -291,13 +309,19 @@ tabPanel("Analyses",
             conditionalPanel(condition = "output.fig_M == null",
               HTML("<em>Run estimate to view figure</em>")
             ), 
-            plotOutput("fig_M")
+            conditionalPanel(condition = "output.MModDone == 'OK'",
+              plotOutput("fig_M", inline = TRUE), br(), br(),
+              downloadButton("downloadMfig", "Download")
+            )
           ),
           tabPanel("Summary", br(), 
             conditionalPanel(condition = "output.table_M == null",
               HTML("<em>Run estimate to view summary</em>")
             ), 
-            br(), dataTableOutput("table_M")
+            conditionalPanel(condition = "output.MModDone == 'OK'",
+              br(), dataTableOutput("table_M"), br(),
+              downloadButton("downloadMtab", "Download")
+            )
           )
         )
       )
@@ -370,13 +394,19 @@ tabPanel("Analyses",
             conditionalPanel(condition = "output.fig_g == null",
               HTML("<em>Run estimate to view figure</em>")
             ), 
-            plotOutput("fig_g")
+            conditionalPanel(condition = "output.gModDone == 'OK'",
+              plotOutput("fig_g"), br(), br(),
+              downloadButton("downloadgfig", "Download")
+            )
           ),
           tabPanel("Summary", br(), 
             conditionalPanel(condition = "output.table_g == null",
               HTML("<em>Run estimate to view summary</em>")
             ), 
-            br(), dataTableOutput("table_g")
+            conditionalPanel(condition = "output.gModDone == 'OK'",
+              br(), dataTableOutput("table_g"), br(),
+              downloadButton("downloadgtab", "Download")
+            )
           )
         )
       )
