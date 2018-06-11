@@ -2,7 +2,7 @@
 % Please edit documentation in R/mortality_functions.R
 \name{DWPbyCarcass}
 \alias{DWPbyCarcass}
-\title{Assign DWP Value to Each Carcass}
+\title{Assign DWP value to each carcass}
 \usage{
 DWPbyCarcass(data_DWP, data_CO, unitCol = NULL, sizeclassCol = NULL,
   DWPCol = NULL)
@@ -39,5 +39,10 @@ Expand the density weighted proportion table to a value for
   they were found
 }
 \examples{
-NA
+ data(mock)
+ DWP <- DWPbyCarcass(data_DWP = mock$DWP, data_CO = mock$CO,
+          sizeclassCol = "Size", unitCol = "Unit")
+ DWP <- DWPbyCarcass(data_DWP = mock$DWP, data_CO = mock$CO,
+          unitCol = "Unit", DWPCol = "S")
+
 }
