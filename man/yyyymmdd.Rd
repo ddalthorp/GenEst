@@ -17,5 +17,6 @@ only transforms m/d/Y dates, returns untransformed dates that
   were already YYYY-mm-dd
 }
 \examples{
-NA
+  yyyymmdd("02/20/2018") 
+
 }

@@ -16,5 +16,6 @@ The anti-logit of \code{x}.
 Compute the anti-logit.
 }
 \examples{
-alogit(0)
+  alogit(0)
+
 }

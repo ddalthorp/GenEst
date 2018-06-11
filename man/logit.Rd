@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{logit}
 \alias{logit}
-\title{Compute the logit.}
+\title{Compute the logit}
 \usage{
 logit(x)
 }
@@ -13,8 +13,9 @@ logit(x)
 The logit of \code{x}.
 }
 \description{
-Compute the logit.
+Compute the logit
 }
 \examples{
-logit(0.5)
+  logit(0.5)
+
 }

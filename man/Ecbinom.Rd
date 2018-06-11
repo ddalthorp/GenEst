@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{Ecbinom}
 \alias{Ecbinom}
-\title{Calculates the expected value of a continuous binomial}
+\title{Expected value of a continuous binomial}
 \usage{
 Ecbinom(prob)
 }
@@ -13,8 +13,7 @@ Ecbinom(prob)
 mean
 }
 \description{
+Calculates the expected value of a continuous binomial
+
 uses internal-only data
-}
-\examples{
-NA
 }
