@@ -20,18 +20,17 @@ include either a \code{split_SS} or \code{split_time} variable, the
 \item{...}{additional arguments to be passed down}
 }
 \description{
-The S3 \code{plot} method for \code{splitSummary} objects constructs 
- boxplots of the mortality estimates for all combinations of splitting 
- covariates summarized in the \code{splits} variable.
-}
-\details{
+The S3 \code{plot} method for \code{splitSummary} objects 
+  constructs boxplots of the mortality estimates for all combinations of 
+  splitting covariates summarized in the \code{splits} variable.
+
 For 1-covariate splits, box plots showing median, IQR, and confidence
-intervals (for the \code{CL} attribute for the splits object). For
-2-covariate splits, the box plots are in an array with levels of
-the temporal split (\code{split_SS} or \code{split_time}) arranged
-horizontally (if present) and the levels of the \code{split_CO} variable
-arranged vertically. If no temporal splits are present, then the box plots
-along the levels of the first \code{split_CO} variable are arranged
-horizontally and the levels of the second variable are are arranged
-vertically.
+  intervals (for the \code{CL} attribute for the splits object). For
+  2-covariate splits, the box plots are in an array with levels of
+  the temporal split (\code{split_SS} or \code{split_time}) arranged
+  horizontally (if present) and the levels of the \code{split_CO} variable
+  arranged vertically. If no temporal splits are present, then the box 
+  plots along the levels of the first \code{split_CO} variable are arranged
+  horizontally and the levels of the second variable are are arranged
+  vertically.
 }

@@ -17,11 +17,11 @@ search, e.g., c(0, 7, 14, 28, 35) would indicate a schedule in at least
 one unit was searched every 7 days.}
 
 \item{tsplit}{A vector of times that splits the monitoring period into a
-set of time intervals for which \code{calcTsplit} will estimate the number
-of fatalities. For example, if \code{tsplit = c(0, 14, 19, 35)}, then
-\code{calcTsplit} estimates the number of fatalities occuring in intervals
-(0, 14], (14, 19], and (19, 35]. Times in \code{tsplit} must be increasing
-and between 0 and max(days), inclusive.}
+set of time intervals for which \code{calcTsplit} will estimate the 
+number of fatalities. For example, if \code{tsplit = c(0, 14, 19, 35)}, 
+then \code{calcTsplit} estimates the number of fatalities occuring in 
+interval (0, 14], (14, 19], and (19, 35]. Times in \code{tsplit} must be 
+increasing and between 0 and max(days), inclusive.}
 }
 \value{
 A numeric array with dimensions
@@ -29,7 +29,7 @@ A numeric array with dimensions
  fatalities that occured in each time interval.
 }
 \description{
-\code{calcTsplit()} is a lower-level function that requires the output
-of \code{calcRate} as input. See \code{\link{calcSplits}} for a more 
-powerful, convenient, and flexible alternative.
+\code{calcTsplit()} is a lower-level function that requires 
+  the output of \code{calcRate} as input. See \code{\link{calcSplits}} 
+  for a more powerful, convenient, and flexible alternative.
 }
