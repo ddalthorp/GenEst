@@ -377,6 +377,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 #' @description Print a \code{\link{cpm}} model object
 #'
 #' @param x a \code{\link{cpm}} model object
+#'
 #' @param ... to be passed down
 #'
 #' @export
@@ -390,7 +391,7 @@ print.cpm <- function(x, ...){
 #' @title Calculate the negative log-likelihood of a carcass persistence model
 #' 
 #' @description The function used to calculate the negative-loglikelihood of
-#'   a given carcass persistence model (\code{\link{cpm}} )with a given data
+#'   a given carcass persistence model (\code{\link{cpm}}) with a given data
 #'   set
 #'
 #' @param t1 last times observed present

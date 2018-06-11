@@ -1,7 +1,7 @@
-#' Fit a single searcher efficiency model.
+#' @title Fit a single searcher efficiency model.
 #' 
-#' Searcher efficiency is modeled as a function of the number of times a 
-#'   carcass has been missed in previous searches and any number of 
+#' @description Searcher efficiency is modeled as a function of the number of
+#'   times a  carcass has been missed in previous searches and any number of 
 #'   such as covariates. Format and usage parallel that of common \code{R} 
 #'   functions \code{lm}, \code{glm}, and \code{gam}. However, the input data 
 #'   (\code{data}) is structured differently to accommodate the 
@@ -130,7 +130,9 @@
 #'  \item{\code{CL}}{the input \code{CL}}
 #'}
 #'
-#' @examples NA
+#' @examples 
+#'   data(wind_RP)
+#'   pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
 #'
 #' @export
 #'
@@ -398,6 +400,14 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   return(output)
 }
 
+#' @title Print a \code{\link{pkm}} model object
+#'
+#' @description Print a \code{\link{pkm}} model object
+#'
+#' @param x a \code{\link{pkm}} model object
+#'
+#' @param ... to be passed down
+#'
 #' @export
 #'
 print.pkm <- function(x, ...){
@@ -406,20 +416,31 @@ print.pkm <- function(x, ...){
   print(x[notHid])
 }
  
-#' Calculate the negative log-likelihood of a searcher efficiency model.
+#' @title Calculate the negative log-likelihood of a searcher efficiency model
 #' 
+#' @description The function used to calculate the negative-loglikelihood of
+#'   a given searcher efficiency model (\code{\link{pkm}}) with a given data
+#'   set
+#'
 #' @param misses Number of searches when carcass was present but
 #'  not found.
+#'
 #' @param foundOn Search on which carcass was found.
+#'
 #' @param beta Parameters to be optimized.
+#'
 #' @param nbeta_p Number of parameters associated with p.
+#'
 #' @param cellByCarc Which cell each observation belongs to.
+#'
 #' @param maxmisses Maximum possible number of misses for a carcass.
+#'
 #' @param cellMM Combined pk model matrix.
+#'
 #' @param kFixed Value of k if fixed. 
+#'
 #' @return Negative log likelihood of the observations, given the parameters.
-#' @examples
-#' NA
+#'
 #' @export 
 #'
 pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, 
@@ -467,10 +488,12 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
   return(nll_total)
 }
 
-#' Run a set of pkm models based on predictor inputs
+#' @title Run a set of pkm models based on predictor inputs
 #'
-#' Function inputs follow \code{pkm}, with all simpler models being run
-#'   and returned as a list of model objects
+#' @description Run a set of \code{\link{pkm}} models based on all possible 
+#'   models, given the predictor inputs. \code{pkmSet}'s inputs generally
+#'   follow \code{\link{pkm}}, with all simpler models being run for all 
+#'   included distributions and returned as a list of model objects
 #'
 #' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
 #'   (or one that can be coerced to that class): a symbolic description of the
@@ -510,6 +533,10 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #' @return \code{pkmSet} returns a list of objects, each of class 
 #'   "\code{pkm}", which each then a list whose components characterize the 
 #'   fit of the specific model.
+#'
+#' @examples
+#'   data(wind_RP)
+#'   pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, data = wind_RP$SE)
 #'
 #' @export 
 #'
@@ -653,11 +680,13 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 }
 
 
-#' Fit all possible searcher efficiency models across all size classes.
+#' @title Fit all possible searcher efficiency models across all size classes
 #'
-#' Function inputs generally follow \code{pkmSet} and \code{pkm} but with an 
-#'   additional size column input and calculation of the set of pkm models for
-#'   each of the size classes
+#' @description Run a set of \code{\link{pkmSet}} model set runs based on all 
+#'   possible models for a suite of size classes. \code{cpmSetSize}'s inputs
+#'   generally follow \code{\link{pkmSet}} and \code{\link{pkm}} but with an 
+#'   additional size column input and calculation of the set of cpm models for 
+#'   each of the size classes.
 #'
 #' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
 #'   (or one that can be coerced to that class): a symbolic description of the
@@ -703,6 +732,12 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'   within the set of \code{pkm} models fit for the given size class), that
 #'   is of length equal to the total number of size classes
 #'
+#' @examples
+#'   data(wind_RP)
+#'   mod <- pkmSetSize(formula_p = p ~ Season, formula_k = k ~ Season, 
+#'            data = wind_RP$SE, sizeclassCol = "Size"
+#'           )
+#'
 #' @export
 #'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
@@ -742,14 +777,25 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   return(out)
 }
 
-#' Create the  AICc tables for the searcher efficiency models
+#' @title Create the AICc tables for a set of searcher efficiency models
+#' 
+#' @description Generates model comparison tables based on AICc values for
+#'   a set of CP models generated by \code{\link{pkmSet}}
 #' 
 #' @param pkmset Set of searcher efficiency models fit to the same
 #'   observations
+#' 
 #' @param quiet Logical indicating if messages should be printed
+#' 
 #' @return AICc table
+#' 
 #' @examples
-#' NA
+#'   data(wind_RP)
+#'   mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, 
+#'            data = wind_RP$SE
+#'          )
+#'  pkmSetAICcTab(mod)
+#'
 #' @export 
 #'
 pkmSetAICcTab <- function(pkmset, quiet = FALSE){
@@ -798,7 +844,9 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
   return(output)
 }
 
-#' Simulate p and k parameters from a fitted pk model.
+#' @title Simulate parameters from a fitted pk model
+#'
+#' @description Simulate parameters from a \code{\link{pkm}} model object
 #'
 #' @param n the number of simulation draws
 #'
@@ -813,7 +861,10 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
 #'   for cells defined by the \code{model} object. 
 #'
 #' @examples
-#'   NA
+#'   data(wind_RP)
+#'   mod <- pkm(formula_p = p ~ 1, formula_k = k ~ Season, data = wind_RP$SE)
+#'   rpk(n = 10, model = mod)
+#'
 #' @export
 #'
 rpk <- function(n = 1, model, seed = NULL, kFill = NA){
@@ -864,10 +915,13 @@ rpk <- function(n = 1, model, seed = NULL, kFill = NA){
   return(output)
 }
 
-
-#' Suggest a value for k based on a weighted mean of the observed decay
+#' @title Suggest a k
+#'
+#' @description Suggest a value for k based on a weighted mean of the 
+#'   observed decay
 #'
 #' @param obsData a matrix of carcasses (rows) x searched (columns)
+#'
 #' @return the weighted mean of the observed proportional decay in p
 #'
 #' @export
@@ -889,9 +943,12 @@ kSuggest <- function(obsData){
   return(suggestion)
 }
 
-#' Check if all of the pkm models fail
+#' @title Check if pkm models fail
+#' 
+#' @description Run a check on each model within a \code{\link{pkmSet}} object
+#'   to determine if it failed or not
 #'
-#' @param pkmSetToCheck A \code{pkmSet} object to test
+#' @param pkmSetToCheck A \code{\link{pkmSet}} object to test
 #'
 #' @return A vector of logical values indicating if each of the models failed
 #'
@@ -907,9 +964,12 @@ pkmSetFail <- function(pkmSetToCheck){
   return(out)
 }
 
-#' Check if all of the pkm models fail
+#' @title Check if all of the pkm models fail
 #'
-#' @param pkmSetSizeToCheck A \code{pkmSetSize} object to test
+#' @description Run a check on each model within a \code{\link{pkmSetSize}}
+#'   object to determine if they all failed or not
+#'
+#' @param pkmSetSizeToCheck A \code{\link{pkmSetSize}} object to test
 #'
 #' @return A list of vectors of logical values indicating if each of the 
 #'   models failed
@@ -926,11 +986,13 @@ pkmSetSizeFail <- function(pkmSetSizeToCheck){
   return(out)
 }
 
-#' Remove failed pkm models
+#' @title Remove failed pkm models from a \code{\link{pkmSet}} object
 #'
-#' @param pkmSetToTidy A \code{pkmSet} object to tidy
+#' @description Remove all failed models within a \code{\link{pkmSet}} object
 #'
-#' @return A \code{pkmSet} object with failed models removed
+#' @param pkmSetToTidy A \code{\link{pkmSet}} object to tidy
+#'
+#' @return A \code{\link{pkmSet}} object with failed models removed
 #'
 #' @export
 #'
@@ -950,11 +1012,13 @@ pkmSetFailRemove <- function(pkmSetToTidy){
   return(out)
 }
 
-#' Remove failed pkm models
+#' @title Remove failed pkm models from a \code{\link{pkmSetSize}} object
 #'
-#' @param pkmSetSizeToTidy A list of \code{pkmSetSize} objects to tidy
+#' @description Remove failed models from a \code{\link{pkmSetSize}} object
 #'
-#' @return A list of \code{pkmSet} objects with failed models removed
+#' @param pkmSetSizeToTidy A list of \code{\link{pkmSetSize}} objects to tidy
+#'
+#' @return A list of \code{\link{pkmSet}} objects with failed models removed
 #'
 #' @export
 #'
@@ -969,12 +1033,17 @@ pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
   return(out)
 }
 
-#' Calculate searcher efficiency after some searches
+#' @title Calculate decayed searcher efficiency
+#'
+#' @description Calculate searcher efficiency after some searches under 
+#'   pk values
 #'
 #' @param days search days
-#' @param pk pk
+#'
+#' @param pk \code{p} and \code{k} values
+#'
 #' @return searcher efficiency that matches the output of ppersist
-#' @examples NA
+#'
 #' @export 
 #'
 SEsi <- function(days, pk){ 
@@ -1003,14 +1072,17 @@ SEsi <- function(days, pk){
   return(t(pfind.si)) 
 }
 
-
-#' Calculate searcher efficiency after some searches for a single pk 
-#'   combination
+#' @title Calculate decayed searcher efficiency for a single pk
+#'
+#' @description Calculate searcher efficiency after some searches for a single 
+#'   pk combination
 #'
 #' @param days search days
-#' @param pk pk
+#'
+#' @param pk pk combination
+#'
 #' @return searcher efficiency that matches the output of ppersist
-#' @examples NA
+#'
 #' @export 
 #'
 SEsi0 <- function(days, pk){ 

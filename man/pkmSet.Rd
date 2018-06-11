@@ -49,6 +49,13 @@ the assumption that the \code{k} parameter is fixed and known to be
   fit of the specific model.
 }
 \description{
-Function inputs follow \code{pkm}, with all simpler models being run
-  and returned as a list of model objects
+Run a set of \code{\link{pkm}} models based on all possible 
+  models, given the predictor inputs. \code{pkmSet}'s inputs generally
+  follow \code{\link{pkm}}, with all simpler models being run for all 
+  included distributions and returned as a list of model objects
+}
+\examples{
+  data(wind_RP)
+  pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, data = wind_RP$SE)
+
 }

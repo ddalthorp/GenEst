@@ -2,21 +2,19 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{SEsi}
 \alias{SEsi}
-\title{Calculate searcher efficiency after some searches}
+\title{Calculate decayed searcher efficiency}
 \usage{
 SEsi(days, pk)
 }
 \arguments{
 \item{days}{search days}
 
-\item{pk}{pk}
+\item{pk}{\code{p} and \code{k} values}
 }
 \value{
 searcher efficiency that matches the output of ppersist
 }
 \description{
-Calculate searcher efficiency after some searches
-}
-\examples{
-NA
+Calculate searcher efficiency after some searches under 
+  pk values
 }
