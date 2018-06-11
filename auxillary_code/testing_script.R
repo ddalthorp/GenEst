@@ -11,14 +11,11 @@ model_SE <- pkm(formula_p = p ~ 1 ,
              formula_k = k ~ 1,
              data = data_SE
             )
-model_CP <- cpmSet(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
              data = data_CP,
              left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays"
             )
-
-plot(model_CP, "dist: lognormal; l ~ Visibility; s ~ Visibility")
-
 
 
 avgSS <- averageSS(data_SS)
