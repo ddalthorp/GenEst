@@ -47,28 +47,30 @@ NumericMatrix calcRateC(NumericMatrix M, NumericMatrix Aj,
 
 // [[Rcpp::export]]
 NumericMatrix calcTsplitC(NumericMatrix rate, NumericVector days, NumericVector times){
-// rate = array of rates
-// days = master search schedule with all search days
-// times = vector of bin boundaries for temporal split
+  // rate = array of rates
+  // days = master search schedule with all search days
+  // times = vector of bin boundaries for temporal split
   const int nsim = rate.nrow();
   const int ntimes = times.size();
-  int si;
   NumericMatrix splits(ntimes - 1, nsim);
+  int ti, si;
+  double *Ft;
+  Ft = new double[ntimes];
   for (int simi = 0; simi < nsim; simi++){
-    si = 1;
-    for (int ti = 1; ti < ntimes; ti++){
-      if (days[si] <= times[ti]){
-        splits(ti - 1, simi) += rate(simi, si - 1) * (days[si] - times[ti - 1]);
+    for (ti = 1; ti < ntimes; ti++){
+      Ft[ti] = 0;
+      si = 1;
+      while (si < days.size()){
+        if(days[si] <= times[ti]){
+          Ft[ti] = Ft[ti] + (days[si] - days[si - 1]) * rate(simi, si - 1);
+        } else {
+          Ft[ti] = Ft[ti] + (times[ti] - days[si - 1]) * rate(simi, si - 1);
+          break;
+        }
         si++;
       }
-      while (si < days.size() && days[si] <= times[ti]){
-        splits(ti - 1, simi) += rate(simi, si - 1) * (days[si] - days[si - 1]);
-        si++;
-      }
-      splits(ti - 1, simi) +=  rate(simi, si - 1) * (times[ti] - fmax(days[si - 1], times[ti - 1]));
+      splits(ti - 1, simi) = (Ft[ti] - Ft[ti - 1]);
     }
   }
   return(splits);
 }
-
-
