@@ -215,7 +215,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   # class estM
 
   if (!is.null(split_SS) || !is.null(split_time)){
-    if (!(class(data_SS) %in% "SS")) data_SS <- SS(data_SS)
+    if (!("SS" %in% class(data_SS))) data_SS <- SS(data_SS)
   }
   ### declare traffic directing variables (updated after parsing inputs)
   # number of valid split variables:
@@ -368,7 +368,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       }
     } else if (split_h$type %in% c("time", "SS")){
       days <- data_SS$days
-      rate <- calcRate(M, Aj, days = days,searches_carcass = searches_carcass)
+      rate <- calcRate(M, Aj, days = days, searches_carcass = searches_carcass)
       splits <- calcTsplit(rate, data_SS$days, split_h$vals)
     }
   } else if (nvar == 2){ # two split variables: split_h and split_v
@@ -548,4 +548,3 @@ transposeSplits <- function(splits){
   attr(ans, "times") <- attr(splits, "times")
   return(ans)
 }
-
