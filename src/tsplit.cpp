@@ -45,34 +45,6 @@ NumericMatrix calcRateC(NumericMatrix M, NumericMatrix Aj,
   return(rate);
 }
 
-//// [[Rcpp::export]]
-//NumericMatrix calcTsplitC(NumericMatrix rate, NumericVector days, NumericVector times){
-//// rate = array of rates
-//// days = master search schedule with all search days
-//// times = vector of bin boundaries for temporal split
-//  const int nsim = rate.nrow();
-//  const int ntimes = times.size();
-//  int si;
-//  NumericMatrix splits(ntimes - 1, nsim);
-//  for (int simi = 0; simi < nsim; simi++){
-//    si = 1;
-//    for (int ti = 1; ti < ntimes; ti++){
-//      if (days[si] <= times[ti]){
-//        splits(ti - 1, simi) += rate(simi, si - 1) * (days[si] - times[ti - 1]);
-//        si++;
-//      }
-//      while (si < days.size() && days[si] <= times[ti]){
-//        splits(ti - 1, simi) += rate(simi, si - 1) * (days[si] - days[si - 1]);
-//        si++;
-//      }
-//      splits(ti - 1, simi) +=  rate(simi, si - 1) * (times[ti] - fmax(days[si - 1], times[ti - 1]));
-//    }
-//  }
-//  return(splits);
-//}
-
-
-
 // [[Rcpp::export]]
 NumericMatrix calcTsplitC(NumericMatrix rate, NumericVector days, NumericVector times){
   // rate = array of rates
