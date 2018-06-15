@@ -47,7 +47,7 @@ createReactiveValues <- function(){
         dateFoundCol = NULL, sizeclassCol_M = NULL,
         SEmodToUse = NULL, CPmodToUse = NULL, M = NULL,
         models_SE = NULL, models_CP = NULL, DWPCol = NULL, 
-        CL = 0.9, n = 1000, SEmodToUse_g = NULL, CPmodToUse_g = NULL, 
+        CL = 0.9, nsim = 1000, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
         gGeneric = NULL,
         split_CO = NULL, split_SS = NULL,
         nsplit_CO = NULL, nsplit_SS = NULL, Msplit = NULL,

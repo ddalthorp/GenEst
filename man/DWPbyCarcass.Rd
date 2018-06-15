@@ -25,9 +25,9 @@ are recorded. Optional.}
 \item{DWPCol}{Name of column where DWP values are stored (optional). Used
 when there is more than one DWP column in \code{data_DWP} but analysis is
 intended for a single class (i.e., no "size" is specified in data_CO).
-If \code{sizeclassCol} is \code{NULL} and \code{DWPCol} is not provided, 
-there is a check for possible DWPCols. If there is only one column with 
-values in (0, 1], that's DWPCol. If there is not a unique column with 
+If \code{sizeclassCol} is \code{NULL} and \code{DWPCol} is not provided,
+there is a check for possible DWPCols. If there is only one column with
+values in (0, 1], that's DWPCol. If there is not a unique column with
 values in (0, 1], an error is returned.}
 }
 \value{

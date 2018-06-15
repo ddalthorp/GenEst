@@ -94,18 +94,15 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
 
 # data pre-processing
 # create lists of arrays for SS (days) and cells (SE and CP)
-  for (sci in 1:nsizeclass){
-    sc <- sizeclasses[sci]
-    if (is.na(model_SE[[sc]]$cellwiseTable[1, "k_median"])){
-      if (is.null(kFill)){
-        kFill[[sc]] <- kFillPropose(model_SE[[sc]])
-        if (is.na(kFill[[sc]])){
-          stop(
-            "Searcher efficiency model does not include estimate ",
-            "for k and kFill was not specified."
-          )
-        }
-      }
+  for (sc in sizeclasses){
+    if (!("pkm" %in% class(model_SE[[sc]]))){
+      stop("Invalid pk model ")
+    }
+    if (sum(diag(model_SE[[sc]]$varbeta) < 0) > 0){
+      stop("
+        Cannot estimate variance in user-supplied pk model for size '", sc,
+        "' Aborting calculation of ghat."
+      )
     }
   }
   preds_SE <- lapply(model_SE, function(x) x$predictors)
@@ -120,17 +117,16 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   if (!all(unlist(SSpreds) %in% names(SSdat))){
     stop("Model predictor missing from both CO and SS data.")
   }
-  if (!is.null(kFill)) {
-    k <- as.list(kFill)
-    pksim <- mapply(function(x, y) rpk(nsim, x, seed_SE, kFill = y), 
-               model_SE, k
-             )
-  } else {
-    pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
-  }
-  cpsim <- lapply(model_CP, 
-             function(x) rcp(nsim, x, seed_CP, type = "ppersist")
-           )
+ # if (!is.null(kFill)) {
+#    k <- as.list(kFill)
+#    pksim <- mapply(function(x, y) rpk(nsim, x, seed_SE, kFill = y),
+#               model_SE, k
+#             )
+#  } else {
+#    pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
+#  }
+  pksim <- lapply(model_SE, rpk, n = nsim, kFill = kFill, seed = seed_SE)
+  cpsim <- lapply(model_CP, rcp, n = nsim, seed = seed_CP, type = "ppersist")
 
   X <- dim(COdat)[1]
   days <- list()
@@ -449,15 +445,16 @@ kFillPropose <- function(model){
 #'
 #' @param days Search schedule data as a vector of days searched
 #'
-#' @param model_SE Searcher Efficiency model
+#' @param model_SE Searcher Efficiency model (\code{pkm} object)
 #'
-#' @param model_CP Carcass Persistence model
+#' @param model_CP Carcass Persistence model (\code{cpm} object)
 #'
 #' @param seed_SE seed for random draws of the SE model
 #'
 #' @param seed_CP seed for random draws of the CP model
 #'
-#' @param kFill value to fill in for missing k when not existing in the model
+#' @param kFill value to use for k if \code{model_SE} does not include an
+#'  estimated k.
 #'
 #' @return \code{gGeneric} object that is a list of [1] a list of g estimates,
 #'    with one element in the list corresponding to each of the cells from the 
@@ -474,7 +471,7 @@ kFillPropose <- function(model){
 #'                 right = "FirstAbsentDecimalDays"
 #'               )
 #'   avgSS <- averageSS(mock$SS)
-#'   ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+#'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
 #'                     seed_SE = 1, seed_CP = 1, kFill = NULL
 #'                   )
 #'
@@ -482,29 +479,22 @@ kFillPropose <- function(model){
 #'
 estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
-  if (!is.vector(days)){
-    msg <- paste0(" 'days' must be a numeric vector")
-    stop(msg)
-  }
 
-  if (is.na(model_SE$cellwiseTable[1, "k_median"])){
-    if (is.null(kFill)){
-      kFill <- kFillPropose(model_SE)
-      if (is.na(kFill)){
-        msg <- paste("Searcher efficiency model does not include estimate ",
-                 "for k and kFill was not specified.", sep = "")
-        stop(msg)
-      }
-    }
-  }
+  if (!is.vector(days) || !is.numeric(days))
+    stop(" 'days' must be a numeric vector")
+  if (!("pkm" %in% class(model_SE))) stop("Invalid pk model")
+  vbhat <- diag(model_SE$varbeta)
+  if (anyNA(vbhat) || sum(vbhat < 0) > 0)
+    stop("Cannot estimate variance for model_SE. Aborting estimation.")
   preds_SE <- model_SE$predictors
   preds_CP <- model_CP$predictors
   data_SE <- model_SE$data
   data_CP <- model_CP$data
   preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
 
-  sim_SE <- rpk(nsim, model_SE, seed_SE, kFill)
-  sim_CP <- rcp(nsim, model_CP, seed_CP, type = "ppersist")
+  sim_SE <- rpk(n = nsim, model = model_SE, seed = seed_SE, kFill = kFill)
+  sim_CP <- rcp(n = nsim, model = model_CP, seed = seed_CP,
+    type = "ppersist")
   dist <- tolower(model_CP$dist)
 
   ncell <- nrow(preds)
@@ -553,12 +543,10 @@ calcg <- function(days, param_SE, param_CP, dist){
   n <- nrow(param_SE)
   if (dist == "exponential"){
     pdb <- param_CP[ , "pdb"]
-
     pda <- 1/pdb
     pdb0 <- exp(mean(log(pdb)))
     pda0 <- 1/pdb0
   } else {
-
     pda <- param_CP[ , "pda"]
     pdb <- param_CP[ , "pdb"]
     pdb0 <- exp(mean(log(pdb)))
@@ -569,7 +557,6 @@ calcg <- function(days, param_SE, param_CP, dist){
   k0 <- mean(pk[, 2])
 
  ###1. setting estimation control parameters
-
   ind1 <- rep(1:nsearch, times = nsearch:1)
   ind2 <- ind1 + 1
   ind3 <- unlist(lapply(1:nsearch, function(x) x:nsearch)) + 1
@@ -590,40 +577,21 @@ calcg <- function(days, param_SE, param_CP, dist){
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
   ppersu <- ppersist(dist, t_arrive0 = 0, t_arrive1 = intxsearch[,1],
-              t_search = intxsearch[,1] + intxsearch[,2],
-               pda = pda0, pdb = pdb0
-            )
+    t_search = intxsearch[,1] + intxsearch[,2], pda = pda0, pdb = pdb0)
   arrvec <- (schedule[,2] - schedule[,1]) / max(days)
   prob_obs <- numeric(dim(schedule)[1])
   for (i in 1:length(prob_obs)){
-    match <- which(
+    ind <- which(
                abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
                abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001
              )
-    prob_obs[i] <- pfind.si[nmiss[i] + 1] * ppersu[match, ] * arrvec[i]
-  }
-  ggnm <- numeric(maxmiss + 1)
-  for (missi in 0:maxmiss){
-    ggnm[missi + 1] <- sum(prob_obs[nmiss == missi])
-  } 
-
-  # if more than 10 searches, truncate search schedule 
-  # Correct bias by multiplying the final g's by gadj = sum(ggnm)/ggnm[iskip]
-
-  if (nsearch > 10){
-    iskip <- min(which(cumsum(ggnm)/sum(ggnm) > 0.99)) + 1
-
-    gadj <- sum(ggnm)/sum(ggnm[1:iskip])
-  } else {
-    iskip <- maxmiss
-    gadj <- 1
+    prob_obs[i] <- pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
   }
 
  ###2. estimation of g
  # assumes uniform arrivals
-
-  schedule <- schedule[ind2 >= ind3 - iskip + 1, ]
-  schedule.index <- cbind(ind1, ind2, ind3)[ind2 >= ind3 - iskip + 1,]
+  schedule <- schedule[ind2 >= ind3 - maxmiss + 1, ]
+  schedule.index <- cbind(ind1, ind2, ind3)[ind2 >= ind3 - maxmiss + 1,]
   nmiss <- schedule.index[ , 3] - schedule.index[ , 2]
   maxmiss <- max(nmiss)
 
@@ -636,11 +604,8 @@ calcg <- function(days, param_SE, param_CP, dist){
     powk[ , 1] <- 1
     powk <- rowCumprods(powk)
     val <- 1 - (pk[ , 1] * powk[ , 1:maxmiss])
-    if (is.null(dim(val))){
-      val <- matrix(val, nrow = 1)
-    }
-    pfind.si <- pk[ , 1] * powk * 
-                cbind(rep(1, n), rowCumprods(val))
+    if (is.null(dim(val))) val <- matrix(val, nrow = 1)
+    pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), rowCumprods(val))
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
@@ -648,29 +613,24 @@ calcg <- function(days, param_SE, param_CP, dist){
               t_search = intxsearch[ , 1] + intxsearch[ , 2],
               pda = param_CP[ , 1], pdb = param_CP[ , 2]
             )
-
   arrvec <- (schedule[ , 2] - schedule[ , 1]) / max(days)
-
   prob_obs <- numeric(n)
-
   if (maxmiss > 0){
     for (i in 1:dim(schedule)[1]){
-      match <- which(
+      ind <- which(
                abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
                abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
       prob_obs <- prob_obs +
-                  pfind.si[ , nmiss[i] + 1] * ppersu[match, ] * arrvec[i]
+                  pfind.si[ , nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
     }
   } else {
     for (i in 1:dim(schedule)[1]){
-      match <- which(
+      ind <- which(
                abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
                abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
-      prob_obs <- prob_obs +
-                  pfind.si[nmiss[i] + 1] * ppersu[match, ] * arrvec[i]
+      prob_obs <- prob_obs + pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
     }
   }
-
   return(prob_obs)
 }
 
@@ -698,7 +658,14 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @param modelSetSize_CP Carcass Persistence model set for multiple sizes
 #'
-#' @param modelSizeSelections_SE vector of SE models to use, one for each size
+#' @param modelSizeSelections_SE vector of SE models to use, one for each size.
+#'  Size names are required, and names must match those of modelSetSize_SE.
+#'  E.g., \code{c(lrg = "p ~ Visibility; k ~ 1", sml = "p ~ 1; k ~ 1")}.
+#'  Model formulas are read as text and must have exact matches among models
+#'  listed in modelSetSize_SE. For example, if one of the
+#'  \code{modelSizeSelections_SE} elements is
+#'  \code{lrg = "p ~ Visibility; k ~ 1"}, then \code{"p ~ Visibility; k ~ 1"}
+#'  must be in \code{names(modelSizeSelections_SE)[["lrg"]]}.
 #'
 #' @param modelSizeSelections_CP vector of CP models to use, one for each size
 #'
@@ -706,7 +673,12 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @param seed_CP seed for random draws of the CP model
 #'
-#' @param kFill values to fill in for missing k when not existing in the model
+#' @param kFill values to fill in for missing k when the selected SE model does
+#'  not include an estimated k. If all of the selected models include estimated
+#'  k's, set \code{kFill = NULL}. Models that do not include estimated k's
+#'  require named kFill values in a vector with names matching the names of
+#'  size classes, e.g., \code{kFill = c(lrg = 0.7, sml = 0.4)}, or, if only one
+#'  model requires a \code{kFill} value, \code{kFill = c(lrg = 0.7)}.
 #'
 #' @return list of g estimates, with one element in the list corresponding
 #'   to each of the cells from the cross-model combination
@@ -747,29 +719,51 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
                             modelSetSize_CP, modelSizeSelections_SE, 
                             modelSizeSelections_CP, seed_SE = NULL, 
                             seed_CP = NULL, kFill = NULL){
-
+  if (!("pkmSetSize" %in% class(modelSetSize_SE))){
+    stop("modelSetSize_SE must be a pkmSetSize object")
+  }
+  if (!("cpmSetSize" %in% class(modelSetSize_CP))){
+    stop("modelSetSize_CP must be a cpmSetSize object")
+  }
   sizeclasses_SE <- names(modelSetSize_SE)
   sizeclasses_CP <- names(modelSetSize_CP)
-  if (!all(sizeclasses_SE %in% sizeclasses_CP) | 
+  if (!all(sizeclasses_SE %in% sizeclasses_CP) ||
       !all(sizeclasses_CP %in% sizeclasses_SE)){
     stop("Size classes don't match between SE and CP model sets")
   }
   sizeclasses <- unique(c(sizeclasses_SE, sizeclasses_CP))
   nsizeclass <- length(sizeclasses)
-  ghats <- vector("list", length = nsizeclass)
+  # check whether kFill is necessary: if so, error; if not, warning.
+  kfill0 <- rep(NA, nsizeclass)
+  names(kfill0) <- sizeclasses
   for (sci in 1:nsizeclass){
     sc <- sizeclasses[sci]
-    model_SEsci <- modelSizeSelections_SE[[sc]]
-    model_SE <- modelSetSize_SE[[sc]][[model_SEsci]]
-    model_CPsci <- modelSizeSelections_CP[[sc]]
-    model_CP <- modelSetSize_CP[[sc]][[model_CPsci]]
-    ghats[[sci]] <- estgGeneric(nsim, days, model_SE, model_CP,
-                      seed_SE, seed_CP, kFill[sc]
-                    )
+    if (modelSetSize_SE[[sc]][[modelSizeSelections_SE[sc]]]$pOnly){
+      if (! (sc %in% names(kFill))){
+        stop("kFill required for SE model for size = ", sc)
+      } else {
+        if (!is.numeric(kFill[sc])) {
+          stop("kFill for SE model for size = ", sc, " must be numeric")
+        }
+        if (kFill[sc] < 0 || kFill[sc] > 1){
+          stop("kFill for SE model for size = ", sc, " must be in [0, 1]")
+        }
+      }
+      kfill0[sc] <- kFill[sc]
+    }
   }
-  names(ghats) <- sizeclasses
-  class(ghats) <- c("gGenericSize", "list")
+  ghats <- list()
+  for (sci in sizeclasses){
+    model_SEsci <- modelSizeSelections_SE[[sci]]
+    model_SE <- modelSetSize_SE[[sci]][[model_SEsci]]
+    model_CPsci <- modelSizeSelections_CP[[sci]]
+    model_CP <- modelSetSize_CP[[sci]][[model_CPsci]]
+    ghats[[sci]] <- estgGeneric(nsim = nsim, days = days,
+      model_SE = model_SE, model_CP = model_CP,
+      seed_SE = seed_SE, seed_CP = seed_CP, kFill[sci]) ###
+  }
 
+  class(ghats) <- c("gGenericSize", "list")
   return(ghats)
 }
 
@@ -801,7 +795,6 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
 #' @export
 #'
 averageSS <- function(data_SS, datesSearchedCol = NULL){
-
   SSdat <- SS(data_SS, datesSearchedCol = datesSearchedCol)
   schedules <- t(SSdat$searches_unit) * SSdat$days
   nintervals <- length(SSdat$days) - colCounts(schedules, value = 0)
@@ -834,7 +827,7 @@ averageSS <- function(data_SS, datesSearchedCol = NULL){
 #'                 right = "FirstAbsentDecimalDays"
 #'               )
 #'   avgSS <- averageSS(mock$SS)
-#'   ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+#'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
 #'                     seed_SE = 1, seed_CP = 1, kFill = NULL
 #'                   )
 #'   summary(ghatsGeneric)
@@ -847,7 +840,7 @@ summary.gGeneric <- function(object, ..., CL = 0.95){
   preds <- object$predictors
   cells <- names(ghats)
   ncell <- length(cells)
-  predsByCell <- strsplit(cells, "\\.")
+  predsByCell <- strsplit(cells, "\\.") # requires pred levels to not have "."
   npred <- length(predsByCell[[1]])
 
   predsTab <- preds[ , -grep("CellNames", colnames(preds))]
@@ -858,7 +851,6 @@ summary.gGeneric <- function(object, ..., CL = 0.95){
   }
 
   colnames(predsTab) <- predNames
-
   gTab <- matrix(NA, ncell, 2)
   for (celli in 1:ncell){
     gspec <- ghats[[celli]]
@@ -871,13 +863,10 @@ summary.gGeneric <- function(object, ..., CL = 0.95){
   }
   out <- data.frame(predsTab, gTab)
 
-  DPheader <- paste0("Detection Probability (Median [", 
-                (1 - CL) / 2 * 100, "% - ", 
-                (1 - (1 - CL) / 2) * 100, "%])"
-              )
+  DPheader <- paste0("Detection Probability (Median [",
+    (1 - CL) / 2 * 100, "% - ", (1 - (1 - CL) / 2) * 100, "%])")
   colnames(out)[npred + (1:2)] <- c("Cell", DPheader)
   return(out)
-
 }
 
 #' @title Summarize the gGenericSize list to a list of simple tables

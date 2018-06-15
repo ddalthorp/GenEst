@@ -4,17 +4,17 @@
 \alias{plot.pkmSet}
 \title{Plot results of a set of SE models}
 \usage{
-\method{plot}{pkmSet}(x, specificModel = NULL, n = 1000, seed_spec = 1,
+\method{plot}{pkmSet}(x, specificModel = NULL, nsim = 1000, seed_spec = 1,
   seed_full = 1, col_spec = "black", col_full = "grey",
   sizeclassName = NULL, ...)
 }
 \arguments{
 \item{x}{pk model set of class pkmSet}
 
-\item{specificModel}{the name(s) or index number(s) of specific model(s) to 
+\item{specificModel}{the name(s) or index number(s) of specific model(s) to
 restrict the plot}
 
-\item{n}{number of draws to use to characterize the distributions}
+\item{nsim}{number of draws to use to characterize the distributions}
 
 \item{seed_spec}{random number seed to use for the specific model}
 
@@ -38,7 +38,7 @@ Produce a set of figures for a set of SE models, as fit by
 }
 \examples{
   data(wind_RP)
-  mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, 
+  mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season,
            data = wind_RP$SE
          )
   plot(mod)
