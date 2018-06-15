@@ -53,7 +53,10 @@ plot.pkm <- function(x, nsim = 1000, seed = NULL, col = "black", ...){
   text_model <- paste("Model: ", modelName, sep = "")
   text(x = 0.58, y = 0.3, text_label, adj = 0, cex = 0.75)
   text(x = 0.58, y = 0.7, text_model, adj = 0, cex = 0.75)
-
+  
+  if (is.null(seed) || is.na(as.numeric(seed[1])){
+    seed <- sample(10000, 1)
+  }
   par(mar = c(2,4,2,1))
   par(fig = c(0, 0.5, 0.725, 0.975), new = TRUE)
   pkmParamPlot(model = model, pk = "p", nsim = nsim, seed = seed, col = col)
@@ -140,7 +143,7 @@ plot.pkm <- function(x, nsim = 1000, seed = NULL, col = "black", ...){
 #' @export
 #'
 plot.pkmSet <- function(x, specificModel = NULL, nsim = 1000,
-                        seed_spec = 1, seed_full = 1, col_spec = "black",
+                        seed_spec = NULL, seed_full = NULL, col_spec = "black",
                         col_full = "grey", sizeclassName = NULL, ...){
 
   modelSet <- x
@@ -210,6 +213,12 @@ plot.pkmSet <- function(x, specificModel = NULL, nsim = 1000,
     if (!is.null(sizeclassName)){
       text_sc <- paste("Size class: ", sizeclassName, sep = "")
       text(x = 0.01, y = 0.8, text_sc, adj = 0, cex = 1, font = 1)
+    }
+    if (is.null(seed_spec) || is.na(seed_spec[1])){
+      seed_spec <- sample(10000, 1)
+    }
+    if (is.null(seed_full) || is.na(seed_full[1])){
+      seed_full <- sample(10000, 1)
     }
 
     par(fig = c(0, 0.45, 0.7, 0.965), new = TRUE)
