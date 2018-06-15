@@ -4,7 +4,7 @@
 \alias{rpk}
 \title{Simulate parameters from a fitted pk model}
 \usage{
-rpk(n = 1, model, seed = NULL, kFill = NA)
+rpk(n = 1, model, kFill = NULL, seed = NULL)
 }
 \arguments{
 \item{n}{the number of simulation draws}
@@ -12,9 +12,9 @@ rpk(n = 1, model, seed = NULL, kFill = NA)
 \item{model}{A \code{\link{pkm}} object (which is returned from 
 \code{pkm()})}
 
-\item{seed}{optional input to set the seed of the RNG}
-
 \item{kFill}{what value to fill k with if k was not estimated}
+
+\item{seed}{optional input to set the seed of the RNG}
 }
 \value{
 list of two matrices of \code{n} simulated \code{p} and \code{k} 
