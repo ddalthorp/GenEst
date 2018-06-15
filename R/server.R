@@ -14,70 +14,11 @@
 #'
 server <- function(input, output, session){
 
-vnumber <- packageDescription("GenEst", fields = "Version")
-vdate <- packageDescription("GenEst", fields = "Date")
-vtext <- paste("This is version ", vnumber, " (", vdate, ")", sep = "")
-output$versionInfo <- renderText(vtext)
+modalWelcome()
+rv <- createReactiveValues()
+output$versionInfo <- renderText(createvtext())
+output$SStext <- renderText(rv$SStext)
 
-disclaimer <- paste("GenEst v", vnumber, " (", vdate, ")", sep = "")
-showModal(modalDialog(title = disclaimer, 
-  "This software is preliminary or provisional and is subject to revision. 
-  It is being provided to meet the need for timely best science. The 
-  software has not received final approval by the U.S. Geological Survey 
-  (USGS). No warranty, expressed or implied, is made by the USGS or the U.S.
-  Government as to the functionality of the software and related material 
-  nor shall the fact of release constitute any such warranty. The software 
-  is provided on the condition that neither the USGS nor the U.S. 
-  Government shall be held liable for any damages resulting from the 
-  authorized or unauthorized use of the software.",  
-  easyClose = FALSE, footer = modalButton("OK"))
-)
-
-rv <- reactiveValues(
-
-        data_SE = NULL, colNames_SE = NULL, colNames_SE_sel = NULL, 
-        colNames_SE_nosel = NULL, obsCols_SE = NULL, 
-        preds_SE = NULL, kFixedChoice = 0, kFixed = NULL,  
-        predictors_SE = NULL, formula_p = NULL, formula_k = NULL, 
-        mods_SE = NULL, modNames_SE = NULL, modNames_SEp = NULL, 
-        modNames_SEk = NULL, modTab_SE = NULL, AICcTab_SE = NULL,
-        modOrder_SE = NULL, modSet_SE = NULL, best_SE = NULL, 
-        figH_SE = 800, figW_SE = 800,  
-        sizeclasses_SE = NULL, tabfig_SEpk = NULL,
-
-        data_CP = NULL, colNames_CP = NULL, colNames_CP_sel = NULL, 
-        colNames_CP_nosel = NULL, ltp = NULL, fta = NULL, 
-        preds_CP = NULL, dists = NULL, mods_CP = NULL, predictors_CP = NULL,
-        formula_l = NULL, formula_s = NULL, sizeclasses_CP = NULL, 
-        AICcTab_CP = NULL,  modOrder_CP = NULL, modNames_CP = NULL, 
-        modNames_CPdist = NULL, modNames_CPl = NULL, modNames_CPs = NULL, 
-        modSet_CP = NULL, best_CP = NULL, modTab_CP = NULL, 
-        figH_CP = 700, figW_CP = 800, sizeclasses_CP = NULL,  
-        CPdls = NULL, tabfig_CPdlsfig = NULL, tabfig_CPdlstab = NULL, 
-
-        data_SS = NULL, colNames_SS = NULL, 
-
-        SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "), 
-        SStemp = NULL, avgSI = NULL, 
-        gSearchInterval = NULL, gSearchMax = NULL, 
-
-        data_DWP = NULL, colNames_DWP = NULL,
-        data_CO = NULL, colNames_CO = NULL, colNames_COdates = NULL, 
-
-        sizeclassCol = NULL, sizeclasses = NULL, sizeclass = NULL,
-        colNames_all = NULL, nsizeclasses = NULL,
-
-        kFill = NULL, kFill_g = NULL,  
-        dateFoundCol = NULL, sizeclassCol_M = NULL,
-        SEmodToUse = NULL, CPmodToUse = NULL, M = NULL,
-        models_SE = NULL, models_CP = NULL, DWPCol = NULL, 
-        CL = 0.9, n = 1000, SEmodToUse_g = NULL, CPmodToUse_g = NULL, 
-        gGeneric = NULL,
-        split_CO = NULL, split_SS = NULL,
-        nsplit_CO = NULL, nsplit_SS = NULL, Msplit = NULL,
-        figH_M = 800
- 
-      )
 
 msg_RunModSE <- NULL
 msg_NobsSE <- NULL
@@ -94,14 +35,10 @@ msg_ModFailg <- NULL
 msg_splitFail <- NULL
 
 
-output$SStext <- renderText(rv$SStext)
-
 observeEvent(input$file_SE, {
   rv$data_SE <- read.csv(input$file_SE$datapath, stringsAsFactors = FALSE)
   rv$colNames_SE <- colnames(rv$data_SE)
-  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
-                       rv$colNames_CO
-                     )
+  rv$colNames_all <- updateColNames_all(rv)
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
   output$data_SE <- renderDataTable(datatable(rv$data_SE))
   updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
@@ -116,9 +53,7 @@ observeEvent(input$file_SE, {
 observeEvent(input$file_CP, {
   rv$data_CP <- read.csv(input$file_CP$datapath, stringsAsFactors = FALSE)
   rv$colNames_CP <- colnames(rv$data_CP)
-  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
-                       rv$colNames_CO
-                     )
+  rv$colNames_all <- updateColNames_all(rv)
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
   output$data_CP <- renderDataTable(datatable(rv$data_CP))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
@@ -148,9 +83,7 @@ observeEvent(input$file_CO, {
   rv$data_CO <- read.csv(input$file_CO$datapath, stringsAsFactors = FALSE)
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
-  rv$colNames_all <- updateColNames_all(rv$colNames_SE, rv$colNames_CP,
-                       rv$colNames_CO
-                     )
+  rv$colNames_all <- updateColNames_all(rv)
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
@@ -213,7 +146,7 @@ observeEvent(input$runMod_SE, {
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$kFixed <- setkFix(input$kFixedChoice, input$kFixed)
-  rv$n <- input$n
+  rv$nsim <- input$nsim
   rv$CL <- input$CL
   rv$sizeclassCol <- input$sizeclassCol
   rv$kFixedChoice <- input$kFixedChoice
@@ -259,6 +192,9 @@ observeEvent(input$runMod_SE, {
     rv$figH_SE <- setFigH(rv$modSet_SE, 800)
     rv$figW_SE <- setFigW(rv$modSet_SE)
 
+    output$SEModDone <- renderText("OK")
+    outputOptions(output, "SEModDone", suspendWhenHidden = FALSE)
+
     output$kFillNeed <- setkFillNeed(rv$obsCols_SE)
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
     output$modTab_SE <- renderDataTable({rv$modTab_SE})
@@ -292,6 +228,7 @@ observeEvent(input$runMod_SE, {
     outputOptions(output, "DWPNeed", suspendWhenHidden = FALSE)
     output$sizeclass_SE1 <-  renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_SE2 <-  renderText(paste0("Size class: ", rv$sizeclass))
+
   }
 })
 
@@ -356,6 +293,35 @@ observeEvent(input$tabfig_sizeclassSE, {
     output$AICcTab_SE <- renderDataTable(datatable(rv$AICcTab_SE))
     output$sizeclass_SE1 <- renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
+
+    output$downloadSEest <- downloadHandler(
+                              filename = "SE_estimates.csv",
+                              content = function(file){
+                                          write.csv(rv$modTab_SE, file, 
+                                          row.names = FALSE)
+                                        }
+                            )
+    output$downloadSEAICc <- downloadHandler(
+                               filename = "SE_AICc.csv",
+                               content = function(file){
+                                           write.csv(rv$AICcTab_SE, file, 
+                                           row.names = FALSE)
+                                         }
+                             )
+    output$downloadSEfig <- downloadHandler(
+                              filename = "SE_fig.png",
+                              content = function(file){
+                                          png(file, width = rv$figW_SE,
+                                            height = rv$figH_SE, units = "px"
+                                          )
+                                          plot(rv$modSet_SE, 
+                                            specificModel = rv$tabfig_SEpk,
+                                            sizeclassName = rv$sizeclass
+                                          )
+                                          dev.off()
+                                        }
+                            )
+
   }
 })
 
@@ -414,7 +380,7 @@ observeEvent(input$runMod_CP, {
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
   rv$dists <- input$dists  
-  rv$n <- input$n
+  rv$nsim <- input$nsim
   rv$CL <- input$CL
   rv$sizeclassCol <- input$sizeclassCol
   rv$predictors_CP <- prepPredictors(rv$preds_CP)
@@ -447,8 +413,8 @@ observeEvent(input$runMod_CP, {
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$tabfig_sizeclassCP)
     rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass]], TRUE)
     rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "", 
-                                       rv$AICcTab_CP[ , "Scale Formula"]
-                                     )
+                                           rv$AICcTab_CP[ , "Scale Formula"]
+                                         )
     rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
     rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass]])[rv$modOrder_CP]
     rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)
@@ -461,6 +427,9 @@ observeEvent(input$runMod_CP, {
 
     rv$figH_CP <- setFigH(rv$modSet_CP, 700, "CP")
     rv$figW_CP <- setFigW(rv$modSet_CP)
+
+    output$CPModDone <- renderText("OK")
+    outputOptions(output, "CPModDone", suspendWhenHidden = FALSE)
 
     output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})    
     output$modTab_CP <- renderDataTable({rv$modTab_CP})
@@ -582,6 +551,34 @@ observeEvent(input$tabfig_sizeclassCP, {
     output$AICcTab_CP <- renderDataTable(datatable(rv$AICcTab_CP))
     output$sizeclass_CP1 <-  renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
+
+    output$downloadCPest <- downloadHandler(
+                              filename = "CP_estimates.csv",
+                              content = function(file){
+                                          write.csv(rv$modTab_CP, file, 
+                                          row.names = FALSE)
+                                        }
+                            )
+    output$downloadCPAICc <- downloadHandler(
+                               filename = "CP_AICc.csv",
+                               content = function(file){
+                                           write.csv(rv$AICcTab_CP, file, 
+                                           row.names = FALSE)
+                                         }
+                             )
+    output$downloadCPfig <- downloadHandler(
+                              filename = "CP_fig.png",
+                              content = function(file){
+                                          png(file, width = rv$figW_CP,
+                                            height = rv$figH_CP, units = "px"
+                                          )
+                                          plot(rv$modSet_CP, 
+                                           specificModel = rv$tabfig_CPdlsfig,
+                                           sizeclassName = rv$sizeclass
+                                          )
+                                          dev.off()
+                                        }
+                            )
   }
 })
 
@@ -603,7 +600,7 @@ observeEvent(input$runMod_M, {
   }
 
   rv$dateFoundCol <- input$dateFoundCol
-  rv$n <- input$n
+  rv$nsim <- input$nsim
   rv$frac <- input$frac
   rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
   rv$CPmodToUse <- rep(NA, rv$nsizeclasses)
@@ -637,7 +634,7 @@ observeEvent(input$runMod_M, {
               frac = rv$frac, model_SE = rv$models_SE, 
               model_CP = rv$models_CP, kFill = rv$kFill, 
               dateFoundCol = rv$dateFoundCol, DWPCol = rv$DWPCol,
-              sizeclassCol = rv$sizeclassCol_M, nsim = rv$n, max_intervals = 8
+              sizeclassCol = rv$sizeclassCol_M, nsim = rv$nsim, max_intervals = 8
             ), error = function(x){NULL}, warning = function(x){NULL}
           )
 
@@ -654,21 +651,42 @@ observeEvent(input$runMod_M, {
                    ), error = function(x){NULL}, warning = function(x){NULL}
                  )
 
+    output$MModDone <- renderText("OK")
+    outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
-    output$fig_M <- renderPlot(plot(rv$M))
+    output$fig_M <- renderPlot({plot(rv$M)},
+                      height = rv$figH_M, width = rv$figW_M
+                    )
     output$table_M <- renderDataTable(
                         datatable(prettySplitTab(summary(rv$Msplit)))
                       )
 
+    output$downloadMtab <- downloadHandler(
+                             filename = "M_table.csv",
+                             content = function(file){
+                                         write.csv(
+                                           prettySplitTab(summary(rv$Msplit)), 
+                                           file, 
+                                           row.names = FALSE
+                                         )
+                                       }
+                           )
+    output$downloadMfig <- downloadHandler(
+                             filename = "M_fig.png",
+                             content = function(file){
+                                         png(file, width = rv$figW_M, 
+                                           height = rv$figH_M, units = "px"
+                                         )
+                                         plot(rv$M)
+                                         dev.off()
+                                       }
+                           )
 
-    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)
-    
+    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)  
     rv$colNames_SS_sel <- colnames(rv$data_SS) %in% rv$data_CO[ , rv$unitCol]
     rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]
     updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
-
     updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
-
   }
 })
 
@@ -693,12 +711,25 @@ observeEvent(input$splitM, {
                )
 
   if (is.null(rv$Msplit)){
+
     msg_splitFail <<- msgsplitFail("run")
-    output$fig_M <- renderPlot(plot(rv$M))
+    output$fig_M <- renderPlot({plot(rv$M)},
+                      height = rv$figH_M, width = rv$figW_M
+                    )
+    output$downloadMfig <- downloadHandler(
+                             filename = "M_fig.png",
+                             content = function(file){
+                                         png(file, width = rv$figW_M, 
+                                           height = rv$figH_M, units = "px"
+                                         )
+                                         plot(rv$M)
+                                         dev.off()
+                                       }
+                           )
   } else{
-    rv$figH_M <- 800
+    rv$figH_M <- 600
     if (length(attr(rv$Msplit, "vars")) > 1){
-      rv$figH_M <- max(800, 300 * length(rv$Msplit))
+      rv$figH_M <- max(600, 300 * length(rv$Msplit))
     }
     output$fig_M <-  renderPlot({
                        tryCatch(plot(rv$Msplit), 
@@ -708,12 +739,36 @@ observeEvent(input$splitM, {
                      }, height = rv$figH_M)
 
     if (is.null(rv$split_CO) & is.null(rv$split_SS)){
-      output$fig_M <- renderPlot(plot(rv$M))
+
+      output$fig_M <- renderPlot({plot(rv$M)},
+                        height = rv$figH_M, width = rv$figW_M
+                      )
     }
 
     output$table_M <- renderDataTable(
                         datatable(prettySplitTab(summary(rv$Msplit)))
                       )
+
+    output$downloadMtab <- downloadHandler(
+                             filename = "M_table.csv",
+                             content = function(file){
+                                         write.csv(
+                                           prettySplitTab(summary(rv$Msplit)), 
+                                           file, 
+                                           row.names = FALSE
+                                         )
+                                       }
+                           )
+    output$downloadMfig <- downloadHandler(
+                             filename = "M_fig.png",
+                             content = function(file){
+                                         png(file, width = rv$figW_M, 
+                                           height = rv$figH_M, units = "px"
+                                         )
+                                         plot(rv$Msplit) 
+                                         dev.off()
+                                       }
+                           )
   }
 
 })
@@ -765,7 +820,7 @@ observeEvent(input$runMod_g, {
     }
   }
 
-  rv$n <- input$n
+  rv$nsim <- input$nsim
   rv$gGeneric <- vector("list", length = rv$nsizeclasses_g)
   for (sci in 1:rv$nsizeclasses_g){
 
@@ -777,7 +832,7 @@ observeEvent(input$runMod_g, {
     rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
 
     rv$gGeneric[[sci]] <- tryCatch(estgGeneric(
-      nsim = rv$n, days = rv$SS,
+      nsim = rv$nsim, days = rv$SS,
       model_SE = rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
       model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
       kFill = rv$kFill
@@ -804,6 +859,9 @@ observeEvent(input$runMod_g, {
     )
     updateTabsetPanel(session, "analyses_g", "Summary")
 
+    output$gModDone <- renderText("OK")
+    outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+
   } else{
     msg_ModFailg <<- msgModFail(rv$gGeneric)
   }
@@ -827,6 +885,29 @@ observeEvent(input$tabfig_sizeclassg, {
                            warning = function(x){plot(1,1)}
                       )
                     )
+    output$downloadgtab <- downloadHandler(
+                             filename = "g_table.csv",
+                             content = function(file){
+                                        write.csv(
+                                        summary(rv$gGeneric[[rv$sizeclass_g]],
+                                        CL = rv$CL
+                                        ), file, 
+                                        row.names = FALSE)
+                                       }
+                           )
+    output$downloadgfig <- downloadHandler(
+                             filename = "g_fig.png",
+                             content = function(file){
+                                         png(file, width = rv$figW_g, 
+                                           height = rv$figH_g, units = "px"
+                                         )
+                                         plot(rv$gGeneric[[rv$sizeclass_g]],
+                                           sizeclassName = rv$sizeclass_g,
+                                           CL = rv$CL
+                                         )
+                                         dev.off()
+                                       }
+                           )
   }
 })
 
