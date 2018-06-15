@@ -1083,7 +1083,8 @@ pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
 #'
 fullMod <- function(modelSet){
   llvec <- sapply(modelSet, "[[", "loglik")
-  return(modelSet[[which(llvec == max(llvec))]])
+  out <- modelSet[[which(llvec == max(llvec))]]
+  return(out)
 }
 #' @title Calculate decayed searcher efficiency
 #'
