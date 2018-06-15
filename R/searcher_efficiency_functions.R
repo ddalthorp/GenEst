@@ -910,7 +910,7 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   varbeta <- model$varbeta
   method <-  "svd"
 
-  if (!is.null(seed) && !is.na(as.numeric(seed))){
+  if (length(seed) > 0 && !is.na(as.numeric(seed[1]))){
     set.seed(as.numeric(seed))
   }
   sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
