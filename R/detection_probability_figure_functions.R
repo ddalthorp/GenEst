@@ -23,7 +23,7 @@
 #'                 right = "FirstAbsentDecimalDays"
 #'               )
 #'   avgSS <- averageSS(mock$SS)
-#'   ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+#'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
 #'                     seed_SE = 1, seed_CP = 1, kFill = NULL
 #'                   )
 #'   plot(ghatsGeneric)

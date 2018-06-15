@@ -146,7 +146,7 @@ observeEvent(input$runMod_SE, {
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$kFixed <- setkFix(input$kFixedChoice, input$kFixed)
-  rv$n <- input$n
+  rv$nsim <- input$nsim
   rv$CL <- input$CL
   rv$sizeclassCol <- input$sizeclassCol
   rv$kFixedChoice <- input$kFixedChoice
@@ -380,7 +380,7 @@ observeEvent(input$runMod_CP, {
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
   rv$dists <- input$dists  
-  rv$n <- input$n
+  rv$nsim <- input$nsim
   rv$CL <- input$CL
   rv$sizeclassCol <- input$sizeclassCol
   rv$predictors_CP <- prepPredictors(rv$preds_CP)
@@ -600,7 +600,7 @@ observeEvent(input$runMod_M, {
   }
 
   rv$dateFoundCol <- input$dateFoundCol
-  rv$n <- input$n
+  rv$nsim <- input$nsim
   rv$frac <- input$frac
   rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
   rv$CPmodToUse <- rep(NA, rv$nsizeclasses)
@@ -634,7 +634,7 @@ observeEvent(input$runMod_M, {
               frac = rv$frac, model_SE = rv$models_SE, 
               model_CP = rv$models_CP, kFill = rv$kFill, 
               dateFoundCol = rv$dateFoundCol, DWPCol = rv$DWPCol,
-              sizeclassCol = rv$sizeclassCol_M, nsim = rv$n, max_intervals = 8
+              sizeclassCol = rv$sizeclassCol_M, nsim = rv$nsim, max_intervals = 8
             ), error = function(x){NULL}, warning = function(x){NULL}
           )
 
@@ -820,7 +820,7 @@ observeEvent(input$runMod_g, {
     }
   }
 
-  rv$n <- input$n
+  rv$nsim <- input$nsim
   rv$gGeneric <- vector("list", length = rv$nsizeclasses_g)
   for (sci in 1:rv$nsizeclasses_g){
 
@@ -832,7 +832,7 @@ observeEvent(input$runMod_g, {
     rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
 
     rv$gGeneric[[sci]] <- tryCatch(estgGeneric(
-      nsim = rv$n, days = rv$SS,
+      nsim = rv$nsim, days = rv$SS,
       model_SE = rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
       model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
       kFill = rv$kFill

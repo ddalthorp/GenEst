@@ -69,9 +69,8 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
                 rowQuantiles(splits[[vi]], probs = c(alpha/2, 1 - alpha/2))
               )
     }
-    plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F, xlab = "",
-      ylab = ""
-    )
+    plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F,
+      xlab = "", ylab = "")
     
     if (vartype[1] == "CO" | !rate){
       xx <- 1:nlevel_h 
@@ -112,7 +111,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       axis(4, at = mean(par("usr")[c(3, 4)]), labels = vnames[vi],
         tck = 0, mgp = c(3, 0.5, 0), cex.axis = cex.axis)
     }
-    box()
+    graphics::box()
   }
   mtext(side = 1, vars[1], line = 4.6, cex = 1.2)
   if (vartype[1] == "SS" & rate) {
