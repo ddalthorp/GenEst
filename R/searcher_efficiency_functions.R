@@ -1072,7 +1072,7 @@ pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
 #' @description  Compares all fitted models in a list and returns the model
 #'  with the greatest log-likelihood
 #'
-#' @param modSet a list of fitted models with a \code{loglik} element. Models
+#' @param modelSet a list of fitted models with a \code{loglik} element. Models
 #'  may be \code{pkm}, \code{cpm}, \code{survreg} objects or any objects with a
 #'  \code{loglik} component.
 #'
