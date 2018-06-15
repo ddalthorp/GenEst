@@ -1025,19 +1025,8 @@ pkmSetSizeFail <- function(pkmSetSizeToCheck){
 #' @export
 #'
 pkmSetFailRemove <- function(pkmSetToTidy){
-
-  nmodsInSet <- length(pkmSetToTidy)
-  fails <- pkmSetFail(pkmSetToTidy)
-  pass <- fails == FALSE
-  npasses <- sum(pass)
-  passes <- which(pass)
-  out <- vector("list", length = npasses)
-  names(out) <- names(pkmSetToTidy[passes])
-  for (passi in 1:npasses){
-    out[[passi]] <- pkmSetToTidy[[passes[passi]]]
-  }
+  out <- pkmSetToTidy[!pkmSetFail(pkmSetToTidy)]
   class(out) <- c("pkmSet", "list")
-  return(out)
 }
 
 #' @title Remove failed pkm models from a \code{\link{pkmSetSize}} object
