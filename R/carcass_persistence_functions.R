@@ -297,35 +297,35 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
   probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
   cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
-  cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 5)
+  cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
   colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
   cellTable_s <- apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s)
-  cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 5)
+  cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
   colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
   cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
 
   if (dist == "exponential"){
     cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- round(exp(cellTable_l), 5)
+    cellTable_b <- round(exp(cellTable_l), 3)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "weibull"){
-    cellTable_a <- round(1 / cellTable_s, 5)
+    cellTable_a <- round(1 / cellTable_s, 3)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- round(exp(cellTable_l), 5)
+    cellTable_b <- round(exp(cellTable_l), 3)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "lognormal"){
-    cellTable_a <- round(cellTable_s^2, 5)
+    cellTable_a <- round(cellTable_s^2, 3)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- round(cellTable_l, 5)
+    cellTable_b <- round(cellTable_l, 3)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "loglogistic"){
-    cellTable_a <- round(1 / cellTable_s, 5)
+    cellTable_a <- round(1 / cellTable_s, 3)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- round(exp(cellTable_l), 5)
+    cellTable_b <- round(exp(cellTable_l), 3)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }  
   cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
@@ -359,14 +359,14 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   output$ncell <- ncell
   output$cellwiseTable_ls <- cellTable_ls
   output$cellwiseTable_ab <- cellTable_ab
+  output$CL <- CL
   output$observations <- data[ , c(left, right)]
   output$carcCells <- carcCells
-  output$CL <- CL
   class(output) <- c("cpm", "list")
   attr(output, "hidden") <- c("data", "predictors_l", "predictors_s", 
                               "betahat_l", "betahat_s", "cellMM_l", 
                               "cellMM_s", "nbeta_l", "nbeta_s", "varbeta",
-                              "levels_l", "levels_s", "carcCells", "CL", 
+                              "levels_l", "levels_s", "carcCells", 
                               "AIC", "cells", "ncell", "observations"
                             )
   return(output)
@@ -377,6 +377,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 #' @description Print a \code{\link{cpm}} model object
 #'
 #' @param x a \code{\link{cpm}} model object
+#'
 #' @param ... to be passed down
 #'
 #' @export
@@ -390,7 +391,7 @@ print.cpm <- function(x, ...){
 #' @title Calculate the negative log-likelihood of a carcass persistence model
 #' 
 #' @description The function used to calculate the negative-loglikelihood of
-#'   a given carcass persistence model (\code{\link{cpm}} )with a given data
+#'   a given carcass persistence model (\code{\link{cpm}}) with a given data
 #'   set
 #'
 #' @param t1 last times observed present
@@ -789,7 +790,7 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
                     CL, quiet
                   ) 
   }
-
+  class(out) <- c("cpmSetSize", "list")
   return(out)
 }
 

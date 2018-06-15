@@ -1,7 +1,7 @@
-#' Fit a single searcher efficiency model.
+#' @title Fit a single searcher efficiency model.
 #' 
-#' Searcher efficiency is modeled as a function of the number of times a 
-#'   carcass has been missed in previous searches and any number of 
+#' @description Searcher efficiency is modeled as a function of the number of
+#'   times a  carcass has been missed in previous searches and any number of 
 #'   such as covariates. Format and usage parallel that of common \code{R} 
 #'   functions \code{lm}, \code{glm}, and \code{gam}. However, the input data 
 #'   (\code{data}) is structured differently to accommodate the 
@@ -130,13 +130,14 @@
 #'  \item{\code{CL}}{the input \code{CL}}
 #'}
 #'
-#' @examples NA
+#' @examples 
+#'   data(wind_RP)
+#'   pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
 #'
 #' @export
 #'
-pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
+pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
                 kFixed = NULL, kInit = 0.7, CL = 0.95, quiet = FALSE){
-
   if(sum(obsCol %in% colnames(data)) != length(obsCol)){
     stop("Observation column provided not in data.")
   }
@@ -144,120 +145,125 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     obsCol <- grep("^[sS].*[0-9]$", names(data), value = TRUE)
     nobsCol <- length(obsCol)
     if (nobsCol == 0){
-      stop("No observation columns provided and no appropriate column names.")
+      stop("No obsCol provided and no appropriate column names found.")
     }
   }
   predCheck <- c(all.vars(formula_p[[3]]), all.vars(formula_k[[3]]))
-  if (sum(predCheck %in% colnames(data)) != length(predCheck)){
-    stop("Predictor(s) in formula(e) not found in data.")
+  if (any(!(predCheck %in% colnames(data)))){
+    stop("User-supplied formula includes predictor that is not found in data.")
   }
-  if (length(kFixed) == 1){
-    if (kFixed < 0 | kFixed > 1){
-      stop("Provided k is outside the supported range [0 - 1].")
+  if (length(kFixed) >= 1){
+    if (!is.numeric(kFixed[1]) || is.na(kFixed[1])){
+      stop("User-supplied kFixed must be numeric (or NULL)")
+    }
+    if (kFixed[1] < 0 | kFixed[1] > 1){
+      stop("User-supplied kFixed is outside the supported range [0, 1].")
    }
     if (length(formula_k) > 0 & quiet == FALSE){
       message("Formula and fixed value provided for k, fixed value used.")
       formula_k <- NULL
     }
+    if (length(kFixed) > 1){
+      kFixed <- kFixed[1]
+      if (!quiet){
+        message("Vector-valued kFixed. Only the first element will be used.")
+      }
+    }
   }
+  pOnly <- FALSE
   if (length(obsCol) == 1){
-    if (length(formula_k) > 0 & quiet == FALSE){
-      message("Only one observation, k not estimated.")
+    if (!is.null(formula_k) && is.language(formula_k) && quiet == FALSE){
+      message("Only one search occasion per carcass. k not estimated.")
     }
-    if (length(kFixed) == 1 & quiet == FALSE){
-      message("Only one observation, kFixed input ignored.")
-    }
-    kFixed <- 0.5
+    pOnly <- TRUE
     formula_k <- NULL
+    kFixed <- 1
+  } else {
+    # flag to indicate no estimation of k
+    if ((is.null(formula_k) || !is.language(formula_k)) & length(kFixed) == 0){
+      pOnly <- TRUE
+      obsCol <- obsCol[1] # use data from first search only
+      formula_k <- NULL
+      kFixed <- 1
+    }
   }
-  if (length(formula_k) == 0 & length(kFixed) == 0){
-    stop("No formula or fixed value provided for k. Provide one.")
-  }
-
   nsearch <- length(obsCol)
-  obsData <- data[ , obsCol]
-  obsData <- as.matrix(obsData, ncol = nsearch)
-  ncarc <- nrow(obsData)
-  obsChar <- as.character(obsData)
-  obsChar <- gsub(" ", "", obsChar)
-  nonStandard <- which(obsChar != "0" & obsChar != "1")
-  if (length(nonStandard) > 0){
-    obsChar[nonStandard] <- NA
-  }
-  obsData <- suppressWarnings(as.numeric(obsData))
-  obsData <- matrix(obsData, nrow = ncarc, ncol = nsearch)
+  obsData <- as.matrix(data[ , obsCol], ncol = nsearch)
 
-  obsNA <- is.na(obsData)
-  onlyNA <- which(apply(obsNA, 1, sum) == apply(obsNA, 1, length))
-  if (length(onlyNA) > 0){
-    obsData <- as.matrix(obsData[-onlyNA, ], ncol = nsearch) 
-    data <- data[-onlyNA, ]
+  # replace all non-zero/non-one data with NA:
+  if (!is.numeric(obsData)){
+    obsData[!is.na(obsData) & !(obsData %in% as.character(0:1))] <- NA
+    obsData <- matrix(as.numeric(obsData), ncol = nsearch)
+  } else {
+    obsData[!(obsData %in% 0:1)] <- NA
   }
-  if (nrow(data) == 0){
+
+  # remove rows that are all NAs
+  onlyNA <- (rowSums(is.na(obsData)) == nsearch)
+  obsData <- as.matrix(obsData[!onlyNA, ], ncol = nsearch)
+  data0 <- data[!onlyNA, ]
+
+  if (nrow(data0) == 0){
     stop("No non-missing data present in provided data.")
   }
   if (any(rowSums(obsData, na.rm = TRUE) > 1)){
     stop("Carcasses observed more than once. Check data.")
   }
-  if (any(apply(obsData, 1, isNeverDecreasing) == FALSE)){
-    stop("Carcasses have observations after being found. Check data.")
+  if (sum(na.omit(rowDiffs(obsData * is.na(obsData)))) > 0){
+    stop("Searches continue after carcass discovery? Check data.")
   }
 
   ncarc <- nrow(obsData)
-  firstObs <- obsData[ , 1]
-  missData <- apply(obsData, 2, match, 0)
-  misses <- apply(missData, 1, sum, na.rm = TRUE)
-  maxmisses <- max(misses)
-  found <- apply(obsData, 1, sum, na.rm = TRUE)
-  carcassesFound <- which(found == 1)
-  foundOn <- numeric(ncarc)
-  foundOn[carcassesFound] <- misses[carcassesFound] + 1
+  # simplified and vectorized calculations of
+  #1. number of times each carcass was missed in searches, and
+  #2. which search carcasses were found on (0 if not found)
+  misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
+  foundOn <- colMaxs(t(obsData) * (1:nsearch), na.rm = T)
 
   if (length(kFixed) > 0){
     if (kFixed == 0 & any(foundOn > 1)){
-      suggestion <- kSuggest(obsData)
-      msg <- paste("k is fixed at 0, but carcasses were found after first ", 
-               "search, indicating k > 0.\n  Suggest estimating k or setting",
-               " k to ",  suggestion, sep = ""
-             )
-      stop(msg)
+#      suggestion <- kSuggest(obsData) # no suggestion
+      stop(
+        "User-supplied kFixed = 0. However, carcasses were found after ",
+        "being missed in previous searches, which indicates k > 0"
+      )
     }
   }
 
   preds_p <- all.vars(formula_p[[3]])
   if (length(preds_p) > 0){
     for (predi in 1:length(preds_p)){
-      data[ , preds_p[predi]] <- as.character(data[ , preds_p[predi]])
+      data0[ , preds_p[predi]] <- as.character(data0[ , preds_p[predi]])
     }
   }
   formulaRHS_p <- formula(delete.response(terms(formula_p)))
-  levels_p <- .getXlevels(terms(formulaRHS_p), data)
+  levels_p <- .getXlevels(terms(formulaRHS_p), data0)
 
   preds_k <- character(0)
-  if (length(formula_k) > 0){
+  if (is.language(formula_k)){
     preds_k <- all.vars(formula_k[[3]])
     if (length(preds_k) > 0){
       for (predi in 1:length(preds_k)){
-        data[ , preds_k[predi]] <- as.character(data[ , preds_k[predi]])
+        data0[ , preds_k[predi]] <- as.character(data0[ , preds_k[predi]])
       }
     }
     formulaRHS_k <- formula(delete.response(terms(formula_k)))
-    levels_k <- .getXlevels(terms(formulaRHS_k), data)
+    levels_k <- .getXlevels(terms(formulaRHS_k), data0)
   }
   if (length(kFixed) == 1){
     preds_k <- character(0)
-    formulaRHS_k <- formula(~1)  
+    formulaRHS_k <- formula(~1)
     formula_k <- c(fixedk = kFixed)
-    levels_k <- .getXlevels(terms(formulaRHS_k), data)
+    levels_k <- .getXlevels(terms(formulaRHS_k), data0)
   }
 
   preds <- unique(c(preds_p, preds_k))
-  cells <- combinePreds(preds, data)
+  cells <- combinePreds(preds, data0)
   ncell <- nrow(cells)
   cellNames <- cells$CellNames
 
-  dataMM_p <- model.matrix(formulaRHS_p, data)
-  dataMM_k <- model.matrix(formulaRHS_k, data)
+  dataMM_p <- model.matrix(formulaRHS_p, data0)
+  dataMM_k <- model.matrix(formulaRHS_k, data0)
   dataMM <- t(cbind(dataMM_p, dataMM_k))
   cellMM_p <- model.matrix(formulaRHS_p, cells)
   cellMM_k <- model.matrix(formulaRHS_k, cells)
@@ -266,38 +272,34 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   nbeta_k <- ncol(dataMM_k)
   nbeta_p <- ncol(dataMM_p)
   nbeta <- nbeta_p + nbeta_k
-
-  cellByCarc <- numeric(ncarc)
-  for (celli in 1:ncell){
-    groupPattern <- cellMM[celli, ]
-    matchingMatrix <- dataMM == groupPattern
-    matchingParts <- apply(matchingMatrix, 2, sum)
-    matchingTotal <- matchingParts == ncol(cellMM)
-    cellByCarc[matchingTotal] <- celli
+  if (length(preds) == 0){
+    carcCells <- rep("all", ncarc)
+  } else if (length(preds) == 1){
+    carcCells <- data0[ , preds]
+  } else if (length(preds) > 1){
+    carcCells <- do.call(paste, c(data0[,preds], sep = '.'))
   }
-  carcCells <- cellNames[cellByCarc]
+  cellByCarc <- match(carcCells, cellNames)
 
-  pInit <- numeric(ncarc)
-  for (celli in 1:ncell){
-    cellMatch <- which(cellByCarc == celli)
-    pInitCellMean <- mean(firstObs[cellMatch])
-    pInit[cellMatch] <- pInitCellMean
-  }
+  pInitCellMean <- tapply(data0[ , obsCol[1]], INDEX = carcCells, FUN = mean)
+  pInit <- as.vector(pInitCellMean[match(carcCells, names(pInitCellMean))])
   pInit[which(pInit < 0.1)] <- 0.1
-  pInit[which(pInit > 0.9)] <- 0.9 
+  pInit[which(pInit > 0.9)] <- 0.9
+
   cellMatrix_p <- solve(t(dataMM_p) %*% dataMM_p)
   cellImpact_p <- t(dataMM_p) %*% logit(pInit)
   betaInit_p <- cellMatrix_p %*% cellImpact_p
   betaInit_k <- logit(rep(kInit, nbeta_k))
   betaInit <- c(betaInit_p, betaInit_k)
+
   if (length(kFixed) == 1){
     betaInit <- betaInit[-length(betaInit)]
   }
-  beta <- betaInit
+
   MLE <- tryCatch(
-           optim(par = beta, fn = pkLogLik, method = "BFGS", 
-             hessian = TRUE, cellByCarc = cellByCarc, misses = misses, 
-             maxmisses = maxmisses, foundOn = foundOn, cellMM = cellMM, 
+           optim(par = betaInit, fn = pkLogLik, method = "BFGS",
+             hessian = TRUE, cellByCarc = cellByCarc, misses = misses,
+             maxmisses = max(misses), foundOn = foundOn, cellMM = cellMM,
              nbeta_p = nbeta_p, kFixed = kFixed
            ), error = function(x) {NA}
          )
@@ -305,10 +307,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   convergence <- MLE$convergence
   betahat <- MLE$par
   betaHessian <- MLE$hessian
-  llik <- MLE$value
+  llik <- -MLE$value
 
-  nparam <- length(betahat)  
-  AIC <- 2 * llik + 2 * nparam
+  nparam <- length(betahat)
+  AIC <- 2*nparam - 2*llik
   AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
   AICc <- round(AIC + AICcOffset, 3)
 
@@ -321,83 +323,93 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   varbeta <- tryCatch(solve(betaHessian), error = function(x) {NA})
-  if (is.na(varbeta)[1]){
-    stop("Model generates unstable variance estimate.")
-  }
+
+  if (is.na(varbeta)[1]) stop("Unable to estimate variance.")
+
   varbeta_p <- varbeta[1:nbeta_p, 1:nbeta_p]
   cellMean_p <- cellMM_p %*% betahat_p
   cellVar_p <- cellMM_p %*% varbeta_p %*% t(cellMM_p)
-  cellSD_p <- sqrt(diag(cellVar_p))
+  cellSD_p <- suppressWarnings(sqrt(diag(cellVar_p)))
 
-  if (length(kFixed) == 0){
+  if (is.null(kFixed) || is.na(kFixed)){
     which_k <- (nbeta_p + 1):(nbeta)
     varbeta_k <- varbeta[which_k, which_k]
     cellMean_k <- cellMM_k %*% betahat_k
     cellVar_k <- cellMM_k %*% varbeta_k %*% t(cellMM_k)
-    cellSD_k <- sqrt(diag(cellVar_k))
-  }else{
+    cellSD_k <- suppressWarnings(sqrt(diag(cellVar_k)))
+  } else {
     cellMean_k <- rep(logit(kFixed), ncell)
     cellSD_k <- rep(0, ncell)
   }
 
-  probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
-  cellTable_p <- apply(probs, 1, qnorm, mean = cellMean_p, sd = cellSD_p)
-  cellTable_p <- matrix(cellTable_p, nrow = ncell, ncol = 3)
-  cellTable_p <- round(alogit(cellTable_p), 5)
+  probs <- list(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2)
+  cellTable_p <- lapply(probs, qnorm, mean = cellMean_p, sd = cellSD_p)
+  cellTable_p <- matrix(unlist(cellTable_p), ncol = 3)
+  cellTable_p <- round(alogit(cellTable_p), 3)
   colnames(cellTable_p) <- c("p_median", "p_lower", "p_upper")
-  cellTable_k <- apply(probs, 1, qnorm, mean = cellMean_k, sd = cellSD_k)
-  cellTable_k <- matrix(cellTable_k, nrow = ncell, ncol = 3)
-  cellTable_k <- round(alogit(cellTable_k), 5)
-  colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
-  if (nsearch == 1){
-    for (rowi in 1:nrow(cellTable_k)){
-      cellTable_k[rowi, 1:3] <- rep(NA, 3)
+  if (!pOnly){
+    cellTable_k <- lapply(probs, qnorm, mean = cellMean_k, sd = cellSD_k)
+    cellTable_k <- matrix(unlist(cellTable_k), nrow = ncell, ncol = 3)
+    cellTable_k <- round(alogit(cellTable_k), 3)
+    colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
+    if (nsearch == 1){
+      cellTable_k[ , names(cellTable_k)] <- kFixed
+      formula_k <- ""
+      nbeta_k <- 0
+      cellMM_k <- NULL
+      kFixed <- NULL
     }
-    formula_k <- ""
-    nbeta_k <- 0
-    cellMM_k <- NULL
-    kFixed <- NULL
+    cellTable <- data.frame(cell = cellNames, cellTable_p, cellTable_k)
+  } else {
+    cellTable <- data.frame(cell = cellNames, cellTable_p)
   }
-  cellTable <- data.frame(cell = cellNames, cellTable_p, cellTable_k)
+
 
   output <- list()
   output$call <- match.call()
   output$data <- data
   output$formula_p <- formula_p
-  output$formula_k <- formula_k
+  if (!pOnly) output$formula_k <- formula_k
   output$predictors <- preds
   output$predictors_p <- preds_p
-  output$predictors_k <- preds_k
+  if (!pOnly) output$predictors_k <- preds_k
   output$AIC <- AIC
   output$AICc <- AICc
   output$convergence <- convergence
   output$varbeta <- varbeta
   output$cellMM_p <- cellMM_p
-  output$cellMM_k <- cellMM_k
-  output$nbeta_p <- nbeta_p  
-  output$nbeta_k <- nbeta_k
+  if (!pOnly) output$cellMM_k <- cellMM_k
+  output$nbeta_p <- nbeta_p
+  if (!pOnly) output$nbeta_k <- nbeta_k
   output$betahat_p <- betahat_p
-  output$betahat_k <- betahat_k
+  if (!pOnly) output$betahat_k <- betahat_k
   output$levels_p <- levels_p
-  output$levels_k <- levels_k
+  if (!pOnly) output$levels_k <- levels_k
   output$cells <- cells
   output$ncell <- ncell
   output$cellwiseTable <- cellTable
-  output$observations <- obsData
-  output$kFixed <- kFixed
-  output$carcCells <- carcCells
   output$CL <- CL
+  output$observations <- obsData
+  if (!pOnly) output$kFixed <- kFixed
+  output$carcCells <- carcCells
+  output$loglik <- llik
+  output$pOnly <- pOnly
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("data", "predictors_p", "predictors_k", 
-                              "kFixed", "betahat_p", "betahat_k", "cellMM_p", 
-                              "cellMM_k", "nbeta_p", "nbeta_k", "varbeta",
-                              "levels_p", "levels_k", "carcCells", "CL",   
-                              "AIC", "cells", "ncell", "observations"
-                            )
-
+  attr(output, "hidden") <- c("data", "predictors_p", "predictors_k", "kFixed",
+    "betahat_p", "betahat_k", "cellMM_p", "cellMM_k", "nbeta_p", "nbeta_k",
+    "varbeta", "levels_p", "levels_k", "carcCells", "AIC", "cells",
+    "ncell", "observations", "loglik", "pOnly")
   return(output)
-}
+} # pkm
 
+#' @title Print a \code{\link{pkm}} model object
+#'
+#' @description Print a \code{\link{pkm}} model object
+#'
+#' @param x a \code{\link{pkm}} model object
+#'
+#' @param ... to be passed down
+#'
 #' @export
 #'
 print.pkm <- function(x, ...){
@@ -406,20 +418,31 @@ print.pkm <- function(x, ...){
   print(x[notHid])
 }
  
-#' Calculate the negative log-likelihood of a searcher efficiency model.
+#' @title Calculate the negative log-likelihood of a searcher efficiency model
 #' 
+#' @description The function used to calculate the negative-loglikelihood of
+#'   a given searcher efficiency model (\code{\link{pkm}}) with a given data
+#'   set
+#'
 #' @param misses Number of searches when carcass was present but
 #'  not found.
+#'
 #' @param foundOn Search on which carcass was found.
+#'
 #' @param beta Parameters to be optimized.
+#'
 #' @param nbeta_p Number of parameters associated with p.
+#'
 #' @param cellByCarc Which cell each observation belongs to.
+#'
 #' @param maxmisses Maximum possible number of misses for a carcass.
+#'
 #' @param cellMM Combined pk model matrix.
+#'
 #' @param kFixed Value of k if fixed. 
+#'
 #' @return Negative log likelihood of the observations, given the parameters.
-#' @examples
-#' NA
+#'
 #' @export 
 #'
 pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, 
@@ -467,10 +490,12 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
   return(nll_total)
 }
 
-#' Run a set of pkm models based on predictor inputs
+#' @title Run a set of pkm models based on predictor inputs
 #'
-#' Function inputs follow \code{pkm}, with all simpler models being run
-#'   and returned as a list of model objects
+#' @description Run a set of \code{\link{pkm}} models based on all possible 
+#'   models, given the predictor inputs. \code{pkmSet}'s inputs generally
+#'   follow \code{\link{pkm}}, with all simpler models being run for all 
+#'   included distributions and returned as a list of model objects
 #'
 #' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
 #'   (or one that can be coerced to that class): a symbolic description of the
@@ -510,6 +535,10 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #' @return \code{pkmSet} returns a list of objects, each of class 
 #'   "\code{pkm}", which each then a list whose components characterize the 
 #'   fit of the specific model.
+#'
+#' @examples
+#'   data(wind_RP)
+#'   pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, data = wind_RP$SE)
 #'
 #' @export 
 #'
@@ -630,12 +659,12 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formi_p <- keptFormula_p[modi][[1]]
     formi_k <- keptFormula_k[modi][[1]]
     pkm_i <- tryCatch(
-               pkm(formi_p, formi_k, data, obsCol, kFixed, kInit, CL, quiet), 
-               error = function(x) {
-                 paste("Failed model fit: ", geterrmessage(), sep = "")
-               }
-             )
-
+       pkm(formula_p = formi_p, formula_k = formi_k, data = data,
+       obsCol = obsCol, kFixed = kFixed, kInit = kInit, CL = CL, quiet = quiet),
+       error = function(x) {
+         paste("Failed model fit: ", geterrmessage(), sep = "")
+       }
+     )
     name_p <- paste(format(formi_p), collapse = "")
     name_p <- gsub("    ", "", name_p)
     name_k <- paste(format(formi_k), collapse = "")
@@ -650,14 +679,16 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   class(output) <- c("pkmSet", "list")
   return(output)
-}
+} # pkmSet
 
 
-#' Fit all possible searcher efficiency models across all size classes.
+#' @title Fit all possible searcher efficiency models across all size classes
 #'
-#' Function inputs generally follow \code{pkmSet} and \code{pkm} but with an 
-#'   additional size column input and calculation of the set of pkm models for
-#'   each of the size classes
+#' @description Run a set of \code{\link{pkmSet}} model set runs based on all 
+#'   possible models for a suite of size classes. \code{cpmSetSize}'s inputs
+#'   generally follow \code{\link{pkmSet}} and \code{\link{pkm}} but with an 
+#'   additional size column input and calculation of the set of cpm models for 
+#'   each of the size classes.
 #'
 #' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
 #'   (or one that can be coerced to that class): a symbolic description of the
@@ -703,6 +734,12 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'   within the set of \code{pkm} models fit for the given size class), that
 #'   is of length equal to the total number of size classes
 #'
+#' @examples
+#'   data(wind_RP)
+#'   mod <- pkmSetSize(formula_p = p ~ Season, formula_k = k ~ Season, 
+#'            data = wind_RP$SE, sizeclassCol = "Size"
+#'           )
+#'
 #' @export
 #'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
@@ -718,7 +755,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     return(out)
   }
   if ((sizeclassCol %in% colnames(data)) == FALSE){
-    stop("Size class column provided not in data set.")
+    stop("sizeclassCol not in data set.")
   }
   nsearch <- length(obsCol)
   ncarc <- nrow(data)
@@ -738,18 +775,29 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
                     kInit, CL, quiet
                   )
   }
-
+  class(out) <- c("pkmSetSize", "list")
   return(out)
-}
+} #pkmSetSize
 
-#' Create the  AICc tables for the searcher efficiency models
+#' @title Create the AICc tables for a set of searcher efficiency models
+#' 
+#' @description Generates model comparison tables based on AICc values for
+#'   a set of CP models generated by \code{\link{pkmSet}}
 #' 
 #' @param pkmset Set of searcher efficiency models fit to the same
 #'   observations
+#' 
 #' @param quiet Logical indicating if messages should be printed
+#' 
 #' @return AICc table
+#' 
 #' @examples
-#' NA
+#'   data(wind_RP)
+#'   mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, 
+#'            data = wind_RP$SE
+#'          )
+#'  pkmSetAICcTab(mod)
+#'
 #' @export 
 #'
 pkmSetAICcTab <- function(pkmset, quiet = FALSE){
@@ -768,7 +816,7 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
     AICc <- tryCatch(pkmset[[1]]$AICc, error = function(x) {1e7})
     deltaAICc <- 0    
     AICcOrder <- 1
-  }else{
+  } else {
     for (modi in 1:nmod){
       splitFormulas_i <- strsplit(formulas[modi], "; ")[[1]]
       formulas_p[modi] <- splitFormulas_i[1] 
@@ -795,10 +843,12 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
     message("Models that failed during fit were removed from output.")
     output <- output[-whichAICcMax, ]
   }
-  return(output)
+  return(output)  # pkmSetAICcTab
 }
 
-#' Simulate p and k parameters from a fitted pk model.
+#' @title Simulate parameters from a fitted pk model
+#'
+#' @description Simulate parameters from a \code{\link{pkm}} model object
 #'
 #' @param n the number of simulation draws
 #'
@@ -813,44 +863,64 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
 #'   for cells defined by the \code{model} object. 
 #'
 #' @examples
-#'   NA
+#'   data(wind_RP)
+#'   mod <- pkm(formula_p = p ~ 1, formula_k = k ~ Season, data = wind_RP$SE)
+#'   rpk(n = 10, model = mod)
+#'
 #' @export
 #'
-rpk <- function(n = 1, model, seed = NULL, kFill = NA){
+rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
 
-  if (!"pkm" %in% class(model)){
-    stop("model not of class pkm.")
+  if (!"pkm" %in% class(model)) stop("model not of class pkm")
+  if (anyNA(model$varbeta) || sum(diag(model$varbeta) < 0) > 0){
+    stop("Variance in pkm not well-defined. Cannot simulate.")
   }
-
+  if (!model$pOnly && !is.null(kFill) && !is.na(kFill)){
+    warning("Model includes k. Ignoring kFill.")
+  }
+  if (model$pOnly){
+    if (is.null(kFill) || is.na(kFill)){
+      stop("k not included in 'model' and kFill not provided. ",
+        "Cannot simulate pk.")
+    }
+    if (!is.numeric(kFill[1])){
+      stop("kFill must be numeric")
+    }
+    if (kFill[1] < 0 || kFill[1] > 1){
+      stop("kFill must be in [0, 1]")
+    }
+    if (length(kFill) > 1){
+      warning("length(kFill) > 1 and only the first element will be used")
+    }
+    kFill <- kFill[1]
+    betahat_k <- NULL
+  } else {
+    nbeta_k <- model$nbeta_k
+    which_beta_k <- (model$nbeta_p + 1):(model$nbeta_p + nbeta_k)
+    kFill <- model$kFixed
+    cellMM_k <- model$cellMM_k
+    betahat_k <- model$betahat_k
+  }
   nbeta_p <- model$nbeta_p 
-  nbeta_k <- model$nbeta_k
-  which_beta_k <- (nbeta_p + 1):(nbeta_p + nbeta_k)
-  kFixed <- model$kFixed
-  formula_k <- model$formula_k
   cellMM_p <- model$cellMM_p
-  cellMM_k <- model$cellMM_k
   ncell <- model$ncell
   cellNames <- model$cells[ , "CellNames"]
-  meanbeta <- c(model$betahat_p, model$betahat_k)
+
+  meanbeta <- c(model$betahat_p, betahat_k)
   varbeta <- model$varbeta
   method <-  "svd"
 
-  if (length(seed) > 0){
-    set.seed(seed)
+  if (!is.null(seed) && !is.na(as.numeric(seed))){
+    set.seed(as.numeric(seed))
   }
-  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
+  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
 
- 
-  if (length(kFixed) == 0){
-    if (formula_k == ""){
-      sim_k <- matrix(kFill, ncol = ncell, nrow = n)
-    }else{
-      sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
-    }
-  }else{
-    sim_k <- matrix(kFixed, ncol = ncell, nrow = n)
+  if (length(kFill) == 0 || is.na(kFill)){
+    sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
+  } else {
+    sim_k <- matrix(kFill, ncol = ncell, nrow = n)
   }
   colnames(sim_k) <- cellNames
 
@@ -864,10 +934,13 @@ rpk <- function(n = 1, model, seed = NULL, kFill = NA){
   return(output)
 }
 
-
-#' Suggest a value for k based on a weighted mean of the observed decay
+#' @title Suggest a k
+#'
+#' @description Suggest a value for k based on a weighted mean of the 
+#'   observed decay
 #'
 #' @param obsData a matrix of carcasses (rows) x searched (columns)
+#'
 #' @return the weighted mean of the observed proportional decay in p
 #'
 #' @export
@@ -889,48 +962,73 @@ kSuggest <- function(obsData){
   return(suggestion)
 }
 
-#' Check if all of the pkm models fail
+#' @title Check if a pk model is well-fit
 #'
-#' @param pkmSetToCheck A \code{pkmSet} object to test
+#' @description Run a check the arg is a well-fit pkm object
+#'
+#' @param mod A \code{\link{pkm}} object to test
+#'
+#' @return logical value indicating a failed fit (TRUE) or successful (FALSE)
+#'
+#' @export
+#'
+pkmFail <- function(pkmod){
+  out <- !("pkm" %in% class(pkmod)) ||
+         anyNA(pkmod) ||
+         sum(diag(pkmod$varbeta) < 0) > 0
+  return(out)
+}
+
+
+#' @title Check if pkm models fail
+#' 
+#' @description Run a check on each model within a \code{\link{pkmSet}} object
+#'   to determine if it failed or not
+#'
+#' @param pkmSetToCheck A \code{\link{pkmSet}} object to test
 #'
 #' @return A vector of logical values indicating if each of the models failed
 #'
 #' @export
 #'
 pkmSetFail <- function(pkmSetToCheck){
-
   nmodsInSet <- length(pkmSetToCheck)
   out <- logical(nmodsInSet)
+  names(out) <- names(pkmSetToCheck)
   for (modi in 1:nmodsInSet){
-    out[modi] <- length(pkmSetToCheck[[modi]]) == 1
+    out[modi] <- pkmFail(pkmSetToCheck[[modi]])
   }
   return(out)
 }
 
-#' Check if all of the pkm models fail
+#' @title Check if all of the pkm models fail
 #'
-#' @param pkmSetSizeToCheck A \code{pkmSetSize} object to test
+#' @description Run a check on each model within a \code{\link{pkmSetSize}}
+#'   object to determine if they all failed or not
 #'
-#' @return A list of vectors of logical values indicating if each of the 
-#'   models failed
+#' @param pkmSetSizeToCheck A \code{\link{pkmSetSize}} object to test
+#'
+#' @return A list of logical vectors indicating which models failed
 #'
 #' @export
 #'
 pkmSetSizeFail <- function(pkmSetSizeToCheck){
-
   nsizes <- length(pkmSetSizeToCheck)
-  out <- vector("list", length = nsizes)
-  for (sci in 1:nsizes){
-    out[[sci]] <- pkmSetFail(pkmSetSizeToCheck[[sci]])
+  out <- list() 
+  for (sci in names(pkmSetSizeToCheck)){ 
+    # check for failed models and associate names to results
+    out[[sci]] <- pkmSetFail(pkmSetSizeToCheck[[sci]]) 
   }
   return(out)
 }
 
-#' Remove failed pkm models
+#' @title Remove failed pkm models from a \code{\link{pkmSet}} object
 #'
-#' @param pkmSetToTidy A \code{pkmSet} object to tidy
+#' @description Remove all failed models within a \code{\link{pkmSet}} object
 #'
-#' @return A \code{pkmSet} object with failed models removed
+#' @param pkmSetToTidy A \code{\link{pkmSet}} object to tidy
+#'
+#' @return A \code{\link{pkmSet}} object with failed models removed
 #'
 #' @export
 #'
@@ -950,31 +1048,54 @@ pkmSetFailRemove <- function(pkmSetToTidy){
   return(out)
 }
 
-#' Remove failed pkm models
+#' @title Remove failed pkm models from a \code{\link{pkmSetSize}} object
 #'
-#' @param pkmSetSizeToTidy A list of \code{pkmSetSize} objects to tidy
+#' @description Remove failed models from a \code{\link{pkmSetSize}} object
 #'
-#' @return A list of \code{pkmSet} objects with failed models removed
+#' @param pkmSetSizeToTidy A list of \code{\link{pkmSetSize}} objects to tidy
+#'
+#' @return A list of \code{\link{pkmSet}} objects with failed models removed
 #'
 #' @export
 #'
 pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
 
-  nsizes <- length(pkmSetSizeToTidy)
-  out <- vector("list", length = nsizes)
-  names(out) <- names(pkmSetSizeToTidy)
-  for (sci in 1:nsizes){
+  out <- list()
+  for (sci in names(pkmSetSizeToTidy)){
     out[[sci]] <- pkmSetFailRemove(pkmSetSizeToTidy[[sci]])
   }
   return(out)
 }
 
-#' Calculate searcher efficiency after some searches
+#' @title Return the model with the greatest log-likelihood
+#'
+#' @description  Compares all fitted models in a list and returns the model
+#'  with the greatest log-likelihood
+#'
+#' @param modSet a list of fitted models with a \code{loglik} element. Models
+#'  may be \code{pkm}, \code{cpm}, \code{survreg} objects or any objects with a
+#'  \code{loglik} component.
+#'
+#' @return The model object with the greatest log-likelihood among
+#'  the models in \code{modelSet}
+#'
+#' @export
+#'
+fullMod <- function(modelSet){
+  llvec <- sapply(modelSet, "[[", "loglik")
+  return(modelSet[[which(llvec == max(llvec))]])
+}
+#' @title Calculate decayed searcher efficiency
+#'
+#' @description Calculate searcher efficiency after some searches under 
+#'   pk values
 #'
 #' @param days search days
-#' @param pk pk
+#'
+#' @param pk \code{p} and \code{k} values
+#'
 #' @return searcher efficiency that matches the output of ppersist
-#' @examples NA
+#'
 #' @export 
 #'
 SEsi <- function(days, pk){ 
@@ -1003,14 +1124,17 @@ SEsi <- function(days, pk){
   return(t(pfind.si)) 
 }
 
-
-#' Calculate searcher efficiency after some searches for a single pk 
-#'   combination
+#' @title Calculate decayed searcher efficiency for a single pk
+#'
+#' @description Calculate searcher efficiency after some searches for a single 
+#'   pk combination
 #'
 #' @param days search days
-#' @param pk pk
+#'
+#' @param pk pk combination
+#'
 #' @return searcher efficiency that matches the output of ppersist
-#' @examples NA
+#'
 #' @export 
 #'
 SEsi0 <- function(days, pk){ 

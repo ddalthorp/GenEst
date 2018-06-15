@@ -6,33 +6,69 @@
 #'   the facility that was surveyed. 
 #'
 #' @param data_CO Carcass Observation data
+#'
 #' @param data_SS Search Schedule data
+#'
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted
 #'   proportion table
+#'
 #' @param frac fraction of facility (by units or by area) surveyed
+#'
 #' @param dateFoundCol Column name for the date found data
+#'
 #' @param model_SE Searcher Efficiency model (or list of models if there are
 #'   multiple size classes)
+#'
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
+#'
 #' @param kFill value to fill in for missing k when not existing in the model
+#'
 #' @param unitCol Column name for the unit indicator (optional)
+#'
 #' @param datesSearchedCol Column name for the date searched data
+#'
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional. If none provided, it is assumed there is no
 #'  distinctions among size classes.
+#'
 #' @param DWPCol Column name for the DWP values in the DWP table when no
 #'   size class is used and there is more than one column in \code{data_DWP}
 #'   that could be interpreted as DWP.
+#'
 #' @param seed_SE seed for random draws of the SE model
+#'
 #' @param seed_CP seed for random draws of the CP model
+#'
 #' @param seed_g seed for random draws of the gs
+#'
 #' @param seed_M seed for the random draws of the Mhats
+#'
 #' @param nsim the number of simulation draws
+#'
 #' @param max_intervals maximum number of arrival intervals to consider
 #'  for each carcass
+#'
 #' @return list of Mhat, Aj, ghat
-#' @examples NA
+#'
+#' @examples 
+#'  \dontrun{
+#'  data(mock)
+#'  model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
+#'               data = mock$SE
+#'              )
+#'  model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+#'                data = mock$CP, dist = "weibull",
+#'                left = "LastPresentDecimalDays", 
+#'                right = "FirstAbsentDecimalDays"
+#'              )
+#'  eM <- estM(nsim = 1000, data_CO = mock$CO, data_SS = mock$SS, 
+#'          data_DWP = mock$DWP, frac = 1, model_SE = model_SE, 
+#'          model_CP = model_CP, dateFoundCol = "DateFound", 
+#'          DWPCol = "S", sizeclassCol = NULL
+#'        )
+#'  }
+#'
 #' @export 
 #'
 estM <- function(data_CO, data_SS, data_DWP, frac = 1,
@@ -82,8 +118,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 
   # error-checking for match b/t DWP and CO data is done in DWPbyCarcass
   DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
-           sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol
-         )
+           sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol)
 
   est <- estg(data_CO = data_CO, data_SS = data_SS, 
            dateFoundCol = dateFoundCol, model_SE = model_SE, 
@@ -110,7 +145,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   return(out)
 }
 
-#' @title Assign DWP Value to Each Carcass
+#' @title Assign DWP value to each carcass
 #'
 #' @description Expand the density weighted proportion table to a value for 
 #'   each carcass (across multiple classes if desired) based on the unit where 
@@ -118,23 +153,35 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #'
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted 
 #'   proportion table 
+#'
 #' @param data_CO Carcass observation data
+#'
 #' @param unitCol Column name for the unit indicator (optional). If 
 #'   \code{NULL}, then is assumed to be the column that \code{data_DWP} and
 #'   \code{data_CO} share. If none are in common, error is thrown with no 
 #'   remedy. If data sets share more than one column, user is asked to input 
 #'   \code{unitCol}.
+#'
 #' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional.
+#'
 #' @param DWPCol Name of column where DWP values are stored (optional). Used
 #'  when there is more than one DWP column in \code{data_DWP} but analysis is
 #'  intended for a single class (i.e., no "size" is specified in data_CO).
-#'  If \code{sizeclassCol} is \code{NULL} and \code{DWPCol} is not provided, 
-#'  there is a check for possible DWPCols. If there is only one column with 
-#'  values in (0, 1], that's DWPCol. If there is not a unique column with 
+#'  If \code{sizeclassCol} is \code{NULL} and \code{DWPCol} is not provided,
+#'  there is a check for possible DWPCols. If there is only one column with
+#'  values in (0, 1], that's DWPCol. If there is not a unique column with
 #'  values in (0, 1], an error is returned.
+#'
 #' @return DWP value for each carcass 
-#' @examples NA
+#'
+#' @examples 
+#'  data(mock)
+#'  DWP <- DWPbyCarcass(data_DWP = mock$DWP, data_CO = mock$CO,
+#'           sizeclassCol = "Size", unitCol = "Unit")
+#'  DWP <- DWPbyCarcass(data_DWP = mock$DWP, data_CO = mock$CO,
+#'           unitCol = "Unit", DWPCol = "S")
+#'
 #' @export 
 #'
 DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL, 
@@ -178,42 +225,62 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
     colind <- match(data_CO[ , sizeclassCol], names(data_DWP))
     # and DWPbyCarc falls out naturally
     DWPbyCarc <- as.numeric(data_DWP[cbind(rowind, colind)])
-
+    if (!is.null(DWPCol) && !is.na(DWPCol)){
+      message("\nBoth sizeclassCol and DWPCol were provided by user. ",
+        "Assigning DWP by size.\n")
+    }
   } else { # assume same DWP for all sizes, so matching is by unit only
     # which column has the DWP data?
-    if (is.null(DWPCol)) {
+    if (!is.null(DWPCol)){
+      # DWPCol has been provided, but must be error-checked (as below)
+      if (length(DWPCol) > 1 || !is.character(DWPCol)){
+        stop("DWPCol must be the name of a single column in data_DWP or NULL")
+      }
+      if (!(DWPCol %in% colnames(data_DWP))){
+        stop("DWPCol must be the name of column in data_DWP or NULL")
+      }
+      if (!is.numeric(data_DWP[ , DWPCol]) || anyNA(data_DWP[ , DWPCol])){
+        stop("data_DWP[, DWPCol] must be numeric with no NA's")
+      }
+      if (sum(data_DWP[, DWPCol] <= 0 | data_DWP[, DWPCol] > 1) > 0){
+        stop("data_DWP[, DWPCol] values must be in (0, 1]")
+      }
+      DWPbyCarc <- data_DWP[ , DWPCol]
+    } else {
       possibleNames <- colnames(data_DWP)
-    } else { # DWPCol has been provided, but must be error-checked (as below)
-      possibleNames <- DWPCol 
-    }
-    for (coli in possibleNames){
-      DWPcolumn <- NULL
-      if (is.numeric(data_DWP[ , coli]) &&
-          all(data_DWP[ , coli] <= 1) && all(data_DWP[ , coli] > 0)){
-        # candidate DWP has been discovered
-        if (is.null(DWPcolumn)){
-          DWPcolumn <- coli
-        } else { # it is the second one found => conflict
-          stop(
-            "data_DWP improperly formatted. Must have columns corresponding ",
-            "to data_CO sizes or have a single column of DWP's to associate ",
-            "with units. Alternatively, specify DWP column via DWPCol arg"
-          )
+      for (coli in possibleNames){
+        if (is.numeric(data_DWP[ , coli]) && !anyNA(data_DWP[ , coli]) &&
+            all(data_DWP[ , coli] <= 1) && all(data_DWP[ , coli] > 0)){
+          # candidate DWP has been discovered
+          if (is.null(DWPCol)){
+            DWPCol <- coli
+          } else { # it is the second one found => conflict
+            stop(
+              "data_DWP must have columns corresponding to data_CO sizes or\n",
+              "have a single column of DWP's to associate with units.\n",
+              "Alternatively, user may specify name of DWP column as DWPCol"
+            )
+          }
         }
       }
+      # DWPCol and unitCol have been error-checked, so
+      rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+      DWPbyCarc <- as.numeric(data_DWP[rowind , DWPCol])
     }
-    # DWPCol and unitCol have been error-checked, so
-    rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-    DWPbyCarc <- as.numeric(data_DWP[rowind , DWPcolumn])
   }
   return(DWPbyCarc)
 }
 
 #' @title Summarize total mortality estimation
+#'
 #' @description \code{summary} defined for class \code{estM} objects
+#'
 #' @param object \code{estM} object
+#'
 #' @param ... arguments to pass down
+#'
 #' @param CL confidence level
+#'
 #' @export
 #'
 summary.estM <- function(object, ..., CL = 0.95){
