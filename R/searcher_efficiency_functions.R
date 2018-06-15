@@ -913,6 +913,7 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   if (length(seed) > 0 && !is.na(seed[1])){
     set.seed(as.numeric(seed[1]))
   }
+
   sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
