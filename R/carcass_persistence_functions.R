@@ -359,14 +359,14 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   output$ncell <- ncell
   output$cellwiseTable_ls <- cellTable_ls
   output$cellwiseTable_ab <- cellTable_ab
+  output$CL <- CL
   output$observations <- data[ , c(left, right)]
   output$carcCells <- carcCells
-  output$CL <- CL
   class(output) <- c("cpm", "list")
   attr(output, "hidden") <- c("data", "predictors_l", "predictors_s", 
                               "betahat_l", "betahat_s", "cellMM_l", 
                               "cellMM_s", "nbeta_l", "nbeta_s", "varbeta",
-                              "levels_l", "levels_s", "carcCells", "CL", 
+                              "levels_l", "levels_s", "carcCells", 
                               "AIC", "cells", "ncell", "observations"
                             )
   return(output)
@@ -790,7 +790,7 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
                     CL, quiet
                   ) 
   }
-
+  class(out) <- c("cpmSetSize", "list")
   return(out)
 }
 

@@ -7,7 +7,7 @@
 #'
 #' @param specificCell name of the specific cell to plot
 #'
-#' @param n number of draws to use to characterize the distributions
+#' @param nsim number of draws to use to characterize the distributions
 #'
 #' @param seed random number seed to use
 #'
@@ -21,7 +21,7 @@
 #'
 #' @export
 #'
-cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
+cpmCPCellPlot <- function(model, specificCell, col, lwd, nsim, seed,
                           axis_y = TRUE, axis_x = TRUE){
 
   dist <- model$dist
@@ -36,7 +36,7 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
   whichSpecificCell <- which(cellNames == specificCell)
   a <- cellwise[whichSpecificCell, "pda_median"]
   b <- cellwise[whichSpecificCell, "pdb_median"]
-  abs <- rcp(n, model, seed, type = "ppersist")
+  abs <- rcp(n = nsim, model = model, seed = seed, type = "ppersist")
   as <- abs[[whichSpecificCell]][ , "pda"]
   bs <- abs[[whichSpecificCell]][ , "pdb"]
 
@@ -83,7 +83,7 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
 #'
 #' @param x model of class cpm
 #'
-#' @param n number of draws to use to characterize the distributions
+#' @param nsim number of draws to use to characterize the distributions
 #'
 #' @param seed random number seed to use
 #'
@@ -100,7 +100,7 @@ cpmCPCellPlot <- function(model, specificCell, col, lwd, n, seed,
 #'
 #' @export
 #'
-plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
+plot.cpm <- function(x, nsim = 500, seed = NULL, col = "black", ...){
 
   model <- x
   name_l <- format(model$formula_l)
@@ -112,8 +112,7 @@ plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
 
   par(mar = c(0, 0, 0, 0), fig = c(0, 1, 0.95, 1))
   plot(1, 1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "", 
-    ylab = "", ylim = c(0, 1), xlim = c(0, 1)
-  )
+    ylab = "", ylim = c(0, 1), xlim = c(0, 1))
 
   points(c(0.01, 0.06), c(0.25, 0.25), type = 'l', lwd = 2, col = col)
   text(x = 0.07, y = 0.3, "= Median", adj = 0, cex = 0.9)
@@ -161,7 +160,7 @@ plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
     if (celli %in% leftCells){
       axis_y <- TRUE
     }
-    cpmCPCellPlot(model, specificCell, col, lwd = 3, n, seed, axis_y, axis_x)
+    cpmCPCellPlot(model, specificCell, col, lwd = 3, nsim, seed, axis_y, axis_x)
   }
 }
 
@@ -175,7 +174,7 @@ plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
 #' @param specificModel the name(s) or index number(s) of specific model(s) to 
 #'   restrict the plot
 #'
-#' @param n number of draws to use to characterize the distributions
+#' @param nsim number of draws to use to characterize the distributions
 #'
 #' @param seed random number seed to use for the models
 #'
@@ -195,7 +194,7 @@ plot.cpm <- function(x, n = 500, seed = 1, col = "black", ...){
 #'
 #' @export
 #'
-plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
+plot.cpmSet <- function(x, specificModel = NULL, nsim = 500, seed = 1,
                         col = c(exponential = rgb(0.80, 0.38, 0.56), 
                                 weibull = rgb(1.00, 0.76, 0.15),
                                 loglogistic = rgb(0.00, 1.00, 1.00),
@@ -394,7 +393,7 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
       }
 
       cpmSetSpecCPCellPlot(modelSet, specificModel, fullModel, specificCell, 
-        col, modelMatches, axis_x, axis_y, n, seed
+        col, modelMatches, axis_x, axis_y, nsim, seed
       )
     }
   }
@@ -416,7 +415,7 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
 #'
 #' @param modelMatches list of matching models for the modelSet
 #'
-#' @param n number of draws to use to characterize the distributions
+#' @param nsim number of draws to use to characterize the distributions
 #'
 #' @param seed random number seed to use
 #'
@@ -430,7 +429,7 @@ plot.cpmSet <- function(x, specificModel = NULL, n = 500, seed = 1,
 #'
 cpmSetSpecCPCellPlot <- function(modelSet, specificModel, fullModel, 
                                  specificCell, col, modelMatches, axis_x, 
-                                 axis_y, n, seed){ 
+                                 axis_y, nsim, seed){
  
   model_spec <- modelSet[[specificModel]] 
   model_full <- modelSet[[fullModel]]

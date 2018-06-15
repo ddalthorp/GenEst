@@ -54,7 +54,7 @@ tabPanel("Analyses",
   tabsetPanel(
     tabPanel("General Inputs", br(), br(),
       sidebarPanel(width = 3,
-        numericInput("n", "Number of Iterations:", value = 1000, 
+        numericInput("nsim", "Number of Iterations:", value = 1000,
           min = 1, max = 10000, step = 1
         ),
         numericInput("CL", "Confidence Level:", value = 0.95, min = 0, 

@@ -9,7 +9,7 @@
 #' @importFrom htmltools div img br HTML a
 #' @importFrom lubridate is.Date
 #' @importFrom matrixStats colCounts colMaxs rowCumprods rowProds rowCumsums 
-#'   rowDiffs rowQuantiles
+#'   rowDiffs rowQuantiles rowCounts
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny shinyApp shinyAppDir navbarPage tabPanel tabsetPanel
