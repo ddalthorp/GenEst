@@ -4,12 +4,12 @@
 \alias{plot.pkm}
 \title{Plot results of a single pk model}
 \usage{
-\method{plot}{pkm}(x, n = 1000, seed = 1, col = "black", ...)
+\method{plot}{pkm}(x, nsim = 1000, seed = NULL, col = "black", ...)
 }
 \arguments{
 \item{x}{model of class pkm}
 
-\item{n}{number of draws to use to characterize the distributions}
+\item{nsim}{number of draws to use to characterize the distributions}
 
 \item{seed}{random number seed to use}
 
@@ -21,5 +21,11 @@
 a plot
 }
 \description{
-Plot results of a single pk model
+Plot a single \code{\link{pkm}} model
+}
+\examples{
+  data(wind_RP)
+  mod <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+  plot(mod)
+
 }
