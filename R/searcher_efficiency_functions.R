@@ -571,7 +571,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   terms_p <- attr(terms(formula_p), "term.labels")
   if (length(formula_k) == 0){
     terms_k <- NULL
-  }else{
+  } else {
     terms_k <- attr(terms(formula_k), "term.labels")
   }
   nterms_p <- length(terms_p)
@@ -606,7 +606,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     for (kepti in 1:nkeepFormula_p){
       keptFormula_p[[kepti]] <- optionFormula_p[[whichKeepFormula_p[kepti]]]
     }
-  }else{
+  } else {
     keptFormula_p <- optionFormula_p
   }
   
@@ -910,7 +910,7 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   varbeta <- model$varbeta
   method <-  "svd"
 
-  if (length(seed) > 0 && !is.na(seed[1])){
+  if (length(seed) > 0 && !is.na(seed[1]){
     set.seed(as.numeric(seed[1]))
   }
   sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
@@ -988,12 +988,7 @@ pkmFail <- function(pkmod){
 #' @export
 #'
 pkmSetFail <- function(pkmSetToCheck){
-  nmodsInSet <- length(pkmSetToCheck)
-  out <- logical(nmodsInSet)
-  names(out) <- names(pkmSetToCheck)
-  for (modi in 1:nmodsInSet){
-    out[modi] <- pkmFail(pkmSetToCheck[[modi]])
-  }
+  out <- unlist(lapply(pkmSetToCheck, pkmFail)) # preserves names
   return(out)
 }
 
@@ -1011,8 +1006,7 @@ pkmSetFail <- function(pkmSetToCheck){
 pkmSetSizeFail <- function(pkmSetSizeToCheck){
   out <- lapply(pkmSetSizeToCheck, pkmSetFail)
   return(out)
-
-
+}
 
 #' @title Remove failed pkm models from a \code{\link{pkmSet}} object
 #'
@@ -1053,7 +1047,7 @@ pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
 #' @description  Compares all fitted models in a list and returns the model
 #'  with the greatest log-likelihood
 #'
-#' @param modelSet a list of fitted models with a \code{loglik} element. Models
+#' @param modSet a list of fitted models with a \code{loglik} element. Models
 #'  may be \code{pkm}, \code{cpm}, \code{survreg} objects or any objects with a
 #'  \code{loglik} component.
 #'
