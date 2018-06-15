@@ -1009,9 +1009,9 @@ pkmSetFail <- function(pkmSetToCheck){
 #' @export
 #'
 pkmSetSizeFail <- function(pkmSetSizeToCheck){
-  out <- lapply(pkmModSetSize, pkmSetFail)
+  out <- lapply(pkmSetSizeToCheck, pkmSetFail)
   return(out)
-}
+
 
 
 #' @title Remove failed pkm models from a \code{\link{pkmSet}} object
