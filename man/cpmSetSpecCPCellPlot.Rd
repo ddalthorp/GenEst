@@ -5,7 +5,7 @@
 \title{Plot cell-specific decay curve for carcass persistence}
 \usage{
 cpmSetSpecCPCellPlot(modelSet, specificModel, fullModel, specificCell, col,
-  modelMatches, axis_x, axis_y, n, seed)
+  modelMatches, axis_x, axis_y, nsim, seed)
 }
 \arguments{
 \item{modelSet}{model set of class cpmSet}
@@ -24,7 +24,7 @@ cpmSetSpecCPCellPlot(modelSet, specificModel, fullModel, specificCell, col,
 
 \item{axis_y}{logical of whether or not to plot the y axis}
 
-\item{n}{number of draws to use to characterize the distributions}
+\item{nsim}{number of draws to use to characterize the distributions}
 
 \item{seed}{random number seed to use}
 }

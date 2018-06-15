@@ -12,15 +12,16 @@ estgGeneric(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
 
 \item{days}{Search schedule data as a vector of days searched}
 
-\item{model_SE}{Searcher Efficiency model}
+\item{model_SE}{Searcher Efficiency model (\code{pkm} object)}
 
-\item{model_CP}{Carcass Persistence model}
+\item{model_CP}{Carcass Persistence model (\code{cpm} object)}
 
 \item{seed_SE}{seed for random draws of the SE model}
 
 \item{seed_CP}{seed for random draws of the CP model}
 
-\item{kFill}{value to fill in for missing k when not existing in the model}
+\item{kFill}{value to use for k if \code{model_SE} does not include an
+estimated k.}
 }
 \value{
 \code{gGeneric} object that is a list of [1] a list of g estimates,
@@ -53,7 +54,7 @@ The g estimated by \code{estgGeneric} is a generic aggregate detection
                 right = "FirstAbsentDecimalDays"
               )
   avgSS <- averageSS(mock$SS)
-  ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+  ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
                     seed_SE = 1, seed_CP = 1, kFill = NULL
                   )
 
