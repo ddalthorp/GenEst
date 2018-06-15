@@ -2,10 +2,10 @@
 % Please edit documentation in R/searcher_efficiency_figure_functions.R
 \name{pkmSetSpecParamPlot}
 \alias{pkmSetSpecParamPlot}
-\title{Plot parameter box plots for each cell within a model for either p or k 
+\title{Plot parameter box plots for each cell within a model for either p or k
   with comparison to the cellwise model}
 \usage{
-pkmSetSpecParamPlot(modelSet, specificModel, pk = "p", n, seed_spec,
+pkmSetSpecParamPlot(modelSet, specificModel, pk = "p", nsim, seed_spec,
   seed_full, col_spec, col_full)
 }
 \arguments{
@@ -15,7 +15,7 @@ pkmSetSpecParamPlot(modelSet, specificModel, pk = "p", n, seed_spec,
 
 \item{pk}{character of "p" or "k" to delineate between parameter graphed}
 
-\item{n}{number of draws to use to characterize the distributions}
+\item{nsim}{number of draws to use to characterize the distributions}
 
 \item{seed_spec}{random number seed to use for the specific model}
 
@@ -29,6 +29,6 @@ pkmSetSpecParamPlot(modelSet, specificModel, pk = "p", n, seed_spec,
 a specific parameter plot panel
 }
 \description{
-Plot parameter box plots for each cell within a model for either p or k 
+Plot parameter box plots for each cell within a model for either p or k
   with comparison to the cellwise model
 }

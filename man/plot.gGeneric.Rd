@@ -7,7 +7,7 @@
 \method{plot}{gGeneric}(x, sizeclassName = NULL, CL = 0.95, ...)
 }
 \arguments{
-\item{x}{\code{\link{ghatGeneric}} output}
+\item{x}{\code{\link{estgGeneric}} output}
 
 \item{sizeclassName}{name of the size class if it is to be added to the
 figure}
@@ -32,7 +32,7 @@ Plot method for a single generic \code{ghat} estimation
                 right = "FirstAbsentDecimalDays"
               )
   avgSS <- averageSS(mock$SS)
-  ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 
+  ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
                     seed_SE = 1, seed_CP = 1, kFill = NULL
                   )
   plot(ghatsGeneric)

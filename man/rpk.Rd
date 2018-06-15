@@ -2,9 +2,9 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{rpk}
 \alias{rpk}
-\title{Simulate p and k parameters from a fitted pk model.}
+\title{Simulate parameters from a fitted pk model}
 \usage{
-rpk(n = 1, model, seed = NULL, kFill = NA)
+rpk(n = 1, model, kFill = NULL, seed = NULL)
 }
 \arguments{
 \item{n}{the number of simulation draws}
@@ -12,17 +12,20 @@ rpk(n = 1, model, seed = NULL, kFill = NA)
 \item{model}{A \code{\link{pkm}} object (which is returned from 
 \code{pkm()})}
 
-\item{seed}{optional input to set the seed of the RNG}
-
 \item{kFill}{what value to fill k with if k was not estimated}
+
+\item{seed}{optional input to set the seed of the RNG}
 }
 \value{
 list of two matrices of \code{n} simulated \code{p} and \code{k} 
   for cells defined by the \code{model} object.
 }
 \description{
-Simulate p and k parameters from a fitted pk model.
+Simulate parameters from a \code{\link{pkm}} model object
 }
 \examples{
-  NA
+  data(wind_RP)
+  mod <- pkm(formula_p = p ~ 1, formula_k = k ~ Season, data = wind_RP$SE)
+  rpk(n = 10, model = mod)
+
 }
