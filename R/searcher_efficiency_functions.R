@@ -910,8 +910,8 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   varbeta <- model$varbeta
   method <-  "svd"
 
-  if (!is.null(seed) && !is.na(as.numeric(seed))){
-    set.seed(as.numeric(seed))
+  if (length(seed) > 0 && !is.na(seed[1]){
+    set.seed(as.numeric(seed[1]))
   }
   sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
@@ -924,12 +924,8 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   }
   colnames(sim_k) <- cellNames
 
-  output <- vector("list", ncell)
-  names(output) <- cellNames
-  for (celli in 1:ncell){
-    cellpk <- cbind(p = sim_p[ , celli], k = sim_k[ , celli])
-    output[[celli]] <-  cellpk
-  }
+  output0 <- lapply(cellNames, function(x) cbind(sim_p[, x], sim_k[, x]))
+  names(output0) <- cellNames
 
   return(output)
 }
