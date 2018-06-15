@@ -966,7 +966,7 @@ kSuggest <- function(obsData){
 #'
 #' @description Run a check the arg is a well-fit pkm object
 #'
-#' @param mod A \code{\link{pkm}} object to test
+#' @param pkmod A \code{\link{pkm}} object to test
 #'
 #' @return logical value indicating a failed fit (TRUE) or successful (FALSE)
 #'
