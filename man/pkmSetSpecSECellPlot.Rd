@@ -6,7 +6,7 @@
   with comparison to the cellwise model}
 \usage{
 pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, col_spec, col_full,
-  axis_y = TRUE, axis_x = TRUE, n, seed_spec, seed_full)
+  axis_y = TRUE, axis_x = TRUE, nsim, seed_spec, seed_full)
 }
 \arguments{
 \item{modelSet}{modelSet of class pkmSet}
@@ -23,7 +23,7 @@ pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, col_spec, col_full,
 
 \item{axis_x}{logical of whether or not to plot the x axis}
 
-\item{n}{number of draws to use to characterize the distributions}
+\item{nsim}{number of draws to use to characterize the distributions}
 
 \item{seed_spec}{random number seed to use for the specific model}
 

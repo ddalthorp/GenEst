@@ -10,8 +10,7 @@ pkmSetSizeFail(pkmSetSizeToCheck)
 \item{pkmSetSizeToCheck}{A \code{\link{pkmSetSize}} object to test}
 }
 \value{
-A list of vectors of logical values indicating if each of the 
-  models failed
+A list of logical vectors indicating which models failed
 }
 \description{
 Run a check on each model within a \code{\link{pkmSetSize}}
