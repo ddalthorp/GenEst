@@ -54,7 +54,7 @@ plot.pkm <- function(x, nsim = 1000, seed = NULL, col = "black", ...){
   text(x = 0.58, y = 0.3, text_label, adj = 0, cex = 0.75)
   text(x = 0.58, y = 0.7, text_model, adj = 0, cex = 0.75)
 
-  if (is.null(seed) || is.na(as.numeric(seed[1])){
+  if (is.null(seed) || is.na(seed[1])){
     seed <- sample(10000, 1)
   }
   par(mar = c(2,4,2,1))
