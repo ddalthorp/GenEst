@@ -146,7 +146,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     }
     formula_s <- formula(s ~ 1)
   } 
-
+#
   formulaRHS_l <- formula(delete.response(terms(formula_l)))
   preds_l <- all.vars(formulaRHS_l)
   if (length(preds_l) > 0){
