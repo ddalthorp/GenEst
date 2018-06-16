@@ -7,7 +7,7 @@
 pkmFail(pkmod)
 }
 \arguments{
-\item{mod}{A \code{\link{pkm}} object to test}
+\item{pkmod}{A \code{\link{pkm}} object to test}
 }
 \value{
 logical value indicating a failed fit (TRUE) or successful (FALSE)

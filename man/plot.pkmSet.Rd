@@ -4,9 +4,9 @@
 \alias{plot.pkmSet}
 \title{Plot results of a set of SE models}
 \usage{
-\method{plot}{pkmSet}(x, specificModel = NULL, nsim = 1000, seed_spec = 1,
-  seed_full = 1, col_spec = "black", col_full = "grey",
-  sizeclassName = NULL, ...)
+\method{plot}{pkmSet}(x, specificModel = NULL, nsim = 1000,
+  seed_spec = NULL, seed_full = NULL, col_spec = "black",
+  col_full = "grey", sizeclassName = NULL, ...)
 }
 \arguments{
 \item{x}{pk model set of class pkmSet}
