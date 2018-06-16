@@ -927,6 +927,7 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
   names(output) <- cellNames
 
+
   return(output)
 }
 
@@ -1021,7 +1022,6 @@ pkmSetSizeFail <- function(pkmSetSizeToCheck){
 pkmSetFailRemove <- function(pkmSetToTidy){
   out <- pkmSetToTidy[!pkmSetFail(pkmSetToTidy)]
   class(out) <- c("pkmSet", "list")
-  return(out)
 }
 
 #' @title Remove failed pkm models from a \code{\link{pkmSetSize}} object
