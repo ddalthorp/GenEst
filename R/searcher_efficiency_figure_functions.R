@@ -235,7 +235,7 @@ plot.pkmSet <- function(x, specificModel = NULL, nsim = 1000,
     x_s <- 0.1
     CL_split <- (1 - model_spec$CL) / 2
     probs_y <- c(0, CL_split, 0.25, 0.5, 0.75, 1 - CL_split, 1)
-    set.seed(12)	
+    set.seed(12)
     y_s <- quantile(rnorm(1000, 0.5, 0.15), probs = probs_y)
     med <- c(-0.1, 0.1)
     tb <- c(-0.07, 0.07)
