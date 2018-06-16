@@ -571,7 +571,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   terms_p <- attr(terms(formula_p), "term.labels")
   if (length(formula_k) == 0){
     terms_k <- NULL
-  }else{
+  } else {
     terms_k <- attr(terms(formula_k), "term.labels")
   }
   nterms_p <- length(terms_p)
@@ -606,7 +606,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     for (kepti in 1:nkeepFormula_p){
       keptFormula_p[[kepti]] <- optionFormula_p[[whichKeepFormula_p[kepti]]]
     }
-  }else{
+  } else {
     keptFormula_p <- optionFormula_p
   }
   
@@ -910,7 +910,7 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   varbeta <- model$varbeta
   method <-  "svd"
 
-    if (length(seed) > 0 && !is.na(seed[1])){
+  if (length(seed) > 0 && !is.na(seed[1])){
     set.seed(as.numeric(seed[1]))
   }
 
@@ -925,12 +925,8 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   }
   colnames(sim_k) <- cellNames
 
-  output <- vector("list", ncell)
-  names(output) <- cellNames
-  for (celli in 1:ncell){
-    cellpk <- cbind(p = sim_p[ , celli], k = sim_k[ , celli])
-    output[[celli]] <-  cellpk
-  }
+  output0 <- lapply(cellNames, function(x) cbind(sim_p[, x], sim_k[, x]))
+  names(output0) <- cellNames
 
   return(output)
 }
@@ -967,7 +963,7 @@ kSuggest <- function(obsData){
 #'
 #' @description Run a check the arg is a well-fit pkm object
 #'
-#' @param mod A \code{\link{pkm}} object to test
+#' @param pkmod A \code{\link{pkm}} object to test
 #'
 #' @return logical value indicating a failed fit (TRUE) or successful (FALSE)
 #'
@@ -993,12 +989,7 @@ pkmFail <- function(pkmod){
 #' @export
 #'
 pkmSetFail <- function(pkmSetToCheck){
-  nmodsInSet <- length(pkmSetToCheck)
-  out <- logical(nmodsInSet)
-  names(out) <- names(pkmSetToCheck)
-  for (modi in 1:nmodsInSet){
-    out[modi] <- pkmFail(pkmSetToCheck[[modi]])
-  }
+  out <- unlist(lapply(pkmSetToCheck, pkmFail)) # preserves names
   return(out)
 }
 
@@ -1014,12 +1005,7 @@ pkmSetFail <- function(pkmSetToCheck){
 #' @export
 #'
 pkmSetSizeFail <- function(pkmSetSizeToCheck){
-  nsizes <- length(pkmSetSizeToCheck)
-  out <- list() 
-  for (sci in names(pkmSetSizeToCheck)){ 
-    # check for failed models and associate names to results
-    out[[sci]] <- pkmSetFail(pkmSetSizeToCheck[[sci]]) 
-  }
+  out <- lapply(pkmSetSizeToCheck, pkmSetFail)
   return(out)
 }
 
@@ -1034,19 +1020,8 @@ pkmSetSizeFail <- function(pkmSetSizeToCheck){
 #' @export
 #'
 pkmSetFailRemove <- function(pkmSetToTidy){
-
-  nmodsInSet <- length(pkmSetToTidy)
-  fails <- pkmSetFail(pkmSetToTidy)
-  pass <- fails == FALSE
-  npasses <- sum(pass)
-  passes <- which(pass)
-  out <- vector("list", length = npasses)
-  names(out) <- names(pkmSetToTidy[passes])
-  for (passi in 1:npasses){
-    out[[passi]] <- pkmSetToTidy[[passes[passi]]]
-  }
+  out <- pkmSetToTidy[!pkmSetFail(pkmSetToTidy)]
   class(out) <- c("pkmSet", "list")
-  return(out)
 }
 
 #' @title Remove failed pkm models from a \code{\link{pkmSetSize}} object
@@ -1084,7 +1059,8 @@ pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
 #'
 fullMod <- function(modelSet){
   llvec <- sapply(modelSet, "[[", "loglik")
-  return(modelSet[[which(llvec == max(llvec))]])
+  out <- modelSet[[which(llvec == max(llvec))]]
+  return(out)
 }
 #' @title Calculate decayed searcher efficiency
 #'

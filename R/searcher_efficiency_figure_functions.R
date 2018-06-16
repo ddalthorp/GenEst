@@ -53,7 +53,7 @@ plot.pkm <- function(x, nsim = 1000, seed = NULL, col = "black", ...){
   text_model <- paste("Model: ", modelName, sep = "")
   text(x = 0.58, y = 0.3, text_label, adj = 0, cex = 0.75)
   text(x = 0.58, y = 0.7, text_model, adj = 0, cex = 0.75)
-  
+
   if (is.null(seed) || is.na(as.numeric(seed[1])){
     seed <- sample(10000, 1)
   }
@@ -220,7 +220,6 @@ plot.pkmSet <- function(x, specificModel = NULL, nsim = 1000,
     if (is.null(seed_full) || is.na(seed_full[1])){
       seed_full <- sample(10000, 1)
     }
-
     par(fig = c(0, 0.45, 0.7, 0.965), new = TRUE)
     pkmSetSpecParamPlot(modelSet, specificModel, "p", nsim, seed_spec, seed_full,
       col_spec, col_full)
@@ -236,8 +235,7 @@ plot.pkmSet <- function(x, specificModel = NULL, nsim = 1000,
     x_s <- 0.1
     CL_split <- (1 - model_spec$CL) / 2
     probs_y <- c(0, CL_split, 0.25, 0.5, 0.75, 1 - CL_split, 1)
-    set.seed(12)
-    y_s <- quantile(rnorm(1000, 0.5, 0.15), probs = probs_y)
+    qnorm(probs, 0.5, 0.15)
     med <- c(-0.1, 0.1)
     tb <- c(-0.07, 0.07)
     rect(x_s - 0.1, y_s[3], x_s + 0.1, y_s[5], lwd = 2, border = col_spec)
