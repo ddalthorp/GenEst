@@ -7,7 +7,7 @@
 fullMod(modelSet)
 }
 \arguments{
-\item{modSet}{a list of fitted models with a \code{loglik} element. Models
+\item{modelSet}{a list of fitted models with a \code{loglik} element. Models
 may be \code{pkm}, \code{cpm}, \code{survreg} objects or any objects with a
 \code{loglik} component.}
 }
