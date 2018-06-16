@@ -913,7 +913,6 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   if (length(seed) > 0 && !is.na(seed[1])){
     set.seed(as.numeric(seed[1]))
   }
-
   sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
@@ -925,8 +924,8 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   }
   colnames(sim_k) <- cellNames
 
-  output0 <- lapply(cellNames, function(x) cbind(sim_p[, x], sim_k[, x]))
-  names(output0) <- cellNames
+  output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
+  names(output) <- cellNames
 
   return(output)
 }
@@ -1022,6 +1021,7 @@ pkmSetSizeFail <- function(pkmSetSizeToCheck){
 pkmSetFailRemove <- function(pkmSetToTidy){
   out <- pkmSetToTidy[!pkmSetFail(pkmSetToTidy)]
   class(out) <- c("pkmSet", "list")
+  return(out)
 }
 
 #' @title Remove failed pkm models from a \code{\link{pkmSetSize}} object
