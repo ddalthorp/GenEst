@@ -1022,6 +1022,7 @@ pkmSetSizeFail <- function(pkmSetSizeToCheck){
 pkmSetFailRemove <- function(pkmSetToTidy){
   out <- pkmSetToTidy[!pkmSetFail(pkmSetToTidy)]
   class(out) <- c("pkmSet", "list")
+  return(out)
 }
 
 #' @title Remove failed pkm models from a \code{\link{pkmSetSize}} object
