@@ -927,7 +927,6 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
   names(output) <- cellNames
 
-
   return(output)
 }
 
