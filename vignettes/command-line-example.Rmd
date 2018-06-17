@@ -27,8 +27,8 @@ was constructed using **GenEst** version `r vers` on `r today`.
 
 ## Installation
 
-To obtain the most recent version of **GenEst**, download the most recent 
-version build from 
+To obtain the most recent version of **GenEst**, download the most recent
+version build from
 [GitHub](https://github.com/ddalthorp/GenEst/tree/master/)
 
 ## Data
@@ -157,7 +157,7 @@ creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
 plot(pkmModSet, specificModel = "p ~ Visibility + HabitatType; k ~ 1")
 ```
 
@@ -204,7 +204,7 @@ $s$ formulae and a singular size classification of carcasses). Note that
 we use $l$ and $s$ to reference $location$ and $scale$ as the parameters for
 survival models, following `survreg`, however we also provide an alternative
 parameterization (using parameters $a$ and $b$, referred to as "`ab`" or
-"ppersist"). As a first example, we will ignore the size category, use 
+"ppersist"). As a first example, we will ignore the size category, use
 intercept-only models for both $l$ and $s$, and use the Weibull distribution:
 
 ```{r}
@@ -344,10 +344,10 @@ names(cpmModSetSize[[1]])
 For the purposes of mortality estimation, we calculate carcass-specific
 detection probabilities (see below), which may be difficult to generalize,
 given the specific history of each observed carcass. Thus, we also provide
-a simple means to calculate generic detection probabilities that are 
-cell-specific, rather than carcass-specific. 
+a simple means to calculate generic detection probabilities that are
+cell-specific, rather than carcass-specific.
 
-For any estimation of detection probability ($\hat{g}$), we need to have 
+For any estimation of detection probability ($\hat{g}$), we need to have
 singular SE and CP models to use for each of the size classes. Here, we use
 the best-fit of the models for each size class:
 
@@ -355,19 +355,19 @@ the best-fit of the models for each size class:
 pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
             "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ HabitatType"
           )
-cpMods <- c("S" = "dist: exponential; l ~ Season; NULL", 
+cpMods <- c("S" = "dist: exponential; l ~ Season; NULL",
             "L" = "dist: exponential; l ~ 1; NULL",
             "M" = "dist: exponential; l ~ 1; NULL",
             "XL" = "dist: exponential; l ~ 1; NULL"
           )
 ```
 
-The `estgGenericSize` function produces `n` random draws of generic (i.e., 
+The `estgGenericSize` function produces `n` random draws of generic (i.e.,
 cell-specific, not carcass-sepecific) detection probabilities for
-each of the possible carcass cell combinations across the selected SE and CP 
+each of the possible carcass cell combinations across the selected SE and CP
 models across the size classes. `estgGeneric` is a single-size-class
-version of function and `estgGenericSize` actually loops over 
-`estgGeneric`. The generic $\hat{g}$ is estimated according to a particular 
+version of function and `estgGenericSize` actually loops over
+`estgGeneric`. The generic $\hat{g}$ is estimated according to a particular
 search schedule. When we pass `averageSS` a full `data_SS` table like we have
 here, it will assume that columns filled exclusively with 0s and 1s represent
 search schedules for units and will create the average search schedule across
@@ -399,19 +399,19 @@ plot(gsGeneric)
 
 ## Mortality Estimation
 
-When estimating mortality, detection probability is determined for 
-individualcarcasses based on the dates when they are observed, size class 
-values, associated covariates, the searcher efficiency and carcass persistence 
-models, and the search schedule. The carcass-specific detection probabilities 
-(as opposed to the generic/cell-specific detection probabilities above) are 
-therefore calculated before estimating the total mortality. 
+When estimating mortality, detection probability is determined for
+individualcarcasses based on the dates when they are observed, size class
+values, associated covariates, the searcher efficiency and carcass persistence
+models, and the search schedule. The carcass-specific detection probabilities
+(as opposed to the generic/cell-specific detection probabilities above) are
+therefore calculated before estimating the total mortality.
 Although it is possible to estimate these detection probabilities separately,
-they are best interpreted in the context of a full mortality estimation. 
+they are best interpreted in the context of a full mortality estimation.
 
-The `estM` function is the general wrapper function for estimating `M`, 
+The `estM` function is the general wrapper function for estimating `M`,
 whether for a single size class or multiple size classes. Prior to estimation,
 we need to reduce the model-set-size complexed to just a single chosen
-model per size class, corresponding to the `pkMods` and `cpMods` vectors 
+model per size class, corresponding to the `pkMods` and `cpMods` vectors
 given above. To reduce the model set complexity, we use the `trimSetSize`
 function:
 
@@ -420,7 +420,7 @@ pkmModSize <- trimSetSize(pkmModSetSize, pkMods)
 cpmModSize <- trimSetSize(cpmModSetSize, cpMods)
 ```
 
-In addition to the models and search schedule data, `estM` requires DWP 
+In addition to the models and search schedule data, `estM` requires DWP
 (Density Weighted Proportion) and CO (Carcass Observation) data. A required
 input is also the column names associated with the DWP value for each size
 class (argument `DWPCol` in `estM`):
@@ -431,15 +431,15 @@ data_DWP <- mock$DWP
 head(data_DWP)
 DWPcolnames <- names(pkmModSize)
 
-eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP, 
-        frac = 1, model_SE = pkmModSize, model_CP = cpmModSize, 
-        seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL, 
-        kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound", 
+eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP,
+        frac = 1, model_SE = pkmModSize, model_CP = cpmModSize,
+        seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
+        kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound",
         datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 1000)
 ```
 
 `estM` returns an object that contains the random draws of `pkm` and `cpm`
-parameters (named `pk` and `ab`, respectively) and the estimated carcass-level 
+parameters (named `pk` and `ab`, respectively) and the estimated carcass-level
 detection parameters (`g`), arrival intervals (`Aj`), and associated total
 mortality (`Mhat`) values for each simulation. These `Mhat` values should be
 considered in combination, and can be summarized and plotted simply:
@@ -453,9 +453,9 @@ plot(eM)
 
 It is possible to split the resulting mortality estimation into components
 that are denoted according to covariates in either the search schedule or
-carcass observation data sets. 
+carcass observation data sets.
 
-#### First, a temporal split:  
+#### First, a temporal split:
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 M_season <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
@@ -465,7 +465,7 @@ summary(M_season)
 plot(M_season)
 ```
 
-#### Next, a carcass split:  
+#### Next, a carcass split:
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
 M_class <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = NULL,
@@ -475,7 +475,7 @@ summary(M_class)
 plot(M_class)
 ```
 
-#### And finally, if two splits are included, the mortality estimation is 
+#### And finally, if two splits are included, the mortality estimation is
 expanded fully factorially:
 
 ```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
