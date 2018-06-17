@@ -428,7 +428,7 @@ command for each sub-model. To plot a specific single model from the full set,
 use the `specificModel` argument. For example, diagnostic plots for the model
 with the lowest AICc score are shown below:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
 plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ Visibility + Season")
 ```
 
@@ -468,7 +468,7 @@ routinely estimates `p` and `k` either well above or well below the full cell
 model but has fairly tight error bars--bad estimates but quite confident about
 them!
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
 plot(pkSet_sml, specificModel = "p ~ Season; k ~ Season")
 ```
 
@@ -537,7 +537,7 @@ cp_smlCandidates
 
 These can be compared in graphs as follows:
 
-```{r}
+```{r, eval = F}
 plot(cpSet_sml, specificModel = cp_smlCandidates)
 ```
 
