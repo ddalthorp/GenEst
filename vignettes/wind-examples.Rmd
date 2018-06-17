@@ -459,7 +459,7 @@ In this example, the second best model in terms of AICc
 (`p ~ Visibility; k ~ 1`, with $latex\Delta$AICc = 1.596) is able to succesfully
 estimate `k` while still providing a good fit for `p`.
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
 plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ 1")
 ```
 
