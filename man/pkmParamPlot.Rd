@@ -4,16 +4,12 @@
 \alias{pkmParamPlot}
 \title{Plot parameter box plots for each cell for either p or k}
 \usage{
-pkmParamPlot(model, pk = "p", nsim, seed, col)
+pkmParamPlot(model, pk = "p", col)
 }
 \arguments{
 \item{model}{model of class pkm}
 
 \item{pk}{character of "p" or "k" to delineate between parameter graphed}
-
-\item{nsim}{number of draws to use to characterize the distributions}
-
-\item{seed}{random number seed to use}
 
 \item{col}{color to use}
 }

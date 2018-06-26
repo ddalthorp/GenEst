@@ -19,7 +19,7 @@
 #'   plotOutput htmlOutput sidebarPanel sidebarLayout mainPanel
 #'   removeNotification outputOptions isolate updateTabsetPanel renderPlot
 #'   updateNumericInput actionButton checkboxGroupInput downloadButton
-#'   downloadHandler column fluidRow textOutput
+#'   downloadHandler column fluidRow textOutput runApp
 #' @importFrom shinydashboard box
 #' @importFrom stats .getXlevels approxfun delete.response formula median
 #'   model.matrix na.omit optim pgamma pnorm qnorm quantile reformulate

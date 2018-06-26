@@ -4,8 +4,7 @@
 \alias{pkmSECellPlot}
 \title{Plot cell-specific decay curve for searcher efficiency}
 \usage{
-pkmSECellPlot(model, specificCell, col, nsim, seed, axis_y = TRUE,
-  axis_x = TRUE)
+pkmSECellPlot(model, specificCell, col, axis_y = TRUE, axis_x = TRUE)
 }
 \arguments{
 \item{model}{model of class pkm}
@@ -13,10 +12,6 @@ pkmSECellPlot(model, specificCell, col, nsim, seed, axis_y = TRUE,
 \item{specificCell}{name of the specific cell to plot}
 
 \item{col}{color to use}
-
-\item{nsim}{number of draws to use to characterize the distributions}
-
-\item{seed}{random number seed to use}
 
 \item{axis_y}{logical of whether or not to plot the y axis}
 

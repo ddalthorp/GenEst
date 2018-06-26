@@ -4,18 +4,19 @@
 \alias{matchCells}
 \title{Match cells between models.}
 \usage{
-matchCells(model_spec, model_full)
+matchCells(specific, modelSet)
 }
 \arguments{
-\item{model_spec}{specific model compared against the full}
+\item{specific}{specific model compared against the full set}
 
-\item{model_full}{full model to compare to the specific}
+\item{modelSet}{full model set to compare to the specific}
 }
 \value{
 vector of length equal to the number of cells in the full model, 
   each element containing the related cell name in the reduced model
 }
 \description{
-Match cells between a (potentially) reduced and full model
-  Terms are automatically alphabatized to insure matching across models.
+Match cells between a (potentially) reduced and the full model
+  set. Terms are automatically alphabatized to insure matching across 
+  models.
 }

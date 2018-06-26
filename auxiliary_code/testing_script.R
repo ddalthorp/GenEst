@@ -7,10 +7,11 @@ data_CO <- mock$CO
 data_SS <- mock$SS
 data_DWP <- mock$DWP
 
-model_SE <- pkm(formula_p = p ~ 1 , 
+model_SE <- pkmSet(formula_p = p ~ Visibility*HabitatType, 
              formula_k = k ~ 1,
              data = data_SE
             )
+plot(model_SE)
 model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
              data = data_CP,
              left = "LastPresentDecimalDays", 

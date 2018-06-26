@@ -4,28 +4,16 @@
 \alias{plot.pkmSet}
 \title{Plot results of a set of SE models}
 \usage{
-\method{plot}{pkmSet}(x, specificModel = NULL, nsim = 1000,
-  seed_spec = NULL, seed_full = NULL, col_spec = "black",
-  col_full = "grey", sizeclassName = NULL, ...)
+\method{plot}{pkmSet}(x, specificModel = NULL, cols = SEcols(), ...)
 }
 \arguments{
 \item{x}{pk model set of class pkmSet}
 
-\item{specificModel}{the name(s) or index number(s) of specific model(s) to
-restrict the plot}
+\item{specificModel}{the name(s) or index number(s) of specific model(s)
+to restrict the plot}
 
-\item{nsim}{number of draws to use to characterize the distributions}
-
-\item{seed_spec}{random number seed to use for the specific model}
-
-\item{seed_full}{random number seed to use for the full model}
-
-\item{col_spec}{color to use for the specific model}
-
-\item{col_full}{color to use for the specific model}
-
-\item{sizeclassName}{name of the size class if it is to be added to the
-figure}
+\item{cols}{named vector of colors to use for the specific and reference
+models}
 
 \item{...}{to be sent to subfunctions}
 }
