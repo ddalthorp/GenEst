@@ -18,7 +18,7 @@ License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:
-    cbinom (>= 1.1),
+    cbinom (>= 1.2),
     devtools,
     digest,
     DT,	
