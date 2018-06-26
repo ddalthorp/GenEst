@@ -1,0 +1,154 @@
+#' @title Update the reactive value list when SE data are read in
+#'
+#' @description Update the rv list when the SE data file is input
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_SE <- function(rv, input){
+  rv$data_SE <- read.csv(input$file_SE$datapath, stringsAsFactors = FALSE)
+  rv$colNames_SE <- colnames(rv$data_SE)
+  rv$colNames_all <- updateColNames_all(rv)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
+  rv$colNames_SE_sel <- c(rv$sizeclassCol)
+  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
+  return(rv)
+}
+
+#' @title Update the reactive value list when CP data are read in
+#'
+#' @description Update the rv list when the CP data file is input
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_CP <- function(rv, input){
+  rv$data_CP <- read.csv(input$file_CP$datapath, stringsAsFactors = FALSE)
+  rv$colNames_CP <- colnames(rv$data_CP)
+  rv$colNames_all <- updateColNames_all(rv)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
+  rv$colNames_CP_sel <- c(rv$sizeclassCol)
+  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  return(rv)
+}
+
+#' @title Update the reactive value list when SS data are read in
+#'
+#' @description Update the rv list when the SS data file is input
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_SS <- function(rv, input){
+  rv$data_SS <- read.csv(input$file_SS$datapath, stringsAsFactors = FALSE)
+  rv$colNames_SS <- colnames(rv$data_SS)
+  return(rv)
+}
+
+#' @title Update the reactive value list when DWP data are read in
+#'
+#' @description Update the rv list when the DWP data file is input
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_DWP <- function(rv, input){
+  rv$data_DWP <- read.csv(input$file_DWP$datapath, stringsAsFactors = FALSE)
+  rv$colNames_DWP <- colnames(rv$data_DWP)
+  return(rv)
+}
+
+#' @title Update the reactive value list when CO data are read in
+#'
+#' @description Update the rv list when the CO data file is input
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_CO <- function(rv, input){
+  rv$data_CO <- read.csv(input$file_CO$datapath, stringsAsFactors = FALSE)
+  rv$colNames_CO <- colnames(rv$data_CO)
+  rv$colNames_COdates <- dateCols(rv$data_CO)
+  rv$colNames_all <- updateColNames_all(rv)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
+  return(rv)
+}
+
+
+#' @title Run the SE Models
+#'
+#' @description Use the inputs to run the SE models requested by the UI
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_SE <- function(rv, input){
+  rv$obsCols_SE <- input$obsCols_SE
+  rv$preds_SE <- input$preds_SE
+  rv$predictors_SE <- prepPredictors(rv$preds_SE)
+  rv$formula_p <- formula(paste0("p~", rv$predictors_SE))
+  rv$formula_k <- formula(paste0("k~", rv$predictors_SE)) 
+  rv$kFixedChoice <- input$kFixedChoice
+  rv$kFixed <- setkFix(input$kFixedChoice, input$kFixed)
+  rv$CL <- input$CL
+  rv$sizeclassCol <- input$sizeclassCol
+  rv$mods_SE <- suppressWarnings(
+                  pkmSetSize(formula_p = rv$formula_p,
+                    formula_k = rv$formula_k, data = rv$data_SE, 
+                    obsCol = rv$obsCols_SE, sizeclassCol = rv$sizeclassCol,
+                    kFixed = rv$kFixed, kInit = 0.7, CL = rv$CL, 
+                    quiet = TRUE
+                  ) 
+                ) 
+  if (!all(unlist(pkmSetSizeFail(rv$mods_SE)))){
+    rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
+    rv$sizeclasses_SE <- rv$sizeclasses
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$tabfig_sizeclassSE)
+    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass]], TRUE)
+    rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
+    rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass]])[rv$modOrder_SE]
+    rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
+    rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
+    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
+    rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
+    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
+    rv$modTab_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+    rv$figH_SE <- setFigH(rv$modSet_SE)
+    rv$figW_SE <- setFigW(rv$modSet_SE)
+  }
+  return(rv)
+}
+
+
+
+

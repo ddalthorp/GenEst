@@ -4,10 +4,6 @@
 #'
 #' @param x model of class pkm
 #'
-#' @param nsim number of draws to use to characterize the distributions
-#'
-#' @param seed random number seed to use
-#'
 #' @param col color to use
 #'
 #' @param ... arguments to be passed to sub functions
@@ -21,7 +17,7 @@
 #'
 #' @export
 #'
-plot.pkm <- function(x, nsim = 1000, seed = NULL, col = "black", ...){
+plot.pkm <- function(x, col = "black", ...){
   model <- x
   if (anyNA(model$varbeta) || sum(diag(model$varbeta) < 0) > 0){
     stop("Variance in pkm not well-defined. Cannot plot.")
@@ -54,15 +50,12 @@ plot.pkm <- function(x, nsim = 1000, seed = NULL, col = "black", ...){
   text(x = 0.58, y = 0.3, text_label, adj = 0, cex = 0.75)
   text(x = 0.58, y = 0.7, text_model, adj = 0, cex = 0.75)
 
-  if (is.null(seed) || is.na(seed[1])){
-    seed <- sample(10000, 1)
-  }
   par(mar = c(2,4,2,1))
   par(fig = c(0, 0.5, 0.725, 0.975), new = TRUE)
-  pkmParamPlot(model = model, pk = "p", nsim = nsim, seed = seed, col = col)
+  pkmParamPlot(model = model, pk = "p", col = col)
 
   par(fig = c(0.5, 1, 0.725, 0.975), new = TRUE)
-  pkmParamPlot(model = model, pk = "k", nsim = nsim, seed = seed, col = col)
+  pkmParamPlot(model = model, pk = "k", col = col)
 
   par(fig = c(0, 1, 0, 0.75), new = TRUE)
   par(mar = c(1, 1, 1, 1))
@@ -102,195 +95,8 @@ plot.pkm <- function(x, nsim = 1000, seed = NULL, col = "black", ...){
       axis_y <- TRUE
     }
     pkmSECellPlot(model = model, specificCell = specificCell, col = col,
-      nsim = nsim, seed = seed, axis_y = axis_y, axis_x = axis_x)
+      axis_y = axis_y, axis_x = axis_x)
   }
-}
-
-#' @title Plot results of a set of SE models
-#'
-#' @description Produce a set of figures for a set of SE models, as fit by
-#'   \code{\link{pkmSet}}
-#'
-#' @param x pk model set of class pkmSet
-#'
-#' @param specificModel the name(s) or index number(s) of specific model(s) to
-#'   restrict the plot
-#'
-#' @param nsim number of draws to use to characterize the distributions
-#'
-#' @param seed_spec random number seed to use for the specific model
-#'
-#' @param seed_full random number seed to use for the full model
-#'
-#' @param col_spec color to use for the specific model
-#'
-#' @param col_full color to use for the specific model
-#'
-#' @param sizeclassName name of the size class if it is to be added to the
-#'   figure
-#'
-#' @param ... to be sent to subfunctions
-#'
-#' @return a set of plots
-#'
-#' @examples
-#'   data(wind_RP)
-#'   mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season,
-#'            data = wind_RP$SE
-#'          )
-#'   plot(mod)
-#'
-#' @export
-#'
-plot.pkmSet <- function(x, specificModel = NULL, nsim = 1000,
-                        seed_spec = NULL, seed_full = NULL, col_spec = "black",
-                        col_full = "grey", sizeclassName = NULL, ...){
-
-  modelSet <- x
-  if (!is.null(specificModel) && anyNA(specificModel)){
-    stop(
-      "specificModel must be NULL or a vector of names of models to consider.",
-      "\nNAs not allowed."
-    )
-  }
-  if (length(specificModel) > 0){
-    if (is.numeric(specificModel)){
-      if (anyNA(specificModel)){
-        warning("specificModel cannot be NA. NA models removed.")
-        specificModel <- specificModel[!is.na(specificModel)]
-        if (length(specificModel) == 0){
-          stop("No valid specificModel")
-        }
-      }
-      if (any(specificModel > length(modelSet))){
-        stop(paste0("there are only ", length(modelSet), " model choices."))
-      }
-      specificModel <- names(modelSet)[specificModel]
-    }
-    if (any(specificModel %in% names(modelSet)) == FALSE){
-      stop("Selected model not in set. To see options use names(modelSet).")
-    }
-    modNames <- specificModel
-    for (modi in modNames){
-      if (pkmFail(modelSet[[modi]])){
-        stop("specificModel ", modi, " is not a well-fit pk model")
-      }
-    }
-  }
-  modelSet <- pkmSetFailRemove(modelSet)
-  modelSet <- modelSet[order(sapply(modelSet, "[[", "AICc"))]
-  class(modelSet) <- c("pkmSet", "list")
-
-  nmod <- length(modelSet)
-  modNames <- names(modelSet)
-  model_full <- fullMod(modelSet)
-
-  for (modi in 1:nmod){
-
-    if (modi == 2){
-      devAskNewPage(TRUE)
-    }
-    specificModel <- modNames[modi]
-    model_spec <- modelSet[[specificModel]]
-
-    par(mar = c(0, 0, 0, 0))
-    par(fig = c(0, 1, 0.935, 1))
-    plot(1, 1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "",
-      ylab = "", ylim = c(0, 1), xlim = c(0, 1)
-    )
-
-    rect(0.01, 0.325, 0.06, 0.525, lwd = 2, col = col_spec, border = NA)
-    text(x = 0.07, y = 0.45, "= Selected Model", adj = 0, cex = 0.9)
-    rect(0.3, 0.325, 0.35, 0.525, lwd = 2, col = col_full, border = NA)
-    text(x = 0.36, y = 0.45, "= Full Model", adj = 0, cex = 0.9)
-
-    labelsText <- paste(model_full$predictors, collapse = ".")
-    text_label <- paste("Labels: ", labelsText, sep = "")
-    text_model <- paste("Model: ", specificModel, sep = "")
-    text(x = 0.52, y = 0.45, text_label, adj = 0, cex = 0.75)
-    text(x = 0.52, y = 0.7, text_model, adj = 0, cex = 0.75)
-
-    if (!is.null(sizeclassName)){
-      text_sc <- paste("Size class: ", sizeclassName, sep = "")
-      text(x = 0.01, y = 0.8, text_sc, adj = 0, cex = 1, font = 1)
-    }
-    if (is.null(seed_spec) || is.na(seed_spec[1])){
-      seed_spec <- sample(10000, 1)
-    }
-    if (is.null(seed_full) || is.na(seed_full[1])){
-      seed_full <- sample(10000, 1)
-    }
-    par(fig = c(0, 0.45, 0.7, 0.965), new = TRUE)
-    pkmSetSpecParamPlot(modelSet, specificModel, "p", nsim, seed_spec, seed_full,
-      col_spec, col_full)
-    par(fig = c(0.45, 0.9, 0.7, 0.965), new = TRUE)
-    pkmSetSpecParamPlot(modelSet, specificModel, "k", nsim, seed_spec, seed_full,
-      col_spec, col_full)
-
-    par(mar = c(2,0,2,0))
-    par(fig = c(0.92, 1, 0.725, 0.9), new = TRUE)
-    plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "",
-      ylab = "", ylim = c(0, 1), xlim = c(0, 1)
-    )
-    x_s <- 0.1
-    CL_split <- (1 - model_spec$CL) / 2
-    probs_y <- c(0, CL_split, 0.25, 0.5, 0.75, 1 - CL_split, 1)
-    set.seed(12)
-    y_s <- quantile(rnorm(1000, 0.5, 0.15), probs = probs_y)
-    med <- c(-0.1, 0.1)
-    tb <- c(-0.07, 0.07)
-    rect(x_s - 0.1, y_s[3], x_s + 0.1, y_s[5], lwd = 2, border = col_spec)
-    points(x_s + med, rep(y_s[4], 2), type = 'l', lwd = 2, col = col_spec)
-    points(x_s + tb, rep(y_s[2], 2), type = 'l', lwd = 2, col = col_spec)
-    points(x_s + tb, rep(y_s[6], 2), type = 'l', lwd = 2, col = col_spec)
-    points(rep(x_s, 3), y_s[1:3], type = 'l', lwd = 2, col = col_spec)
-    points(rep(x_s, 3), y_s[5:7], type = 'l', lwd = 2, col = col_spec)
-    num_CL <- c(CL_split, 1 - CL_split) * 100
-    text_CL <- paste(num_CL, "%", sep = "")
-    text_ex <- c("min", text_CL[1], "25%", "50%", "75%", text_CL[2], "max")
-    text(x_s + 0.2, y_s, text_ex, cex = 0.65, adj = 0)
-
-    par(fig = c(0, 1, 0, 0.65), new = TRUE)
-    par(mar = c(1, 1, 1, 1))
-    plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "",
-      ylab = ""
-    )
-    mtext(side = 1, "Search", line = -0.25, cex = 1.5)
-    mtext(side = 2, "Searcher Efficiency", line = -0.25, cex = 1.5)
-
-    ncell <- model_full$ncell
-    cellNames <- model_full$cells[ , "CellNames"]
-
-    nmatrix_col <- min(3, ncell)
-    nmatrix_row <- ceiling(ncell / nmatrix_col)
-    figxspace <- 0.95 / nmatrix_col
-    figyspace <- 0.65 / nmatrix_row
-    x1 <- rep(figxspace * ((1:nmatrix_col) - 1), nmatrix_row) + 0.035
-    x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.035
-    y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.03
-    y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.03
-    bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
-    leftCells <- which(1:ncell %% nmatrix_col == 1)
-    if (length(leftCells) == 0){
-      leftCells <- 1
-    }
-    for (celli in 1:ncell){
-      par(mar = c(2.5, 2, 0, 0))
-      par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = T)
-      specificCell <- cellNames[celli]
-      axis_x <- FALSE
-      axis_y <- FALSE
-      if (celli %in% bottomCells){
-        axis_x <- TRUE
-      }
-      if (celli %in% leftCells){
-        axis_y <- TRUE
-      }
-      pkmSetSpecSECellPlot(modelSet, specificModel, specificCell,
-        col_spec, col_full, axis_y, axis_x, nsim, seed_spec, seed_full)
-    }
-  }
-  devAskNewPage(FALSE)
 }
 
 #' Plot parameter box plots for each cell for either p or k
@@ -299,25 +105,21 @@ plot.pkmSet <- function(x, specificModel = NULL, nsim = 1000,
 #'
 #' @param pk character of "p" or "k" to delineate between parameter graphed
 #'
-#' @param nsim number of draws to use to characterize the distributions
-#'
-#' @param seed random number seed to use
-#'
 #' @param col color to use
 #'
 #' @return a parameter plot panel
 #'
 #' @export
 #'
-pkmParamPlot <- function(model, pk = "p", nsim, seed, col){
+pkmParamPlot <- function(model, pk = "p", col){
 
   ncell <- model$ncell
   cellNames <- model$cells[ , "CellNames"]
   predictors <- model$predictors
   CL <- model$CL
   probs <- c(0, (1 - CL) / 2, 0.25, 0.5, 0.75, 1 - (1 - CL) / 2, 1)
-  pks <- rpk(n = nsim, model = model, seed = seed)
-  pks_full <- rpk(n = nsim, model = model, seed = seed)
+  pks <- rpk(n = 1000, model = model, seed = 1)
+  pks_full <- rpk(n = 1000, model = model, seed = 1)
 
   if (pk == "p"){
     maxy <- 1
@@ -357,16 +159,11 @@ pkmParamPlot <- function(model, pk = "p", nsim, seed, col){
 
 }
 
-
 #' Plot cell-specific decay curve for searcher efficiency
 #'
 #' @param model model of class pkm
 #'
 #' @param specificCell name of the specific cell to plot
-#'
-#' @param nsim number of draws to use to characterize the distributions
-#'
-#' @param seed random number seed to use
 #'
 #' @param col color to use
 #'
@@ -378,8 +175,8 @@ pkmParamPlot <- function(model, pk = "p", nsim, seed, col){
 #'
 #' @export
 #'
-pkmSECellPlot <- function(model, specificCell, col, nsim, seed,
-                          axis_y = TRUE, axis_x = TRUE){
+pkmSECellPlot <- function(model, specificCell, col, axis_y = TRUE, 
+                          axis_x = TRUE){
 
   CL <- model$CL
   cellwise <- model$cellwiseTable
@@ -398,10 +195,10 @@ pkmSECellPlot <- function(model, specificCell, col, nsim, seed,
   whichSpecificCell <- which(cellNames == specificCell)
   p <- cellwise[whichSpecificCell, "p_median"]
   k <- cellwise[whichSpecificCell, "k_median"]
-  pks <- rpk(n = nsim, model = model, seed = seed)
+  pks <- rpk(n = 1000, model = model, seed = 1)
   ps <- pks[[whichSpecificCell]][ , "p"]
   ks <- pks[[whichSpecificCell]][ , "k"]
-  searchTab <- matrix(1:nobs, nrow = nsim, ncol = nobs, byrow = TRUE)
+  searchTab <- matrix(1:nobs, nrow = length(ps), ncol = nobs, byrow = TRUE)
   ktab <- ks^(searchTab - 1)
   SE <- ps * ktab
   y <- apply(SE, 2, median)
@@ -436,9 +233,144 @@ pkmSECellPlot <- function(model, specificCell, col, nsim, seed,
 
 }
 
+#' @title Plot results of a set of SE models
+#'
+#' @description Produce a set of figures for a set of SE models, as fit by
+#'   \code{\link{pkmSet}}
+#'
+#' @param x pk model set of class pkmSet
+#'
+#' @param specificModel the name(s) or index number(s) of specific model(s)
+#'   to restrict the plot
+#'
+#' @param cols named vector of colors to use for the specific and reference
+#'   models
+#'
+#' @param ... to be sent to subfunctions
+#'
+#' @return a set of plots
+#'
+#' @examples
+#'   data(wind_RP)
+#'   mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season,
+#'            data = wind_RP$SE
+#'          )
+#'   plot(mod)
+#'
+#' @export
+#'
+plot.pkmSet <- function(x, specificModel = NULL, cols = SEcols(), ...){
 
-#' Plot parameter box plots for each cell within a model for either p or k
-#'   with comparison to the cellwise model
+  modelSet <- x
+  specMods <- checkSpecificModelSE(modelSet, specificModel)
+  modSet <- tidyModelSetSE(modelSet)
+  nmod <- length(specMods)
+  for (modi in 1:nmod){
+    if (modi == 2){
+      devAskNewPage(TRUE)
+    }
+    plotSEFigure(modSet, specMods[modi], cols)
+  }
+  devAskNewPage(FALSE)
+}
+
+
+#' @title Plot results of a single SE model in a set 
+#'
+#' @description Produce a figures for a specific SE model, as fit by
+#'   \code{\link{pkmSet}}
+#'
+#' @param modelSet pk model set of class \code{pkmSet}
+#'
+#' @param specificModel the name of the specific model for the plot
+#'
+#' @param plotPage numeric indicator of which of the models in the set
+#'
+#' @param cols named vector of colors to use for the specific and reference
+#'   models
+#'
+#' @return a plot
+#'
+#' @export
+#'
+plotSEFigure <- function(modelSet, specificModel, cols){
+  
+  model_ref <- refMod(modelSet)
+  model_spec <- modelSet[[specificModel]]
+  plotSEHeader(modelSet, specificModel, cols)
+  plotSEBoxPlots(modelSet, specificModel, cols)
+  plotSEBoxTemplate(model_spec, cols["spec"])
+  plotSECells(modelSet, specificModel, model_ref, cols)
+
+}
+
+
+#' @title The SE plot header
+#'
+#' @description Produce the header for an SE plot
+#'
+#' @param modelSet pk model set of class pkmSet
+#'
+#' @param specificModel the name of the specific model for the plot
+#'
+#' @param cols named vector of colors to use for the specific and reference
+#'   models
+#'
+#' @param sizeclassName name of the size class if it is to be added to the
+#'   figure
+#'
+#' @return a plot
+#'
+#' @export
+#'
+plotSEHeader <- function(modelSet, specificModel, cols = SEcols()){
+  par(mar = c(0, 0, 0, 0))
+  par(fig = c(0, 1, 0.935, 1))
+  plot(1, 1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "",
+    ylab = "", ylim = c(0, 1), xlim = c(0, 1)
+  )
+
+  rect(0.01, 0.325, 0.06, 0.525, lwd = 2, col = cols["spec"], border = NA)
+  text(x = 0.07, y = 0.45, "= Selected Model", adj = 0, cex = 0.9)
+  rect(0.3, 0.325, 0.35, 0.525, lwd = 2, col = cols["ref"], border = NA)
+  text(x = 0.36, y = 0.45, "= Reference Model", adj = 0, cex = 0.9)
+
+  labelsText <- paste(modelSetPredictors(modelSet), collapse = ".")
+  text_label <- paste("Labels: ", labelsText, sep = "")
+  text_model <- paste("Model: ", specificModel, sep = "")
+  text(x = 0.52, y = 0.3, text_label, adj = 0, cex = 0.75)
+  text(x = 0.52, y = 0.7, text_model, adj = 0, cex = 0.75)
+
+}
+
+#' @title p and k box plots for an SE model set
+#'
+#' @description Plot parameter box plots for each cell within a model for 
+#'   both p and k with comparison to the cellwise model
+#'
+#' @param modelSet modelSet of class pkmSet
+#'
+#' @param specificModel name of the specific submodel to plot
+#'
+#' @param cols named vector of colors to use for the specific and reference
+#'   models
+#'
+#' @return a set of parameter plot panels
+#'
+#' @export
+#'
+plotSEBoxPlots <- function(modelSet, specificModel, cols){
+  par(mar = c(0,0,0,0))
+  par(fig = c(0, 0.45, 0.7, 0.965), new = TRUE)
+  pkmSetSpecParamPlot(modelSet, specificModel, "p", cols)
+  par(fig = c(0.45, 0.9, 0.7, 0.965), new = TRUE)
+  pkmSetSpecParamPlot(modelSet, specificModel, "k", cols)
+}
+
+#' @title p or k box plots for an SE model set
+#'
+#' @description Plot parameter box plots for each cell within a model for 
+#'   either p or k with comparison to the cellwise model
 #'
 #' @param modelSet modelSet of class pkmSet
 #'
@@ -446,96 +378,202 @@ pkmSECellPlot <- function(model, specificCell, col, nsim, seed,
 #'
 #' @param pk character of "p" or "k" to delineate between parameter graphed
 #'
-#' @param nsim number of draws to use to characterize the distributions
-#'
-#' @param seed_spec random number seed to use for the specific model
-#'
-#' @param seed_full random number seed to use for the full model
-#'
-#' @param col_spec color to use for the specific model
-#'
-#' @param col_full color to use for the specific model
+#' @param cols named vector of colors to use for the specific and reference
+#'   models
 #'
 #' @return a specific parameter plot panel
 #'
 #' @export
 #'
-pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", nsim,
-                                seed_spec, seed_full, col_spec, col_full){
+pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
 
   model_spec <- modelSet[[specificModel]]
-  model_full <- fullMod(modelSet)
+  model_ref <- refMod(modelSet)
 
-  CL <- model_full$CL
+  CL <- model_ref$CL
   probs <- c(0, (1 - CL) / 2, 0.25, 0.5, 0.75, 1 - (1 - CL) / 2, 1)
   observations_spec <- model_spec$observations
-  observations_full <- model_full$observations
+  observations_ref <- model_ref$observations
   ncell_spec <- model_spec$ncell
-  ncell_full <- model_full$ncell
-  cellNames_full <- model_full$cells[ , "CellNames"]
+  ncell_ref <- model_ref$ncell
+  cellNames_ref <- model_ref$cells[ , "CellNames"]
   predictors_spec <- model_spec$predictors
-  predictors_full <- model_full$predictors
+  predictors_ref <- model_ref$predictors
 
-  pks_spec <- rpk(n = nsim, model = model_spec, seed = seed_spec)
-  pks_full <- rpk(n = nsim, model = model_full, seed = seed_full)
-  cellMatch <- matchCells(model_spec, model_full)
+  pks_spec <- rpk(n = 1000, model = model_spec)
+  pks_ref <- rpk(n = 1000, model = model_ref)
+  cellMatch_spec <- matchCells(model_spec, modelSet)
+  cellMatch_ref <- matchCells(model_ref, modelSet)
+
+  cells_set <- modelSetCells(modelSet)
+  cellNames_set <- cells_set$CellNames
+  ncell_set <- nrow(cells_set)
 
   if (pk == "p"){
     maxy <- 1
   } else if (pk == "k"){
     maxy <- 1
-    for (celli in 1:ncell_full){
-      maxcell <- max(pks_full[[celli]][ , "k"]) * 1.01
-      maxy <- max(maxy, maxcell)
+    for (celli in 1:ncell_set){
+      maxcell_spec <- max(pks_spec[[cellMatch_spec[celli]]][ , "k"]) * 1.01
+      maxcell_ref <- max(pks_ref[[cellMatch_ref[celli]]][ , "k"]) * 1.01
+      maxy <- max(c(maxy, maxcell_spec, maxcell_ref))
     }
   }
   maxy[is.na(maxy)] <- 1
 
-  par(mar = c(4,4,2,1))
+  par(mar = c(4,3,2,1))
   plot(1, type = "n", xlab = "", ylab = "", bty = "L", xaxt = 'n', yaxt = 'n',
-    ylim = c(0, maxy), xlim = c(0.5, ncell_full + 0.5)
+    ylim = c(0, maxy), xlim = c(0.5, ncell_set + 0.5)
   )
 
-  for (celli in 1:ncell_full){
-    cMi <- cellMatch[celli]
+  for (celli in 1:ncell_set){
+    cMi_s <- cellMatch_spec[celli]
+    cMi_f <- cellMatch_ref[celli]
     x_s <- celli - 0.2
-    y_s <- quantile(pks_spec[[cMi]][ , pk], probs, na.rm = TRUE)
+    y_s <- quantile(pks_spec[[cMi_s]][ , pk], probs, na.rm = TRUE)
     x_f <- celli + 0.2
-    y_f <- quantile(pks_full[[celli]][ , pk], probs, na.rm = TRUE)
+    y_f <- quantile(pks_ref[[cMi_f]][ , pk], probs, na.rm = TRUE)
 
     med <- c(-0.1, 0.1)
     tb <- c(-0.07, 0.07)
 
-    rect(x_s - 0.1, y_s[3], x_s + 0.1, y_s[5], lwd = 2, border = col_spec)
-    points(x_s + med, rep(y_s[4], 2), type = 'l', lwd = 2, col = col_spec)
-    points(x_s + tb, rep(y_s[2], 2), type = 'l', lwd = 2, col = col_spec)
-    points(x_s + tb, rep(y_s[6], 2), type = 'l', lwd = 2, col = col_spec)
-    points(rep(x_s, 3), y_s[1:3], type = 'l', lwd = 2, col = col_spec)
-    points(rep(x_s, 3), y_s[5:7], type = 'l', lwd = 2, col = col_spec)
+    rect(x_s - 0.1, y_s[3], x_s + 0.1, y_s[5], lwd = 1, border = cols["spec"])
+    points(x_s + med, rep(y_s[4], 2), type = 'l', lwd = 1, col = cols["spec"])
+    points(x_s + tb, rep(y_s[2], 2), type = 'l', lwd = 1, col = cols["spec"])
+    points(x_s + tb, rep(y_s[6], 2), type = 'l', lwd = 1, col = cols["spec"])
+    points(rep(x_s, 3), y_s[1:3], type = 'l', lwd = 1, col = cols["spec"])
+    points(rep(x_s, 3), y_s[5:7], type = 'l', lwd = 1, col = cols["spec"])
 
-    rect(x_f - 0.1, y_f[3], x_f + 0.1, y_f[5], lwd = 2, border = col_full)
-    points(x_f + med, rep(y_f[4], 2), type = 'l', lwd = 2, col = col_full)
-    points(x_f + tb, rep(y_f[2], 2), type = 'l', lwd = 2, col = col_full)
-    points(x_f + tb, rep(y_f[6], 2), type = 'l', lwd = 2, col = col_full)
-    points(rep(x_f, 3), y_f[1:3], type = 'l', lwd = 2, col = col_full)
-    points(rep(x_f, 3), y_f[5:7], type = 'l', lwd = 2, col = col_full)
+    rect(x_f - 0.1, y_f[3], x_f + 0.1, y_f[5], lwd = 1, border = cols["ref"])
+    points(x_f + med, rep(y_f[4], 2), type = 'l', lwd = 1, col = cols["ref"])
+    points(x_f + tb, rep(y_f[2], 2), type = 'l', lwd = 1, col = cols["ref"])
+    points(x_f + tb, rep(y_f[6], 2), type = 'l', lwd = 1, col = cols["ref"])
+    points(rep(x_f, 3), y_f[1:3], type = 'l', lwd = 1, col = cols["ref"])
+    points(rep(x_f, 3), y_f[5:7], type = 'l', lwd = 1, col = cols["ref"])
   }
 
-  axis(1, at = 1:ncell_full, labels = FALSE)
+  axis(1, at = 1:ncell_set, labels = FALSE, tck = -0.05)
   ang <- 0
   offx <- NULL
-  if (ncell_full > 3){
+  if (ncell_set > 3){
     ang <- 35
     offx <- 1
   }
-  text(1:ncell_full, -0.11, srt = ang, adj = offx, labels = cellNames_full,
-    xpd = TRUE, cex = 0.75
+  xcex <- 0.75
+  if (ncell_set > 6){
+    xcex <- 0.5
+  }
+  text(1:ncell_set, -0.25, srt = ang, adj = offx, labels = cellNames_set,
+    xpd = TRUE, cex = xcex
   )
 
-  axis(2, at = seq(0, 1, 0.5), las = 1, cex.axis = 0.75)
-  axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.02)
-  mtext(side = 2, pk, line = 2.75, cex = 1.25)
+  axis(2, at = seq(0, 1, 0.5), labels = FALSE, cex.axis = 0.7, tck = -0.04)
+  axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.015)
+  mtext(side = 2, pk, line = 2, cex = 1.25)
+  ax2 <- c("0.0", "0.5", "1.0")
+  mtext(side = 2, ax2, at = c(0, 0.5, 1), line = 0.5, cex = 0.7, las = 1)
 
+}
+
+#' @title template box plot
+#'
+#' @description Plot template box plot
+#'
+#' @param model_spec specific model object
+#'
+#' @param col_spec color to use
+#'
+#' @return a template box plot 
+#'
+#' @export
+#'
+plotSEBoxTemplate <- function(model_spec, col_spec){
+
+  par(mar = c(0,0,0,0))
+  par(fig = c(0.92, 1, 0.8, 0.95), new = TRUE)
+  plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "",
+    ylab = "", ylim = c(0, 1), xlim = c(0, 1)
+  )
+  x_s <- 0.1
+  CL_split <- (1 - model_spec$CL) / 2
+  probs_y <- c(0, CL_split, 0.25, 0.5, 0.75, 1 - CL_split, 1)
+  set.seed(12)
+  y_s <- quantile(rnorm(1000, 0.5, 0.15), probs = probs_y)
+  med <- c(-0.1, 0.1)
+  tb <- c(-0.07, 0.07)
+  rect(x_s - 0.1, y_s[3], x_s + 0.1, y_s[5], lwd = 1, border = col_spec)
+  points(x_s + med, rep(y_s[4], 2), type = 'l', lwd = 1, col = col_spec)
+  points(x_s + tb, rep(y_s[2], 2), type = 'l', lwd = 1, col = col_spec)
+  points(x_s + tb, rep(y_s[6], 2), type = 'l', lwd = 1, col = col_spec)
+  points(rep(x_s, 3), y_s[1:3], type = 'l', lwd = 1, col = col_spec)
+  points(rep(x_s, 3), y_s[5:7], type = 'l', lwd = 1, col = col_spec)
+  num_CL <- c(CL_split, 1 - CL_split) * 100
+  text_CL <- paste(num_CL, "%", sep = "")
+  text_ex <- c("min", text_CL[1], "25%", "50%", "75%", text_CL[2], "max")
+  text(x_s + 0.2, y_s, text_ex, cex = 0.6, adj = 0)
+
+}
+
+#' @title Plot the cellwise results of a single model in a set of SE models
+#'
+#' @description Produce a set of cellwise figures for a specific SE model, as 
+#'   fit by \code{\link{pkmSet}}
+#'
+#' @param modelSet pk model set of class pkmSet
+#'
+#' @param specificModel the name of the specific model for the plot
+#'
+#' @param model_ref reference model for comparison
+#'
+#' @param cols named vector of colors to use for the specific and reference
+#'   models
+#'
+#' @return a plot
+#'
+#' @export
+#'
+plotSECells <- function(modelSet, specificModel, model_ref = NULL, cols){
+
+  par(fig = c(0, 1, 0, 0.65), new = TRUE)
+  par(mar = c(1, 1, 1, 1))
+  plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "",
+    ylab = ""
+  )
+  mtext(side = 1, "Search", line = -0.25, cex = 1.5)
+  mtext(side = 2, "Searcher Efficiency", line = -0.25, cex = 1.5)
+
+  cells_set <- modelSetCells(modelSet)
+  ncell <- nrow(cells_set)
+  cellNames <- cells_set[ , "CellNames"]
+
+  nmatrix_col <- min(3, ncell)
+  nmatrix_row <- ceiling(ncell / nmatrix_col)
+  figxspace <- 0.95 / nmatrix_col
+  figyspace <- 0.65 / nmatrix_row
+  x1 <- rep(figxspace * ((1:nmatrix_col) - 1), nmatrix_row) + 0.035
+  x2 <- rep(figxspace * ((1:nmatrix_col)), nmatrix_row) + 0.035
+  y1 <- rep(figyspace * ((nmatrix_row:1) - 1), each = nmatrix_col) + 0.03
+  y2 <- rep(figyspace * ((nmatrix_row:1)), each = nmatrix_col) + 0.03
+  bottomCells <- seq(ncell - (nmatrix_col - 1), ncell, 1)
+  leftCells <- which(1:ncell %% nmatrix_col == 1)
+  if (length(leftCells) == 0){
+    leftCells <- 1
+  }
+  for (celli in 1:ncell){
+    par(mar = c(2.5, 2, 0, 0))
+    par(fig = c(x1[celli], x2[celli], y1[celli], y2[celli]), new = TRUE)
+    specificCell <- cellNames[celli]
+    axis_x <- FALSE
+    axis_y <- FALSE
+    if (celli %in% bottomCells){
+      axis_x <- TRUE
+    }
+    if (celli %in% leftCells){
+      axis_y <- TRUE
+    }
+    axes <- c("x" = axis_x, "y" = axis_y)
+    pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, cols, axes)
+  }
 }
 
 #' Plot cell-specific decay curve for searcher efficiency for a specific model
@@ -547,41 +585,40 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", nsim,
 #'
 #' @param specificCell name of the specific cell to plot
 #'
-#' @param nsim number of draws to use to characterize the distributions
+#' @param cols named vector of colors to use for the specific and reference
+#'   models
 #'
-#' @param seed_spec random number seed to use for the specific model
-#'
-#' @param seed_full random number seed to use for the full model
-#'
-#' @param col_spec color to use for the specific model
-#'
-#' @param col_full color to use for the specific model
-#'
-#' @param axis_x logical of whether or not to plot the x axis
-#'
-#' @param axis_y logical of whether or not to plot the y axis
+#' @param axes named vector of logical values indicating whether or not to 
+#'   plot the x axis and the y axis
 #'
 #' @return a specific cell plot panel
 #'
 #' @export
 #'
 pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
-                                 col_spec, col_full, axis_y = TRUE,
-                                 axis_x = TRUE, nsim, seed_spec, seed_full){
+                                 cols, axes){
 
   model_spec <- modelSet[[specificModel]]
-  model_full <- fullMod(modelSet)
+  model_ref <- refMod(modelSet)
 
   cellwise_spec <- model_spec$cellwiseTable
-  cellwise_full <- model_full$cellwiseTable
+  cellwise_ref <- model_ref$cellwiseTable
   cellNames_spec <- model_spec$cells[ , "CellNames"]
-  cellNames_full <- model_full$cells[ , "CellNames"]
+  cellNames_ref <- model_ref$cells[ , "CellNames"]
 
-  whichCarcs <- which(model_full$carcCell == specificCell)
+  cells_set <- modelSetCells(modelSet)
+  preds_set <- modelSetPredictors(modelSet)
+  carcCells <- apply(data.frame(model_spec$data[ , preds_set]),
+                 1, paste, collapse = "."
+               )
+  whichCarcs <- which(carcCells == specificCell)
+  if (specificCell == "all"){
+    whichCarcs <- 1:length(carcCells)
+  }
 
-  observations <- as.matrix(model_full$observations[whichCarcs, ],
+  observations <- as.matrix(model_spec$observations[whichCarcs, ],
                     nrow = length(whichCarcs),
-                    ncol = ncol(model_full$observations)
+                    ncol = ncol(model_spec$observations)
                   )
   nobs <- ncol(observations)
   ncarc <- nrow(observations)
@@ -589,27 +626,28 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   carcUnavail <- apply(apply(observations, 2, is.na), 2, sum)
   carcAvail <- ncarc - carcUnavail
 
-  cellMatch <- matchCells(model_spec, model_full)
-  reducedCell <- cellMatch[cellNames_full == specificCell]
+  pks_spec <- rpk(n = 1000, model = model_spec)
+  pks_ref <- rpk(n = 1000, model = model_ref)
+  cellMatch_spec <- matchCells(model_spec, modelSet)
+  cellMatch_ref <- matchCells(model_ref, modelSet)
 
-  whichSpecificCell_spec <- which(cellNames_spec == reducedCell)
-  whichSpecificCell_full <- which(cellNames_full == specificCell)
+  cells_set <- modelSetCells(modelSet)
+  cellNames_set <- cells_set$CellNames
 
-  pks_spec <- rpk(n = nsim, model = model_spec, seed = seed_spec)
-  pks_full <- rpk(n = nsim, model = model_full, seed = seed_full)
+  whichSpecificCell_spec <- cellMatch_spec[cellNames_set == specificCell]
+  whichSpecificCell_ref <- cellMatch_ref[cellNames_set == specificCell]
 
   ps_spec <- pks_spec[[whichSpecificCell_spec]][ , "p"]
   ks_spec <- pks_spec[[whichSpecificCell_spec]][ , "k"]
-  ps_full <- pks_full[[whichSpecificCell_full]][ , "p"]
-  ks_full <- pks_full[[whichSpecificCell_full]][ , "k"]
-  searchTab <- matrix(1:nobs, nrow = nsim, ncol = nobs, byrow = TRUE)
+  ps_ref <- pks_ref[[whichSpecificCell_ref]][ , "p"]
+  ks_ref <- pks_ref[[whichSpecificCell_ref]][ , "k"]
+  searchTab <- matrix(1:nobs, nrow = 1000, ncol = nobs, byrow = TRUE)
   ktab_spec <- ks_spec^(searchTab - 1)
-  ktab_full <- ks_full^(searchTab - 1)
+  ktab_ref <- ks_ref^(searchTab - 1)
   SE_spec <- ps_spec * ktab_spec
-  SE_full <- ps_full * ktab_full
+  SE_ref <- ps_ref * ktab_ref
   y_spec <- apply(SE_spec, 2, median)
-  y_full <- apply(SE_full, 2, median)
-
+  y_ref <- apply(SE_ref, 2, median)
 
   x_pts <- 1:nobs
   y_pts <- carcFound / carcAvail
@@ -618,8 +656,8 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
     lwd = 2, pch = 1, cex = 1.5
   )
 
-  points(x_pts, y_full, type = 'l', lwd = 3, col = col_full)
-  points(x_pts, y_spec, type = 'l', lwd = 3, col = col_spec)
+  points(x_pts, y_ref, type = 'l', lwd = 3, col = cols["ref"])
+  points(x_pts, y_spec, type = 'l', lwd = 3, col = cols["spec"])
 
   for (obi in 1:nobs){
     x1 <- x_pts[obi] - 0.25
@@ -631,8 +669,105 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   obsLabels <- paste(carcFound, carcAvail, sep = "/")
   text(x_pts + 0.05, y_pts + 0.075, obsLabels, cex = 0.65)
 
-  axis(1, at = x_pts, las = 1, cex.axis = 0.75, labels = axis_x)
-  axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axis_y)
+  axis(1, at = x_pts, las = 1, cex.axis = 0.75, labels = axes["x"])
+  axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axes["y"])
   text(0.5, 1.1, specificCell, adj = 0, cex = 0.75, font = 2, xpd = TRUE)
 
 }
+
+
+#' @title Return the model with the greatest log-likelihood
+#'
+#' @description  Compares all fitted models in a list and returns the model
+#'  with the greatest log-likelihood
+#'
+#' @param modelSet a list of fitted models with a \code{loglik} element. 
+#'  Models may be \code{pkm}, \code{cpm}, \code{survreg} objects or any 
+#'  objects with a \code{loglik} component.
+#'
+#' @return The model object with the greatest log-likelihood among
+#'  the models in \code{modelSet}
+#'
+#' @export
+#'
+refMod <- function(modelSet){
+  llvec <- sapply(modelSet, "[[", "loglik")
+  out <- modelSet[[which(llvec == max(llvec))]]
+  return(out)
+}
+
+#' @title Produce a named vectory with standard SE plot colors
+#' 
+#' @description Produce a named vectory with standard SE plot colors
+#'
+#' @export
+#'
+SEcols <- function(){
+  c("spec" = "black", "ref" = "grey")
+}
+
+#' @title Error check a specific model selection for an SE plot
+#'
+#' @description Make sure it's available and good, update the name for usage
+#'
+#' @param modelSet pk model set of class pkmSet
+#'
+#' @param specificModel the name of the specific model for the plot
+#'
+#' @return updated name of the model to use
+#'
+#' @export
+#'
+checkSpecificModelSE <- function(modelSet, specificModel){
+  if (!is.null(specificModel) && anyNA(specificModel)){
+    stop(
+      "specificModel must be NULL or a vector of model names or positions.",
+      "\nNAs not allowed."
+    )
+  }
+  if (length(specificModel) > 0){
+    if (is.numeric(specificModel)){
+      if (anyNA(specificModel)){
+        warning("specificModel cannot be NA. NA models removed.")
+        specificModel <- specificModel[!is.na(specificModel)]
+        if (length(specificModel) == 0){
+          stop("No valid specificModel")
+        }
+      }
+      if (any(specificModel > length(modelSet))){
+        stop(paste0("there are only ", length(modelSet), " model choices."))
+      }
+      specificModel <- names(modelSet)[specificModel]
+    }
+    if (any(specificModel %in% names(modelSet)) == FALSE){
+      stop("Selected model not in set. To see options use names(modelSet).")
+    }
+    modNames <- specificModel
+    for (modi in modNames){
+      if (pkmFail(modelSet[[modi]])){
+        stop("specificModel ", modi, " is not a well-fit pk model")
+      }
+    }
+  } else{
+    specificModel <- names(pkmSetFailRemove(modelSet))
+  }
+  return(specificModel)
+}
+
+#' @title Tidy an SE model set
+#'
+#' @description Remove bad fit models
+#'
+#' @param modelSet pk model set of class pkmSet
+#'
+#' @return a trimmed model set
+#'
+#' @export
+#'
+tidyModelSetSE <- function(modelSet){
+  modelSet <- pkmSetFailRemove(modelSet)
+  modelSet <- modelSet[order(sapply(modelSet, "[[", "AICc"))]
+  class(modelSet) <- c("pkmSet", "list")
+  return(modelSet)
+}
+
