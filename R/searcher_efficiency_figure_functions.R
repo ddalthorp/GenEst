@@ -263,13 +263,13 @@ plot.pkmSet <- function(x, specificModel = NULL, cols = SEcols(), ...){
 
   modelSet <- x
   specMods <- checkSpecificModelSE(modelSet, specificModel)
-  modSet <- tidyModelSetSE(modelSet)
+  modelSet <- tidyModelSetSE(modelSet)
   nmod <- length(specMods)
   for (modi in 1:nmod){
     if (modi == 2){
       devAskNewPage(TRUE)
     }
-    plotSEFigure(modSet, specMods[modi], cols)
+    plotSEFigure(modelSet, specMods[modi], cols)
   }
   devAskNewPage(FALSE)
 }
@@ -292,16 +292,11 @@ plot.pkmSet <- function(x, specificModel = NULL, cols = SEcols(), ...){
 #' @export
 #'
 plotSEFigure <- function(modelSet, specificModel, cols){
-  
-  model_ref <- refMod(modelSet)
-  model_spec <- modelSet[[specificModel]]
   plotSEHeader(modelSet, specificModel, cols)
   plotSEBoxPlots(modelSet, specificModel, cols)
-  plotSEBoxTemplate(model_spec, cols["spec"])
-  plotSECells(modelSet, specificModel, model_ref, cols)
-
+  plotSEBoxTemplate(modelSet, specificModel, cols)
+  plotSECells(modelSet, specificModel, cols)
 }
-
 
 #' @title The SE plot header
 #'
@@ -473,23 +468,27 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
   axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.015)
   mtext(side = 2, pk, line = 2.2, cex = 1.125)
 
-
 }
 
 #' @title template box plot
 #'
 #' @description Plot template box plot
 #'
-#' @param model_spec specific model object
+#' @param modelSet modelSet of class pkmSet
 #'
-#' @param col_spec color to use
+#' @param specificModel name of the specific submodel to plot
+#'
+#' @param cols named vector of colors to use for the specific and reference
+#'   models
 #'
 #' @return a template box plot 
 #'
 #' @export
 #'
-plotSEBoxTemplate <- function(model_spec, col_spec){
+plotSEBoxTemplate <- function(modelSet, specificModel, cols){
 
+  model_spec <- modelSet[[specificModel]]
+  col_spec <- cols["spec"]
   par(mar = c(0,0,0,0))
   par(fig = c(0.92, 1, 0.8, 0.95), new = TRUE)
   plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "",
@@ -524,8 +523,6 @@ plotSEBoxTemplate <- function(model_spec, col_spec){
 #'
 #' @param specificModel the name of the specific model for the plot
 #'
-#' @param model_ref reference model for comparison
-#'
 #' @param cols named vector of colors to use for the specific and reference
 #'   models
 #'
@@ -533,10 +530,11 @@ plotSEBoxTemplate <- function(model_spec, col_spec){
 #'
 #' @export
 #'
-plotSECells <- function(modelSet, specificModel, model_ref = NULL, cols){
+plotSECells <- function(modelSet, specificModel, cols){
 
-  par(fig = c(0, 1, 0, 0.65), new = TRUE)
-  par(mar = c(1, 1, 1, 1))
+  model_ref <- refMod(modelSet)
+
+  par(fig = c(0, 1, 0, 0.65), new = TRUE, mar = c(1, 1, 1, 1))
   plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "",
     ylab = ""
   )
@@ -684,7 +682,7 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 #' @export
 #'
 SEcols <- function(){
-  c("spec" = "black", "ref" = "grey")
+  c(spec = "black", ref = "grey")
 }
 
 #' @title Error check a specific model selection for an SE plot

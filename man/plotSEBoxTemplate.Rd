@@ -4,12 +4,15 @@
 \alias{plotSEBoxTemplate}
 \title{template box plot}
 \usage{
-plotSEBoxTemplate(model_spec, col_spec)
+plotSEBoxTemplate(modelSet, specificModel, cols)
 }
 \arguments{
-\item{model_spec}{specific model object}
+\item{modelSet}{modelSet of class pkmSet}
 
-\item{col_spec}{color to use}
+\item{specificModel}{name of the specific submodel to plot}
+
+\item{cols}{named vector of colors to use for the specific and reference
+models}
 }
 \value{
 a template box plot

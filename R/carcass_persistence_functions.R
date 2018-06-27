@@ -146,7 +146,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     }
     formula_s <- formula(s ~ 1)
   } 
-#
+
   formulaRHS_l <- formula(delete.response(terms(formula_l)))
   preds_l <- all.vars(formulaRHS_l)
   if (length(preds_l) > 0){
@@ -260,13 +260,13 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     which_s <- (nbeta_l + 1):nbeta
     betaHessian <- betaHessian[-which_s, -which_s]
   }
-  llik <- MLE$value  
+  llik <- -MLE$value  
 
   nparam <- length(betahat)  
   if (dist == "exponential"){
     nparam <- length(betahat) - 1
   }
-  AIC <- 2 * llik + 2 * nparam
+  AIC <- 2 * nparam - 2 * llik
   AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
   AICc <- round(AIC + AICcOffset, 3)
 
@@ -362,12 +362,14 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   output$CL <- CL
   output$observations <- data[ , c(left, right)]
   output$carcCells <- carcCells
+  output$loglik <- llik
   class(output) <- c("cpm", "list")
   attr(output, "hidden") <- c("data", "predictors_l", "predictors_s", 
                               "betahat_l", "betahat_s", "cellMM_l", 
                               "cellMM_s", "nbeta_l", "nbeta_s", "varbeta",
                               "levels_l", "levels_s", "carcCells", 
-                              "AIC", "cells", "ncell", "observations"
+                              "AIC", "cells", "ncell", "observations",
+                              "loglik"
                             )
   return(output)
 }
@@ -936,6 +938,20 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
   return(probs)
 }
 
+#' @title Check if a CP model is well-fit
+#'
+#' @description Run a check the arg is a well-fit cpm object
+#'
+#' @param cpmod A \code{\link{cpm}} object to test
+#'
+#' @return logical value indicating a failed fit (TRUE) or successful (FALSE)
+#'
+#' @export
+#'
+cpmFail <- function(cpmod){
+!("cpm" %in% class(cpmod)) || anyNA(cpmod) || sum(diag(cpmod$varbeta) < 0) > 0
+}
+
 #' @title Check if cpm models fail
 #' 
 #' @description Run a check on each model within a \code{\link{cpmSet}} object
@@ -948,13 +964,7 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
 #' @export
 #'
 cpmSetFail <- function(cpmSetToCheck){
-
-  nmodsInSet <- length(cpmSetToCheck)
-  out <- logical(nmodsInSet)
-  for (modi in 1:nmodsInSet){
-    out[modi] <- length(cpmSetToCheck[[modi]]) == 1
-  }
-  return(out)
+  unlist(lapply(cpmSetToCheck, cpmFail)) 
 }
 
 #' @title Check if all of the cpm models fail
@@ -970,15 +980,8 @@ cpmSetFail <- function(cpmSetToCheck){
 #' @export
 #'
 cpmSetSizeFail <- function(cpmSetSizeToCheck){
-
-  nsizes <- length(cpmSetSizeToCheck)
-  out <- vector("list", length = nsizes)
-  for (sci in 1:nsizes){
-    out[[sci]] <- cpmSetFail(cpmSetSizeToCheck[[sci]])
-  }
-  return(out)
+  lapply(cpmSetSizeToCheck, cpmSetFail)
 }
-
 
 #' @title Remove failed cpm models from a \code{\link{cpmSet}} object
 #'
@@ -991,17 +994,7 @@ cpmSetSizeFail <- function(cpmSetSizeToCheck){
 #' @export
 #'
 cpmSetFailRemove <- function(cpmSetToTidy){
-
-  nmodsInSet <- length(cpmSetToTidy)
-  fails <- pkmSetFail(cpmSetToTidy)
-  pass <- fails == FALSE
-  npasses <- sum(pass)
-  passes <- which(pass)
-  out <- vector("list", length = npasses)
-  names(out) <- names(cpmSetToTidy[passes])
-  for (passi in 1:npasses){
-    out[[passi]] <- cpmSetToTidy[[passes[passi]]]
-  }
+  out <- cpmSetToTidy[!cpmSetFail(cpmSetToTidy)]
   class(out) <- c("cpmSet", "list")
   return(out)
 }
@@ -1017,11 +1010,8 @@ cpmSetFailRemove <- function(cpmSetToTidy){
 #' @export
 #'
 cpmSetSizeFailRemove <- function(cpmSetSizeToTidy){
-
-  nsizes <- length(cpmSetSizeToTidy)
-  out <- vector("list", length = nsizes)
-  names(out) <- names(cpmSetSizeToTidy)
-  for (sci in 1:nsizes){
+  out <- list()
+  for (sci in names(cpmSetSizeToTidy)){
     out[[sci]] <- cpmSetFailRemove(cpmSetSizeToTidy[[sci]])
   }
   return(out)

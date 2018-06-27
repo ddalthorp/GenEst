@@ -4,14 +4,10 @@
 \alias{plot.cpm}
 \title{Plot results of a single CP model}
 \usage{
-\method{plot}{cpm}(x, nsim = 500, seed = NULL, col = "black", ...)
+\method{plot}{cpm}(x, col = "black", ...)
 }
 \arguments{
 \item{x}{model of class cpm}
-
-\item{nsim}{number of draws to use to characterize the distributions}
-
-\item{seed}{random number seed to use}
 
 \item{col}{color to use}
 

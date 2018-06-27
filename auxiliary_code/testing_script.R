@@ -12,7 +12,7 @@ model_SE <- pkmSet(formula_p = p ~ Visibility*HabitatType,
              data = data_SE
             )
 plot(model_SE)
-model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+model_CP <- cpmSet(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
              data = data_CP,
              left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays"
