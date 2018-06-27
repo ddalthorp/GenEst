@@ -69,13 +69,15 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 
 
 
-#' @title Create a model running message
+#' @title Create a model done message
 #'
-#' @description Produces a model-running notification
+#' @description Produces a model-done notification
 #'
 #' @param msgs message list
 #'
 #' @param modelType "SE", "CP", "g", or "M"
+#'
+#' @param rv reactive values list
 #'
 #' @param clear if all notifications should be cleared or not
 #'
@@ -83,9 +85,61 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 #'
 #' @export
 #'
-msgModDone <- function(msgs, modelType, clear = TRUE){
+msgModDone <- function(msgs, modelType, rv, clear = TRUE){
   if (clear){
     clearNotifications(msgs)
   }
-  NULL
+  if (modelType == "SE"){
+    if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
+      return(msgModFail(rv$mod_SE))
+    } else{
+      if (any(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
+      }
+    }
+  }
+
+  if (modelType == "CP"){
+    return(NULL)
+  }
+}
+
+
+#' @title Create the warning message text for when only some models are fit 
+#'   successfully
+#'
+#' @description Produces text for a notification for partial model failure
+#'
+#' @return a partial model fail warning text
+#'
+#' @export
+#'
+msgModPartialFail <- function(){
+paste(
+  "Some models were not successfully fit. Failed models were ",
+  "removed.", sep = " "
+)
+}
+
+
+
+
+#' @title Create the error message for when no models are fit successfully
+#'
+#' @description Produces a notification for complete model failure
+#'
+#' @param mods (fully failed) model object
+#'
+#' @return a model fail error message
+#'
+#' @export
+#'
+msgModFail <- function(mods){
+  msg <- paste(
+           "No models were successfully fit.", 
+            gsub("Failed model fit: ", "", unique(unlist(mods))),
+            sep = " "
+         )
+  if(!is.null(msg)){
+    return(showNotification(msg, type = "error", duration = NULL))
+  }
 }
