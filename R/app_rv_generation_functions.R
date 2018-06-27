@@ -29,6 +29,15 @@ createReactiveValues <- function(){
     best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
     modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
 
+    ltp = NULL, fta = NULL, preds_CP = NULL, dists = NULL, 
+    predictors_CP = NULL, formula_l = NULL, formula_s = NULL, 
+    mods_CP = NULL, CPdls = NULL, outCPdlsfig = NULL, outCPdlstab = NULL, 
+    sizeclasses_CP = NULL, AICcTab_CP = NULL, modOrder_CP = NULL, 
+    modNames_CP = NULL, modNames_CPdist = NULL, modNames_CPl = NULL, 
+    modNames_CPs = NULL, modSet_CP = NULL, best_CP = NULL, 
+    modTab_CP = NULL, modTabPretty_CP = NULL, modTabDL_CP = NULL, 
+    figH_CP = 700, figW_CP = 800,
+
     SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", ")
 
   )

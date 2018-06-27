@@ -55,16 +55,10 @@ CPSidebar <- function(){
       br(), br(), 
       HTML("<big><strong><u> Table & Figure Selection: </u></strong></big>"),
       br(), br(),
-      selectizeInput("tabfig_sizeclassCP", "Size Class:", 
-        " ", multiple = FALSE
-      ),
-      selectizeInput("tabfig_CPd", "Distribution:",
-        " ", multiple = FALSE
-      ), 
-      selectizeInput("tabfig_CPl", "Location Model:",
-        " ", multiple = FALSE
-      ), 
-      selectizeInput("tabfig_CPs", "Scale Model:", " ", multiple = FALSE)        
+      selectizeInput("outsizeclassCP", "Size Class:",  " ", multiple = FALSE),
+      selectizeInput("outCPdist", "Distribution:", " ", multiple = FALSE),
+      selectizeInput("outCPl", "Location Model:", " ", multiple = FALSE),
+      selectizeInput("outCPs", "Scale Model:", " ", multiple = FALSE)        
     )
   )
 }
@@ -123,6 +117,7 @@ CPFiguresPanel <- function(){
       HTML("<em>Run model to view figures</em>")
     ),
     conditionalPanel(condition = "output.CPModDone == 'OK'",
+      textOutput("sizeclass_CP1"), br(), 
       plotOutput("fig_CP", inline = TRUE), br(), br(),
       downloadButton("downloadCPfig", "Download")
     )
@@ -144,9 +139,9 @@ CPEstimatesPanel <- function(){
       HTML("<em>Run model to view model estimates</em>")
     ),
     conditionalPanel(condition = "output.CPModDone == 'OK'",
-      textOutput("sizeclass_CP1"), br(), 
-        dataTableOutput("modTab_CP"), br(),
-        downloadButton("downloadCPest", "Download")
+      textOutput("sizeclass_CP2"), br(), 
+      dataTableOutput("modTab_CP"), br(),
+      downloadButton("downloadCPest", "Download")
     )
   )
 }
@@ -166,7 +161,7 @@ CPModComparisonPanel <- function(){
       HTML("<em>Run models to view model comparison</em>")
     ),
     conditionalPanel(condition = "output.CPModDone == 'OK'",
-      textOutput("sizeclass_CP2"), br(), 
+      textOutput("sizeclass_CP3"), br(), 
       dataTableOutput("AICcTab_CP"), br(),
       downloadButton("downloadCPAICc", "Download")
     )

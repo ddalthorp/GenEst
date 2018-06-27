@@ -203,3 +203,121 @@ update_rv_outpk_SE <- function(rv, input){
   }
   return(rv)
 }
+
+#' @title Run the CP Models
+#'
+#' @description Use the inputs to run the CP models requested by the UI
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_CP <- function(rv, input){
+
+  rv$ltp <- input$ltp
+  rv$fta <- input$fta
+  rv$preds_CP <- input$preds_CP
+  rv$dists <- input$dists  
+  rv$nsim <- input$nsim
+  rv$CL <- input$CL
+  rv$sizeclassCol <- input$sizeclassCol
+  rv$predictors_CP <- prepPredictors(rv$preds_CP)
+  rv$formula_l <- formula(paste("l~", rv$predictors_CP, sep = ""))
+  rv$formula_s <- formula(paste("s~", rv$predictors_CP, sep = "")) 
+
+  rv$mods_CP <- suppressWarnings(
+                  cpmSetSize(formula_l = rv$formula_l,
+                    formula_s = rv$formula_s, data = rv$data_CP, 
+                    left = rv$ltp, right = rv$fta, dists = rv$dists,
+                    sizeclassCol = rv$sizeclassCol, CL = rv$CL, quiet = TRUE
+                  )
+                )
+
+  if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
+    rv$sizeclasses <- updateSizeclasses(rv$data_CP, rv$sizeclassCol)
+    rv$sizeclasses_CP <- rv$sizeclasses
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
+    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass]], TRUE)
+    rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "", 
+                                           rv$AICcTab_CP[ , "Scale Formula"]
+                                         )
+    rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
+    rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass]])[rv$modOrder_CP]
+    rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)
+    rv$modNames_CPl <- modNameSplit(rv$modNames_CP, 2)
+    rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
+    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
+    rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
+    rv$modTab_CP <- rv$mods_CP[[rv$sizeclass]][[rv$best_CP]]$cellwiseTable_ls
+    rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
+    rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+    rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
+    rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
+    rv$figW_CP <- setFigW(rv$modSet_CP)
+  }
+  return(rv)
+}
+
+#' @title Update the SE reactive values when the size class is chosen
+#'
+#' @description Update the SE reactive values when the size class is chosen
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_outsc_CP <- function(rv, input){
+  if (length(rv$mods_CP) > 0){
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
+    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass]], TRUE)
+    rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
+    rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass]])[rv$modOrder_CP]
+    rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)
+    rv$modNames_CPl <- modNameSplit(rv$modNames_CP, 2)
+    rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
+    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
+    rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
+    rv$modTab_CP <- rv$mods_CP[[rv$sizeclass]][[rv$best_CP]]$cellwiseTable_ls
+    rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
+    rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+    rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
+    rv$figW_CP <- setFigW(rv$modSet_CP)
+    rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
+  }
+  return(rv)
+}
+
+#' @title Update the CP reactive values when a distribution or l or s model 
+#'   is chosen
+#'
+#' @description Update the CP reactive values when a distribution or l or s 
+#'   model is chosen
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_outdls_CP <- function(rv, input){
+  if (length(rv$mods_CP) > 0){
+    rv$CPdls <- c(input$outCPdist, input$outCPl, input$outCPs)
+    rv$outCPdlsfig <- modNamePaste(rv$CPdls, "CP")
+    rv$outCPdlstab <- modNamePaste(rv$CPdls, "CP", tab = TRUE)
+    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
+    rv$modTab_CP <- rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_ls
+    rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
+    rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+  }
+  return(rv)
+}

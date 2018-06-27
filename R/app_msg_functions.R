@@ -9,7 +9,7 @@
 #'
 msgList <- function(){
   list(
-    "ModSE" = NULL
+    "ModSE" = NULL, "ModCP" = NULL
   )
 }
 
@@ -25,6 +25,9 @@ msgList <- function(){
 clearNotifications <- function(msgs = msgList()){
   if (!is.null(msgs$ModSE)){
     removeNotification(msgs$ModSE)
+  }
+  if (!is.null(msgs$ModCP)){
+    removeNotification(msgs$ModCP)
   }
 }
 
@@ -64,29 +67,6 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
   }
 }
 
-#' @title Create the error message for when no models are fit successfully
-#'
-#' @description Produces a notification for complete model failure
-#'
-#' @param msgs message list
-#'
-#' @param clear if all notifications should be cleared or not
-#'
-#' @return a model fail error message
-#'
-#' @export
-#'
-msgModFail <- function(msgs, clear = TRUE){
-  if (clear){
-    clearNotifications(msgs)
-  }
-  msg <- paste(
-           "No models were successfully fit."
-         )
-  if(!is.null(msg)){
-    return(showNotification(msg, type = "error", duration = NULL))
-  }
-}
 
 
 #' @title Create a model running message

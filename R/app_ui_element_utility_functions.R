@@ -39,6 +39,9 @@ makeMenu <- function(mods, sizeclasses, type){
       if (type == "SE"){
         AICcTab <- pkmSetAICcTab(mods[[sci]], quiet = TRUE)
       }
+      if (type == "CP"){
+        AICcTab <- cpmSetAICcTab(mods[[sci]], quiet = TRUE)
+      }
       modOrder <- as.numeric(row.names(AICcTab))
       modNames <- names(mods[[sci]])[modOrder]
       modNames <- gsub("; NULL", "", modNames)
