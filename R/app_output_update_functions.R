@@ -192,7 +192,6 @@ update_output_run_SE <- function(rv, output, session){
                        plot(rv$modSet_SE, specificModel = rv$best_SE)
                      }, height = rv$figH_SE, width = rv$figW_SE)
 
-
     isolate({
       output$sizeclasses_SE <- prepSizeclassText(rv$sizeclasses_SE)
       outputOptions(output, "sizeclasses_SE", suspendWhenHidden = FALSE)
@@ -265,6 +264,108 @@ update_output_outpk_SE <- function(rv, output, session){
                      }, height = rv$figH_SE, width = rv$figW_SE)
     output$downloadSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
     output$downloadSEfig <- downloadSEFig(rv)
+  }
+  return(output)
+}
+
+#' @title Update the output when an CP model has been run
+#'
+#' @description Update the output table when an CP model has been run
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_run_CP <- function(rv, output, session){
+
+  if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
+
+    output$CPModDone <- renderText("OK")
+    outputOptions(output, "CPModDone", suspendWhenHidden = FALSE)
+
+    output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})    
+    output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
+    output$fig_CP <- renderPlot({ 
+                       plot(rv$modSet_CP, specificModel = rv$best_CP)
+                     }, height = rv$figH_CP, width = rv$figW_CP)
+
+    isolate({
+      output$sizeclasses_CP <- prepSizeclassText(rv$sizeclasses_CP)
+      outputOptions(output, "sizeclasses_CP", suspendWhenHidden = FALSE)
+      output$modelMenu_CP <- makeMenu(rv$mods_CP, rv$sizeclasses_CP, "CP")
+    })
+    output$sizeclass_CP1 <-  renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_CP3 <-  renderText(paste0("Size class: ", rv$sizeclass))
+
+    output$downloadCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
+    output$downloadCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
+    output$downloadCPfig <- downloadCPFig(rv)
+  }
+  return(output)
+}
+
+#' @title Update the CP output when a size class is chosen
+#'
+#' @description Update the CP output when a size class is chosen
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_outsc_CP <- function(rv, output, session){
+  if (length(rv$mods_CP) > 0){
+    output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
+    output$fig_CP <- renderPlot({ 
+                       plot(rv$modSet_CP, specificModel = rv$best_CP)
+                     }, height = rv$figH_CP, width = rv$figW_CP)
+    output$sizeclass_CP1 <-  renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_CP3 <-  renderText(paste0("Size class: ", rv$sizeclass))
+
+    output$downloadCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
+    output$downloadCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
+    output$downloadCPfig <- downloadCPFig(rv)
+  }
+  return(output)
+}
+
+#' @title Update the CP output when a distribuition or l or s equation is 
+#'   chosen
+#'
+#' @description Update the SE output when a distribution or l or s equation is 
+#'   chosen
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_outdls_CP <- function(rv, output, session){
+  if (length(rv$mods_CP) > 0){
+    output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
+    output$fig_CP <- renderPlot({ 
+                       plot(rv$modSet_CP, specificModel = rv$outCPdlsfig)
+                     }, height = rv$figH_CP, width = rv$figW_CP)
+    output$downloadCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
+    output$downloadCPfig <- downloadCPFig(rv)
   }
   return(output)
 }

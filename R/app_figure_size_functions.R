@@ -37,9 +37,9 @@ setFigH <- function(modelSet, type = "SE"){
     mult <- 300
   }
   proposed <- nRow * mult + 400
-  if (type == "CP"){
-    proposed <- proposed - 100
-  }
   out <- max(c(proposed, 800))
+  if (type == "CP"){
+    out <- out - 100
+  }
   out
 }

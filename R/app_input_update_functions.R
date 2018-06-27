@@ -214,3 +214,39 @@ update_input_outsc_SE <- function(rv, session){
   updateSelectizeInput(session, "outSEp", choices = rv$modNames_SEp)
   updateSelectizeInput(session, "outSEk", choices = rv$modNames_SEk)
 }
+
+#' @title Update the CP output dropdown selections when the model is run
+#'
+#' @description Update the CP output dropdown selections when the model is run
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_CP <- function(rv, session){
+  updateTabsetPanel(session, "analyses_CP", "Model Comparison")
+  updateSelectizeInput(session, "outCPl", choices = rv$modNames_CPl)
+  updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)
+  updateSelectizeInput(session, "outCPdist", choices = rv$modNames_CPdist)
+  updateSelectizeInput(session, "outsizeclassCP", choices = rv$sizeclasses)
+}
+
+#' @title Update the CP output dropdown selections when the size class is 
+#'   chosen
+#'
+#' @description Update the CP output dropdown selections when the size 
+#'   class is chosen
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_outsc_CP <- function(rv, session){
+  updateSelectizeInput(session, "outCPl", choices = rv$modNames_CPl)
+  updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)
+  updateSelectizeInput(session, "outCPdist", choices = rv$modNames_CPdist)
+}
