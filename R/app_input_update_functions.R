@@ -121,11 +121,6 @@ update_input_sizeclassCol <- function(rv, input, session){
     selected = input$preds_CP)
 }
 
-
-
-
-
-
 #' @title Update the remaining columns when SE data columns are selected
 #'
 #' @description Update the inputs when the SE data columns are selected
@@ -149,8 +144,6 @@ update_input_cols_SE <- function(rv, input, session, x = "obsCols"){
   updateSelectizeInput(session, notx, choices = rv$colNames_SE_nosel,
     selected = input[[notx]])
 }
-
-
 
 #' @title Update the remaining columns when CP data columns are selected
 #'
@@ -184,10 +177,9 @@ update_input_cols_CP <- function(rv, input, session, x = "ltp"){
     selected = input[[notx1]])
 }
 
-
-#' @title Update the SE output dropdown selections
+#' @title Update the SE output dropdown selections when the model is run
 #'
-#' @description Update the SE output dropdown selections
+#' @description Update the SE output dropdown selections when the model is run
 #'
 #' @param rv reactive values list
 #'
@@ -197,14 +189,28 @@ update_input_cols_CP <- function(rv, input, session, x = "ltp"){
 #'
 update_input_run_SE <- function(rv, session){
   updateTabsetPanel(session, "analyses_SE", "Model Comparison")
-  updateSelectizeInput(session, "tabfig_SEp", choices = rv$modNames_SEp)
-  updateSelectizeInput(session, "tabfig_SEk", choices = rv$modNames_SEk)
-  updateSelectizeInput(session, "tabfig_sizeclassSE", 
-    choices = rv$sizeclasses
-  )
+  updateSelectizeInput(session, "outSEp", choices = rv$modNames_SEp)
+  updateSelectizeInput(session, "outSEk", choices = rv$modNames_SEk)
+  updateSelectizeInput(session, "outsizeclassSE", choices = rv$sizeclasses)
+
   if (rv$kFixedChoice == 1){
     updateNumericInput(session, "kFill", value = rv$kFixed)
   }
 }
 
-
+#' @title Update the SE output dropdown selections when the size class is 
+#'   chosen
+#'
+#' @description Update the SE output dropdown selections when the size 
+#'   class is chosen
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_outsc_SE <- function(rv, session){
+  updateSelectizeInput(session, "outSEp", choices = rv$modNames_SEp)
+  updateSelectizeInput(session, "outSEk", choices = rv$modNames_SEk)
+}

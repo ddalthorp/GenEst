@@ -176,35 +176,95 @@ update_output_run_SE <- function(rv, output, session){
   if (!all(unlist(pkmSetSizeFail(rv$mods_SE)))){
 
     output$SEModDone <- renderText("OK")
-    outputOptions(output, "SEModDone", suspendWhenHidden = FALSE)
-
     output$kFillNeed <- setkFillNeed(rv$obsCols_SE)
-    output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
-    output$modTab_SE <- renderDataTable({rv$modTab_SE})
-    output$fig_SE <- renderPlot({ 
-                       plot(rv$modSet_SE, specificModel = rv$best_SE)
-                     }, height = rv$figH_SE, width = rv$figW_SE)
-    outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
-    isolate({
-      output$sizeclasses_SE <- prepSizeclassText(rv$sizeclasses_SE)
-      outputOptions(output, "sizeclasses_SE", suspendWhenHidden = FALSE)
-      output$modelMenu_SE <- makeMenu(rv$mods_SE, rv$sizeclasses_SE, "SE")
-    })
     if (length(rv$sizeclasses) == 1){
       output$DWPNeed <- renderText("yes")
     } else{
       output$DWPNeed <- renderText("no")
     }
+    outputOptions(output, "SEModDone", suspendWhenHidden = FALSE)
+    outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
     outputOptions(output, "DWPNeed", suspendWhenHidden = FALSE)
+
+    output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
+    output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
+    output$fig_SE <- renderPlot({ 
+                       plot(rv$modSet_SE, specificModel = rv$best_SE)
+                     }, height = rv$figH_SE, width = rv$figW_SE)
+
+
+    isolate({
+      output$sizeclasses_SE <- prepSizeclassText(rv$sizeclasses_SE)
+      outputOptions(output, "sizeclasses_SE", suspendWhenHidden = FALSE)
+      output$modelMenu_SE <- makeMenu(rv$mods_SE, rv$sizeclasses_SE, "SE")
+    })
+
     output$sizeclass_SE1 <- renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_SE3 <- renderText(paste0("Size class: ", rv$sizeclass))
 
-    output$downloadSEest <- downloadTable("SE_estimates.csv", rv$modTab_SE)
+    output$downloadSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
     output$downloadSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
     output$downloadSEfig <- downloadSEFig(rv)
   }
   return(output)
 }
 
+#' @title Update the SE output when a size class is chosen
+#'
+#' @description Update the SE output when a size class is chosen
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_outsc_SE <- function(rv, output, session){
+  if (length(rv$mods_SE) > 0){
+    output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
+    output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
+    output$fig_SE <- renderPlot({ 
+                       plot(rv$modSet_SE, specificModel = rv$best_SE)
+                     }, height = rv$figH_SE, width = rv$figW_SE)
 
+    output$sizeclass_SE1 <- renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
+    output$sizeclass_SE3 <- renderText(paste0("Size class: ", rv$sizeclass))
 
+    output$downloadSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
+    output$downloadSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
+    output$downloadSEfig <- downloadSEFig(rv)
+  }
+  return(output)
+}
+
+#' @title Update the SE output when a p or k equation is chosen
+#'
+#' @description Update the SE output when a p or k equation is chosen
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_outpk_SE <- function(rv, output, session){
+  if (length(rv$mods_SE) > 0){
+    output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
+    output$fig_SE <- renderPlot({ 
+                       plot(rv$modSet_SE, specificModel = rv$outSEpk)
+                     }, height = rv$figH_SE, width = rv$figW_SE)
+    output$downloadSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
+    output$downloadSEfig <- downloadSEFig(rv)
+  }
+  return(output)
+}

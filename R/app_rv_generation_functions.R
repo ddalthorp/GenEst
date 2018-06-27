@@ -18,11 +18,16 @@ createReactiveValues <- function(){
     colNames_CO = NULL, colNames_COdates = NULL,
     colNames_all = NULL, 
 
-    nsim = 1000, CL = 0.95, sizeclassCol = NULL,
+    nsim = 1000, CL = 0.95, sizeclassCol = NULL, sizeclasses = NULL,
+    sizeclass = NULL, 
 
     obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL, 
-    formula_p = NULL, formula_k = NULL, kFixedChoice = NULL, kFixed = NULL 
-    
+    formula_p = NULL, formula_k = NULL, kFixedChoice = NULL, kFixed = NULL, 
+    mods_SE = NULL, sizeclasses_SE = NULL, outSEpk = NULL, 
+    AICcTab_SE = NULL, modOrder_SE = NULL, modNames_SE = NULL,
+    modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
+    best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
+    modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800
 
   )
 }

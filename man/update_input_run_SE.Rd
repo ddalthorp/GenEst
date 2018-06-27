@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_input_update_functions.R
 \name{update_input_run_SE}
 \alias{update_input_run_SE}
-\title{Update the SE output dropdown selections}
+\title{Update the SE output dropdown selections when the model is run}
 \usage{
 update_input_run_SE(rv, session)
 }
@@ -12,5 +12,5 @@ update_input_run_SE(rv, session)
 \item{session}{session}
 }
 \description{
-Update the SE output dropdown selections
+Update the SE output dropdown selections when the model is run
 }

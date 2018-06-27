@@ -55,11 +55,9 @@ SESidebar <- function(){
       HTML("<big><strong><u> Table & Figure Selection:
       </u></strong></big>"), 
       br(), br(), 
-      selectizeInput("tabfig_sizeclassSE",  
-        "Size Class:", " ", multiple = FALSE
-      ),  
-      selectizeInput("tabfig_SEp", "p Model:", " ", multiple = FALSE), 
-      selectizeInput("tabfig_SEk", "k Model:", " ", multiple = FALSE)
+      selectizeInput("outsizeclassSE",  "Size Class:", " ", multiple = FALSE),
+      selectizeInput("outSEp", "p Model:", " ", multiple = FALSE), 
+      selectizeInput("outSEk", "k Model:", " ", multiple = FALSE)
     )
   )
 }
@@ -118,6 +116,7 @@ SEFiguresPanel <- function(){
       HTML("<em>Run model to view figures</em>")
     ),
     conditionalPanel(condition = "output.SEModDone == 'OK'",
+      textOutput("sizeclass_SE1"), br(), 
       plotOutput("fig_SE", inline = TRUE), br(), br(),
       downloadButton("downloadSEfig", "Download")
     )
@@ -139,9 +138,9 @@ SEEstimatesPanel <- function(){
       HTML("<em>Run model to view model estimates</em>")
     ),
     conditionalPanel(condition = "output.SEModDone == 'OK'",
-      textOutput("sizeclass_SE1"), br(), 
-        dataTableOutput("modTab_SE"), br(),
-        downloadButton("downloadSEest", "Download")
+      textOutput("sizeclass_SE2"), br(), 
+      dataTableOutput("modTab_SE"), br(),
+      downloadButton("downloadSEest", "Download")
     )
   )
 }
@@ -161,7 +160,7 @@ SEModComparisonPanel <- function(){
       HTML("<em>Run models to view model comparison</em>")
     ),
     conditionalPanel(condition = "output.SEModDone == 'OK'",
-      textOutput("sizeclass_SE2"), br(), 
+      textOutput("sizeclass_SE3"), br(), 
       dataTableOutput("AICcTab_SE"), br(),
       downloadButton("downloadSEAICc", "Download")
     )

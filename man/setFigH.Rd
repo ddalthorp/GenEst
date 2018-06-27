@@ -10,8 +10,6 @@ setFigH(modelSet, type = "SE")
 \item{type}{"SE" or "CP"}
 
 \item{modelelSet}{model set}
-
-\item{minH}{minimum height}
 }
 \value{
 figure height

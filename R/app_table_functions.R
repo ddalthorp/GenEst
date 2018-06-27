@@ -1,4 +1,3 @@
-
 #' @title Create the pretty version of the Searcher Efficiency model table
 #'
 #' @description Format a reader-friendly version of the parameter table from
@@ -12,7 +11,7 @@
 #'
 #' @export
 #'
-prettyModTabSE <- function(modTab, CL = 0.9){
+prettyModTabSE <- function(modTab, CL = 0.95){
 
   out <- modTab[ , c("cell", "p_median", "k_median")]
   ncell <- nrow(out)
@@ -37,5 +36,28 @@ prettyModTabSE <- function(modTab, CL = 0.9){
               100 - 100 * (1 - CL) / 2, "%])"
             )
   colnames(out) <- c("Cell", paste0(c("p", "k"), coltxt))
+  return(out)
+}
+
+#' @title Create the download version of the Searcher Efficiency model table
+#'
+#' @description Format a user-friendly version of the parameter table from
+#'   a Searcher Efficiency model, based on confidence level of interest
+#'
+#' @param modTab model table
+#'
+#' @param CL Confidence level
+#'
+#' @return download version of the SE model table
+#'
+#' @export
+#'
+dlModTabSE <- function(modTab, CL = 0.95){
+
+  out <- modTab
+  lo <- 100 * (1 - CL) / 2
+  up <- 100 - 100 * (1 - CL) / 2
+  coltypes <- c("Median", paste0(lo, "%"), paste0(up, "%"))
+  colnames(out) <- c("Cell", paste0("p ", coltypes), paste0("k ", coltypes))
   return(out)
 }

@@ -55,7 +55,6 @@ observeEvent(input$preds_CP, {
   update_input_cols_CP(rv, input, session, "preds")
 })
 
-
 observeEvent(input$runMod_SE, {
   msgs$ModSE <<- msgModRun(msgs, "SE")
   rv <- update_rv_run_SE(rv, input)
@@ -63,9 +62,19 @@ observeEvent(input$runMod_SE, {
   update_input_run_SE(rv, session)
   msgs$ModSE <<- msgModDone(msgs, "SE")
 })
-
-
-
+observeEvent(input$outsizeclassSE, {
+  rv <- update_rv_outsc_SE(rv, input)
+  output <- update_output_outsc_SE(rv, output, session)
+  update_input_outsc_SE(rv, session)
+})
+observeEvent(input$outSEp, {
+  rv <- update_rv_outpk_SE(rv, input)
+  output <- update_output_outpk_SE(rv, output, session)
+})
+observeEvent(input$outSEk, {
+  rv <- update_rv_outpk_SE(rv, input)
+  output <- update_output_outpk_SE(rv, output, session)
+})
 
 
 }
