@@ -118,7 +118,7 @@ SEFiguresPanel <- function(){
     conditionalPanel(condition = "output.SEModDone == 'OK'",
       textOutput("sizeclass_SE1"), br(), 
       plotOutput("fig_SE", inline = TRUE), br(), br(),
-      downloadButton("downloadSEfig", "Download")
+      downloadButton("dlSEfig", "Download")
     )
   )
 }
@@ -140,7 +140,7 @@ SEEstimatesPanel <- function(){
     conditionalPanel(condition = "output.SEModDone == 'OK'",
       textOutput("sizeclass_SE2"), br(), 
       dataTableOutput("modTab_SE"), br(),
-      downloadButton("downloadSEest", "Download")
+      downloadButton("dlSEest", "Download")
     )
   )
 }
@@ -162,7 +162,7 @@ SEModComparisonPanel <- function(){
     conditionalPanel(condition = "output.SEModDone == 'OK'",
       textOutput("sizeclass_SE3"), br(), 
       dataTableOutput("AICcTab_SE"), br(),
-      downloadButton("downloadSEAICc", "Download")
+      downloadButton("dlSEAICc", "Download")
     )
   )
 }

@@ -99,7 +99,6 @@ update_rv_data_CO <- function(rv, input){
   return(rv)
 }
 
-
 #' @title Run the SE Models
 #'
 #' @description Use the inputs to run the SE models requested by the UI
@@ -130,6 +129,8 @@ update_rv_run_SE <- function(rv, input){
                     quiet = TRUE
                   ) 
                 ) 
+  rv$mods_SE_og <- rv$mods_SE
+  rv$mods_SE <- pkmSetSizeFailRemove(rv$mods_SE)
   if (!all(unlist(pkmSetSizeFail(rv$mods_SE)))){
     rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
     rv$sizeclasses_SE <- rv$sizeclasses
@@ -172,9 +173,9 @@ update_rv_outsc_SE <- function(rv, input){
     rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
-    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
-    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
-    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
+#    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
+#    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+#    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE)
     rv$figW_SE <- setFigW(rv$modSet_SE)
   }
@@ -197,9 +198,17 @@ update_rv_outpk_SE <- function(rv, input){
   if (length(rv$mods_SE) > 0){
     rv$outSEpk <- modNamePaste(c(input$outSEp, input$outSEk))
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
-    rv$modTab_SE <- rv$modSet_SE[[rv$outSEpk]]$cellwiseTable
-    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
-    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
+
+    if (rv$outSEpk %in% names(rv$modSet_SE)){
+      rv$modTab_SE <- rv$modSet_SE[[rv$outSEpk]]$cellwiseTable
+      rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+      rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
+    } else {
+      rv$modTab_SE <- NULL
+      holder <- data.frame(msg = "Selected model was not successfully fit.")
+      rv$modTabPretty_SE <- holder
+      rv$modTabDL_SE <- holder
+    }
   }
   return(rv)
 }
@@ -236,6 +245,8 @@ update_rv_run_CP <- function(rv, input){
                     sizeclassCol = rv$sizeclassCol, CL = rv$CL, quiet = TRUE
                   )
                 )
+  rv$mods_CP_og <- rv$mods_CP
+  rv$mods_CP <- cpmSetSizeFailRemove(rv$mods_CP)
 
   if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
     rv$sizeclasses <- updateSizeclasses(rv$data_CP, rv$sizeclassCol)
@@ -315,9 +326,17 @@ update_rv_outdls_CP <- function(rv, input){
     rv$outCPdlsfig <- modNamePaste(rv$CPdls, "CP")
     rv$outCPdlstab <- modNamePaste(rv$CPdls, "CP", tab = TRUE)
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
-    rv$modTab_CP <- rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_ls
-    rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
-    rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+
+    if (rv$outCPdlstab %in% names(rv$modSet_CP)){
+      rv$modTab_CP <- rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_ls
+      rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
+      rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+    } else {
+      rv$modTab_CP <- NULL
+      holder <- data.frame(msg = "Selected model was not successfully fit.")
+      rv$modTabPretty_CP <- holder
+      rv$modTabDL_CP <- holder
+    }
   }
   return(rv)
 }

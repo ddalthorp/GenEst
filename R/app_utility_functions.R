@@ -285,3 +285,18 @@ CPdistOptions <- function(){
   )
 }
 
+
+#' @title Produce a blank plot for unsucessful fits
+#'
+#' @description Simply make a blank plot with descriptive text
+#'
+#' @return dummy plot
+#'
+#' @export
+#'
+plotNA <- function(){
+  plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "", 
+    ylab = "", ylim = c(0, 1), xlim = c(0,1))
+  text(0.01, 0.9, "Selected model was not fit successfully.", adj = 0)
+}
+

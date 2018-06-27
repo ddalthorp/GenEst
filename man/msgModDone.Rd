@@ -2,14 +2,16 @@
 % Please edit documentation in R/app_msg_functions.R
 \name{msgModDone}
 \alias{msgModDone}
-\title{Create a model running message}
+\title{Create a model done message}
 \usage{
-msgModDone(msgs, modelType, clear = TRUE)
+msgModDone(msgs, modelType, rv, clear = TRUE)
 }
 \arguments{
 \item{msgs}{message list}
 
 \item{modelType}{"SE", "CP", "g", or "M"}
+
+\item{rv}{reactive values list}
 
 \item{clear}{if all notifications should be cleared or not}
 }
@@ -17,5 +19,5 @@ msgModDone(msgs, modelType, clear = TRUE)
 a model running message
 }
 \description{
-Produces a model-running notification
+Produces a model-done notification
 }

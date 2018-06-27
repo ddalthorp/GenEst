@@ -119,7 +119,7 @@ CPFiguresPanel <- function(){
     conditionalPanel(condition = "output.CPModDone == 'OK'",
       textOutput("sizeclass_CP1"), br(), 
       plotOutput("fig_CP", inline = TRUE), br(), br(),
-      downloadButton("downloadCPfig", "Download")
+      downloadButton("dlCPfig", "Download")
     )
   )
 }
@@ -141,7 +141,7 @@ CPEstimatesPanel <- function(){
     conditionalPanel(condition = "output.CPModDone == 'OK'",
       textOutput("sizeclass_CP2"), br(), 
       dataTableOutput("modTab_CP"), br(),
-      downloadButton("downloadCPest", "Download")
+      downloadButton("dlCPest", "Download")
     )
   )
 }
@@ -163,7 +163,7 @@ CPModComparisonPanel <- function(){
     conditionalPanel(condition = "output.CPModDone == 'OK'",
       textOutput("sizeclass_CP3"), br(), 
       dataTableOutput("AICcTab_CP"), br(),
-      downloadButton("downloadCPAICc", "Download")
+      downloadButton("dlCPAICc", "Download")
     )
   )
 }

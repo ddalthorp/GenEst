@@ -121,6 +121,7 @@ dlModTabCP <- function(modTab, CL = 0.95){
   lo <- 100 * (1 - CL) / 2
   up <- 100 - 100 * (1 - CL) / 2
   coltypes <- c("Median", paste0(lo, "%"), paste0(up, "%"))
-  colnames(out) <- c("Cell", paste0("l ", coltypes), paste0("s ", coltypes))
+  colnames(out) <- c("Cell", paste0("Location ", coltypes), 
+                     paste0("Scale ", coltypes))
   return(out)
 }

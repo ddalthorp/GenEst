@@ -32,7 +32,10 @@ downloadSEFig <- function(rv){
   downloadHandler(filename = "SE_fig.png",
       content = function(file){
         png(file, height = rv$figH_SE, width = rv$figW_SE, units = "px")
-        plot(rv$modSet_SE, specificModel = rv$outSEpk)
+        tryCatch(
+          plot(rv$modSet_SE, specificModel = rv$outSEpk),
+          error = function(x){plotNA()}
+        )
         dev.off()
       }
   )

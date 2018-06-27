@@ -202,9 +202,9 @@ update_output_run_SE <- function(rv, output, session){
     output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_SE3 <- renderText(paste0("Size class: ", rv$sizeclass))
 
-    output$downloadSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
-    output$downloadSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
-    output$downloadSEfig <- downloadSEFig(rv)
+    output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
+    output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
+    output$dlSEfig <- downloadSEFig(rv)
   }
   return(output)
 }
@@ -235,9 +235,9 @@ update_output_outsc_SE <- function(rv, output, session){
     output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_SE3 <- renderText(paste0("Size class: ", rv$sizeclass))
 
-    output$downloadSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
-    output$downloadSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
-    output$downloadSEfig <- downloadSEFig(rv)
+    output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
+    output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
+    output$dlSEfig <- downloadSEFig(rv)
   }
   return(output)
 }
@@ -258,12 +258,17 @@ update_output_outsc_SE <- function(rv, output, session){
 #'
 update_output_outpk_SE <- function(rv, output, session){
   if (length(rv$mods_SE) > 0){
-    output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
     output$fig_SE <- renderPlot({ 
-                       plot(rv$modSet_SE, specificModel = rv$outSEpk)
+                       tryCatch(
+                         plot(rv$modSet_SE, specificModel = rv$outSEpk),
+                         error = function(x){plotNA()}
+                       )
                      }, height = rv$figH_SE, width = rv$figW_SE)
-    output$downloadSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
-    output$downloadSEfig <- downloadSEFig(rv)
+    output$dlSEfig <- downloadSEFig(rv)
+    if (!is.null(rv$modTab_SE)){
+      output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
+      output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
+    }
   }
   return(output)
 }
@@ -304,9 +309,9 @@ update_output_run_CP <- function(rv, output, session){
     output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_CP3 <-  renderText(paste0("Size class: ", rv$sizeclass))
 
-    output$downloadCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
-    output$downloadCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
-    output$downloadCPfig <- downloadCPFig(rv)
+    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
+    output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
+    output$dlCPfig <- downloadCPFig(rv)
   }
   return(output)
 }
@@ -335,9 +340,9 @@ update_output_outsc_CP <- function(rv, output, session){
     output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
     output$sizeclass_CP3 <-  renderText(paste0("Size class: ", rv$sizeclass))
 
-    output$downloadCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
-    output$downloadCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
-    output$downloadCPfig <- downloadCPFig(rv)
+    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
+    output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
+    output$dlCPfig <- downloadCPFig(rv)
   }
   return(output)
 }
@@ -362,10 +367,19 @@ update_output_outdls_CP <- function(rv, output, session){
   if (length(rv$mods_CP) > 0){
     output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
     output$fig_CP <- renderPlot({ 
-                       plot(rv$modSet_CP, specificModel = rv$outCPdlsfig)
+                       tryCatch(
+                       plot(rv$modSet_CP, specificModel = rv$outCPdlsfig),
+                         error = function(x){plotNA()}
+                       )
                      }, height = rv$figH_CP, width = rv$figW_CP)
-    output$downloadCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
-    output$downloadCPfig <- downloadCPFig(rv)
+    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
+    output$dlCPfig <- downloadCPFig(rv)
+
+    if (!is.null(rv$modTab_CP)){
+      output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
+    }
+
   }
   return(output)
 }
