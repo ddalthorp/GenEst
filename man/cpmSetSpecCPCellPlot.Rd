@@ -4,29 +4,22 @@
 \alias{cpmSetSpecCPCellPlot}
 \title{Plot cell-specific decay curve for carcass persistence}
 \usage{
-cpmSetSpecCPCellPlot(modelSet, specificModel, fullModel, specificCell, col,
-  modelMatches, axis_x, axis_y, nsim, seed)
+cpmSetSpecCPCellPlot(modelSet, specificModel, specificCell, cols, axes)
 }
 \arguments{
-\item{modelSet}{model set of class cpmSet}
+\item{modelSet}{modelSet of class cpmSet}
 
-\item{specificModel}{name of the specific model to plot and emphasize}
-
-\item{fullModel}{name of the full model to create the cell structure}
+\item{specificModel}{name of the specific submodel to plot}
 
 \item{specificCell}{name of the specific cell to plot}
 
-\item{col}{color to use}
+\item{cols}{named vector of the colors to use for the distributions}
 
-\item{modelMatches}{list of matching models for the modelSet}
-
-\item{axis_x}{logical of whether or not to plot the x axis}
-
-\item{axis_y}{logical of whether or not to plot the y axis}
-
-\item{nsim}{number of draws to use to characterize the distributions}
-
-\item{seed}{random number seed to use}
+\item{axes}{named vector of logical values indicating whether or not to 
+plot the x axis and the y axis}
+}
+\value{
+a specific cell plot panel
 }
 \description{
 Produce the figure panel for a specific cell (factor 

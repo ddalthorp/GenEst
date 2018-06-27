@@ -4,10 +4,7 @@
 \alias{plot.cpmSet}
 \title{Plot results of a set of CP models}
 \usage{
-\method{plot}{cpmSet}(x, specificModel = NULL, nsim = 500, seed = 1,
-  col = c(exponential = rgb(0.8, 0.38, 0.56), weibull = rgb(1, 0.76, 0.15),
-  loglogistic = rgb(0, 1, 1), lognormal = rgb(0, 0.41, 0.55)),
-  sizeclassName = NULL, ...)
+\method{plot}{cpmSet}(x, specificModel = NULL, cols = CPcols(), ...)
 }
 \arguments{
 \item{x}{pk model set of class pkmSet}
@@ -15,14 +12,7 @@
 \item{specificModel}{the name(s) or index number(s) of specific model(s) to 
 restrict the plot}
 
-\item{nsim}{number of draws to use to characterize the distributions}
-
-\item{seed}{random number seed to use for the models}
-
-\item{col}{color to use for the specific model}
-
-\item{sizeclassName}{name of the size class if it is to be added to the
-figure}
+\item{cols}{named vector of the colors to use for the distributions}
 
 \item{...}{to be passed down}
 }

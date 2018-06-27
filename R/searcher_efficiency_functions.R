@@ -971,10 +971,7 @@ kSuggest <- function(obsData){
 #' @export
 #'
 pkmFail <- function(pkmod){
-  out <- !("pkm" %in% class(pkmod)) ||
-         anyNA(pkmod) ||
-         sum(diag(pkmod$varbeta) < 0) > 0
-  return(out)
+!("pkm" %in% class(pkmod)) || anyNA(pkmod) || sum(diag(pkmod$varbeta) < 0) > 0
 }
 
 
@@ -990,8 +987,7 @@ pkmFail <- function(pkmod){
 #' @export
 #'
 pkmSetFail <- function(pkmSetToCheck){
-  out <- unlist(lapply(pkmSetToCheck, pkmFail)) # preserves names
-  return(out)
+  unlist(lapply(pkmSetToCheck, pkmFail)) # preserves names
 }
 
 #' @title Check if all of the pkm models fail
@@ -1006,8 +1002,7 @@ pkmSetFail <- function(pkmSetToCheck){
 #' @export
 #'
 pkmSetSizeFail <- function(pkmSetSizeToCheck){
-  out <- lapply(pkmSetSizeToCheck, pkmSetFail)
-  return(out)
+  lapply(pkmSetSizeToCheck, pkmSetFail)
 }
 
 #' @title Remove failed pkm models from a \code{\link{pkmSet}} object
@@ -1037,7 +1032,6 @@ pkmSetFailRemove <- function(pkmSetToTidy){
 #' @export
 #'
 pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
-
   out <- list()
   for (sci in names(pkmSetSizeToTidy)){
     out[[sci]] <- pkmSetFailRemove(pkmSetSizeToTidy[[sci]])

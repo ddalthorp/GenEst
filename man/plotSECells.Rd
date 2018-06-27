@@ -4,14 +4,12 @@
 \alias{plotSECells}
 \title{Plot the cellwise results of a single model in a set of SE models}
 \usage{
-plotSECells(modelSet, specificModel, model_ref = NULL, cols)
+plotSECells(modelSet, specificModel, cols)
 }
 \arguments{
 \item{modelSet}{pk model set of class pkmSet}
 
 \item{specificModel}{the name of the specific model for the plot}
-
-\item{model_ref}{reference model for comparison}
 
 \item{cols}{named vector of colors to use for the specific and reference
 models}
