@@ -13,9 +13,6 @@ plotSEHeader(modelSet, specificModel, cols = SEcols())
 
 \item{cols}{named vector of colors to use for the specific and reference
 models}
-
-\item{sizeclassName}{name of the size class if it is to be added to the
-figure}
 }
 \value{
 a plot

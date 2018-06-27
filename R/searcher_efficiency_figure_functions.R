@@ -677,26 +677,6 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 }
 
 
-#' @title Return the model with the greatest log-likelihood
-#'
-#' @description  Compares all fitted models in a list and returns the model
-#'  with the greatest log-likelihood
-#'
-#' @param modelSet a list of fitted models with a \code{loglik} element. 
-#'  Models may be \code{pkm}, \code{cpm}, \code{survreg} objects or any 
-#'  objects with a \code{loglik} component.
-#'
-#' @return The model object with the greatest log-likelihood among
-#'  the models in \code{modelSet}
-#'
-#' @export
-#'
-refMod <- function(modelSet){
-  llvec <- sapply(modelSet, "[[", "loglik")
-  out <- modelSet[[which(llvec == max(llvec))]]
-  return(out)
-}
-
 #' @title Produce a named vectory with standard SE plot colors
 #' 
 #' @description Produce a named vectory with standard SE plot colors

@@ -13,6 +13,6 @@ pkmSetFail(pkmSetToCheck)
 A vector of logical values indicating if each of the models failed
 }
 \description{
-Run a check on each model within a \code{\link{pkmSet}} object
-  to determine if it failed or not
+Run a check on each model within a \code{\link{pkmSet}} 
+  object to determine if it failed or not
 }
