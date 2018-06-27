@@ -284,8 +284,6 @@ plot.pkmSet <- function(x, specificModel = NULL, cols = SEcols(), ...){
 #'
 #' @param specificModel the name of the specific model for the plot
 #'
-#' @param plotPage numeric indicator of which of the models in the set
-#'
 #' @param cols named vector of colors to use for the specific and reference
 #'   models
 #'
@@ -315,9 +313,6 @@ plotSEFigure <- function(modelSet, specificModel, cols){
 #'
 #' @param cols named vector of colors to use for the specific and reference
 #'   models
-#'
-#' @param sizeclassName name of the size class if it is to be added to the
-#'   figure
 #'
 #' @return a plot
 #'

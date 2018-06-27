@@ -27,7 +27,9 @@ createReactiveValues <- function(){
     AICcTab_SE = NULL, modOrder_SE = NULL, modNames_SE = NULL,
     modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
     best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
-    modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800
+    modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
+
+    SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", ")
 
   )
 }

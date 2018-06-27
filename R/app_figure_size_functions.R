@@ -21,7 +21,7 @@ setFigW <- function(modelSet){
 #'
 #' @description Convenience function for determining the needed figure height
 #'
-#' @param modelelSet model set
+#' @param modelSet model set
 #'
 #' @param type "SE" or "CP"
 #'

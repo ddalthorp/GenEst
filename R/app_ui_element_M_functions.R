@@ -7,7 +7,9 @@
 #' @export
 #'
 MPanel <- function(){
-  tabPanel("Mortality Estimation", br(), br(), MSidebar()
+  tabPanel("Mortality Estimation", br(), br(), 
+    MSidebar(),
+    MMainPanel()
   )
 }
 
