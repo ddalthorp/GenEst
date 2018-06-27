@@ -9,7 +9,8 @@
 #'
 gPanel <- function(){
   tabPanel("Detection Probability", br(), br(),
-    gSidebar()
+    gSidebar(),
+    gMainPanel()
   )
 }
 
@@ -110,7 +111,7 @@ gMainPanel <- function(){
 #'
 gSchedulePanel <- function(){
   tabPanel("Schedule",         
-    br(), br(),
+    br(), 
     HTML("<big><strong><u> Search Schedule: </u></strong></big>"),
     br(), br(), 
     box(textOutput("SStext"))
