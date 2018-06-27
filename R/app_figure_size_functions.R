@@ -23,8 +23,6 @@ setFigW <- function(modelSet){
 #'
 #' @param modelelSet model set
 #'
-#' @param minH minimum height
-#'
 #' @param type "SE" or "CP"
 #'
 #' @return figure height
@@ -34,9 +32,14 @@ setFigW <- function(modelSet){
 setFigH <- function(modelSet, type = "SE"){
   ncell <- nrow(modelSetCells(modelSet))
   nRow <- ceiling(ncell / 3)
-  out <- nRow * 400 + 400
-  if (type == "CP"){
-    out <- out - 100
+  mult <- 200
+  if (ncell > 6){
+    mult <- 300
   }
+  proposed <- nRow * mult + 400
+  if (type == "CP"){
+    proposed <- proposed - 100
+  }
+  out <- max(c(proposed, 800))
   out
 }

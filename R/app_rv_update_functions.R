@@ -133,7 +133,7 @@ update_rv_run_SE <- function(rv, input){
   if (!all(unlist(pkmSetSizeFail(rv$mods_SE)))){
     rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
     rv$sizeclasses_SE <- rv$sizeclasses
-    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$tabfig_sizeclassSE)
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
     rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass]], TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
     rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass]])[rv$modOrder_SE]
@@ -142,13 +142,64 @@ update_rv_run_SE <- function(rv, input){
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
     rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
-    rv$modTab_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE)
     rv$figW_SE <- setFigW(rv$modSet_SE)
   }
   return(rv)
 }
 
+#' @title Update the SE reactive values when the size class is chosen
+#'
+#' @description Update the SE reactive values when the size class is chosen
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_outsc_SE <- function(rv, input){
+  if (length(rv$mods_SE) > 0){
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
+    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass]], TRUE)
+    rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
+    rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass]])[rv$modOrder_SE]
+    rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
+    rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
+    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
+    rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
+    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
+    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
+    rv$figH_SE <- setFigH(rv$modSet_SE)
+    rv$figW_SE <- setFigW(rv$modSet_SE)
+  }
+  return(rv)
+}
 
-
-
+#' @title Update the SE reactive values when a p or k model is chosen
+#'
+#' @description Update the SE reactive values when a p or k model is chosen
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_outpk_SE <- function(rv, input){
+  if (length(rv$mods_SE) > 0){
+    rv$outSEpk <- modNamePaste(c(input$outSEp, input$outSEk))
+    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
+    rv$modTab_SE <- rv$modSet_SE[[rv$outSEpk]]$cellwiseTable
+    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
+  }
+  return(rv)
+}

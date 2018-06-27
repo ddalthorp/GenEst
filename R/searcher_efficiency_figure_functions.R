@@ -330,16 +330,21 @@ plotSEHeader <- function(modelSet, specificModel, cols = SEcols()){
     ylab = "", ylim = c(0, 1), xlim = c(0, 1)
   )
 
-  rect(0.01, 0.325, 0.06, 0.525, lwd = 2, col = cols["spec"], border = NA)
-  text(x = 0.07, y = 0.45, "= Selected Model", adj = 0, cex = 0.9)
-  rect(0.3, 0.325, 0.35, 0.525, lwd = 2, col = cols["ref"], border = NA)
-  text(x = 0.36, y = 0.45, "= Reference Model", adj = 0, cex = 0.9)
+  LL <- sapply(modelSet, "[[", "loglik")
+  referenceMod <- names(modelSet)[which(LL == max(LL))]
+
+  rect(0.01, 0.725, 0.06, 0.925, lwd = 2, col = cols["spec"], border = NA)
+  text_model <- paste("= Selected Model: ", specificModel, sep = "")
+  text(x = 0.07, y = 0.85, text_model, adj = 0, cex = 0.9)
+
+  rect(0.01, 0.325, 0.06, 0.525, lwd = 2, col = cols["ref"], border = NA)
+  text_model <- paste("= Reference Model: ", referenceMod, sep = "")
+  text(x = 0.07, y = 0.45, text_model, adj = 0, cex = 0.9)
 
   labelsText <- paste(modelSetPredictors(modelSet), collapse = ".")
+  labelsText[labelsText == ""] <- "all"
   text_label <- paste("Labels: ", labelsText, sep = "")
-  text_model <- paste("Model: ", specificModel, sep = "")
-  text(x = 0.52, y = 0.3, text_label, adj = 0, cex = 0.75)
-  text(x = 0.52, y = 0.7, text_model, adj = 0, cex = 0.75)
+  text(x = 0.9, y = 0.8, text_label, adj = 1, cex = 0.75)
 
 }
 
@@ -454,6 +459,7 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
 
   axis(1, at = 1:ncell_set, labels = FALSE, tck = -0.05)
   ang <- 0
+  offy <- -0.25
   offx <- NULL
   if (ncell_set > 3){
     ang <- 35
@@ -462,16 +468,16 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
   xcex <- 0.75
   if (ncell_set > 6){
     xcex <- 0.5
+    offy <- -0.125
   }
-  text(1:ncell_set, -0.25, srt = ang, adj = offx, labels = cellNames_set,
+  text(1:ncell_set, offy, srt = ang, adj = offx, labels = cellNames_set,
     xpd = TRUE, cex = xcex
   )
 
-  axis(2, at = seq(0, 1, 0.5), labels = FALSE, cex.axis = 0.7, tck = -0.04)
+  axis(2, at = seq(0, 1, 0.5), las = 1, cex.axis = 0.7)
   axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.015)
-  mtext(side = 2, pk, line = 2, cex = 1.25)
-  ax2 <- c("0.0", "0.5", "1.0")
-  mtext(side = 2, ax2, at = c(0, 0.5, 1), line = 0.5, cex = 0.7, las = 1)
+  mtext(side = 2, pk, line = 2.2, cex = 1.125)
+
 
 }
 
