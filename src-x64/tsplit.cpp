@@ -18,7 +18,7 @@ NumericMatrix calcRateC(NumericMatrix M, NumericMatrix Aj,
   int **di;
   di = new int *[x];
   for (xi = 0; xi < x; xi++) {
-    di[xi] = new int [nsearch + 1];
+    di[xi] = new int [nsearch + 1]();
   }
   for (xi = 0; xi < x; xi++){
     i = 0;
@@ -55,7 +55,7 @@ NumericMatrix calcTsplitC(NumericMatrix rate, NumericVector days, NumericVector 
   NumericMatrix splits(ntimes - 1, nsim);
   int ti, si;
   double *Ft;
-  Ft = new double[ntimes];
+  Ft = new double[ntimes]();
   for (int simi = 0; simi < nsim; simi++){
     for (ti = 1; ti < ntimes; ti++){
       Ft[ti] = 0;
