@@ -13,8 +13,6 @@ plotSEFigure(modelSet, specificModel, cols)
 
 \item{cols}{named vector of colors to use for the specific and reference
 models}
-
-\item{plotPage}{numeric indicator of which of the models in the set}
 }
 \value{
 a plot

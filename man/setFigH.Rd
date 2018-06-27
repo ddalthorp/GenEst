@@ -7,9 +7,9 @@
 setFigH(modelSet, type = "SE")
 }
 \arguments{
-\item{type}{"SE" or "CP"}
+\item{modelSet}{model set}
 
-\item{modelelSet}{model set}
+\item{type}{"SE" or "CP"}
 }
 \value{
 figure height
