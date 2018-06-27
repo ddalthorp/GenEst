@@ -173,9 +173,9 @@ update_rv_outsc_SE <- function(rv, input){
     rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
-#    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
-#    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
-#    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
+    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
+    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE)
     rv$figW_SE <- setFigW(rv$modSet_SE)
   }

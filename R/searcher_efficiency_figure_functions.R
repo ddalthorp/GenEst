@@ -359,7 +359,9 @@ plotSEBoxPlots <- function(modelSet, specificModel, cols){
   par(fig = c(0, 0.45, 0.7, 0.965), new = TRUE)
   pkmSetSpecParamPlot(modelSet, specificModel, "p", cols)
   par(fig = c(0.45, 0.9, 0.7, 0.965), new = TRUE)
-  pkmSetSpecParamPlot(modelSet, specificModel, "k", cols)
+  if (!grepl("k not estimated", specificModel)){
+    pkmSetSpecParamPlot(modelSet, specificModel, "k", cols)
+  }
 }
 
 #' @title p or k box plots for an SE model set
@@ -395,8 +397,14 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
   predictors_spec <- model_spec$predictors
   predictors_ref <- model_ref$predictors
 
-  pks_spec <- rpk(n = 1000, model = model_spec)
-  pks_ref <- rpk(n = 1000, model = model_ref)
+  kIncluded <- !any(grepl("k not estimated", specificModel))
+  if (kIncluded){
+    pks_spec <- rpk(n = 1000, model = model_spec)
+    pks_ref <- rpk(n = 1000, model = model_ref)
+  } else{
+    pks_spec <- rpk(n = 1000, model = model_spec, kFill = 1)
+    pks_ref <- rpk(n = 1000, model = model_ref, kFill = 1)
+  }
   cellMatch_spec <- matchCells(model_spec, modelSet)
   cellMatch_ref <- matchCells(model_ref, modelSet)
 
@@ -607,7 +615,7 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 
   cells_set <- modelSetCells(modelSet)
   preds_set <- modelSetPredictors(modelSet)
-  carcCells <- apply(data.frame(model_spec$data[ , preds_set]),
+  carcCells <- apply(data.frame(model_spec$data0[ , preds_set]),
                  1, paste, collapse = "."
                )
   whichCarcs <- which(carcCells == specificCell)
@@ -625,8 +633,14 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   carcUnavail <- apply(apply(observations, 2, is.na), 2, sum)
   carcAvail <- ncarc - carcUnavail
 
-  pks_spec <- rpk(n = 1000, model = model_spec)
-  pks_ref <- rpk(n = 1000, model = model_ref)
+  kIncluded <- !any(grepl("k not estimated", specificModel))
+  if (kIncluded){
+    pks_spec <- rpk(n = 1000, model = model_spec)
+    pks_ref <- rpk(n = 1000, model = model_ref)
+  } else{
+    pks_spec <- rpk(n = 1000, model = model_spec, kFill = 1)
+    pks_ref <- rpk(n = 1000, model = model_ref, kFill = 1)
+  }
   cellMatch_spec <- matchCells(model_spec, modelSet)
   cellMatch_ref <- matchCells(model_ref, modelSet)
 

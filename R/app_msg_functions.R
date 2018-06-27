@@ -91,7 +91,7 @@ msgModDone <- function(msgs, modelType, rv, clear = TRUE){
   }
   if (modelType == "SE"){
     if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
-      return(msgModFail(rv$mod_SE))
+      return(msgModFail(rv$mod_SE_og))
     } else{
       if (any(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
       }
@@ -99,7 +99,12 @@ msgModDone <- function(msgs, modelType, rv, clear = TRUE){
   }
 
   if (modelType == "CP"){
-    return(NULL)
+    if (all(unlist(cpmSetSizeFail(rv$mods_CP_og)))){
+      return(msgModFail(rv$mod_CP_og))
+    } else{
+      if (any(unlist(cpmSetSizeFail(rv$mods_SECPog)))){
+      }
+    }
   }
 }
 

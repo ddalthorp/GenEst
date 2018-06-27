@@ -368,6 +368,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output <- list()
   output$call <- match.call()
   output$data <- data
+  output$data0 <- data0
   output$formula_p <- formula_p
   if (!pOnly) output$formula_k <- formula_k
   output$predictors <- preds
@@ -395,7 +396,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output$loglik <- llik
   output$pOnly <- pOnly
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("data", "predictors_p", "predictors_k", 
+  attr(output, "hidden") <- c("data", "data0", "predictors_p", "predictors_k", 
     "kFixed", "betahat_p", "betahat_k", "cellMM_p", "cellMM_k", "nbeta_p", 
     "nbeta_k", "varbeta", "levels_p", "levels_k", "carcCells", "AIC", "cells",
     "ncell", "observations", "loglik", "pOnly")

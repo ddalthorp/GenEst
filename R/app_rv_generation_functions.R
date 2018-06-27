@@ -28,6 +28,7 @@ createReactiveValues <- function(){
     modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
     best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
     modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
+    kFill = 1, 
 
     ltp = NULL, fta = NULL, preds_CP = NULL, dists = NULL, 
     predictors_CP = NULL, formula_l = NULL, formula_s = NULL, 

@@ -7,9 +7,9 @@ data_CO <- mock$CO
 data_SS <- mock$SS
 data_DWP <- mock$DWP
 
-model_SE <- pkmSet(formula_p = p ~ Visibility*HabitatType, 
+model_SE <- pkmSet(formula_p = p ~ 1, 
              formula_k = k ~ 1,
-             data = data_SE
+             data = data_SE, obsCol = c("Search1", "Search2")
             )
 plot(model_SE)
 model_CP <- cpmSet(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
