@@ -542,4 +542,39 @@ update_rv_run_M <- function(rv, input){
 }
 
 
+#' @title Update the M reactive values when M is split
+#'
+#' @description Update the M reactive values when M is split
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_split_M <- function(rv, input){
+  rv$Msplit <- NULL
+  rv$split_CO <- input$split_CO
+  rv$split_SS <- input$split_SS
+  rv$nsplit_CO <- length(rv$split_CO)
+  rv$nsplit_SS <- length(rv$split_SS)
+  rv$dateFoundCol <- input$dateFoundCol
+
+  rv$Msplit <- tryCatch(
+                 calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
+                   split_SS = rv$split_SS, split_CO = rv$split_CO,
+                   data_SS = rv$data_SS, data_CO = rv$data_CO
+                 ), error = function(x){NULL}, warning = function(x){NULL}
+               )
+  if (!is.null(rv$Msplit)){
+    rv$figH_M <- 600
+    if (length(attr(rv$Msplit, "vars")) > 1){
+      rv$figH_M <- max(600, 300 * length(rv$Msplit))
+    }
+  }
+  rv
+}
+
 

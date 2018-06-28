@@ -45,6 +45,7 @@ createReactiveValues <- function(){
     M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, 
     sizeclassCol_M = NULL, DWPCol = NULL, dateFoundCol = NULL, 
     SEmodToUse = NULL, CPmodToUse = NULL,
+    split_CO = NULL, split_SS = NULL, nsplit_CO = NULL, nsplit_SS = NULL, 
     figH_M = 800, figW_M = 800,
 
     SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "),

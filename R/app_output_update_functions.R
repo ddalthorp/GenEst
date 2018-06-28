@@ -487,7 +487,6 @@ update_output_outsc_g <- function(rv, output, session){
   return(output)
 }
 
-
 #' @title Update the output when an M model has been run
 #'
 #' @description Update the output table when an M model has been run
@@ -517,6 +516,43 @@ update_output_run_M <- function(rv, output, session){
     output$dlMtab <- downloadTable("M_table.csv", 
                        prettySplitTab(summary(rv$Msplit)))
     output$dlMfig <- downloadMFig(rv)
+  }
+  output
+}
+
+#' @title Update the output when M has been split
+#'
+#' @description Update the output table when M has been split
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_split_M <- function(rv, output, session){
+
+  if (is.null(rv$Msplit)){
+    output$fig_M <- renderPlot({plot(rv$M)},
+                      height = rv$figH_M, width = rv$figW_M
+                    )
+    output$dlMfig <- downloadMFig(rv, split = FALSE)
+
+  } else{
+    output$fig_M <- renderPlot({plot(rv$Msplit)},
+                      height = rv$figH_M, width = rv$figW_M
+                    )
+    output$table_M <- renderDataTable(
+                        datatable(prettySplitTab(summary(rv$Msplit)))
+                      )
+    output$dlMtab <- downloadTable("M_table.csv", 
+                       prettySplitTab(summary(rv$Msplit)))
+    output$dlMfig <- downloadMFig(rv)
+
   }
   output
 }
