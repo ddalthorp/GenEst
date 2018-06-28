@@ -49,7 +49,7 @@ plot.estM <- function(x, ..., CL = 0.95){
 #'
 simpleMplot <- function(M, ..., CL = 0.95){
   
-  if ("splitSummary" %in% class(M)){
+  if ("splitSummary" %in% class(M) | "splitFull" %in% class(M)){
     Mtot <- as.vector(M)
   } else {
     Mtot <- apply(M, 2, sum)

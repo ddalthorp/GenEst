@@ -122,7 +122,6 @@ removeSelCols <- function(colNames, selCols){
 #'
 updateColNames_all <- function(rv){
 
- 
   SECPCO <- NULL
   SE <- rv$colNames_SE
   CP <- rv$colNames_CP
@@ -215,15 +214,20 @@ modNameSplit <- function(modNames, pos){
 #' @export
 #'
 countCarcs <- function(mods){
-  ncarc <- NULL
   nsizeclasses <- length(mods)
   nmods <- length(mods[[1]])
   if (nsizeclasses > 0 & nmods > 0){
+    ncarc <- rep(NA, nsizeclasses * nmods)
+    counter <- 0
     for (sci in 1:nsizeclasses){
       for (modi in 1:nmods){
-        ncarc <- c(NULL, min(table(mods[[sci]][[modi]]$carcCell)))
+        counter <- counter + 1
+        if (!grepl("Failed model fit", mods[[sci]][[modi]][1])){
+          ncarc[counter] <- min(table(mods[[sci]][[modi]]$carcCell))
+        }
       }
     }
+    ncarc <- min(na.omit(ncarc))
   }else{
     ncarc <- Inf
   }
@@ -242,57 +246,6 @@ countCarcs <- function(mods){
 #'
 prepSizeclassText <- function(sizeclasses){
   return(renderText(paste(sizeclasses, collapse = " ")))
-}
-
-#' @title Make a model menu
-#'
-#' @description Produce a size-based model-selection menu object based on
-#'   model inputs
-#'
-#' @param mods size-indexed list of model sets
-#'
-#' @param sizeclasses size class names
-#'
-#' @param type model type, either "SE" or "CP"
-#'
-#' @return rendered HTML model selection menu object
-#'
-#' @export
-#'
-makeMenu <- function(mods, sizeclasses, type){
-
-  modelMenu <- ""
-  nsizeclasses <- length(sizeclasses)
-  if (nsizeclasses > 0){
-    for(sci in 1:nsizeclasses){
-      AICcTab <- pkmSetAICcTab(mods[[sci]], quiet = TRUE)
-      modOrder <- as.numeric(row.names(AICcTab))
-      modNames <- names(mods[[sci]])[modOrder]
-      modNames <- gsub("; NULL", "", modNames)
-      modNames <- gsub("dist: ", "", modNames)
-
-      modNames_nchar <- nchar(modNames)
-      modNames_maxchar <- max(modNames_nchar)
-      modNames_nspaces <- modNames_maxchar - modNames_nchar + 10
-      modSpaces <- sapply(modNames_nspaces, 
-                     function(x){paste(rep(" ", x), collapse = "")}
-                   )
-
-      modDeltaAICcs <- AICcTab[ , "Delta AICc"]
-      modLabels <- paste0(modNames, " (delta AICc: ", modDeltaAICcs, ")")
-      names(modNames) <- modLabels
-      labels_nchar <- nchar(modLabels)
-      labels_maxchar <- max(labels_nchar)
-      widthval <- max(c(400, labels_maxchar * 7 + 20))
-      widthtxt <- paste0(widthval, "px")
-      mtuText <- paste("modelChoices_", type, sci, sep = "") 
-      scText <- paste("Model for ", sizeclasses[sci], sep = "")
-      modSelect <- selectizeInput(mtuText, scText, modNames, width = widthtxt)
-      modelMenu <- paste(modelMenu, modSelect)  
-    }
-  }
-          
-  return(renderUI({HTML(modelMenu)}))
 }
 
 #' @title Paste the parts of a model's name back together
@@ -335,5 +288,20 @@ CPdistOptions <- function(){
   list("exponential" = "exponential", "weibull" = "weibull",
     "lognormal" = "lognormal", "loglogistic" = "loglogistic"
   )
+}
+
+
+#' @title Produce a blank plot for unsucessful fits
+#'
+#' @description Simply make a blank plot with descriptive text
+#'
+#' @return dummy plot
+#'
+#' @export
+#'
+plotNA <- function(){
+  plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "", 
+    ylab = "", ylim = c(0, 1), xlim = c(0,1))
+  text(0.01, 0.9, "Selected model was not fit successfully.", adj = 0)
 }
 

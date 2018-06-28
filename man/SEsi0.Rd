@@ -15,6 +15,6 @@ SEsi0(days, pk)
 searcher efficiency that matches the output of ppersist
 }
 \description{
-Calculate searcher efficiency after some searches for a single 
-  pk combination
+Calculate searcher efficiency after some searches for a 
+  single pk combination
 }

@@ -13,7 +13,6 @@ Ecbinom(prob)
 mean
 }
 \description{
-Calculates the expected value of a continuous binomial
-
-uses internal-only data
+Calculates the expected value of a continuous binomial. Uses 
+  internal-only data
 }

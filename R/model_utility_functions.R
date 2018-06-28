@@ -106,49 +106,52 @@ checkComponents <- function(formula){
   return(output)
 }
 
+
 #' @title Match cells between models.
 #'
-#' @description Match cells between a (potentially) reduced and full model
-#'   Terms are automatically alphabatized to insure matching across models.
+#' @description Match cells between a (potentially) reduced and the full model
+#'   set. Terms are automatically alphabatized to insure matching across 
+#'   models.
 #'
-#' @param model_spec specific model compared against the full
+#' @param specific specific model compared against the full set
 #'
-#' @param model_full full model to compare to the specific
+#' @param modelSet full model set to compare to the specific
 #'
 #' @return vector of length equal to the number of cells in the full model, 
 #'   each element containing the related cell name in the reduced model
 #'
 #' @export 
 #'
-matchCells <- function(model_spec, model_full){
+matchCells <- function(specific, modelSet){
 
-  cells_spec <- model_spec$cells
-  cells_full <- model_full$cells
-  ncell_full <- model_full$ncell
+  cells_spec <- specific$cells
+  cells_set <- modelSetCells(modelSet)
+  ncell_set <- nrow(cells_set)
 
-  predictors_spec <- model_spec$predictors
-  predictors_full <- model_full$predictors
-  predictorsMatch_spec <- which(predictors_spec %in% predictors_full)
-  predictorsMatch_full <- which(predictors_full %in% predictors_spec)
+  predictors_spec <- specific$predictors
+  predictors_set <- modelSetPredictors(modelSet)
+
+  predictorsMatch_spec <- which(predictors_spec %in% predictors_set)
+  predictorsMatch_set <- which(predictors_set %in% predictors_spec)
  
-  if (!all(predictors_spec %in% predictors_full)){
-    stop("Full model does not include specific model's terms.")
+  if (!all(predictors_spec %in% predictors_set)){
+    stop("Complete model set does not include specific model's terms.")
   }
 
   if (length(predictorsMatch_spec) == 0){
-    out <- as.character(rep(cells_spec$CellNames, ncell_full))
-  }else{
+    out <- as.character(rep(cells_spec$CellNames, ncell_set))
+  } else{
 
-    matchedPredictors_full <- sort(colnames(cells_full)[predictorsMatch_full])
+    matchedPredictors_set <- sort(colnames(cells_set)[predictorsMatch_set])
     matchedPredictors_spec <- sort(colnames(cells_spec)[predictorsMatch_spec])
     cellSubSet_spec <- data.frame(cells_spec[ , matchedPredictors_spec])
-    cellSubSet_full <- data.frame(cells_full[ , matchedPredictors_full])
+    cellSubSet_set <- data.frame(cells_set[ , matchedPredictors_set])
     pasteCellNames_spec <- apply(cellSubSet_spec, 1, paste, collapse = ".")   
-    pasteCellNames_full <- apply(cellSubSet_full, 1, paste, collapse = ".")   
+    pasteCellNames_set <- apply(cellSubSet_set, 1, paste, collapse = ".")   
 
-    out <- rep(NA, ncell_full)
-    for (celli in 1:ncell_full){
-      cellMatch <- which(pasteCellNames_spec == pasteCellNames_full[celli])
+    out <- rep(NA, ncell_set)
+    for (celli in 1:ncell_set){
+      cellMatch <- which(pasteCellNames_spec == pasteCellNames_set[celli])
       out[celli] <- cells_spec$CellNames[cellMatch]
     }
   }
@@ -265,3 +268,125 @@ trimSetSize <- function(modSetSize, mods){
   }
   return(models)
 }
+
+
+#' @title Determine the predictors from each model in a model set
+#'
+#' @description Determine the predictors from each model in a model set
+#'
+#' @param modelSet model set
+#'
+#' @return List of the predictors from each model in a model set
+#'
+#' @export
+#'
+modelSetModelPredictors <- function(modelSet){
+  nmod <- length(modelSet)
+  out <- vector("list", length = nmod)
+  for (modi in 1:nmod){
+     if (!(grepl("Failed model fit", modelSet[[modi]][1]))){
+       if ( length(modelSet[[modi]]$predictors) > 0){
+         out[[modi]] <- modelSet[[modi]]$predictors
+       }
+     }
+  }
+  names(out) <- names(modelSet)
+  return(out)
+}
+
+#' @title Determine the predictors for a whole model set
+#'
+#' @description Determine the predictors for a whole model set
+#'
+#' @param modelSet model set
+#'
+#' @return vector of the predictors from a model set
+#'
+#' @export
+#'
+modelSetPredictors <- function(modelSet){
+  unique(unlist(modelSetModelPredictors(modelSet)))
+}
+
+#' @title Determine the cells from each model in a model set
+#'
+#' @description Determine the cells from each model in a model set
+#'
+#' @param modelSet model set
+#'
+#' @return List of the cells from each model in a model set
+#'
+#' @export
+#'
+modelSetModelCells <- function(modelSet){
+  nmod <- length(modelSet)
+  out <- vector("list", length = nmod)
+  for (modi in 1:nmod){
+    if (!(grepl("Failed model fit", modelSet[[modi]][1]))){
+      out[[modi]] <- modelSet[[modi]]$cells
+    }
+  }
+  names(out) <- names(modelSet)
+  return(out)
+}
+
+#' @title Determine the cell table for a full model set
+#'
+#' @description Determine the cell table for a full model set
+#'
+#' @param modelSet model set
+#'
+#' @return cell table for the model set
+#'
+#' @export
+#'
+modelSetCells <- function(modelSet){
+  modelCells <- modelSetModelCells(modelSet)
+  modelPreds <- modelSetPredictors(modelSet)
+
+  if (is.null(modelPreds)){
+    out <- data.frame("group" = "all", "CellNames" = "all")
+    return(out)
+  }
+
+  nmod <- length(modelSet)
+  npred <- length(modelPreds)
+  predLevels <- vector("list", npred)
+
+  for (modi in 1:nmod){
+    modiCells <- modelCells[[modi]]
+    for (predi in 1:npred){
+      if (modelPreds[predi] %in% colnames(modiCells)){
+        existing <- predLevels[[predi]]
+        new <- as.character(modiCells[ , modelPreds[predi]])
+        predLevels[[predi]] <- unique(c(existing, new))
+      }
+    }
+  }
+  out <- expand.grid(predLevels)
+  colnames(out) <- modelPreds
+  out$CellNames <- apply(out, 1, paste, collapse = ".")
+  return(out)
+}
+
+
+#' @title Return the model with the greatest log-likelihood
+#'
+#' @description  Compares all fitted models in a list and returns the model
+#'  with the greatest log-likelihood
+#'
+#' @param modelSet a list of fitted models with a \code{loglik} element. 
+#'  Models may be \code{pkm}, \code{cpm}, \code{survreg} objects or any 
+#'  objects with a \code{loglik} component.
+#'
+#' @return The model object with the greatest log-likelihood among
+#'  the models in \code{modelSet}
+#'
+#' @export
+#'
+refMod <- function(modelSet){
+  llvec <- sapply(modelSet, "[[", "loglik")
+  out <- modelSet[[which(llvec == max(llvec))]]
+  return(out)
+}
+

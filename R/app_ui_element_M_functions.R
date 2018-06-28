@@ -1,0 +1,142 @@
+#' @title Analysis Mortality Main Panel UI element 
+#'
+#' @description create the HTML code for the Analysis Mortality panel
+#'
+#' @return HTML for the Analysis Mortality Estimation panel
+#'
+#' @export
+#'
+MPanel <- function(){
+  tabPanel("Mortality Estimation", br(), br(), 
+    MSidebar(),
+    MMainPanel()
+  )
+}
+
+
+#' @title Analysis Mortality sidebar panel UI element 
+#'
+#' @description create the HTML code for the Analysis Mortality sidebar
+#'
+#' @return HTML for the Analysis Mortality sidebar
+#'
+#' @export
+#'
+MSidebar <- function(){
+  sidebarPanel(width = 3, 
+    HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+    br(), br(),
+    numericInput("frac", "Fraction of Facility Surveyed:", value = 1.0, 
+      min = 0.01, max = 1.0, step = 0.01
+    ),
+    selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
+      multiple = FALSE
+    ),
+    conditionalPanel(
+      condition = "output.kFillNeed == 'yes'",
+      numericInput("kFill", "Assumed k:", value = 0.5, 
+        min = 0, max = 1, step = 0.001
+      )
+    ),
+    conditionalPanel(
+      condition = "output.DWPNeed == 'yes'",
+      selectizeInput("DWPCol", "DWP Column", c("No data input yet"), 
+        multiple = FALSE
+      )
+    ),
+    conditionalPanel(
+      condition = 
+        "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
+         output.sizeclassesSE != output.sizeclassesCP",
+      br(), 
+      HTML("<center><em>Select SE and CP models fit to matching size
+        classes to run model</center></em>"
+      )
+    ),
+    conditionalPanel(
+      condition = 
+        "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
+         output.sizeclassesSE == output.sizeclassesCP",
+      br(), 
+      actionButton("runMod_M", "Estimate")
+    ),
+    conditionalPanel(
+      condition = "output.MModDone == 'OK'",
+      br(), br(), 
+      HTML("<big><strong><u> Splitting Mortality: </u></strong></big>"),
+      br(), br(), 
+      HTML("<em>Max. two splits, of which only one can be search-based</em>"),
+      br(), br(),
+      selectizeInput("split_SS", "Search Split:", 
+        " ", multiple = TRUE, options = list(maxItems = 1)
+      ),
+      selectizeInput("split_CO", "Carcass Splits:", 
+        " ", multiple = TRUE, options = list(maxItems = 2)
+      ),
+      br(),
+      actionButton("splitM", "Split Estimate")
+    )
+  )
+}
+
+#' @title Analysis Mortality main panel UI element 
+#'
+#' @description create the HTML code for the Analysis Mortality main panel
+#'
+#' @return HTML for the Analysis Mortality main panel
+#'
+#' @export
+#'
+MMainPanel <- function(){
+  mainPanel(
+    tabsetPanel(id = "analyses_M",
+      MFigurePanel(),
+      MSummaryPanel()
+    )
+  )
+}
+
+
+#' @title Analysis Mortality main panel figure UI element 
+#'
+#' @description create the HTML code for the Analysis Mortality
+#'   main panel figure element
+#'
+#' @return HTML for the Analysis Mortality figure panel
+#'
+#' @export
+#'
+MFigurePanel <- function(){
+  tabPanel("Figure", br(), 
+    conditionalPanel(condition = "output.fig_M == null",
+      HTML("<em>Run estimate to view figure</em>")
+    ), 
+    conditionalPanel(condition = "output.MModDone == 'OK'",
+      plotOutput("fig_M", inline = TRUE), br(), br(),
+      downloadButton("dlMfig", "Download")
+    )
+  )
+}
+
+
+#' @title Analysis Mortality main panel summary UI element 
+#'
+#' @description create the HTML code for the Analysis Mortality
+#'   main panel summary element
+#'
+#' @return HTML for the Analysis Mortality summary panel
+#'
+#' @export
+#'
+MSummaryPanel <- function(){
+  tabPanel("Summary", br(), 
+    conditionalPanel(condition = "output.table_M == null",
+      HTML("<em>Run estimate to view summary</em>")
+    ), 
+    conditionalPanel(condition = "output.MModDone == 'OK'",
+      br(), dataTableOutput("table_M"), br(),
+      downloadButton("dlMtab", "Download")
+    )
+  )
+}
+

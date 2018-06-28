@@ -33,7 +33,7 @@ entered as a vector of names, like \code{c("s1", "s2", "s3")},
 "lastSearch")}.}
 
 \item{kFixed}{Parameter for user-specified \code{k} value (optional). If a
-value is provided, \code{formula_k} is ignored and the model is fit under 
+value is provided, \code{formula_k} is ignored and the model is fit under
 the assumption that the \code{k} parameter is fixed and known to be
 \code{fix_k}.}
 
@@ -62,7 +62,7 @@ The following components are displayed automatically:
    on CIs for each parameter, indexed by cell (or combination of
    covariate levels).}
  \item{\code{AICc}}{the AIC value as corrected for small sample size}
- \item{\code{convergence}}{convergence status of the numerical optimization 
+ \item{\code{convergence}}{convergence status of the numerical optimization
    to find the maximum likelihood estimates of \code{p} and \code{k}. A 
    value of \code{0} indicates that the model was fit successfully. For 
    help in deciphering other values, see \code{\link{optim}}.}
@@ -133,7 +133,7 @@ The probability of finding a carcass that is present at the time of search
 
 Search trial \code{data} must be entered in a data frame with data in 
   each row giving the fate of a single carcass in the field trials. There
-  must be a column for each search occassion, with 0, 1, or NA depending on 
+  must be a column for each search occassion, with 0, 1, or NA depending on
   whether the carcass was missed, found, or not available (typically 
   because it was found and removed on a previous search, had been earlier
   removed by  scavengers, or was not searched for) on the given search  
