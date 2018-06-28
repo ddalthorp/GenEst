@@ -8,6 +8,8 @@ downloadMFig(rv, split = TRUE)
 }
 \arguments{
 \item{rv}{the reactive values list}
+
+\item{split}{logical indicator to use the split or not}
 }
 \value{
 an updated reactive values list

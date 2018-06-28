@@ -69,6 +69,8 @@ downloadgFig <- function(rv, sc){
 #'
 #' @param rv the reactive values list
 #'
+#' @param split logical indicator to use the split or not
+#'
 #' @return an updated reactive values list
 #'
 #' @export

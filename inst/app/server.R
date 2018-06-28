@@ -1,6 +1,6 @@
 function(input, output, session){
 
-#modalWelcome()
+modalWelcome()
 rv <- createReactiveValues()
 output$versionInfo <- renderText(createvtext())
 output$SStext <- renderText(rv$SStext)
@@ -103,7 +103,6 @@ observeEvent(input$outCPs, {
   output <- update_output_outdls_CP(rv, output, session)
 })
 
-
 observeEvent(input$runMod_M, {
   msgs$ModM <<- msgModRun(msgs, "M")
   rv <- update_rv_run_M(rv, input)
@@ -113,11 +112,9 @@ observeEvent(input$runMod_M, {
 })
 observeEvent(input$splitM, {
   rv <- update_rv_split_M(rv, input)
-  output <- update_output_run_M(rv, output, session)
-#  msgs$ModM <<- msgMod
+  output <- update_output_split_M(rv, output, session)
+  msgs$ModM <<- msgModDone(msgs, rv, "split")
 })
-
-
 
 observeEvent(input$useSSdata, {
   rv <- update_rv_useSSdata(rv)
