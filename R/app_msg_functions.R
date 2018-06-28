@@ -8,7 +8,8 @@
 #' @export
 #'
 msgList <- function(){
-  list("ModSE" = NULL, "ModCP" = NULL)
+  list(ModSE = NULL, ModCP = NULL,
+       SS = NULL)
 }
 
 #' @title Clear all notifications
@@ -26,6 +27,9 @@ clearNotifications <- function(msgs = msgList()){
   }
   if (!is.null(msgs$ModCP)){
     removeNotification(msgs$ModCP)
+  }
+  if (!is.null(msgs$SS)){
+    removeNotification(msgs$SS)
   }
 }
 
@@ -251,4 +255,30 @@ msgModFail <- function(mods){
   if(!is.null(msg)){
     return(showNotification(msg, type = "error", duration = NULL))
   }
+}
+
+#' @title Create the warning message for when the SS average doesn't work
+#'
+#' @description Produces a notification for when an average search schedule
+#'   can't be created
+#'
+#' @param msgs message list
+#'
+#' @param rv reactive values list
+#'
+#' @param clear if all notifications should be cleared or not
+#'
+#' @return an average SS fail warning
+#'
+#' @export
+#'
+msgSSavgFail <- function(msgs, rv, clear = TRUE){
+  if (clear){
+    clearNotifications(msgs)
+  }
+  if (is.na(rv$SStemp[1])){
+    msg <- "Search Schedule can't be averaged using date searched column"
+    return(showNotification(msg, type = "warning", duration = NULL))
+  }
+  NULL
 }

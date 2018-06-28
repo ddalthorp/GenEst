@@ -340,3 +340,47 @@ update_rv_outdls_CP <- function(rv, input){
   }
   return(rv)
 }
+
+#' @title Update the SS reactive values when the SS are chosen
+#'
+#' @description Update the SS reactive values when the SS are chosen
+#'
+#' @param rv the reactive values list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_useSSdata <- function(rv){
+  rv$SS <- NULL
+  rv$SStemp <- tryCatch(averageSS(rv$data_SS), error = function(x){NA})
+  if (!is.na(rv$SStemp[1])){
+    rv$SS <- rv$SStemp
+    rv$avgSI <-  mean(diff(rv$SS[-length(rv$SS)]))
+    rv$SStext <- paste(rv$SS, collapse = ", ")
+  }
+  rv
+}
+
+#' @title Update the SS reactive values when the average SS is chosen
+#'
+#' @description Update the SS reactive values when the average SS is chosen
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_useSSinputs <- function(rv, input){
+  rv$gSearchInterval <- input$gSearchInterval
+  rv$gSearchMax <- input$gSearchMax
+  rv$SS <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
+  if (max(rv$SS) != rv$gSearchMax){
+    rv$SS <- c(rv$SS, rv$gSearchMax)
+  }
+  rv$SStext <- paste(rv$SS, collapse = ", ")
+  rv
+}

@@ -383,3 +383,24 @@ update_output_outdls_CP <- function(rv, output, session){
   }
   return(output)
 }
+
+
+#' @title Update the SS text output when the SS is updated
+#'
+#' @description Update the SS text output when the SS is updated
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_SS <- function(rv, output, session){
+  output$SStext <- renderText(rv$SStext)
+  output
+}
+
