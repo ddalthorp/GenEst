@@ -8,23 +8,17 @@ data_SS <- mock$SS
 data_DWP <- mock$DWP
 
 
-model_SE <- pkmSetSize(formula_p = p ~ 1, 
+model_SE <- pkm(formula_p = p ~ 1, 
              formula_k = k ~ 1,
              data = data_SE
             )
 
 
-model_SE <- pkmSetSize(formula_p = p ~ Season*Visibility*HabitatType, 
-             formula_k = k ~ Season*Visibility*HabitatType,
-             data = data_SE
-            )
-plot(model_SE)
-model_CP <- cpmSet(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
+model_CP <- cpm(formula_l = l ~ 1, formula_s = s ~ 1, 
              data = data_CP,
              left = "LastPresentDecimalDays", 
              right = "FirstAbsentDecimalDays"
             )
-
 
 avgSS <- averageSS(data_SS)
 ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP, 

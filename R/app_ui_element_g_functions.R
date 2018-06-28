@@ -74,7 +74,7 @@ gSidebar <- function(){
       HTML("<big><strong><u> Table & Figure Selection: 
         </u></strong></big>"
       ), br(), br(),
-      selectizeInput("tabfig_sizeclassg", "Size Class:", 
+      selectizeInput("outsizeclassg", "Size Class:", 
         " ", multiple = FALSE
       )
     )
@@ -133,8 +133,9 @@ gFigurePanel <- function(){
       HTML("<em>Run estimate to view figure</em>")
     ), 
     conditionalPanel(condition = "output.gModDone == 'OK'",
+      textOutput("sizeclass_g1"), br(), 
       plotOutput("fig_g", inline = TRUE), br(), br(),
-      downloadButton("downloadgfig", "Download")
+      downloadButton("dlgfig", "Download")
     )
   )
 }
@@ -154,8 +155,9 @@ gSummaryPanel <- function(){
       HTML("<em>Run estimate to view summary</em>")
     ), 
     conditionalPanel(condition = "output.gModDone == 'OK'",
+      textOutput("sizeclass_g2"), br(), 
       br(), dataTableOutput("table_g"), br(),
-      downloadButton("downloadgtab", "Download")
+      downloadButton("dlgtab", "Download")
     )
   )
 }

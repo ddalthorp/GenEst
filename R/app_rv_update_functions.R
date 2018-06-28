@@ -135,14 +135,15 @@ update_rv_run_SE <- function(rv, input){
     rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
     rv$sizeclasses_SE <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
-    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass]], TRUE)
+    rv$sizeclass_SE <- rv$sizeclass
+    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass_SE]], TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
-    rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass]])[rv$modOrder_SE]
+    rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
     rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
     rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
-    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
+    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass_SE]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
-    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
+    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cellwiseTable
     rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
     rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE)
@@ -166,14 +167,15 @@ update_rv_run_SE <- function(rv, input){
 update_rv_outsc_SE <- function(rv, input){
   if (length(rv$mods_SE) > 0){
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
-    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass]], TRUE)
+    rv$sizeclass_SE <- rv$sizeclass
+    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass_SE]], TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
-    rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass]])[rv$modOrder_SE]
+    rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
     rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
     rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
-    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
+    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass_SE]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
-    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass]][[rv$best_SE]]$cellwiseTable
+    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cellwiseTable
     rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
     rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE)
@@ -252,18 +254,20 @@ update_rv_run_CP <- function(rv, input){
     rv$sizeclasses <- updateSizeclasses(rv$data_CP, rv$sizeclassCol)
     rv$sizeclasses_CP <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
-    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass]], TRUE)
+    rv$sizeclass_CP <- rv$sizeclass
+    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass_CP]], TRUE)
     rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "", 
                                            rv$AICcTab_CP[ , "Scale Formula"]
                                          )
     rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
-    rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass]])[rv$modOrder_CP]
+    rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass_CP]])[rv$modOrder_CP]
     rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)
     rv$modNames_CPl <- modNameSplit(rv$modNames_CP, 2)
     rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
-    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
+    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
-    rv$modTab_CP <- rv$mods_CP[[rv$sizeclass]][[rv$best_CP]]$cellwiseTable_ls
+    rv$modTab_CP <- 
+                  rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_ls
     rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
     rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
     rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
@@ -288,15 +292,17 @@ update_rv_run_CP <- function(rv, input){
 update_rv_outsc_CP <- function(rv, input){
   if (length(rv$mods_CP) > 0){
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
-    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass]], TRUE)
+    rv$sizeclass_CP <- rv$sizeclass
+    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass_CP]], TRUE)
     rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
-    rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass]])[rv$modOrder_CP]
+    rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass_CP]])[rv$modOrder_CP]
     rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)
     rv$modNames_CPl <- modNameSplit(rv$modNames_CP, 2)
     rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
-    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
+    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
-    rv$modTab_CP <- rv$mods_CP[[rv$sizeclass]][[rv$best_CP]]$cellwiseTable_ls
+    rv$modTab_CP <- 
+                  rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_ls
     rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
     rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
     rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
@@ -384,3 +390,66 @@ update_rv_useSSinputs <- function(rv, input){
   rv$SStext <- paste(rv$SS, collapse = ", ")
   rv
 }
+
+#' @title Run the g Model
+#'
+#' @description Use the inputs to run the g model requested by the UI
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_g <- function(rv, input){
+  rv$CL <- input$CL
+  rv$kFill_g <- NA
+  if (length(rv$obsCols_SE) == 1 | rv$kFixedChoice == 1){
+    rv$kFill_g <- input$kFill_g
+  }
+  rv$sizeclasses_g <- rv$sizeclasses
+  rv$nsizeclasses_g <- length(rv$sizeclasses_g)
+  if (length(rv$nsizeclasses_g) == 1){
+    if (is.null(rv$sizeclasses_g)){
+      rv$sizeclasses_g <- "all"
+      rv$nsizeclasses_g <- 1
+    }
+  }
+
+  rv$nsim <- input$nsim
+  rv$gGeneric <- vector("list", length = rv$nsizeclasses_g)
+  for (sci in 1:rv$nsizeclasses_g){
+
+    rv$SEmodToUse_g <- input[[sprintf("modelChoices_SE%d", sci)]]
+    rv$CPmodToUse_g <- input[[sprintf("modelChoices_CP%d", sci)]]
+    if (!grepl("s ~", rv$CPmodToUse_g)){
+      rv$CPmodToUse_g <- paste(rv$CPmodToUse_g, "; NULL", sep = "")
+    }
+    rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
+
+    rv$gGeneric[[sci]] <- tryCatch(
+                            estgGeneric(nsim = rv$nsim, days = rv$SS,
+                              model_SE = rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
+                              model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
+                              kFill = rv$kFill
+                            ), 
+                            error = function(x){NULL}
+                          )
+  }
+  names(rv$gGeneric) <- rv$sizeclasses_g
+  rv$sizeclass_g <- rv$sizeclasses_g[1]
+  rv
+}
+
+
+
+
+update_rv_outsc_g <- function(rv, input){
+  rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$outsizeclassg)
+  rv$CL <- input$CL
+  rv
+}
+
+

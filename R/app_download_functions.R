@@ -41,6 +41,28 @@ downloadSEFig <- function(rv){
   )
 }
 
+#' @title Download the g figure
+#'
+#' @description Handle the g figure downloading
+#'
+#' @param rv the reactive values list
+#'
+#' @param sc size class
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+downloadgFig <- function(rv, sc){
+  downloadHandler(filename = "g_fig.png",
+      content = function(file){
+        png(file, height = rv$figH_g, width = rv$figW_g, units = "px")
+        plot(rv$gGeneric[[sc]], CL = rv$CL)
+        dev.off()
+      }
+  )
+}
+
 #' @title Download a table
 #'
 #' @description Handle the downloading of a table

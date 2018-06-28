@@ -198,9 +198,10 @@ update_output_run_SE <- function(rv, output, session){
       output$modelMenu_SE <- makeMenu(rv$mods_SE, rv$sizeclasses_SE, "SE")
     })
 
-    output$sizeclass_SE1 <- renderText(paste0("Size class: ", rv$sizeclass))
-    output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
-    output$sizeclass_SE3 <- renderText(paste0("Size class: ", rv$sizeclass))
+    scText <- renderText(paste0("Size class: ", rv$sizeclass_SE))
+    output$sizeclass_SE1 <- scText
+    output$sizeclass_SE2 <- scText
+    output$sizeclass_SE3 <- scText
 
     output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
     output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
@@ -231,9 +232,10 @@ update_output_outsc_SE <- function(rv, output, session){
                        plot(rv$modSet_SE, specificModel = rv$best_SE)
                      }, height = rv$figH_SE, width = rv$figW_SE)
 
-    output$sizeclass_SE1 <- renderText(paste0("Size class: ", rv$sizeclass))
-    output$sizeclass_SE2 <- renderText(paste0("Size class: ", rv$sizeclass))
-    output$sizeclass_SE3 <- renderText(paste0("Size class: ", rv$sizeclass))
+    scText <- renderText(paste0("Size class: ", rv$sizeclass_SE))
+    output$sizeclass_SE1 <- scText
+    output$sizeclass_SE2 <- scText
+    output$sizeclass_SE3 <- scText
 
     output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
     output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
@@ -305,9 +307,11 @@ update_output_run_CP <- function(rv, output, session){
       outputOptions(output, "sizeclasses_CP", suspendWhenHidden = FALSE)
       output$modelMenu_CP <- makeMenu(rv$mods_CP, rv$sizeclasses_CP, "CP")
     })
-    output$sizeclass_CP1 <-  renderText(paste0("Size class: ", rv$sizeclass))
-    output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
-    output$sizeclass_CP3 <-  renderText(paste0("Size class: ", rv$sizeclass))
+
+    scText <- renderText(paste0("Size class: ", rv$sizeclass_CP))
+    output$sizeclass_CP1 <- scText
+    output$sizeclass_CP2 <- scText
+    output$sizeclass_CP3 <- scText
 
     output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
     output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
@@ -336,9 +340,11 @@ update_output_outsc_CP <- function(rv, output, session){
     output$fig_CP <- renderPlot({ 
                        plot(rv$modSet_CP, specificModel = rv$best_CP)
                      }, height = rv$figH_CP, width = rv$figW_CP)
-    output$sizeclass_CP1 <-  renderText(paste0("Size class: ", rv$sizeclass))
-    output$sizeclass_CP2 <-  renderText(paste0("Size class: ", rv$sizeclass))
-    output$sizeclass_CP3 <-  renderText(paste0("Size class: ", rv$sizeclass))
+
+    scText <- renderText(paste0("Size class: ", rv$sizeclass_CP))
+    output$sizeclass_CP1 <- scText
+    output$sizeclass_CP2 <- scText
+    output$sizeclass_CP3 <- scText
 
     output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
     output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
@@ -384,7 +390,6 @@ update_output_outdls_CP <- function(rv, output, session){
   return(output)
 }
 
-
 #' @title Update the SS text output when the SS is updated
 #'
 #' @description Update the SS text output when the SS is updated
@@ -403,4 +408,73 @@ update_output_SS <- function(rv, output, session){
   output$SStext <- renderText(rv$SStext)
   output
 }
+
+#' @title Update the output when a generic g model has been run
+#'
+#' @description Update the output table when a generic g model has been run
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_run_g <- function(rv, output, session){
+
+  if (!is.null(rv$gGeneric[[1]])){
+    summaryTab <- summary(rv$gGeneric[[1]], CL = rv$CL)
+    output$table_g <- renderDataTable(summaryTab)
+    output$fig_g <- renderPlot({
+                      tryCatch(
+                        plot(rv$gGeneric[[1]], CL = rv$CL),
+                        error = function(x){plot(1,1)},
+                        warning = function(x){plot(1,1)}
+                      )
+                    }, height = rv$figH_g, width = rv$figW_g)
+    output$gModDone <- renderText("OK")
+    outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+
+    scText <- renderText(paste0("Size class: ", rv$sizeclass_g))
+    output$sizeclass_g1 <- scText
+    output$sizeclass_g2 <- scText
+
+    output$dlgtab <- downloadTable("g_estimates.csv", summaryTab)
+    output$dlgfig <- downloadgFig(rv, 1)
+  }
+  return(output)
+}
+
+
+
+
+
+update_output_outsc_g <- function(rv, output, session){
+
+  if (class(rv$gGeneric[[rv$sizeclass_g]])[1] == "gGeneric"){
+    summaryTab <- summary(rv$gGeneric[[rv$sizeclass_g]], CL = rv$CL)
+    output$table_g <- renderDataTable(summaryTab)
+    output$fig_g <- renderPlot({
+                      tryCatch(
+                        plot(rv$gGeneric[[rv$sizeclass_g]], CL = rv$CL),
+                        error = function(x){plot(1,1)},
+                        warning = function(x){plot(1,1)}
+                      )
+                    }, height = rv$figH_g, width = rv$figW_g)
+    output$gModDone <- renderText("OK")
+    outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+
+    scText <- renderText(paste0("Size class: ", rv$sizeclass_g))
+    output$sizeclass_g1 <- scText
+    output$sizeclass_g2 <- scText
+
+    output$dlgtab <- downloadTable("g_estimates.csv", summaryTab)
+    output$dlgfig <- downloadgFig(rv, rv$sizeclass_g)
+  }
+  return(output)
+}
+
 
