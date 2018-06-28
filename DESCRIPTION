@@ -1,18 +1,19 @@
 Package: GenEst
 Title: Generalised Fatality Estimator
-Version: 0.0.11.1
+Version: 0.0.11.2
 Date: 2018-06-28
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
-    person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
     person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"),
+    person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
     person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
+    person("Jeffrey", "Mintz", , "mintzj@oregonstate.edu", "aut"),
+    person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"),
     person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
-    person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"),
-    person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"))
-Description: A tool for estimating fatalities from searcher efficiency, carcass
-  persistence, and carcass observation data. 
+    person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"))
+Description: A tool for estimating mortality from searcher efficiency, carcass
+  persistence, search schedule, and carcass observation data. 
 Depends: R (>= 3.2.3)
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
