@@ -4,12 +4,14 @@
 \alias{msgModWarning}
 \title{Create the warning message for a model run (if needed)}
 \usage{
-msgModWarning(mods, type = "SE")
+msgModWarning(mods, type = "SE", rv = NULL)
 }
 \arguments{
 \item{mods}{Set Size list of models}
 
 \item{type}{"SE" or "CP"}
+
+\item{rv}{reactive values list}
 }
 \value{
 a partial model warning (if needed)

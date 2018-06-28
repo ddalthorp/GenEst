@@ -91,7 +91,7 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
       return(msgModFail(rv$mods_SE_og))
     } else{
-      return(msgModWarning(rv$mods_SE_og, "SE"))
+      return(msgModWarning(rv$mods_SE_og, "SE", rv))
     }
   }
   if (type == "CP"){
@@ -192,17 +192,45 @@ msgSampleSize <- function(mods){
 #'
 #' @param type "SE" or "CP"
 #'
+#' @param rv reactive values list
+#'
 #' @return a partial model warning (if needed)
 #'
 #' @export
 #'
-msgModWarning <- function(mods, type = "SE"){
+msgModWarning <- function(mods, type = "SE", rv = NULL){
   msg <- paste(msgModPartialFail(mods, type), msgSampleSize(mods), sep = " ")
+  if (type == "SE"){
+    msg <- paste(msg, msgModSENobs(rv), sep = " ")
+  }
   if (length(msg) > 0){
     return(showNotification(msg, type = "warning", duration = NULL))    
   }
   NULL
 }
+
+#' @title Create the SE data size notification 
+#'
+#' @description Produces a notification for SE data sizes (associated with k)
+#'
+#' @param rv reactive values list
+#'
+#' @return data size message
+#'
+#' @export
+#'
+msgModSENobs <- function(rv){
+  if (length(rv$obsCols_SE) == 1){
+    if(length(rv$formula_k) > 0 & length(rv$kFixed) == 0){
+      return("Only one observation, k not estimated.")
+    }
+    if (length(rv$kFixed) == 1){
+      return("Only one observation, fix k input ignored.")
+    }
+  }
+  NULL
+}
+
 
 #' @title Create the error message for when no models are fit successfully
 #'
