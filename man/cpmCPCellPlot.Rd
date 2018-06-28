@@ -4,8 +4,7 @@
 \alias{cpmCPCellPlot}
 \title{Plot cell-specific decay curve for carcass persistence}
 \usage{
-cpmCPCellPlot(model, specificCell, col, lwd, nsim, seed, axis_y = TRUE,
-  axis_x = TRUE)
+cpmCPCellPlot(model, specificCell, col, axis_y = TRUE, axis_x = TRUE)
 }
 \arguments{
 \item{model}{model of class cpm}
@@ -13,12 +12,6 @@ cpmCPCellPlot(model, specificCell, col, lwd, nsim, seed, axis_y = TRUE,
 \item{specificCell}{name of the specific cell to plot}
 
 \item{col}{color to use}
-
-\item{lwd}{line width to use}
-
-\item{nsim}{number of draws to use to characterize the distributions}
-
-\item{seed}{random number seed to use}
 
 \item{axis_y}{logical of whether or not to plot the y axis}
 

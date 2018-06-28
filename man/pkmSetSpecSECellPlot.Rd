@@ -5,8 +5,7 @@
 \title{Plot cell-specific decay curve for searcher efficiency for a specific model
   with comparison to the cellwise model}
 \usage{
-pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, col_spec, col_full,
-  axis_y = TRUE, axis_x = TRUE, nsim, seed_spec, seed_full)
+pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, cols, axes)
 }
 \arguments{
 \item{modelSet}{modelSet of class pkmSet}
@@ -15,19 +14,11 @@ pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, col_spec, col_full,
 
 \item{specificCell}{name of the specific cell to plot}
 
-\item{col_spec}{color to use for the specific model}
+\item{cols}{named vector of colors to use for the specific and reference
+models}
 
-\item{col_full}{color to use for the specific model}
-
-\item{axis_y}{logical of whether or not to plot the y axis}
-
-\item{axis_x}{logical of whether or not to plot the x axis}
-
-\item{nsim}{number of draws to use to characterize the distributions}
-
-\item{seed_spec}{random number seed to use for the specific model}
-
-\item{seed_full}{random number seed to use for the full model}
+\item{axes}{named vector of logical values indicating whether or not to 
+plot the x axis and the y axis}
 }
 \value{
 a specific cell plot panel

@@ -9,7 +9,7 @@
 runGenEst <- function(){
 
   appDir <- system.file("app", package = "GenEst")
-  shinyAppDir(appDir, options = list())
+  runApp(appDir)
   
 }
 

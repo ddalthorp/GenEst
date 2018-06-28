@@ -27,7 +27,7 @@
 #'
 #' Search trial \code{data} must be entered in a data frame with data in 
 #'   each row giving the fate of a single carcass in the field trials. There
-#'   must be a column for each search occassion, with 0, 1, or NA depending on 
+#'   must be a column for each search occassion, with 0, 1, or NA depending on
 #'   whether the carcass was missed, found, or not available (typically 
 #'   because it was found and removed on a previous search, had been earlier
 #'   removed by  scavengers, or was not searched for) on the given search  
@@ -59,7 +59,7 @@
 #'   "lastSearch")}.
 #'
 #' @param kFixed Parameter for user-specified \code{k} value (optional). If a
-#'   value is provided, \code{formula_k} is ignored and the model is fit under 
+#'   value is provided, \code{formula_k} is ignored and the model is fit under
 #'   the assumption that the \code{k} parameter is fixed and known to be
 #'   \code{fix_k}.
 #'
@@ -87,7 +87,7 @@
 #'    on CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
 #'  \item{\code{AICc}}{the AIC value as corrected for small sample size}
-#'  \item{\code{convergence}}{convergence status of the numerical optimization 
+#'  \item{\code{convergence}}{convergence status of the numerical optimization
 #'    to find the maximum likelihood estimates of \code{p} and \code{k}. A 
 #'    value of \code{0} indicates that the model was fit successfully. For 
 #'    help in deciphering other values, see \code{\link{optim}}.}
@@ -150,7 +150,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   predCheck <- c(all.vars(formula_p[[3]]), all.vars(formula_k[[3]]))
   if (any(!(predCheck %in% colnames(data)))){
-    stop("User-supplied formula includes predictor that is not found in data.")
+    stop("User-supplied formula includes predictor(s) not found in data.")
   }
   if (length(kFixed) >= 1){
     if (!is.numeric(kFixed[1]) || is.na(kFixed[1])){
@@ -180,7 +180,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     kFixed <- 1
   } else {
     # flag to indicate no estimation of k
-    if ((is.null(formula_k) || !is.language(formula_k)) & length(kFixed) == 0){
+    if((is.null(formula_k) || !is.language(formula_k)) & length(kFixed) == 0){
       pOnly <- TRUE
       obsCol <- obsCol[1] # use data from first search only
       formula_k <- NULL
@@ -212,7 +212,9 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (sum(na.omit(rowDiffs(obsData * is.na(obsData)))) > 0){
     stop("Searches continue after carcass discovery? Check data.")
   }
-
+  if (any(apply(obsData, 1, ZeroAfterOne))){
+    stop("Searches continue after carcass discovery? Check data.")
+  }
   ncarc <- nrow(obsData)
   # simplified and vectorized calculations of
   #1. number of times each carcass was missed in searches, and
@@ -304,6 +306,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
            ), error = function(x) {NA}
          )
 
+  if (length(MLE) == 1 && is.na(MLE)){
+    stop("Failed optimization. Consider simplifying predictors.")
+  }
+
   convergence <- MLE$convergence
   betahat <- MLE$par
   betaHessian <- MLE$hessian
@@ -368,6 +374,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output <- list()
   output$call <- match.call()
   output$data <- data
+  output$data0 <- data0
   output$formula_p <- formula_p
   if (!pOnly) output$formula_k <- formula_k
   output$predictors <- preds
@@ -395,9 +402,9 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output$loglik <- llik
   output$pOnly <- pOnly
   class(output) <- c("pkm", "list")
-  attr(output, "hidden") <- c("data", "predictors_p", "predictors_k", "kFixed",
-    "betahat_p", "betahat_k", "cellMM_p", "cellMM_k", "nbeta_p", "nbeta_k",
-    "varbeta", "levels_p", "levels_k", "carcCells", "AIC", "cells",
+  attr(output, "hidden") <- c("data", "data0", "predictors_p", "predictors_k", 
+    "kFixed", "betahat_p", "betahat_k", "cellMM_p", "cellMM_k", "nbeta_p", 
+    "nbeta_k", "varbeta", "levels_p", "levels_k", "carcCells", "AIC", "cells",
     "ncell", "observations", "loglik", "pOnly")
   return(output)
 } # pkm
@@ -659,12 +666,13 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     formi_p <- keptFormula_p[modi][[1]]
     formi_k <- keptFormula_k[modi][[1]]
     pkm_i <- tryCatch(
-       pkm(formula_p = formi_p, formula_k = formi_k, data = data,
-       obsCol = obsCol, kFixed = kFixed, kInit = kInit, CL = CL, quiet = quiet),
-       error = function(x) {
-         paste("Failed model fit: ", geterrmessage(), sep = "")
-       }
-     )
+               pkm(formula_p = formi_p, formula_k = formi_k, data = data,
+                 obsCol = obsCol, kFixed = kFixed, kInit = kInit, CL = CL, 
+                 quiet = quiet),
+               error = function(x) {
+                       paste("Failed model fit: ", geterrmessage(), sep = "")
+               }
+             )
     name_p <- paste(format(formi_p), collapse = "")
     name_p <- gsub("    ", "", name_p)
     name_k <- paste(format(formi_k), collapse = "")
@@ -684,40 +692,40 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 
 #' @title Fit all possible searcher efficiency models across all size classes
 #'
-#' @description Run a set of \code{\link{pkmSet}} model set runs based on all 
+#' @description Run a set of \code{\link{pkmSet}} model set runs based on all
 #'   possible models for a suite of size classes. \code{cpmSetSize}'s inputs
 #'   generally follow \code{\link{pkmSet}} and \code{\link{pkm}} but with an 
-#'   additional size column input and calculation of the set of cpm models for 
-#'   each of the size classes.
+#'   additional size column input and calculation of the set of cpm models 
+#'   for each of the size classes.
 #'
 #' @param formula_p Formula for p; an object of class "\code{\link{formula}}"
-#'   (or one that can be coerced to that class): a symbolic description of the
-#'   model to be fitted. Details of model specification are given under 
+#'   (or one that can be coerced to that class): a symbolic description of
+#'   the model to be fitted. Details of model specification are given under 
 #'   "Details".
 #'
 #' @param data Dataframe with results from searcher efficiency trials and any
 #'   covariates included in \code{formula_p} or {formula_k} (required).
 #'
 #' @param formula_k Formula for k; an object of class "\code{\link{formula}}"
-#'   (or one that can be coerced to that class): a symbolic description of the
-#'   model to be fitted. Details of model specification are given under 
+#'   (or one that can be coerced to that class): a symbolic description of 
+#'   the model to be fitted. Details of model specification are given under 
 #'   "Details".
 #'
 #' @param obsCol Vector of names of columns in \code{data} where results 
 #'   for each search occasion are stored (optional). If no \code{obsCol} are 
 #'   provided, \code{pkm} uses as \code{obsCol} all columns with names that 
-#'   begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
-#'   "s2", "s3", etc. This option is included as a convenience for the user, 
-#'   but care must be taken that other data are not stored in columns with 
-#'   names matching that pattern. Alternatively, \code{obsCol} may be 
+#'   begin with an \code{"s"} or \code{"S"} and end with a number, e.g., 
+#'   "s1", "s2", "s3", etc. This option is included as a convenience for the 
+#'   user, but care must be taken that other data are not stored in columns 
+#'   with names matching that pattern. Alternatively, \code{obsCol} may be 
 #'   entered as a vector of names, like \code{c("s1", "s2", "s3")}, 
 #'   \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch", 
 #'   "lastSearch")}.
 #'
 #' @param kFixed Parameter for user-specified \code{k} value (optional). If a
-#'   value is provided, \code{formula_k} is ignored and the model is fit under 
-#'   the assumption that the \code{k} parameter is fixed and known to be
-#'   \code{fix_k}.
+#'   value is provided, \code{formula_k} is ignored and the model is fit 
+#'   under the assumption that the \code{k} parameter is fixed and known to
+#'   be \code{fix_k}.
 #'
 #' @param kInit Initial value used for \code{k} in the optimization.
 #'
@@ -924,7 +932,8 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   }
   colnames(sim_k) <- cellNames
 
-  output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
+  output <- lapply(cellNames, 
+                   function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
   names(output) <- cellNames
 
   return(output)
@@ -969,17 +978,14 @@ kSuggest <- function(obsData){
 #' @export
 #'
 pkmFail <- function(pkmod){
-  out <- !("pkm" %in% class(pkmod)) ||
-         anyNA(pkmod) ||
-         sum(diag(pkmod$varbeta) < 0) > 0
-  return(out)
+!("pkm" %in% class(pkmod)) || anyNA(pkmod) || sum(diag(pkmod$varbeta) < 0) > 0
 }
 
 
 #' @title Check if pkm models fail
 #' 
-#' @description Run a check on each model within a \code{\link{pkmSet}} object
-#'   to determine if it failed or not
+#' @description Run a check on each model within a \code{\link{pkmSet}} 
+#'   object to determine if it failed or not
 #'
 #' @param pkmSetToCheck A \code{\link{pkmSet}} object to test
 #'
@@ -988,8 +994,7 @@ pkmFail <- function(pkmod){
 #' @export
 #'
 pkmSetFail <- function(pkmSetToCheck){
-  out <- unlist(lapply(pkmSetToCheck, pkmFail)) # preserves names
-  return(out)
+  unlist(lapply(pkmSetToCheck, pkmFail)) # preserves names
 }
 
 #' @title Check if all of the pkm models fail
@@ -1004,8 +1009,7 @@ pkmSetFail <- function(pkmSetToCheck){
 #' @export
 #'
 pkmSetSizeFail <- function(pkmSetSizeToCheck){
-  out <- lapply(pkmSetSizeToCheck, pkmSetFail)
-  return(out)
+  lapply(pkmSetSizeToCheck, pkmSetFail)
 }
 
 #' @title Remove failed pkm models from a \code{\link{pkmSet}} object
@@ -1035,7 +1039,6 @@ pkmSetFailRemove <- function(pkmSetToTidy){
 #' @export
 #'
 pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
-
   out <- list()
   for (sci in names(pkmSetSizeToTidy)){
     out[[sci]] <- pkmSetFailRemove(pkmSetSizeToTidy[[sci]])
@@ -1043,25 +1046,6 @@ pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
   return(out)
 }
 
-#' @title Return the model with the greatest log-likelihood
-#'
-#' @description  Compares all fitted models in a list and returns the model
-#'  with the greatest log-likelihood
-#'
-#' @param modelSet a list of fitted models with a \code{loglik} element. Models
-#'  may be \code{pkm}, \code{cpm}, \code{survreg} objects or any objects with a
-#'  \code{loglik} component.
-#'
-#' @return The model object with the greatest log-likelihood among
-#'  the models in \code{modelSet}
-#'
-#' @export
-#'
-fullMod <- function(modelSet){
-  llvec <- sapply(modelSet, "[[", "loglik")
-  out <- modelSet[[which(llvec == max(llvec))]]
-  return(out)
-}
 #' @title Calculate decayed searcher efficiency
 #'
 #' @description Calculate searcher efficiency after some searches under 
@@ -1103,8 +1087,8 @@ SEsi <- function(days, pk){
 
 #' @title Calculate decayed searcher efficiency for a single pk
 #'
-#' @description Calculate searcher efficiency after some searches for a single 
-#'   pk combination
+#' @description Calculate searcher efficiency after some searches for a 
+#'   single pk combination
 #'
 #' @param days search days
 #'
