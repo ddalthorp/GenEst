@@ -464,7 +464,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
 #'   
 #' @export
 #'
-summary.splitFull <- function(object, CL = 0.90, ...){
+summary.splitFull <- function(object, CL = 0.95, ...){
   splits <- object
   alpha <- 1 - CL
   probs <- c(alpha / 2, 0.25, 0.5, 0.75, 1 - alpha / 2)
