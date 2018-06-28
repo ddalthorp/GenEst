@@ -443,13 +443,103 @@ update_rv_run_g <- function(rv, input){
   rv
 }
 
-
-
-
+#' @title Update the g reactive values when the size class is chosen
+#'
+#' @description Update the g reactive values when the size class is chosen
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
 update_rv_outsc_g <- function(rv, input){
   rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$outsizeclassg)
   rv$CL <- input$CL
   rv
 }
+
+#' @title Run the M Model
+#'
+#' @description Use the inputs to run the M model requested by the UI
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_M <- function(rv, input){
+
+  rv$M <- NULL
+  rv$kFill <- NULL
+  if (length(rv$obsCols_SE) == 1 | rv$kFixedChoice == 1){
+    rv$kFill <- input$kFill
+  }
+  rv$nsizeclasses <- length(rv$sizeclasses)
+  if (length(rv$nsizeclasses) == 1){
+    if (is.null(rv$sizeclasses)){
+      rv$sizeclasses <- "all"
+     }
+  }
+  rv$dateFoundCol <- input$dateFoundCol
+  rv$nsim <- input$nsim
+  rv$frac <- input$frac
+  rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
+  rv$CPmodToUse <- rep(NA, rv$nsizeclasses)
+
+  for (sci in 1:rv$nsizeclasses){
+    rv$SEmodToUse[sci] <- input[[sprintf("modelChoices_SE%d", sci)]]
+    rv$CPmodToUse[sci] <- input[[sprintf("modelChoices_CP%d", sci)]]
+    if (!grepl("s ~", rv$CPmodToUse[sci])){
+      rv$CPmodToUse[sci] <- paste(rv$CPmodToUse[sci], "; NULL", sep = "")
+    }
+    rv$CPmodToUse[sci] <- paste("dist: ", rv$CPmodToUse[sci], sep = "")
+  }
+  names(rv$SEmodToUse) <- rv$sizeclasses
+  names(rv$CPmodToUse) <- rv$sizeclasses
+
+  rv$models_SE <- trimSetSize(rv$mods_SE, rv$SEmodToUse)
+  rv$models_CP <- trimSetSize(rv$mods_CP, rv$CPmodToUse)
+
+  if (rv$nsizeclasses > 1){
+    rv$DWPCol <- NULL
+    rv$sizeclassCol_M <- rv$sizeclassCol
+  } else{
+    rv$DWPCol <- input$DWPCol  
+    rv$sizeclassCol_M <- NULL
+    rv$models_SE <- rv$models_SE[[1]]
+    rv$models_CP <- rv$models_CP[[1]]
+  }
+
+  rv$M <- tryCatch(
+            estM(data_CO = rv$data_CO, data_SS = rv$data_SS, rv$data_DWP,
+              frac = rv$frac, model_SE = rv$models_SE, 
+              model_CP = rv$models_CP, kFill = rv$kFill, 
+              dateFoundCol = rv$dateFoundCol, DWPCol = rv$DWPCol,
+              sizeclassCol = rv$sizeclassCol_M, nsim = rv$nsim, 
+              max_intervals = 8
+            ), error = function(x){NULL}, warning = function(x){NULL}
+          )
+
+  if (!is.null(rv$M)){
+    rv$Msplit <- tryCatch(
+                   calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
+                     split_SS = NULL, split_CO = NULL,
+                     data_SS = rv$data_SS, data_CO = rv$data_CO
+                   ), error = function(x){NULL}, warning = function(x){NULL}
+                 )
+    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)  
+    rv$colNames_SS_sel <- colnames(rv$data_SS) %in% rv$data_CO[ , rv$unitCol]
+    rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]  
+  }
+
+  rv
+}
+
 
 

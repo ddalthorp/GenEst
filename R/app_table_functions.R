@@ -140,3 +140,82 @@ dlModTabCP <- function(modTab, CL = 0.95){
                      paste0("Scale ", coltypes))
   return(out)
 }
+
+#' @title Create the pretty version of the split summary table
+#'
+#' @description Format a reader-friendly version of the split summary table
+#'   a mortality estimation
+#'
+#' @param splitSummary a split summary
+#'
+#' @return split pretty table 
+#'
+#' @export
+#'
+prettySplitTab <- function(splitSummary){
+
+  vectored <- as.vector(splitSummary)
+
+  if ("splitSummary" %in% attr(vectored, "class")){
+
+    nspec <- length(splitSummary)
+    Out <- prettySplitSpecTab(splitSummary[[1]])
+    colnames(Out)[1] <- attr(splitSummary, "vars")[1]
+    extralev <- rep(names(splitSummary)[1], nrow(Out))
+    Out <- cbind(extralev, Out)    
+    colnames(Out)[1] <- attr(splitSummary, "vars")[2]
+
+    for (speci in 2:nspec){
+      specOut <- prettySplitSpecTab(splitSummary[[speci]])
+      colnames(specOut)[1] <- attr(splitSummary, "vars")[1]
+      extralev <- rep(names(splitSummary)[speci], nrow(specOut))
+      specOut <- cbind(extralev, specOut)    
+      colnames(specOut)[1] <- attr(splitSummary, "vars")[2]
+      Out <- rbind(Out, specOut)
+    }
+    return(Out)
+  } else{
+    return(prettySplitSpecTab(splitSummary))
+  }
+}
+
+#' @title Create the pretty version of a specific split summary table
+#'
+#' @description Format a reader-friendly version of a specific split summary 
+#'   table from a mortality estimation
+#'
+#' @param splitSummarySpec a specific split summary
+#'
+#' @return specific split pretty table  
+#'
+#' @export
+#'
+prettySplitSpecTab <- function(splitSummarySpec){
+  vectored <- as.vector(splitSummarySpec)
+  nrows <- nrow(splitSummarySpec)
+  ncols <- ncol(splitSummarySpec)
+  if (is.null(nrows)){
+    nrows <- 1
+    ncols <- length(splitSummarySpec)
+    rnames <- "all"
+    cnames <- names(splitSummarySpec)
+  } else{
+    rnames <- rownames(splitSummarySpec)
+    cnames <- colnames(splitSummarySpec)
+  }
+  prettyTab <- matrix(NA, nrow = nrows, ncol = ncols)
+  counter <- 0
+  for (ri in 1:nrows){
+    spots <- counter + 1:ncols
+    prettyTab[ri, ] <- round(vectored[spots], 2)
+    counter <- spots[ncols]
+  }     
+  colnames(prettyTab) <- cnames
+  varname <- attr(splitSummarySpec, "vars")
+  if (is.null(varname)){
+    return(prettyTab)
+  }
+  prettyTab <- cbind(rnames, prettyTab)
+  colnames(prettyTab)[1] <- varname
+  return(prettyTab)
+}

@@ -448,10 +448,20 @@ update_output_run_g <- function(rv, output, session){
   return(output)
 }
 
-
-
-
-
+#' @title Update the output when a generic g size class is chosen
+#'
+#' @description Update the output table when a generic g size class is chosen
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
 update_output_outsc_g <- function(rv, output, session){
 
   if (class(rv$gGeneric[[rv$sizeclass_g]])[1] == "gGeneric"){
@@ -478,3 +488,35 @@ update_output_outsc_g <- function(rv, output, session){
 }
 
 
+#' @title Update the output when an M model has been run
+#'
+#' @description Update the output table when an M model has been run
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_run_M <- function(rv, output, session){
+
+  if (!is.null(rv$Msplit)){
+    output$MModDone <- renderText("OK")
+    outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+
+    output$fig_M <- renderPlot({plot(rv$Msplit)},
+                      height = rv$figH_M, width = rv$figW_M
+                    )
+    output$table_M <- renderDataTable(
+                        datatable(prettySplitTab(summary(rv$Msplit)))
+                      )
+    output$dlMtab <- downloadTable("M_table.csv", 
+                       prettySplitTab(summary(rv$Msplit)))
+    output$dlMfig <- downloadMFig(rv)
+  }
+  output
+}

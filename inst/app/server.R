@@ -104,6 +104,15 @@ observeEvent(input$outCPs, {
 })
 
 
+observeEvent(input$runMod_M, {
+  msgs$ModM <<- msgModRun(msgs, "M")
+  rv <- update_rv_run_M(rv, input)
+  output <- update_output_run_M(rv, output, session)
+  update_input_run_M(rv, session)
+  msgs$ModM <<- msgModDone(msgs, rv, "M")
+})
+
+
 
 observeEvent(input$useSSdata, {
   rv <- update_rv_useSSdata(rv)
@@ -122,7 +131,6 @@ observeEvent(input$runMod_g, {
   update_input_run_g(rv, session)
   msgs$Modg <<- msgModDone(msgs, rv, "g")
 })
-
 observeEvent(input$outsizeclassg, {
   rv <- update_rv_outsc_g(rv, input)
   output <- update_output_outsc_g(rv, output, session)

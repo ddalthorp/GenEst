@@ -283,3 +283,19 @@ update_input_run_g <- function(rv, session){
   updateSelectizeInput(session, "outsizeclassg", choices = rv$sizeclasses_g)
   updateTabsetPanel(session, "analyses_g", "Summary")
 }
+
+
+#' @title Update the M output dropdown selections when the model is run
+#'
+#' @description Update the M output dropdown selections when the model is run
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_M <- function(rv, session){
+  updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
+  updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
+}

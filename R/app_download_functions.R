@@ -63,6 +63,29 @@ downloadgFig <- function(rv, sc){
   )
 }
 
+#' @title Download the M figure
+#'
+#' @description Handle the M figure downloading
+#'
+#' @param rv the reactive values list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+downloadMFig <- function(rv){
+  downloadHandler(filename = "SE_fig.png",
+      content = function(file){
+        png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
+        tryCatch(
+          plot(rv$Msplit),
+          error = function(x){plotNA()}
+        )
+        dev.off()
+      }
+  )
+}
+
 #' @title Download a table
 #'
 #' @description Handle the downloading of a table
