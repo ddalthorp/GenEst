@@ -111,6 +111,11 @@ observeEvent(input$runMod_M, {
   update_input_run_M(rv, session)
   msgs$ModM <<- msgModDone(msgs, rv, "M")
 })
+observeEvent(input$splitM, {
+  rv <- update_rv_split_M(rv, input)
+  output <- update_output_run_M(rv, output, session)
+#  msgs$ModM <<- msgMod
+})
 
 
 

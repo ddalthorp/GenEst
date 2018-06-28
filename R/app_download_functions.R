@@ -73,17 +73,31 @@ downloadgFig <- function(rv, sc){
 #'
 #' @export
 #'
-downloadMFig <- function(rv){
-  downloadHandler(filename = "SE_fig.png",
-      content = function(file){
-        png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
-        tryCatch(
-          plot(rv$Msplit),
-          error = function(x){plotNA()}
-        )
-        dev.off()
-      }
-  )
+downloadMFig <- function(rv, split = TRUE){
+
+  if (split){
+    downloadHandler(filename = "M_fig.png",
+        content = function(file){
+          png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
+          tryCatch(
+            plot(rv$Msplit),
+            error = function(x){plotNA()}
+          )
+          dev.off()
+        }
+    )
+  } else{
+    downloadHandler(filename = "M_fig.png",
+        content = function(file){
+          png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
+          tryCatch(
+            plot(rv$M),
+            error = function(x){plotNA()}
+          )
+          dev.off()
+        }
+    )
+  }
 }
 
 #' @title Download a table

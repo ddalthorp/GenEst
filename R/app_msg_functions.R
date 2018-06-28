@@ -109,6 +109,9 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     }
   }  
   if (type == "M"){
+    if (is.null(rv$Msplit)){
+      return(msgModFail(rv$Msplit))
+    }
   }
   if (type == "g"){
     if (is.null(rv$gGeneric[[1]])){    
