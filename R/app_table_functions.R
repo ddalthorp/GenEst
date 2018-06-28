@@ -203,13 +203,8 @@ prettySplitSpecTab <- function(splitSummarySpec){
     rnames <- rownames(splitSummarySpec)
     cnames <- colnames(splitSummarySpec)
   }
-  prettyTab <- matrix(NA, nrow = nrows, ncol = ncols)
-  counter <- 0
-  for (ri in 1:nrows){
-    spots <- counter + 1:ncols
-    prettyTab[ri, ] <- round(vectored[spots], 2)
-    counter <- spots[ncols]
-  }     
+  prettyTab <- matrix(round(vectored, 2), nrow = nrows, ncol = ncols)
+    
   colnames(prettyTab) <- cnames
   varname <- attr(splitSummarySpec, "vars")
   if (is.null(varname)){
