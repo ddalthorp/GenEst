@@ -510,11 +510,9 @@ update_output_run_M <- function(rv, output, session){
     output$fig_M <- renderPlot({plot(rv$Msplit)},
                       height = rv$figH_M, width = rv$figW_M
                     )
-    output$table_M <- renderDataTable(
-                        datatable(prettySplitTab(summary(rv$Msplit)))
-                      )
-    output$dlMtab <- downloadTable("M_table.csv", 
-                       prettySplitTab(summary(rv$Msplit)))
+    summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
+    output$table_M <- renderDataTable(datatable(summaryTab))
+    output$dlMtab <- downloadTable("M_table.csv", summaryTab)
     output$dlMfig <- downloadMFig(rv)
   }
   output
@@ -548,13 +546,10 @@ update_output_split_M <- function(rv, output, session){
     output$fig_M <- renderPlot({plot(rv$Msplit)},
                       height = rv$figH_M, width = rv$figW_M
                     )
-    output$table_M <- renderDataTable(
-                        datatable(prettySplitTab(summary(rv$Msplit)))
-                      )
-    output$dlMtab <- downloadTable("M_table.csv", 
-                       prettySplitTab(summary(rv$Msplit)))
+    summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
+    output$table_M <- renderDataTable(datatable(summaryTab))
+    output$dlMtab <- downloadTable("M_table.csv", summaryTab)
     output$dlMfig <- downloadMFig(rv)
-
   }
   output
 }
