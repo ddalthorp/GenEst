@@ -537,9 +537,11 @@ update_output_run_M <- function(rv, output, session){
 update_output_split_M <- function(rv, output, session){
 
   if (is.null(rv$Msplit)){
-    output$fig_M <- renderPlot({plot(rv$M)},
-                      height = rv$figH_M, width = rv$figW_M
-                    )
+    output$fig_M <- renderPlot({
+                      tryCatch(plot(rv$M),
+                        error = function(x){plotNA()}
+                      )
+                    }, height = rv$figH_M, width = rv$figW_M)
     output$dlMfig <- downloadMFig(rv, split = FALSE)
 
   } else{

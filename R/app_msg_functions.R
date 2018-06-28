@@ -82,7 +82,7 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 #'
 #' @param rv reactive values list
 #'
-#' @param type "SE", "CP", "M", or "g"
+#' @param type "SE", "CP", "M", "split", or "g"
 #'
 #' @param clear if all notifications should be cleared or not
 #'
@@ -96,26 +96,34 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
   }
   if (type == "SE"){
     if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
-      return(msgModFail(rv$mods_SE_og))
+      return(msgModFail(rv$mods_SE_og, "SE"))
     } else{
       return(msgModWarning(rv$mods_SE_og, "SE", rv))
     }
   }
   if (type == "CP"){
     if (all(unlist(cpmSetSizeFail(rv$mods_CP_og)))){
-      return(msgModFail(rv$mods_CP_og))
+      return(msgModFail(rv$mods_CP_og, "CP"))
     } else{
       return(msgModWarning(rv$mods_CP_og, "CP"))
     }
   }  
   if (type == "M"){
+    if (is.null(rv$M)){
+      return(msgModFail(rv$M, "M"))
+    }
+  }
+  if (type == "split"){
+    if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
+      return(msgsplitFail("setup"))
+    }
     if (is.null(rv$Msplit)){
-      return(msgModFail(rv$Msplit))
+      return(msgsplitFail("run"))
     }
   }
   if (type == "g"){
     if (is.null(rv$gGeneric[[1]])){    
-      return(msgModFail(rv$gGeneric))
+      return(msgModFail(rv$gGeneric, "g"))
     }
   }
   NULL
@@ -255,16 +263,26 @@ msgModSENobs <- function(rv){
 #'
 #' @param mods (fully failed) model object
 #'
+#' @param type "SE", "CP", "M", or "g"
+#'
 #' @return a model fail error message
 #'
 #' @export
 #'
-msgModFail <- function(mods){
-  msg <- paste(
-           "No models were successfully fit.", 
-            gsub("Failed model fit: ", "", unique(unlist(mods))),
-            sep = " "
-         )
+msgModFail <- function(mods, type = "SE"){
+  if (type %in% c("SE", "CP")){
+    msg <- paste(
+             "No models were successfully fit.", 
+              gsub("Failed model fit: ", "", unique(unlist(mods))),
+              sep = " "
+           )
+  }
+  if (type == "g"){
+    msg <- "Detection probability not able to be estimated"
+  }
+  if (type == "M"){
+    msg <- "Mortality not able to be estimated"
+  }
   if(!is.null(msg)){
     return(showNotification(msg, type = "error", duration = NULL))
   }
@@ -294,4 +312,32 @@ msgSSavgFail <- function(msgs, rv, clear = TRUE){
     return(showNotification(msg, type = "warning", duration = NULL))
   }
   NULL
+}
+
+
+#' @title Create the fail message for when splits aren't done correctly
+#'
+#' @description Produces a notification for failed mortality splits
+#'
+#' @param type "setup" or "run"
+#'
+#' @return a split fail warning
+#'
+#' @export
+#'
+msgsplitFail <- function(type = NULL){
+
+  if (is.null(type)){
+    return(NULL)
+  }
+  if (type == "setup"){
+    msg <- paste0(
+             "Improper splits setup. Maximum two splits, only one of which ",
+             "can be associated with the search schedule."
+           )
+  }
+  if (type == "run"){
+    msg <- "Splits calculation failed. Check split selections."
+  }
+  return(showNotification(msg, type = "error", duration = NULL))
 }

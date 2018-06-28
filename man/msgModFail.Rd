@@ -4,10 +4,12 @@
 \alias{msgModFail}
 \title{Create the error message for when no models are fit successfully}
 \usage{
-msgModFail(mods)
+msgModFail(mods, type = "SE")
 }
 \arguments{
 \item{mods}{(fully failed) model object}
+
+\item{type}{"SE", "CP", "M", or "g"}
 }
 \value{
 a model fail error message

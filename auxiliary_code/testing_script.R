@@ -25,19 +25,22 @@ ghatsGeneric <- estgGeneric(n = 1000, avgSS, model_SE, model_CP,
                   seed_SE = 1, seed_CP = 1, kFill = NULL
                 )
 
-
-eM <- estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
+M<-tryCatch(
+estM(nsim = 1000, data_CO, data_SS, data_DWP, frac = 1,  
                  model_SE = model_SE, model_CP = model_CP, 
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, 
                  seed_M = NULL, kFill = NULL,  
                  dateFoundCol = "DateFound", 
-                 DWPCol = "S",
-                 sizeclassCol = NULL)
+                 DWPCol = "Unit",
+                 sizeclassCol = NULL),
+ error = function(x){NULL}, warning = function(x){NULL}
+          )
+
 
 M <- eM$M
 Aj <- eM$Aj
 
-M_ <- calcSplits(M = M, Aj = Aj, split_SS = NULL, 
+M_ <- calcSplits(M = M, Aj = Aj, split_SS = "Season", 
                  split_CO = NULL,
                  data_SS = data_SS, data_CO = data_CO
                )
