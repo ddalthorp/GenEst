@@ -253,6 +253,10 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
            ), error = function(x) {NA}
          )
 
+  if (length(MLE) == 1 && is.na(MLE)){
+    stop("Failed optimization. Consider simplifying predictors.")
+  }
+
   betahat <- MLE$par
   convergence <- MLE$convergence
   betaHessian <- MLE$hessian

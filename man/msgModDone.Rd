@@ -4,20 +4,20 @@
 \alias{msgModDone}
 \title{Create a model done message}
 \usage{
-msgModDone(msgs, modelType, rv, clear = TRUE)
+msgModDone(msgs, rv, type = "SE", clear = TRUE)
 }
 \arguments{
 \item{msgs}{message list}
 
-\item{modelType}{"SE", "CP", "g", or "M"}
-
 \item{rv}{reactive values list}
+
+\item{type}{"SE" or "CP"}
 
 \item{clear}{if all notifications should be cleared or not}
 }
 \value{
-a model running message
+an SE model done message
 }
 \description{
-Produces a model-done notification
+Produces a SE or CP model-done notification
 }
