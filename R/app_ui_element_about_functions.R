@@ -9,30 +9,34 @@
 aboutPanel <- function(){
   fluidRow(
     column(5, offset = 2,
-      br(),
-      HTML('<center><img src = "Logo.jpg" width = "600"></center>'), 
-
       br(), br(), 
       HTML("<b>Authors:</b>  
         Daniel Dalthorp
           <a href = 'http://www.USGS.gov'>(USGS)</a>,
         Juniper Simonis 
           <a href = 'http://www.dapperstats.com'>(DAPPER Stats)</a>,
-        Lisa Madsen
-          <a href = 'http://www.oregonstate.edu'>(OSU)</a>,
         Manuela Huso
           <a href = 'http://www.USGS.gov'>(USGS)</a>,
+        Lisa Madsen
+          <a href = 'http://www.oregonstate.edu'>(OSU)</a>,
         Paul Rabie 
           <a href = 'http://www.west-inc.com'>(WEST)</a>, 
+        Jeffrey Mintz
+          <a href = 'http://www.USGS.gov'>(USGS)</a>,
+        Robert Wolpert
+          <a href = 'http://www2.stat.duke.edu/~rlw/'>(Duke)</a>,
         Jared Studyvin
           <a href = 'http://www.west-inc.com'>(WEST)</a>, 
-        Franzi Korner-Nievergelt
-          <a href = 'http://www.oikostat.ch/'>(oikostat)</a>, 
-        and Robert Wolpert
-          <a href = 'http://www2.stat.duke.edu/~rlw/'>(Duke)</a>"),
+        and Franzi Korner-Nievergelt
+          <a href = 'http://www.oikostat.ch/'>(oikostat)</a>"),
       br(), br(),
-      HTML("GenEst is a tool for estimating mortalities from efficiency, 
-        persistence, and carcass data."
+      HTML("<b>Web Design and Graphics User Interface Programming:</b>  
+        Juniper Simonis 
+          <a href = 'http://www.dapperstats.com'>(DAPPER Stats)</a>"
+      ),
+      br(), br(),
+      HTML("GenEst is a tool for estimating mortality from efficiency, 
+        persistence, search schedule, and carcass data."
       ),
       br(), br(),
       HTML("GenEst is currently in development and should be considered
@@ -42,18 +46,16 @@ aboutPanel <- function(){
       textOutput("versionInfo"),
       br(), 
       HTML("The development of GenEst is being supported by 
-        <a href = 'https://www.blm.gov/'>(The US Bureau of Land 
-          Management)</a>,
-        <a href = 'https://www.usgs.gov/'>(The US Geological Survey)</a>,
-        <a href = 'https://www.nrel.gov/'>(National Renewable Energy 
-          Laboratory)</a>, 
-        <a href = 'http://www.westconsultants.com/'>(WEST)</a>, 
-        <a href = 'http://www.batcon.org/'>(Bat Conservation
-          International)</a>,
-        <a href = 'https://awwi.org/'>(American Wind Wildlife Institute)</a>, 
-        <a href = 'http://www.avangridrenewables.us/'>(Avangrid 
-           Renewables)</a>, and 
-        <a href = 'https://oregonstate.edu/'>(Oregon State University)</a>."),
+        <a href = 'https://www.blm.gov/'>The US Bureau of Land Management</a>,
+        <a href = 'https://www.usgs.gov/'>The US Geological Survey</a>,
+        <a href = 'https://www.nrel.gov/'>National Renewable Energy 
+          Laboratory</a>, 
+        <a href = 'http://www.westconsultants.com/'>WEST, Inc.</a>, 
+        <a href = 'http://www.batcon.org/'>Bat Conservation International</a>,
+        <a href = 'http://www.avangridrenewables.us/'>Avangrid Renewables</a>,
+        <a href = 'https://awwi.org/'>American Wind Wildlife Institute</a>, 
+        and
+        <a href = 'https://oregonstate.edu/'>Oregon State University</a>."),
       br(), br(),
       HTML("GenEst is provided under GNU GPL v3 (and later versions)."),
       br(), br(), br(), br(),
