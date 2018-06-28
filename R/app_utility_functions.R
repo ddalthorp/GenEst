@@ -214,15 +214,20 @@ modNameSplit <- function(modNames, pos){
 #' @export
 #'
 countCarcs <- function(mods){
-  ncarc <- NULL
   nsizeclasses <- length(mods)
   nmods <- length(mods[[1]])
   if (nsizeclasses > 0 & nmods > 0){
+    ncarc <- rep(NA, nsizeclasses * nmods)
+    counter <- 0
     for (sci in 1:nsizeclasses){
       for (modi in 1:nmods){
-        ncarc <- c(NULL, min(table(mods[[sci]][[modi]]$carcCell)))
+        counter <- counter + 1
+        if (!grepl("Failed model fit", mods[[sci]][[modi]][1])){
+          ncarc[counter] <- min(table(mods[[sci]][[modi]]$carcCell))
+        }
       }
     }
+    ncarc <- min(na.omit(ncarc))
   }else{
     ncarc <- Inf
   }

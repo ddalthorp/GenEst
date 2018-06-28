@@ -212,7 +212,9 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (sum(na.omit(rowDiffs(obsData * is.na(obsData)))) > 0){
     stop("Searches continue after carcass discovery? Check data.")
   }
-
+  if (any(apply(obsData, 1, ZeroAfterOne))){
+    stop("Searches continue after carcass discovery? Check data.")
+  }
   ncarc <- nrow(obsData)
   # simplified and vectorized calculations of
   #1. number of times each carcass was missed in searches, and
@@ -303,6 +305,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
              nbeta_p = nbeta_p, kFixed = kFixed
            ), error = function(x) {NA}
          )
+
+  if (length(MLE) == 1 && is.na(MLE)){
+    stop("Failed optimization. Consider simplifying predictors.")
+  }
 
   convergence <- MLE$convergence
   betahat <- MLE$par

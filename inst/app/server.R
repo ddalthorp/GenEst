@@ -50,7 +50,7 @@ observeEvent(input$runMod_SE, {
   rv <- update_rv_run_SE(rv, input)
   output <- update_output_run_SE(rv, output, session)
   update_input_run_SE(rv, session)
-  msgs$ModSE <<- msgModDone(msgs, "SE", rv)
+  msgs$ModSE <<- msgModDone(msgs, rv, "SE")
 })
 observeEvent(input$outsizeclassSE, {
   rv <- update_rv_outsc_SE(rv, input)
@@ -83,7 +83,7 @@ observeEvent(input$runMod_CP, {
   rv <- update_rv_run_CP(rv, input)
   output <- update_output_run_CP(rv, output, session)
   update_input_run_CP(rv, session)
-  msgs$ModCP <<- msgModDone(msgs, "CP", rv)
+  msgs$ModCP <<- msgModDone(msgs, rv, "CP")
 })
 observeEvent(input$outsizeclassCP, {
   rv <- update_rv_outsc_CP(rv, input)

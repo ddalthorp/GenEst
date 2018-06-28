@@ -5,7 +5,12 @@
 \title{Create the warning message text for when only some models are fit 
   successfully}
 \usage{
-msgModPartialFail()
+msgModPartialFail(mods, type = "SE")
+}
+\arguments{
+\item{mods}{Set Size list of models}
+
+\item{type}{"SE" or "CP"}
 }
 \value{
 a partial model fail warning text
