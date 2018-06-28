@@ -113,7 +113,7 @@ MFigurePanel <- function(){
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",
       plotOutput("fig_M", inline = TRUE), br(), br(),
-      downloadButton("downloadMfig", "Download")
+      downloadButton("dlMfig", "Download")
     )
   )
 }
@@ -135,7 +135,7 @@ MSummaryPanel <- function(){
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",
       br(), dataTableOutput("table_M"), br(),
-      downloadButton("downloadMtab", "Download")
+      downloadButton("dlMtab", "Download")
     )
   )
 }

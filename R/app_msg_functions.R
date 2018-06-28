@@ -8,8 +8,7 @@
 #' @export
 #'
 msgList <- function(){
-  list(ModSE = NULL, ModCP = NULL,
-       SS = NULL, Modg = NULL)
+  list(ModSE = NULL, ModCP = NULL, ModM = NULL, SS = NULL, Modg = NULL)
 }
 
 #' @title Clear all notifications
@@ -27,6 +26,9 @@ clearNotifications <- function(msgs = msgList()){
   }
   if (!is.null(msgs$ModCP)){
     removeNotification(msgs$ModCP)
+  }
+  if (!is.null(msgs$ModM)){
+    removeNotification(msgs$ModM)
   }
   if (!is.null(msgs$SS)){
     removeNotification(msgs$SS)
@@ -80,7 +82,7 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 #'
 #' @param rv reactive values list
 #'
-#' @param type "SE", "CP", "g"
+#' @param type "SE", "CP", "M", or "g"
 #'
 #' @param clear if all notifications should be cleared or not
 #'
@@ -106,6 +108,8 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
       return(msgModWarning(rv$mods_CP_og, "CP"))
     }
   }  
+  if (type == "M"){
+  }
   if (type == "g"){
     if (is.null(rv$gGeneric[[1]])){    
       return(msgModFail(rv$gGeneric))

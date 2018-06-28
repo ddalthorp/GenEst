@@ -13,7 +13,7 @@ createReactiveValues <- function(){
     data_CO = NULL,
     colNames_SE = NULL, colNames_SE_sel = NULL, colNames_SE_nosel = NULL, 
     colNames_CP = NULL, colNames_CP_sel = NULL, colNames_CP_nosel = NULL,    
-    colNames_SS = NULL,
+    colNames_SS = NULL, colNames_SS_sel = NULL, colNames_SS_nosel = NULL, 
     colNames_DWP = NULL,
     colNames_CO = NULL, colNames_COdates = NULL,
     colNames_all = NULL, 
@@ -22,6 +22,7 @@ createReactiveValues <- function(){
 
     sizeclassCol = NULL, sizeclasses = NULL, sizeclass = NULL, 
     sizeclass_SE = NULL, sizeclass_CP = NULL, sizeclass_g = NULL,
+    sizeclass_M = NULL,
 
     obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL, 
     formula_p = NULL, formula_k = NULL, kFixedChoice = NULL, kFixed = NULL, 
@@ -41,10 +42,14 @@ createReactiveValues <- function(){
     best_CP = NULL, modTab_CP = NULL, modTabPretty_CP = NULL, 
     modTabDL_CP = NULL, figH_CP = 700, figW_CP = 800,
 
+    M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, 
+    sizeclassCol_M = NULL, DWPCol = NULL, dateFoundCol = NULL, 
+    SEmodToUse = NULL, CPmodToUse = NULL,
+    figH_M = 800, figW_M = 800,
+
     SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "),
     kFill_g = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
-    gGeneric = NULL,SEmodToUse_g = NULL, CPmodToUse_g = NULL,
-
+    gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
     figH_g = 400, figW_g = 800
   )
 }
