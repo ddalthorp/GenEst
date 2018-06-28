@@ -7,7 +7,7 @@
 \title{Generalized estimation of mortality}
 \description{
 This package is designed to analyze searcher efficiency, 
-  carcass persistence, and carcass observation data for the estimation of
-  mortality.
+  carcass persistence, search schedule, and carcass observation data for 
+  the estimation of mortality.
 }
 \keyword{package}
