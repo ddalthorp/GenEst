@@ -4,13 +4,10 @@
 \alias{plot.gGeneric}
 \title{Plot results of a single generic ghat estimation}
 \usage{
-\method{plot}{gGeneric}(x, sizeclassName = NULL, CL = 0.95, ...)
+\method{plot}{gGeneric}(x, CL = 0.95, ...)
 }
 \arguments{
 \item{x}{\code{\link{estgGeneric}} output}
-
-\item{sizeclassName}{name of the size class if it is to be added to the
-figure}
 
 \item{CL}{confidence level to use}
 

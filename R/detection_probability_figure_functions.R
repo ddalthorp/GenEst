@@ -6,9 +6,6 @@
 #'
 #' @param CL confidence level to use
 #'
-#' @param sizeclassName name of the size class if it is to be added to the
-#'   figure
-#'
 #' @param ... to be passed down
 #'
 #' @return generic detection probability plot
@@ -30,7 +27,7 @@
 #'
 #' @export
 #'
-plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.95, ...){
+plot.gGeneric <- function(x, CL = 0.95, ...){
 
   ghats <- x$ghat
   cells <- names(ghats)
@@ -57,7 +54,7 @@ plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.95, ...){
     offx <- 1
   }
 
-  text(1:ncell, -0.08, srt = ang, adj = offx, labels = cells, xpd = TRUE, 
+  text(1:ncell, -0.1, srt = ang, adj = offx, labels = cells, xpd = TRUE, 
     cex = 0.75
   )
   if (predNames[1] == "group" & length(predNames) == 1 & cells[1] == "all"){
@@ -65,11 +62,6 @@ plot.gGeneric <- function(x, sizeclassName = NULL, CL = 0.95, ...){
   }
 
   text(0.5, 1.15, labelText, xpd = TRUE, cex = 0.75, adj = 0)
-
-  if (!is.null(sizeclassName)){
-    text_sc <- paste("Size class: ", sizeclassName, sep = "")
-    text(x = 0.5, y = 1.25, xpd = TRUE, text_sc, adj = 0, cex = 1, font = 1)
-  }
 
   probs <- c(0, (1 - CL) / 2, 0.25, 0.5, 0.75, 1 - (1 - CL) / 2, 1)
 

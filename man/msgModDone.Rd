@@ -11,7 +11,7 @@ msgModDone(msgs, rv, type = "SE", clear = TRUE)
 
 \item{rv}{reactive values list}
 
-\item{type}{"SE" or "CP"}
+\item{type}{"SE", "CP", "g"}
 
 \item{clear}{if all notifications should be cleared or not}
 }
