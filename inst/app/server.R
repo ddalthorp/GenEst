@@ -103,4 +103,17 @@ observeEvent(input$outCPs, {
   output <- update_output_outdls_CP(rv, output, session)
 })
 
+
+
+observeEvent(input$useSSdata, {
+  rv <- update_rv_useSSdata(rv)
+  msgs$SS <<- msgSSavgFail(msgs, rv)
+  output <- update_output_SS(rv, output, session)
+  update_input_useSSdata(rv, session)
+})
+observeEvent(input$useSSinputs, {
+  rv <- update_rv_useSSinputs(rv, input)
+  output <- update_output_SS(rv, output, session)
+})
+
 }

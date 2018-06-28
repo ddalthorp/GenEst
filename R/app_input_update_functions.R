@@ -250,3 +250,22 @@ update_input_outsc_CP <- function(rv, session){
   updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)
   updateSelectizeInput(session, "outCPdist", choices = rv$modNames_CPdist)
 }
+
+#' @title Update the SS average dropdown selections when the SS data are used
+#'
+#' @description Update the SS average dropdown selections when the SS data 
+#'   are used
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_useSSdata <- function(rv, session){
+  if (!is.na(rv$SStemp[1])){
+    updateNumericInput(session, "gSearchInterval", value = rv$avgSI)
+    updateNumericInput(session, "gSearchMax", value = max(rv$SS))
+  }
+}
+
