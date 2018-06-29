@@ -140,7 +140,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     n <- length(gDf)
     Mhat[-c_out,] <- ((rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   }
-  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat)
+  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, Xtot = nrow(data_CO))
   class(out) <- c("estM", "list")
   return(out)
 }
@@ -256,8 +256,8 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
             DWPCol <- coli
           } else { # it is the second one found => conflict
             stop(
-              "data_DWP must have columns corresponding to data_CO sizes or\n",
-              "have a single column of DWP's to associate with units.\n",
+              "data_DWP must have columns corresponding to data_CO sizes\n",
+              "or have a single column of DWP's to associate with units.\n",
               "Alternatively, user may specify name of DWP column as DWPCol"
             )
           }
@@ -286,6 +286,8 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
 summary.estM <- function(object, ..., CL = 0.95){
   alpha <- 1 - CL
   Mtot <- colSums(object$Mhat) 
+  Xmin <- object$Xtot
+  Mtot[Mtot < Xmin] <- Xmin
   out <- c(
     "Median" = round(median(Mtot), 2),
     "lwr" = round(quantile(Mtot, alpha/2), 2), 
