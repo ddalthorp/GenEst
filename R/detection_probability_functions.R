@@ -457,7 +457,7 @@ kFillPropose <- function(model){
 #'  estimated k.
 #'
 #' @return \code{gGeneric} object that is a list of [1] a list of g estimates,
-#'    with one element in the list corresponding to each of the cells from the 
+#'    with one element in the list corresponding to each of the cells from the
 #'    cross-model combination and [2] a table of predictors and cell names 
 #'    associated with the gs
 #'
@@ -514,7 +514,7 @@ estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
 
 #' @title Calculate cell-level generic detection probability
 #'
-#' @description Calculate detection probability (g) given SE and CP parameters 
+#' @description Calculate detection probability (g) given SE and CP parameters
 #'  and a search schedule.
 #'
 #' The g given by \code{calcg} is a generic aggregate detection
@@ -574,7 +574,7 @@ calcg <- function(days, param_SE, param_CP, dist){
   notfind <- cumprod(1 - f0*powk[-length(powk)])
   nvec <- c(1, notfind) * f0
 
-  # conditional probability of finding a carcass on the ith search (row) after 
+  # conditional probability of finding a carcass on the ith search (row) after
   # arrival for given (simulated) searcher efficiency (column)
   pfind.si <- nvec * powk
 
@@ -632,7 +632,7 @@ calcg <- function(days, param_SE, param_CP, dist){
       ind <- which(
                abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
                abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
-      prob_obs <- prob_obs + pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
+     prob_obs <- prob_obs + pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
     }
   }
   return(prob_obs)
@@ -662,9 +662,10 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @param modelSetSize_CP Carcass Persistence model set for multiple sizes
 #'
-#' @param modelSizeSelections_SE vector of SE models to use, one for each size.
-#'  Size names are required, and names must match those of modelSetSize_SE.
-#'  E.g., \code{c(lrg = "p ~ Visibility; k ~ 1", sml = "p ~ 1; k ~ 1")}.
+#' @param modelSizeSelections_SE vector of SE models to use, one for each 
+#'  size. Size names are required, and names must match those of
+#'  modelSetSize_SE. E.g., 
+#'  \code{c(lrg = "p ~ Visibility; k ~ 1", sml = "p ~ 1; k ~ 1")}.
 #'  Model formulas are read as text and must have exact matches among models
 #'  listed in modelSetSize_SE. For example, if one of the
 #'  \code{modelSizeSelections_SE} elements is
@@ -677,15 +678,16 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @param seed_CP seed for random draws of the CP model
 #'
-#' @param kFill values to fill in for missing k when the selected SE model does
-#'  not include an estimated k. If all of the selected models include estimated
-#'  k's, set \code{kFill = NULL}. Models that do not include estimated k's
-#'  require named kFill values in a vector with names matching the names of
-#'  size classes, e.g., \code{kFill = c(lrg = 0.7, sml = 0.4)}, or, if only one
-#'  model requires a \code{kFill} value, \code{kFill = c(lrg = 0.7)}.
+#' @param kFill values to fill in for missing k when the selected SE model 
+#'   does not include an estimated k. If all of the selected models include 
+#'   estimated k's, set \code{kFill = NULL}. Models that do not include 
+#'   estimated k's require named kFill values in a vector with names matching 
+#'   the names of size classes, e.g., \code{kFill = c(lrg = 0.7, sml = 0.4)},
+#'   or, if only one model requires a \code{kFill} value, 
+#'   \code{kFill = c(lrg = 0.7)}.
 #'
 #' @return list of g estimates, with one element in the list corresponding
-#'   to each of the cells from the cross-model combination
+#'    to each of the cells from the cross-model combination
 #'
 #' @examples
 #'   data(mock)
