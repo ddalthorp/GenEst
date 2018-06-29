@@ -1,6 +1,6 @@
 function(input, output, session){
 
-modalWelcome()
+modalWelcome("base")
 rv <- createReactiveValues()
 output$versionInfo <- renderText(createvtext())
 output$SStext <- renderText(rv$SStext)
