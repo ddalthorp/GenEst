@@ -385,7 +385,9 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       }
     } else if (split_h$type %in% c("time", "SS")){
       days <- data_SS$days
-      rate <- calcRate(M, Aj, days = days, searches_carcass = searches_carcass)
+      rate <- calcRate(M, Aj, days = days, 
+                searches_carcass = searches_carcass
+              )
       splits <- calcTsplit(rate, data_SS$days, split_h$vals)
     }
   } else if (nvar == 2){ # two split variables: split_h and split_v
@@ -470,15 +472,22 @@ summary.splitFull <- function(object, CL = 0.95, ...){
   probs <- c(alpha / 2, 0.25, 0.5, 0.75, 1 - alpha / 2)
   if (length(attr(splits, "vars")) == 0){
     sumry <- c(quantile(splits, probs = probs))
+    sumry[sumry < 0] <- 0
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits)) splits <- matrix(splits, nrow = 1)
     sumry <- cbind(rowQuantiles(splits, probs = probs))
+    sumry[sumry < 0] <- 0
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits[[1]])){
       splits <- lapply(splits, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits, function(x){
       cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))})
+    for (i in 1:length(sumry)){
+      sumry_0 <- sumry[[i]]
+      sumry_0[sumry_0 < 0] <- 0 
+      sumry[[i]] <- sumry_0
+    }
   } else {
     stop(
       "length(attr(splits, 'vars')) > 2.",
