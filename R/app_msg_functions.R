@@ -173,7 +173,11 @@ msgModPartialFail <- function(mods, type = "SE"){
     if (nfailedmods > 0){
       for(fmodi in 1:nfailedmods){
         newmsg <- mods[[sci]][[names(failedmods)[fmodi]]]
-        newmsg <- gsub("Failed model fit: ", "", newmsg)
+        if (length(newmsg) == 1){
+          newmsg <- gsub("Failed model fit: ", "", newmsg)
+        } else{
+          newmsg <- "Failed fit for k."
+        }
         newmsgs <- unique(c(newmsgs, newmsg))
       }
     }
