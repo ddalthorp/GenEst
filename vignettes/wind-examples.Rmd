@@ -135,8 +135,11 @@ season).
 
 ```{r}
 head(data_SS[, 1:10])
-print("NOTE: there are 100 turbine columns altogether (t1, ..., t100)")
 ```
+
+Note that we have only displayed a few of the turbine columns - there are 100 
+turbine columns altogether (t1, ..., t100).
+
 
 ### Density Weighted Proportion (`DWP`)
 The density-weighted proportion (`DWP`) is the expected fraction of carcasses
@@ -164,8 +167,8 @@ head(data_DWP)
 Information about each (non-trial) carcass observed during searches is stored in
 `CO_data` which is a data frame with at least 4 columns: carcass ID, the turbine
 (or unit) at which it was found, the date it was found and its distance from the
-turbine center. In `CO_data` for we also have turbine type, species, and species
-group, variables by which we will later summarize mortality estimates.
+turbine center. In `CO_data` we also have turbine type, species, and species
+group variables by which we will later summarize mortality estimates.
 ```{r}
 head(data_CO)
 ```
@@ -249,7 +252,7 @@ estimated using the `estM` function.
 ```{r, eval = FALSE}
 ?estM
 ```
-```{r}
+```{r, fig.width = 7, fig.height = 5, fig.align = 'center'}
 Mhat <- estM(nsim = 1000, data_CO = data_CO, data_SS = data_SS,
   data_DWP = data_DWP, model_SE = model_SE, model_CP = model_CP,
   unitCol = "Turbine", dateFoundCol = "DateFound")
@@ -271,7 +274,7 @@ specific times).
 ```
 
 Species (a CO split because it is a column in the CO file):
-```{r}
+```{r, fig.width = 5, fig.height = 5, fig.align = 'center'}
 M_species <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
   data_CO = data_CO)
 summary(M_species)
@@ -288,7 +291,7 @@ SSdat <- SS(data_SS)
 ```
 
 Season (a SS split because it is a column in the SS file):
-```{r}
+```{r Season Split, fig.width = 4, fig.height = 4, fig.align = 'center'}
 M_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_SS = "Season", data_SS = SSdat, split_CO = NULL,  data_CO = data_CO)
 summary(M_season)
@@ -296,7 +299,7 @@ plot(M_season)
 ```
 
 Month (a temporal split that as a vector of times spanning monitoring season):
-```{r}
+```{r Temporal Split, fig.width = 7, fig.height = 5, fig.align = 'center'}
 M_month <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_time = seq(0, max(SSdat$days), by = 28),
   data_SS = SSdat, data_CO = data_CO)
@@ -307,7 +310,7 @@ Temporal splits that divide the monitoring season into separate time intervals
 (like season or month) can be plotted as the number per interval
 (`rate = FALSE`, which is the default arg in `calcSplits`) or the number per
 unit time (`rate = TRUE`).
-```{r}
+```{r Time unit Split, fig.width = 7, fig.height = 5, fig.align = 'center'}
 M_various_times <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_time = c(seq(0, 90, by = 15), 120, 150, seq(155, 200, by = 5)),
   data_SS = SSdat, data_CO = data_CO)
@@ -321,7 +324,7 @@ like species by season or species group by turbine type. No more than two
 splitting covariates may be used in one call to `calcSplits` and at most one
 temporal split may be used (whether it is an SS split or a vector of times).
 
-```{r}
+```{r Species and Season, fig.width = 4, fig.height = 6, fig.align = 'center'}
 M_species_by_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_CO = "Species", data_CO = data_CO,
   split_SS = "Season", data_SS = SSdat)
@@ -411,7 +414,7 @@ be relied upon as definitive. Its utility is in identifying relatively poor
 models and in narrowing the choice of plausible models to a manageable number.
 
 The `pkmSetAICcTab` function lists the fitted models in order of
-$latex\Delta$AICc.
+${\small \Delta}$AICc.
 
 ```{r}
 pkmSetAICcTab(pkSet_sml)
@@ -429,7 +432,8 @@ use the `specificModel` argument. For example, diagnostic plots for the model
 with the lowest AICc score are shown below:
 
 ```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
-plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ Visibility + Season")
+# Error in checkSpecificModelSE(modelSet, specificModel) : specificModel p ~ Visibility; k ~ Visibility + Season is not a well-fit pk model
+# plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ Visibility + Season")
 ```
 
 The top row shows box plots of estimated `p` and `k` parameters for all cells
@@ -456,14 +460,14 @@ selected model is unable to estimate `k` for the given cell. Selecting a simpler
 model for `k` often remedies this problem.
 
 In this example, the second best model in terms of AICc
-(`p ~ Visibility; k ~ 1`, with $latex\Delta$AICc = 1.596) is able to succesfully
+(`p ~ Visibility; k ~ 1`, with ${\small \Delta}$AICc = 1.596) is able to succesfully
 estimate `k` while still providing a good fit for `p`.
 
 ```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
 plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ 1")
 ```
 
-By comparison, the model with the highest $latex\DeltaAICc$ (= 41.5) has \
+By comparison, the model with the highest ${\small \Delta}$AICc (= 41.5) has \
 routinely estimates `p` and `k` either well above or well below the full cell
 model but has fairly tight error bars--bad estimates but quite confident about
 them!
@@ -606,7 +610,7 @@ that were searched. In this example, 23 out of 100 turbines were searched, so
 unsearched turbines did not differ substantially from the rates at the searched
 turbines.
 
-```{r}
+```{r Mhat plot, fig.height = 4, fig.width = 7, fig.align = 'center'}
 Mhat <- estM(nsim = 1000, data_CO = data_CO, data_SS = data_SS, frac = 0.23,
   data_DWP = data_DWP, model_SE = pkMods, model_CP = cpMods,
   sizeclassCol = "Size", unitCol = "Turbine", dateFoundCol = "DateFound")
@@ -633,7 +637,7 @@ Although species groups may extend across different size classes (e.g.,
 `passerines` could include sparrows and ravens), splits according to species
 group can easily be accomplished:
 
-```{r}
+```{r Species Group Plot, , fig.height = 5, fig.width = 5, fig.align = 'center'}
 M_speciesGroup <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_CO = "SpeciesGroup",  data_CO = data_CO)
 summary(M_speciesGroup)
@@ -641,7 +645,7 @@ plot(M_speciesGroup)
 ```
 
 Split by species and season:
-```{r}
+```{r Split Species and Season, fig.height = 12, fig.width = 4, fig.align = 'center'}
 M_speciesseason <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_CO = "Species",  data_CO = data_CO, split_SS = "Season", data_SS = data_SS)
 summary(M_speciesseason)
@@ -652,12 +656,12 @@ There are so many vertical panels that it is difficult to glean any useful
 information out of the graph. However, the panels may be transposed and graphed
 for better interpretability:
 
-```{r}
+```{r Transposed Species Season, fig.height = 7, fig.width = 7, fig.align = 'center'}
 plot(transposeSplits(M_speciesseason))
 ```
 
 Split by size and distance from turbine:
-```{r}
+```{r, fig.width = 4, fig.height = 6, fig.align = 'center'}
 M_distance <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_CO = c("Distance", "Size"),  data_CO = data_CO)
 summary(M_distance)
