@@ -584,8 +584,6 @@ update_rv_split_M <- function(rv, input){
 #'
 #' @param rv the reactive values list
 #'
-#' @param input the input list
-#'
 #' @return an updated reactive values list
 #'
 #' @export
