@@ -4,7 +4,10 @@
 \alias{modalWelcome}
 \title{Create the modal welcome for GenEst}
 \usage{
-modalWelcome()
+modalWelcome(type = "base")
+}
+\arguments{
+\item{type}{"base" (just USGS text) or "deploy" (USGS and West text)}
 }
 \value{
 Nothing
