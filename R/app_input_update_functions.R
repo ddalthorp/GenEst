@@ -165,6 +165,8 @@ update_input_cols_CP <- function(rv, input, session, x = "ltp"){
   notx2 <- switch(x, "ltp" = "preds", "fta" = "preds", "preds" = "fta")
 
   x <- gsub("preds", "preds_CP", x)
+  notx1 <- gsub("preds", "preds_CP", notx1)
+  notx2 <- gsub("preds", "preds_CP", notx2)
 
   rv$colNames_CP_sel <- c(input[[x]], input[[notx1]], input$sizeclassCol)
   rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
