@@ -160,7 +160,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
 #'
 #' @export
 #'
-plot.splitFull <- function(x, rate = FALSE, CL = 0.9, ...){
+plot.splitFull <- function(x, rate = FALSE, CL = 0.95, ...){
   nvar <- length(attr(x, "vars"))
   if (nvar == 0){
     simpleMplot(x, ..., CL)
