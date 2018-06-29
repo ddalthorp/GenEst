@@ -160,6 +160,7 @@ prettySplitTab <- function(splitSummary){
 
     nspec <- length(splitSummary)
     Out <- prettySplitSpecTab(splitSummary[[1]])
+    Out[, 1] <- row.names(splitSummary[[1]])
     colnames(Out)[1] <- attr(splitSummary, "vars")[1]
     extralev <- rep(names(splitSummary)[1], nrow(Out))
     Out <- cbind(extralev, Out)    
@@ -167,6 +168,8 @@ prettySplitTab <- function(splitSummary){
 
     for (speci in 2:nspec){
       specOut <- prettySplitSpecTab(splitSummary[[speci]])
+      colnames(specOut)[1] <- attr(splitSummary, "vars")[1]
+      specOut[, 1] <- row.names(splitSummary[[speci]])
       colnames(specOut)[1] <- attr(splitSummary, "vars")[1]
       extralev <- rep(names(splitSummary)[speci], nrow(specOut))
       specOut <- cbind(extralev, specOut)    
