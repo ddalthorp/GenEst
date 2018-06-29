@@ -578,3 +578,21 @@ update_rv_split_M <- function(rv, input){
 }
 
 
+#' @title Update the M reactive values when M split is transposed
+#'
+#' @description Update the M reactive values when M split is transposed
+#'
+#' @param rv the reactive values list
+#'
+#' @param input the input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_transpose_split <- function(rv){
+  if (rv$nsplit_CO + rv$nsplit_SS == 2){
+    rv$Msplit <- transposeSplits(rv$Msplit)
+  } 
+  rv
+}
