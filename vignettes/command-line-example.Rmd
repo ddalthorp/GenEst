@@ -1,9 +1,9 @@
 ---
-title: "GenEst Command Line Example"
+title: "GenEst - Command Line Walkthrough"
 author: "Juniper L. Simonis"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{GenEst - Command Line Walkthrough}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -101,7 +101,7 @@ pkModel$cells
 The `plot` function has been defined for `pkm` objects, such that one can
 simply run
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(pkModel)
 ```
 
@@ -157,7 +157,7 @@ creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
-```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(pkmModSet, specificModel = "p ~ Visibility + HabitatType; k ~ 1")
 ```
 
@@ -233,7 +233,7 @@ cpModel$cells
 The `plot` function has been defined for `cpm` objects, such that one can
 simply run
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 6, fig.height = 6, fig.align = 'center'}
 plot(cpModel)
 ```
 
@@ -306,7 +306,7 @@ creates a new plot window on command for each sub-model. If we want to only
 plot a specific single (or subset) of models from the full set, we can utilize
 the `specificModel` argument:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7, fig.align = 'center'}
 plot(cpmModSet,
   specificModel = "dist: lognormal; l ~ Visibility * Season; s ~ Visibility"
 )
@@ -390,9 +390,9 @@ The output from `estgGeneric` can be simply summarized
 summary(gsGeneric)
 ```
 
-or plotted (not shown):
+or plotted.
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 10}
+```{r, fig.show = "hold", fig.width = 4, fig.height = 14, fig.align = 'center'}
 plot(gsGeneric)
 ```
 
@@ -444,7 +444,7 @@ detection parameters (`g`), arrival intervals (`Aj`), and associated total
 mortality (`Mhat`) values for each simulation. These `Mhat` values should be
 considered in combination, and can be summarized and plotted simply:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 6, fig.height = 6, fig.align = 'center'}
 summary(eM)
 plot(eM)
 ```
@@ -455,9 +455,9 @@ It is possible to split the resulting mortality estimation into components
 that are denoted according to covariates in either the search schedule or
 carcass observation data sets.
 
-#### First, a temporal split:
+First, a temporal split:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 4, fig.height = 6, fig.align = 'center'}
 M_season <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
@@ -465,9 +465,9 @@ summary(M_season)
 plot(M_season)
 ```
 
-#### Next, a carcass split:
+Next, a carcass split:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 4, fig.height = 6, fig.align = 'center'}
 M_class <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = NULL,
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
@@ -475,10 +475,9 @@ summary(M_class)
 plot(M_class)
 ```
 
-#### And finally, if two splits are included, the mortality estimation is
-expanded fully factorially:
+And finally, if two splits are included, the mortality estimation is expanded fully factorially:
 
-```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+```{r, fig.show = "hold", fig.width = 4, fig.height = 8, fig.align = 'center'}
 M_SbyC <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )

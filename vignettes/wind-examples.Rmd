@@ -1,5 +1,5 @@
 ---
-title: "Tutorial with Wind Examples"
+title: "GenEst - A Tutorial with Wind Examples"
 author: "Dan Dalthorp"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -21,7 +21,7 @@ library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
 ```
-# Introduction: Tutorial with Examples
+## Introduction: Tutorial with Examples
 This tutorial provides an introduction to the array of command line tools
 **GenEst** provides for estimating carcass arrivals and detection
 probabilities. The approach is to walk through analyses of realistic but 
@@ -647,6 +647,7 @@ M_speciesseason <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
 summary(M_speciesseason)
 plot(M_speciesseason)
 ```
+
 There are so many vertical panels that it is difficult to glean any useful
 information out of the graph. However, the panels may be transposed and graphed
 for better interpretability:
