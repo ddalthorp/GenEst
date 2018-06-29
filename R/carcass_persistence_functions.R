@@ -234,16 +234,15 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   event[is.na(t2) | is.infinite(t2)] <- 0
   event[round(t1, 3) == round(t2, 3)] <- 1
   t1 <- pmax(t1, 0.0001)
-  tevent <- Surv(time = t1, time2 = t2, event = event, 
-              type = "interval")
+  tevent <- survival::Surv(time = t1, time2 = t2, event = event, type = "interval")
   init_formRHS <- as.character(formulaRHS_l)[-1]
   init_form <- reformulate(init_formRHS, response = "tevent")
-  init_mod <- survreg(formula = init_form, data = data, dist = dist)
+  init_mod <- survival::survreg(formula = init_form, data = data, dist = dist)
   init_l <- init_mod$coef
   names(init_l) <- paste("l_", names(init_l), sep = "")
   init_s <- rep(init_mod$scale, nbeta_s)
   names(init_s) <- paste("s_", colnames(cellMM_s), sep = "")
-  betaInit <- c(init_l, init_s)
+  betaInit <- c(init_l, log(init_s))
 
   MLE <- tryCatch(
            optim(par = betaInit, fn = cpLogLik, method = "BFGS", 
@@ -303,7 +302,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
   cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
   colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
-  cellTable_s <- apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s)
+  cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
   cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
   colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
   cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
@@ -421,6 +420,7 @@ print.cpm <- function(x, ...){
 #' @export 
 #'
 cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
+  # scaling for beta 
   t2[which(is.na(t2))] <- Inf
   ncell <- nrow(cellMM)
   nbeta <- length(beta)
@@ -430,18 +430,18 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
   beta_l <- beta[which_l]
   beta_s <- beta[which_s]
   if (dist == "exponential"){
-    beta_s <- c(1, rep(0, nbeta_s - 1))
+    beta_s <- c(log(1), rep(0, nbeta_s - 1))
   } 
   dataMM_l <- matrix(dataMM[which_l, ], ncol = nbeta_l, byrow = TRUE)
   dataMM_s <- matrix(dataMM[which_s, ], ncol = nbeta_s, byrow = TRUE)
   Beta_l <- dataMM_l %*% beta_l 
   Beta_s <- dataMM_s %*% beta_s  
-  psurv_t1 <- psurvreg(t1, Beta_l, Beta_s, dist)
-  psurv_t2 <- psurvreg(t2, Beta_l, Beta_s, dist)
+  psurv_t1 <- psurvreg(t1, Beta_l, exp(Beta_s), dist)
+  psurv_t2 <- psurvreg(t2, Beta_l, exp(Beta_s), dist)
   psurv_t2[which(is.na(psurv_t2))] <- 1
   lik <- psurv_t2 - psurv_t1
-  too_small <- t1 + .Machine$double.eps >= t2
-  lik[too_small] <- dsurvreg(t2, Beta_l, Beta_s, dist)
+  too_small <- (t1 + 0.0001) >= t2
+  lik[too_small] <- dsurvreg(t2, Beta_l, exp(Beta_s), dist)
   lik <- pmax(lik, .Machine$double.eps) 
   nll <- -sum(log(lik))
   return(nll)
@@ -510,7 +510,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
   sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
 
   sim_l <- as.matrix(sim_beta[ , 1:nbeta_l] %*% t(cellMM_l))
-  sim_s <- as.matrix(sim_beta[ , which_beta_s] %*% t(cellMM_s))
+  sim_s <- exp(as.matrix(sim_beta[ , which_beta_s] %*% t(cellMM_s)))
 
   if (type == "ppersist"){
     if (dist == "exponential"){
@@ -518,13 +518,6 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
       sim_b <- exp(sim_l)
     }
     if (dist == "weibull"){
-      if (any(sim_s <= 0)){
-        if (any(sim_s > 0)){
-          sim_s[sim_s <= 0] <- min(sim_s[sim_s > 0])
-        } else{
-          stop("No appropriate scale values.")
-        }
-      }
       sim_a <- 1 / sim_s
       sim_b <- exp(sim_l)
     }
