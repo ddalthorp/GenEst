@@ -25,7 +25,7 @@ estimated k.}
 }
 \value{
 \code{gGeneric} object that is a list of [1] a list of g estimates,
-   with one element in the list corresponding to each of the cells from the 
+   with one element in the list corresponding to each of the cells from the
    cross-model combination and [2] a table of predictors and cell names 
    associated with the gs
 }
