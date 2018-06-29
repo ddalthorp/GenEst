@@ -989,7 +989,7 @@ SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   # if dateCol not provided, extract search dates (if possible)
   if (is.null(dateCol)){
     for (coli in colnames(data_SS)){
-      tmp <- try(as.Date(data_SS[, coli]), silent = T)
+      tmp <- try(as.Date(yyyymmdd(data_SS[, coli])), silent = T)
       if (class(tmp) != "try-error"){
         if (!is.null(dateCol)){
           stop(
@@ -1028,7 +1028,7 @@ SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
       unitNames <- c(unitNames, coli)
     }
   }
-  dates <- as.Date(data_SS[, dateCol])
+  dates <- as.Date(yyyymmdd(data_SS[, dateCol]))
   date0 <- min(dates)
   ans <- list()
   ans$date0 <- date0

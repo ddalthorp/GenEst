@@ -128,6 +128,7 @@ observeEvent(input$useSSdata, {
 })
 observeEvent(input$useSSinputs, {
   rv <- update_rv_useSSinputs(rv, input)
+  msgs$SS <<- msgSSinputFail(msgs, rv)
   output <- update_output_SS(rv, output, session)
 })
 observeEvent(input$runMod_g, {
