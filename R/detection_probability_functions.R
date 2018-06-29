@@ -549,7 +549,11 @@ calcg <- function(days, param_SE, param_CP, dist){
   } else {
     pda <- param_CP[ , "pda"]
     pdb <- param_CP[ , "pdb"]
-    pdb0 <- exp(mean(log(pdb)))
+    if (dist %in% c("lognormal", "Lognormal")){
+      pdb0 <- mean(pdb)
+    } else {
+      pdb0 <- exp(mean(log(pdb)))
+    }
     pda0 <- 1/mean(1/pda)
   }
   pk <- param_SE
