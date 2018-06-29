@@ -16,7 +16,7 @@ calcg(days, param_SE, param_CP, dist)
 \item{dist}{distribution for the CP model}
 }
 \description{
-Calculate detection probability (g) given SE and CP parameters 
+Calculate detection probability (g) given SE and CP parameters
  and a search schedule.
 
 The g given by \code{calcg} is a generic aggregate detection

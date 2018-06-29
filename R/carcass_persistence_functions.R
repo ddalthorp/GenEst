@@ -518,6 +518,13 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
       sim_b <- exp(sim_l)
     }
     if (dist == "weibull"){
+      if (any(sim_s <= 0)){
+        if (any(sim_s > 0)){
+          sim_s[sim_s <= 0] <- min(sim_s[sim_s > 0])
+        } else{
+          stop("No appropriate scale values.")
+        }
+      }
       sim_a <- 1 / sim_s
       sim_b <- exp(sim_l)
     }
