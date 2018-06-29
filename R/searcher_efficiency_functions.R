@@ -284,6 +284,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   cellByCarc <- match(carcCells, cellNames)
 
   pInitCellMean <- tapply(data0[ , obsCol[1]], INDEX = carcCells, FUN = mean)
+  if (any(pInitCellMean %in% 0:1)) {
+     stop("Initial search has all 0s or 1s in a cell.")
+  }
+
   pInit <- as.vector(pInitCellMean[match(carcCells, names(pInitCellMean))])
   pInit[which(pInit < 0.1)] <- 0.1
   pInit[which(pInit > 0.9)] <- 0.9
