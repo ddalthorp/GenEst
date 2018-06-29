@@ -3,25 +3,84 @@
 #' @description Create a modal welcome and basic info screen for the GenEst
 #'   application
 #'
+#' @param type "base" (just USGS text) or "deploy" (USGS and West text)
+#'
 #' @return Nothing
 #'
 #' @export
 #'
-modalWelcome <- function(){  
-  vnumber <- packageDescription("GenEst", fields = "Version")
-  vdate <- packageDescription("GenEst", fields = "Date")
-  disclaimer <- paste("GenEst v", vnumber, " (", vdate, ")", sep = "")
-  showModal(modalDialog(title = disclaimer, 
-    "This software is preliminary or provisional and is subject to revision. 
-    It is being provided to meet the need for timely best science. The 
-    software has not received final approval by the U.S. Geological Survey 
-    (USGS). No warranty, expressed or implied, is made by the USGS or the U.S.
-    Government as to the functionality of the software and related material 
-    nor shall the fact of release constitute any such warranty. The software 
-    is provided on the condition that neither the USGS nor the U.S. 
+modalWelcome <- function(type = "base"){  
+  if (type == "base"){
+    vnumber <- packageDescription("GenEst", fields = "Version")
+    vdate <- packageDescription("GenEst", fields = "Date")
+    disclaimer <- paste("GenEst v", vnumber, " (", vdate, ")", sep = "")
+    showModal(modalDialog(title = disclaimer, modalTextUSGS(),
+      easyClose = FALSE, footer = modalButton("OK"))
+    )
+  }
+  if (type == "deploy"){
+    vnumber <- packageDescription("GenEst", fields = "Version")
+    vdate <- packageDescription("GenEst", fields = "Date")
+    disclaimer <- paste("GenEst v", vnumber, " (", vdate, ")", sep = "")
+    showModal(modalDialog(title = disclaimer, modalTextUSGS(), br(), br(),
+      modalTextWest(), easyClose = FALSE, footer = modalButton("OK"))
+    )
+  }
+}
+
+#' @title Create USGS text for the modal welcome
+#'
+#' @description Create USGS text for the modal welcome
+#'
+#' @return HTML element of the USGS text
+#'
+#' @export
+#'
+modalTextUSGS <- function(){
+  HTML("This software is preliminary or provisional and is subject to
+    revision. It is being provided to meet the need for timely best science. 
+    The software has not received final approval by the U.S. Geological 
+    Survey (USGS). No warranty, expressed or implied, is made by the USGS or 
+    the U.S. Government as to the functionality of the software and related 
+    material nor shall the fact of release constitute any such warranty. The 
+    software is provided on the condition that neither the USGS nor the U.S. 
     Government shall be held liable for any damages resulting from the 
-    authorized or unauthorized use of the software.",  
-    easyClose = FALSE, footer = modalButton("OK"))
+    authorized or unauthorized use of the software."
+  )
+}
+
+#' @title Create West text for the modal welcome
+#'
+#' @description Create West text for the modal welcome
+#'
+#' @return HTML element of the West text
+#'
+#' @export
+#'
+modalTextWest <- function(){
+  HTML("Western EcoSystems Technology, Inc. does not host nor maintain the 
+    Shinyapp.io website. It is advised that users not upload sensitive data 
+    containing personally identifiable information (SSN, birthdates, medical 
+    information, etc.). Western EcoSystems Technology, Inc. is not liable for 
+    any damages, including but not limited to general, compensatory, special 
+    or punitive damages, sustained by user arising out of another party or 
+    entity using said sensitive data or for the use of any data by another 
+    party or entity which is obtained from viruses, Trojans or other malware. 
+    Shinyapp.io is actively maintained by the RStudio Company on Amazon Web 
+    Services.", "<br>", "<br>", 
+    "This program is an 'AS IS' without warranty of any kind, either expressed
+    or implied, including but not limited to, the implied warranties of 
+    merchantability and fitness for a particular purpose. The entire risk as
+    to the quality and performance of the program is with you. Should the 
+    program prove defective, you assume all cost of all necessary servicing,
+    repair or correction. If this program is modified and/or redistributed, 
+    Western EcoSystems Technology, Inc. is not liable for any damages,
+    including any general, special, incidental or consequential damages 
+    arising out of the use or inability to use this program (including but not
+    limited to loss of data or data being rendered inaccurate or losses 
+    sustained by you or third parties or a failure of the program to operate 
+    with any other programs), even if such holder or other party has been
+    advised of the possibility of such damages."
   )
 }
 
