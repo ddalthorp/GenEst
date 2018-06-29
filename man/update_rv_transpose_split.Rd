@@ -8,8 +8,6 @@ update_rv_transpose_split(rv)
 }
 \arguments{
 \item{rv}{the reactive values list}
-
-\item{input}{the input list}
 }
 \value{
 an updated reactive values list
