@@ -71,23 +71,38 @@ downloadgFig <- function(rv, sc){
 #'
 #' @param split logical indicator to use the split or not
 #'
+#' @param transpose logical indicator if to transpose the output or not
+#'
 #' @return an updated reactive values list
 #'
 #' @export
 #'
-downloadMFig <- function(rv, split = TRUE){
+downloadMFig <- function(rv, split = TRUE, transpose = FALSE){
 
   if (split){
-    downloadHandler(filename = "M_fig.png",
-        content = function(file){
-          png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
-          tryCatch(
-            plot(rv$Msplit),
-            error = function(x){plotNA()}
-          )
-          dev.off()
-        }
-    )
+    if (transpose){
+      downloadHandler(filename = "M_fig.png",
+          content = function(file){
+            png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
+            tryCatch(
+              plot(transposeSplits(rv$Msplit)),
+              error = function(x){plotNA()}
+            )
+            dev.off()
+          }
+      )
+    } else {
+      downloadHandler(filename = "M_fig.png",
+          content = function(file){
+            png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
+            tryCatch(
+              plot(rv$Msplit),
+              error = function(x){plotNA()}
+            )
+            dev.off()
+          }
+      )
+    }
   } else{
     downloadHandler(filename = "M_fig.png",
         content = function(file){

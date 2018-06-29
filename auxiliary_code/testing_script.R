@@ -41,7 +41,7 @@ M_ <- calcSplits(M = M, Aj = Aj, split_SS = "Construction",
                  split_CO = NULL,
                  data_SS = data_SS, data_CO = data_CO
                )
-plot(M_)
+plot(transposeSplits((M_)))
 
 
 pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType,

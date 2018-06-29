@@ -553,3 +553,30 @@ update_output_split_M <- function(rv, output, session){
   }
   output
 }
+
+
+#' @title Update the output when the M split is transposed
+#'
+#' @description Update the output when the M split is transposed
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @param session session
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_transpose_split <- function(rv, output, session){
+
+  if (!is.null(rv$Msplit)){
+      output$fig_M <- renderPlot({plot(rv$Msplit)},
+                        height = rv$figH_M, width = rv$figW_M
+                      )
+      output$dlMfig <- downloadMFig(rv, TRUE, TRUE)
+
+  }
+  output
+}

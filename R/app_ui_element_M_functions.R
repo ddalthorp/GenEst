@@ -74,7 +74,9 @@ MSidebar <- function(){
         " ", multiple = TRUE, options = list(maxItems = 2)
       ),
       br(),
-      actionButton("splitM", "Split Estimate")
+      actionButton("splitM", "Split Estimate"),
+      br(), br(), br(), br(), 
+      actionButton("transposeSplit", "Transpose Split Plot")
     )
   )
 }

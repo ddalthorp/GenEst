@@ -4,12 +4,14 @@
 \alias{downloadMFig}
 \title{Download the M figure}
 \usage{
-downloadMFig(rv, split = TRUE)
+downloadMFig(rv, split = TRUE, transpose = FALSE)
 }
 \arguments{
 \item{rv}{the reactive values list}
 
 \item{split}{logical indicator to use the split or not}
+
+\item{transpose}{logical indicator if to transpose the output or not}
 }
 \value{
 an updated reactive values list

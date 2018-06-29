@@ -115,6 +115,10 @@ observeEvent(input$splitM, {
   output <- update_output_split_M(rv, output, session)
   msgs$ModM <<- msgModDone(msgs, rv, "split")
 })
+observeEvent(input$transposeSplit, {
+  rv <- update_rv_transpose_split(rv)
+  output <- update_output_transpose_split(rv, output, session)
+})
 
 observeEvent(input$useSSdata, {
   rv <- update_rv_useSSdata(rv)
