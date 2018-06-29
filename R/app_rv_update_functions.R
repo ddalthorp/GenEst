@@ -131,7 +131,8 @@ update_rv_run_SE <- function(rv, input){
                 ) 
   rv$mods_SE_og <- rv$mods_SE
   rv$mods_SE <- pkmSetSizeFailRemove(rv$mods_SE)
-  if (!all(unlist(pkmSetSizeFail(rv$mods_SE)))){
+  if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
+      !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
     rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
     rv$sizeclasses_SE <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
