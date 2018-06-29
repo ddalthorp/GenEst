@@ -326,6 +326,32 @@ msgSSavgFail <- function(msgs, rv, clear = TRUE){
   NULL
 }
 
+#' @title Create the warning message for when the SS based on inputs doesn't 
+#'   work
+#'
+#' @description Produces a notification for when an input-based search 
+#'   schedule can't be created
+#'
+#' @param msgs message list
+#'
+#' @param rv reactive values list
+#'
+#' @param clear if all notifications should be cleared or not
+#'
+#' @return an average SS fail warning
+#'
+#' @export
+#'
+msgSSinputFail <- function(msgs, rv, clear = TRUE){
+  if (clear){
+    clearNotifications(msgs)
+  }
+  if (is.na(rv$SStemp[1])){
+    msg <- "Search Schedule can't be created using inputs"
+    return(showNotification(msg, type = "warning", duration = NULL))
+  }
+  NULL
+}
 
 #' @title Create the fail message for when splits aren't done correctly
 #'

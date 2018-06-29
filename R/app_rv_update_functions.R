@@ -382,13 +382,22 @@ update_rv_useSSdata <- function(rv){
 #' @export
 #'
 update_rv_useSSinputs <- function(rv, input){
+  rv$SStemp <- NA
   rv$gSearchInterval <- input$gSearchInterval
   rv$gSearchMax <- input$gSearchMax
-  rv$SS <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
-  if (max(rv$SS) != rv$gSearchMax){
-    rv$SS <- c(rv$SS, rv$gSearchMax)
+  if (rv$gSearchInterval > 0){
+    rv$SStemp <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
   }
-  rv$SStext <- paste(rv$SS, collapse = ", ")
+  if (any(is.na(rv$SStemp)) || any(rv$SStemp < 0) | any(rv$SStemp %% 1 != 0)){
+    rv$SStemp <- NA
+  }
+  if (!is.na(rv$SStemp[1])){
+    rv$SS <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
+    if (max(rv$SS) != rv$gSearchMax){
+      rv$SS <- c(rv$SS, rv$gSearchMax)
+    }
+    rv$SStext <- paste(rv$SS, collapse = ", ")
+  }
   rv
 }
 
