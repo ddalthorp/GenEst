@@ -17,9 +17,10 @@ estgGenericSize(nsim = 1, days, modelSetSize_SE, modelSetSize_CP,
 
 \item{modelSetSize_CP}{Carcass Persistence model set for multiple sizes}
 
-\item{modelSizeSelections_SE}{vector of SE models to use, one for each size.
-Size names are required, and names must match those of modelSetSize_SE.
-E.g., \code{c(lrg = "p ~ Visibility; k ~ 1", sml = "p ~ 1; k ~ 1")}.
+\item{modelSizeSelections_SE}{vector of SE models to use, one for each 
+size. Size names are required, and names must match those of
+modelSetSize_SE. E.g., 
+\code{c(lrg = "p ~ Visibility; k ~ 1", sml = "p ~ 1; k ~ 1")}.
 Model formulas are read as text and must have exact matches among models
 listed in modelSetSize_SE. For example, if one of the
 \code{modelSizeSelections_SE} elements is
@@ -32,16 +33,17 @@ must be in \code{names(modelSizeSelections_SE)[["lrg"]]}.}
 
 \item{seed_CP}{seed for random draws of the CP model}
 
-\item{kFill}{values to fill in for missing k when the selected SE model does
-not include an estimated k. If all of the selected models include estimated
-k's, set \code{kFill = NULL}. Models that do not include estimated k's
-require named kFill values in a vector with names matching the names of
-size classes, e.g., \code{kFill = c(lrg = 0.7, sml = 0.4)}, or, if only one
-model requires a \code{kFill} value, \code{kFill = c(lrg = 0.7)}.}
+\item{kFill}{values to fill in for missing k when the selected SE model 
+does not include an estimated k. If all of the selected models include 
+estimated k's, set \code{kFill = NULL}. Models that do not include 
+estimated k's require named kFill values in a vector with names matching 
+the names of size classes, e.g., \code{kFill = c(lrg = 0.7, sml = 0.4)},
+or, if only one model requires a \code{kFill} value, 
+\code{kFill = c(lrg = 0.7)}.}
 }
 \value{
 list of g estimates, with one element in the list corresponding
-  to each of the cells from the cross-model combination
+   to each of the cells from the cross-model combination
 }
 \description{
 Generic g estimation for a combination of SE model and CP
