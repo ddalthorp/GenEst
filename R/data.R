@@ -181,10 +181,6 @@
 #'   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or
 #'     \code{"sml"} bird}
 #'   \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"}}
-#'   \item{\code{Visibility}}{indicator for visibility class of the ground, with
-#'      \code{"RP"} for carcasses placed on a road or turbine pad, \code{"M"}
-#'      for moderate visibility (e.g., plowed field; short, sparse vegetation),
-#'      or \code{"D"} for difficult visibility.}
 #'   \item{\code{"s1",...,"s5"}}{fate of carcass on the 1st, 2nd, 3rd, 4th, and
 #'      5th search after placement. A value of 1 implies that a carcass was
 #'      discovered by searchers, 0 implies the carcass was present but not
@@ -206,10 +202,6 @@
 #'   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or 
 #'   \code{"sml"} bird.} 
 #'   \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"}}
-#'   \item{\code{Visibility}}{indicator for visibility class of the ground, 
-#'   with \code{"RP"} for carcasses placed on a road or turbine pad, \code{"M"} 
-#'   for moderate visibility (e.g., plowed field; short, sparse vegetation), or 
-#'   \code{"D"} for difficult visibility}
 #'   \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing the 
 #'   time the carcass was scavenged or otherwise removed from the field. For 
 #'   example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the carcass
@@ -269,8 +261,6 @@
 #'   \item{\code{DateFound}}{dates entered in the same format as in
 #'     \code{$SS$SearchDate}. Every date entered here is (and must be) included
 #'      in the search schedule (\code{$SS$SearchDate}}
-#'   \item{\code{Visibility}}{visibility class: \code{"RP"}, \code{"M"}, or
-#'     \code{"D"}, as described in \code{$CP} and \code{$SE}}
 #'   \item{\code{Species}}{species of the carcass: \code{"BA"}, \code{"BB"},
 #'     \code{"BC"}, \code{"BD"}, \code{"BE"}, \code{"LA"}, \code{"LB"},
 #'     \code{"LD"}, \code{"LE"}, \code{"MA"}, \code{"MB"}, \code{"SA"},
