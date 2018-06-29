@@ -4,12 +4,14 @@
 \alias{simpleMplot}
 \title{Plot a total mortality estimation for a simple situation}
 \usage{
-simpleMplot(M, ..., CL = 0.95)
+simpleMplot(M, ..., Xmin = 0, CL = 0.95)
 }
 \arguments{
 \item{M}{Mortality object}
 
 \item{...}{arguments to pass down}
+
+\item{Xmin}{minimum number of observable carcasses}
 
 \item{CL}{confidence level}
 }
