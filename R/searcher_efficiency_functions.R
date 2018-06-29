@@ -1016,6 +1016,25 @@ pkmSetSizeFail <- function(pkmSetSizeToCheck){
   lapply(pkmSetSizeToCheck, pkmSetFail)
 }
 
+#' @title Check if all of the pkm models fail within a given set
+#'
+#' @description Run a check on each model within a \code{\link{pkmSet}}
+#'   object to determine if they all failed or not
+#'
+#' @param pkmSetToCheck A \code{\link{pkmSet}} object to test
+#'
+#' @return A logical value indicating if all models failed in the set
+#'
+#' @export
+#'
+pkmSetAllFail <- function(pkmSetToCheck){
+  modchecks <- unlist(lapply(pkmSetToCheck, pkmFail))
+  if (length(modchecks) == sum(modchecks)){
+    return(TRUE)
+  }
+  FALSE
+}
+
 #' @title Remove failed pkm models from a \code{\link{pkmSet}} object
 #'
 #' @description Remove all failed models within a \code{\link{pkmSet}} object
