@@ -173,7 +173,8 @@ update_output_cols_CP <- function(rv, input, output){
 #'
 update_output_run_SE <- function(rv, output, session){
 
-  if (!all(unlist(pkmSetSizeFail(rv$mods_SE)))){
+  if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
+      !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
 
     output$SEModDone <- renderText("OK")
     output$kFillNeed <- setkFillNeed(rv$obsCols_SE)

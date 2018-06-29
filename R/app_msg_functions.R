@@ -97,7 +97,9 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
   if (type == "SE"){
     if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
       return(msgModFail(rv$mods_SE_og, "SE"))
-    } else{
+    } else if(any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
+      return(msgModFail(rv$mods_SE_og, "SE", "size_k"))
+    } else {
       return(msgModWarning(rv$mods_SE_og, "SE", rv))
     }
   }
@@ -269,17 +271,23 @@ msgModSENobs <- function(rv){
 #'
 #' @param type "SE", "CP", "M", or "g"
 #'
+#' @param special indicator of a special type of message
+#'
 #' @return a model fail error message
 #'
 #' @export
 #'
-msgModFail <- function(mods, type = "SE"){
+msgModFail <- function(mods, type = "SE", special = NULL){
   if (type %in% c("SE", "CP")){
-    msg <- paste(
-             "No models were successfully fit.", 
-              gsub("Failed model fit: ", "", unique(unlist(mods))),
-              sep = " "
-           )
+    if (is.null(special)){
+      msg <- paste(
+               "No models were successfully fit.", 
+                gsub("Failed model fit: ", "", unique(unlist(mods))),
+                sep = " "
+             )
+    } else if (special == "size_k"){
+      msg <- "Some size classes had no successful models. Consider a fixed k."
+    }
   }
   if (type == "g"){
     msg <- "Detection probability not able to be estimated"
