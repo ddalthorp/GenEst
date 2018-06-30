@@ -23,8 +23,7 @@ today <- Sys.Date()
 set.seed(951)
 ```
 
-# Gen Est - A Solar Example with Carcass Size
-## Introduction
+### Introduction
 
 In this vignette we walk through an example illustrating how **GenEst** command 
 line utilities could be used to estimate mortality for different size birds at a
