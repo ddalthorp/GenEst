@@ -43,8 +43,6 @@ install.packages(file.choose())
 install.packages(file.choose())
 
 ```
-
-
 ## Getting Started
 ### Graphical user interface (GUI): easy-to-use buttons and menus
 
@@ -65,3 +63,5 @@ Also, help files for GenEst functions are accessible in the standard R way, for 
 ?pkm
 help(pkm)
 ```
+## Further Reading
+For further reading about the models that GenEst is based on and about how to use the software, download the guides available in the "user" folder. 
