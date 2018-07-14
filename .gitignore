@@ -1,4 +1,12 @@
-.Rproj.user
-.Rhistory
-.RData
-inst/doc
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.travis\.yml$
+^user$
+^data-raw$
+^code\.json$
+^DISCLAIMER\.md$
+^.\.tar\.gz$
+^.\.zip$
+^DISCLAIMER\.md$
+^\.gitlab-ci\.yml$
+^README\.md$
