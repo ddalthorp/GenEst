@@ -58,16 +58,13 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
     if ((vartype[1] %in% c("time", "SS")) & rate) {
       hwid <- deltaT/2
       xlim <- range(times)
-      ylim <- range(
-                rowQuantiles(splits[[vi]], probs = c(alpha/2, 1 - alpha/2)
-                )/deltaT
-              )
+      ylim <- range(matrixStats::rowQuantiles(splits[[vi]],
+        probs = c(alpha/2, 1 - alpha/2))/deltaT)
     } else {
       hwid <- rep(0.45, nlevel_h) # half-width of boxes
       xlim <- c(1, nlevel_h) + hwid[1] * c(-1, 1)
-      ylim <- range(
-                rowQuantiles(splits[[vi]], probs = c(alpha/2, 1 - alpha/2))
-              )
+      ylim <- range(matrixStats::rowQuantiles(splits[[vi]],
+        probs = c(alpha/2, 1 - alpha/2)))
     }
     plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F,
       xlab = "", ylab = "")

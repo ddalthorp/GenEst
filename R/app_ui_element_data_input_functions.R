@@ -21,7 +21,7 @@ dataInputPanel <- function(){
 #'
 dataInputSidebar <- function(){
   sidebarPanel(width = 3,
-    fileInput("file_SE", "Search Efficiency Data File",
+    fileInput("file_SE", "Searcher Efficiency Data File",
       accept = c("text/csv", "text/comma-separated-values", ".csv")
     ), 
     fileInput("file_CP", "Carcass Persistence Data File",
@@ -50,7 +50,7 @@ dataInputSidebar <- function(){
 loadedDataPanel <- function(){
   mainPanel(
     tabsetPanel(id = "LoadedDataViz",
-      dataTabPanel("Search Efficiency", "data_SE"),
+      dataTabPanel("Searcher Efficiency", "data_SE"),
       dataTabPanel("Carcass Persistence", "data_CP"),
       dataTabPanel("Search Schedule", "data_SS"),
       dataTabPanel("Density Weighted Proportion", "data_DWP"),
