@@ -114,7 +114,8 @@ Searcher efficiency is modeled as a function of the number of
   multiple-search searcher efficiency trials (see 'Details'), and model 
   formulas may be entered for both \code{p} (akin to an intercept) and  
   \code{k} (akin to aslope).
-
+}
+\details{
 The probability of finding a carcass that is present at the time of search
   is \code{p} on the first search after carcass arrival and is assumed to
   decrease by a factor of \code{k} each time the carcass is missed in 
