@@ -210,10 +210,6 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (any(rowSums(obsData, na.rm = TRUE) > 1)){
     stop("Carcasses observed more than once. Check data.")
   }
-#  if (any(apply(obsData, 1, ZeroAfterOne))){
-#    stop("Searches continue after carcass discovery? Check data.")
-#  }
-
   ncarc <- nrow(obsData)
   # simplified and vectorized calculations of
   #1. number of times each carcass was missed in searches, and

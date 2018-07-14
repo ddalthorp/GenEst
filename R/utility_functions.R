@@ -146,25 +146,3 @@ Ecbinom <- function(prob){
   interp(prob)
 }
 
-#' @title Check if any 0s come after a 1 in a string
-#'
-#' @description Do any 0s come after a 1? Only applicable when only 1 1 is 
-#'   observed. 
-#'
-#' @param x numeric vector
-#'
-#' @return logical if any 0s come after a 1 
-#'
-#' @export 
-#'
-ZeroAfterOne <- function(x){
-  x <- na.omit(x)
-
-  Zero <- which(x == 0)
-  One <- which(x == 1)
-
-  if (length(One) == 1){
-    return(any(Zero > One))
-  }
-  FALSE
-}

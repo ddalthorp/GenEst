@@ -40,7 +40,7 @@
 #'
 #' @section Useful command-line functions:
 #' \code{\link{pkm}}\cr
-#' \code{\link[=plot.pkm]{plot} S3 function for \code{pkm} object\cr
+#' \code{\link[=plot.pkm]{plot}} S3 function for \code{pkm} object\cr
 #' \code{\link{pkmSet}}\cr
 #' \code{\link{pkmSetAICcTab}}\cr
 #' \code{\link[=plot.pkmSet]{plot}} S3 function for \code{pkm.Set} object\cr
@@ -59,7 +59,7 @@
 #'
 #' \code{\link{SS}}\cr
 #' \code{\link{estM}}\cr
-#' \code{\link[=summary.estM]{summary} S3 function for \code{estM} object\cr
+#' \code{\link[=summary.estM]{summary}} S3 function for \code{estM} object\cr
 #' \code{\link[=plot.estM]{plot}} S3 function\cr
 #' \code{\link{calcSplits}} returns \code{splitFull} object\cr
 #' \code{\link[=summary.splitFull]{summary}}
