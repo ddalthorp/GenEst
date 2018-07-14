@@ -1,14 +1,13 @@
 ---
 title: "GenEst - A Tutorial with Wind Examples"
-author: "Dan Dalthorp"
+author: "Daniel Dalthorp"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Tutorial with Wind Examples}
+  %\VignetteIndexEntry{GenEst - A Tutorial with Wind Examples}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -314,7 +313,6 @@ unit time (`rate = TRUE`).
 M_various_times <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_time = c(seq(0, 90, by = 15), 120, 150, seq(155, 200, by = 5)),
   data_SS = SSdat, data_CO = data_CO)
-summary(M_various_times)
 plot(M_various_times)
 plot(M_various_times, rate = TRUE)
 ```
@@ -369,7 +367,7 @@ In searcher efficiency and carcass persistence trials, 15 carcasses trial
 carcasses were placed in each combination of visibility class (`D`, `M`, `RP`),
 season (`spring`, `summer`, `fall`), and size class (`lrg`, `med`, `sml`,
 `bat`). Data formats are like those of example 1:
-```{r, eval = F}
+```{r}
 head(data_SE)
 head(data_CP)
 ```
@@ -432,8 +430,7 @@ use the `specificModel` argument. For example, diagnostic plots for the model
 with the lowest AICc score are shown below:
 
 ```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
-# Error in checkSpecificModelSE(modelSet, specificModel) : specificModel p ~ Visibility; k ~ Visibility + Season is not a well-fit pk model
-# plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ Visibility + Season")
+plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ 1")
 ```
 
 The top row shows box plots of estimated `p` and `k` parameters for all cells
@@ -664,7 +661,6 @@ Split by size and distance from turbine:
 ```{r, fig.width = 4, fig.height = 6, fig.align = 'center'}
 M_distance <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_CO = c("Distance", "Size"),  data_CO = data_CO)
-summary(M_distance)
 plot(M_distance)
 ```
 
