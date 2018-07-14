@@ -401,30 +401,6 @@ SEsi_right <- function(nsi, pk){
   return(pfind.si)
 }
 
-#' @title Propose a k value if it is not in the model table
-#'
-#' @description Based on the call to \code{pkm}
-#'
-#' @param model searcher efficiency model
-#'
-#' @return proposed k value
-#'
-#' @export 
-#'
-kFillPropose <- function(model){
-
-  proposal <- model$cellwiseTable[1, c("k_median", "k_lower", "k_upper")]
-  if (any(is.na(proposal))){
-    return(NA)
-  }
-  if (proposal[1] == proposal[2] & proposal[1] == proposal[3]){
-    proposal <- proposal[1]
-  } else{
-    proposal <- NULL
-  }
-  return(proposal)
-}
-
 #' @title Estimate generic g
 #'
 #' @description Generic g estimation by simulation from given SE model and CP 
@@ -606,10 +582,10 @@ calcg <- function(days, param_SE, param_CP, dist){
   } else {
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(n, maxmiss + 1))
     powk[ , 1] <- 1
-    powk <- rowCumprods(powk)
+    powk <- matrixStats::rowCumprods(powk)
     val <- 1 - (pk[ , 1] * powk[ , 1:maxmiss])
     if (is.null(dim(val))) val <- matrix(val, nrow = 1)
-    pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), rowCumprods(val))
+    pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), matrixStats::rowCumprods(val))
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
@@ -803,8 +779,8 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
 averageSS <- function(data_SS, datesSearchedCol = NULL){
   SSdat <- SS(data_SS, datesSearchedCol = datesSearchedCol)
   schedules <- t(SSdat$searches_unit) * SSdat$days
-  nintervals <- length(SSdat$days) - colCounts(schedules, value = 0)
-  maxdays <- colMaxs(schedules)
+  nintervals <- length(SSdat$days) - matrixStats::colCounts(schedules, value = 0)
+  maxdays <- matrixStats::colMaxs(schedules)
   aveSS <- seq(0, max(maxdays), round(mean(maxdays/nintervals)))
   return(aveSS)
 }

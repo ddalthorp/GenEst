@@ -9,7 +9,8 @@
 #'   formulas may be entered for both \code{p} (akin to an intercept) and  
 #'   \code{k} (akin to aslope).
 #'
-#' The probability of finding a carcass that is present at the time of search
+#' @details
+#'   The probability of finding a carcass that is present at the time of search
 #'   is \code{p} on the first search after carcass arrival and is assumed to
 #'   decrease by a factor of \code{k} each time the carcass is missed in 
 #'   searches. Both \code{p} and \code{k} may depend on covariates such as 
@@ -209,23 +210,23 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (any(rowSums(obsData, na.rm = TRUE) > 1)){
     stop("Carcasses observed more than once. Check data.")
   }
-  if (sum(na.omit(rowDiffs(obsData * is.na(obsData)))) > 0){
-    stop("Searches continue after carcass discovery? Check data.")
-  }
-  if (any(apply(obsData, 1, ZeroAfterOne))){
-    stop("Searches continue after carcass discovery? Check data.")
-  }
+#  if (any(apply(obsData, 1, ZeroAfterOne))){
+#    stop("Searches continue after carcass discovery? Check data.")
+#  }
+
   ncarc <- nrow(obsData)
   # simplified and vectorized calculations of
   #1. number of times each carcass was missed in searches, and
   #2. which search carcasses were found on (0 if not found)
   misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
-  foundOn <- colMaxs(t(obsData) * (1:nsearch), na.rm = T)
-
+  foundOn <- matrixStats::rowMaxs(
+    obsData * matrixStats::rowCumsums(1 * !is.na(obsData)), na.rm = T)
+  if (any(misses >= foundOn & foundOn > 0)){
+    stop("Searches continue after carcass discovery? Check data.")
+  }
   if (length(kFixed) > 0){
     if (kFixed == 0 & any(foundOn > 1)){
-#      suggestion <- kSuggest(obsData) # no suggestion
-      stop(
+      warning(
         "User-supplied kFixed = 0. However, carcasses were found after ",
         "being missed in previous searches, which indicates k > 0"
       )
@@ -480,11 +481,11 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 
   powk <- matrix(k, nrow = ncell, ncol = maxmisses + 1)
   powk[ , 1] <- 1
-  powk <- rowCumprods(powk)
+  powk <- matrixStats::rowCumprods(powk)
 
   pmiss <- matrix(1 - (p * powk[ , 1:(maxmisses + 1)]), nrow = ncell)
-  pmiss <- rowCumprods(pmiss)
-  pfind <- rowDiffs(1 - pmiss)
+  pmiss <- matrixStats::rowCumprods(pmiss)
+  pfind <- matrixStats::rowDiffs(1 - pmiss)
   pfind_si <- cbind(pk[ , 1], pfind)
 
   notFoundCell <- cellByCarc[foundOn == 0]
@@ -925,7 +926,7 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   if (length(seed) > 0 && !is.na(seed[1])){
     set.seed(as.numeric(seed[1]))
   }
-  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
+  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
 
@@ -936,39 +937,10 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   }
   colnames(sim_k) <- cellNames
 
-  output <- lapply(cellNames, 
-                   function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
+  output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
   names(output) <- cellNames
 
   return(output)
-}
-
-#' @title Suggest a k
-#'
-#' @description Suggest a value for k based on a weighted mean of the 
-#'   observed decay
-#'
-#' @param obsData a matrix of carcasses (rows) x searched (columns)
-#'
-#' @return the weighted mean of the observed proportional decay in p
-#'
-#' @export
-#'
-kSuggest <- function(obsData){
-  nsearch <- ncol(obsData)
-  if (nsearch == 1){
-    message("only one observation, k not informed by data")
-    return(numeric(0))
-  }
-  navail <- apply(obsData, 2, trueLength)
-  nfound <- apply(obsData, 2, sum, na.rm = TRUE) 
-  pfound <- nfound / navail
-  pfoundRatios <- rep(NA, nsearch - 1)
-  for (searchi in 1:(nsearch - 1)){
-    pfoundRatios[searchi] <- pfound[searchi + 1]/pfound[searchi]
-  }
-  suggestion <- round(weighted.mean(pfoundRatios, navail[2:nsearch]), 3)
-  return(suggestion)
 }
 
 #' @title Check if a pk model is well-fit
@@ -1100,9 +1072,9 @@ SEsi <- function(days, pk){
   } else {
       powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
       powk[ , 1] <- 1
-      powk <- rowCumprods(powk)
+      powk <- matrixStats::rowCumprods(powk)
       pfind.si <- pk[, 1] * powk * cbind(
-        rep(1, npk), rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+        rep(1, npk), matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
       )
   }
   return(t(pfind.si)) 

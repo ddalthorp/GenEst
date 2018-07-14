@@ -14,7 +14,7 @@ update_input_data_SE <- function(rv, session){
   updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_all,
     selected = rv$sizeclassCol
   )
-  updateTabsetPanel(session, "LoadedDataViz", "Search Efficiency")
+  updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
 }
 
 #' @title Update the inputs when CP data are read in
