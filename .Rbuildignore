@@ -3,5 +3,5 @@
 ^.travis.yml$
 ^auxiliary_code$
 ^data-raw$
-^user_guide$
+^user$
 ^GenEst\.zip$
