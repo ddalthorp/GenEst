@@ -1,127 +1,67 @@
+[![Build Status](https://api.travis-ci.org/ddalthorp/GenEst.svg?branch=master)](https://travis-ci.org/ddalthorp/GenEst)
+# GenEst_beta
 <img src = 'inst/app/www/GenEst.png' height = '80' align="right" />
 
 ## GenEst: Generalized Fatality Estimator    
-
-[![Build Status](https://api.travis-ci.org/ddalthorp/GenEst.svg?branch=master)](https://travis-ci.org/ddalthorp/GenEst)
-[![License](https://img.shields.io/badge/license-GPL%20(%3E=%203)-blue.svg)](https://raw.githubusercontent.com/ddalthorp/GenEst/master/LICENSE)
 
 **GenEst** is a tool for estimating mortalities from efficiency, persistence,
 and carcass data.
 
 ## DISCLAIMER
 
-This software is preliminary or provisional and is subject to revision. It is
-being provided to meet the need for timely best science. The software has not
-received final approval by the U.S. Geological Survey (USGS). No warranty,
-expressed or implied, is made by the USGS or the U.S. Government as to the
-functionality of the software and related material nor shall the fact of release
-constitute any such warranty. The software is provided on the condition that
-neither the USGS nor the U.S. Government shall be held liable for any damages
-resulting from the authorized or unauthorized use of the software.
+This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS). No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.
 
 ## Installation
+With this preliminary version of GenEst, setup and installation require several steps. Do not skip any steps.
 
-You can install the in-development version of **GenEst** using a few different
-options, all of which assume you have installed 
-[**R**](https://www.r-project.org/)
+### Updated version of R (>= 3.5.0, released on 23 April 2018):
+R is free and open source software for statistical computing. If R is not installed on your computer or if your version of R is <3.5.0, download and install the latest version from https://cran.r-project.org/, following the instructions provided at the site. If you already have an older copy of R installed on your computer, the new version will be installed alongside the old. Unless you know a reason why you want to keep both versions, it is usually a good idea to uninstall the old version to avoid confusion and clutter. 
 
-### Windows Base User
 
-Windows users who are not familiar with R development should [download the 
-zipped package](https://github.com/ddalthorp/GenEst/raw/master/GenEst.zip) and
-then in an instance of **R** run 
-```
-utils:::menuInstallLocal()
-```
-and point to the zipped file. Once it is finished installing, run
+### Third-party packages: 
+Several third-party pacakges are required; all are free and open source and available from CRAN. The easiest way to install them is to run the following commands in R (with guidance concerning potential dialog boxes given below the commands):
 
 ```
-install.packages("devtools")
-devtools::install_deps(paste0(.libPaths()[1], "/GenEst"))
+package_new <- c("cbinom", "digest", "DT", "gsl", "gtools", "htmltools", "lubridate", 
+   "matrixStats", "mvtnorm", "Rcpp", "shiny", "shinydashboard", "sticky", "survival")
+package_new <- package_new[!(package_new %in% installed.packages()[,"Package"])] 
+if(length(new_packages) > 0) install.packages(new_packages)
+```
+-- If asked about a "CRAN mirror", choose the nearest location.
+
+-- If asked whether you want to use a "personal library instead", choose "Yes"
+
+-- If you are on Windows and are asked whether you want to install packages and their dependencies "from source", choose "No" (unless you are ready to go to lunch, in which case, you can select "Yes" and the installation may well be done by the time you get back).
+
+### GenEst: 
+-- For Windows, download the compressed folder GenEst_0.1.0.zip from the "User" folder (do not unzip) and install from the local .zip folder by running the following command in R:
+```
+install.packages(file.choose())
+```
+-- For Mac OS or Unix-like OS, download the compressed file GenEst_0.1.0.tar.gz from the "User" folder and install from the local .tar.gz file by running the following command in R:
+```
+install.packages(file.choose())
+
 ```
 
-### Windows Development-Savvy User
 
-Windows users who are familiar with R development should first ensure that
-they have the most recent version of
-[Rtools](https://cran.r-project.org/bin/windows/Rtools/) installed on their
-machine, and then can simply run
+## Getting Started
+### Graphical user interface (GUI): easy-to-use buttons and menus
 
-```
-install.packages("devtools")
-devtools::install_github("ddalthorp/GenEst")
-```
-
-### Mac/Linux User
-
-Mac and Linux users can simply run
-
-```
-install.packages("devtools")
-devtools::install_github("ddalthorp/GenEst")
-```
-
-## GUI
-
-Having installed **GenEst**, you can launch the app in **R** by running
-
+To start the GUI, open R and enter the command:
 ```
 GenEst::runGenEst()
 ```
 
-## Support
+Download the User Guide from the "user" folder at to learn about opening GenEst, data requirements, examples, etc.
 
-The development of GenEst is being supported by [The US Bureau of Land
-Management](https://www.blm.gov/), [The US Geological
-Survey](https://www.usgs.gov/), the [National Renewable Energy 
-Laboratory](https://www.nrel.gov/),
-[WEST](http://www.westconsultants.com/), [Bat Conservation
-International](http://www.batcon.org/), [American 
-Wind Wildlife Institute](https://awwi.org/), [Avangrid 
-Renewables](http://www.avangridrenewables.us/), and [Oregon State
-University](https://oregonstate.edu/). 
-
-## Authors
-
-Daniel Dalthorp ([USGS](https://www.usgs.gov/)), Juniper Simonis ([DAPPER
-Stats](http://www.dapperstats.com)), Lisa Madsen ([OSU](https://oregonstate.edu/)),
-Paul Rabie ([WEST](http://www.westconsultants.com/)), Jared Studyvin
-([WEST](http://www.westconsultants.com/)), Robert Wolpert 
-([Duke](http://www2.stat.duke.edu/~rlw/)), Franzi Korner-Nievergelt 
-([oikostat](http://www.oikostat.ch/)) and Manuela Huso 
-([USGS](https://www.usgs.gov/)).
-
-<br><br>
-<a href="https://www.blm.gov/">
-<img src = 'inst/app/www/blm.jpg' height = '65'> 
-</a>
-<a href="https://www.usgs.gov/">
-<img src = 'inst/app/www/usgs.png' height = '65'> 
-</a>
-<a href="https://www.nrel.gov/">
-<img src = 'inst/app/www/nrel.jpg' height = '65'> 
-</a>
-<a href="http://www.westconsultants.com/">
-<img src = 'inst/app/www/west.png' height = '65'> 
-</a>
-<a href="http://www.batcon.org/">
-<img src = 'inst/app/www/bci.jpg' height = '65'>
-</a>
-<a href="https://awwi.org/">
-<img src = 'inst/app/www/awwi.png' height = '65'> 
-</a>
-<a href="http://www.avangridrenewables.us/">
-<img src = 'inst/app/www/avangrid.png' height = '65'> 
-</a>
-<a href="http://www.dapperstats.com">
-<img src = 'inst/app/www/dapper.png' height = '65'> 
-</a>
-<a href="http://www.oikostat.ch/">
-<img src = 'inst/app/www/oikostat.jpg' height = '65'> 
-</a>
-<a href="https://www.oregonstate.edu/">
-<img src = 'inst/app/www/osu.jpg' height = '65'> 
-</a>
-<a href="https://www.duke.edu/">
-<img src = 'inst/app/www/duke.png' height = '65'>
-</a>
+### R command line: more functionality and flexibility
+```
+library(GenEst)
+browseVignettes("GenEst")
+```
+Also, help files for GenEst functions are accessible in the standard R way, for example:
+```
+?pkm
+help(pkm)
+```
