@@ -108,7 +108,8 @@ Carcass persistence is modeled as survival function where the
   structured differently to accommodate the survival model approach (see 
   "Details"), and model formulas may be entered for both \code{l} 
   ("location") and \code{s} ("scale").
-
+}
+\details{
 The probability of a carcass persisting to a particular time is dictated
   by the specific distribution chosen and its underlying location (l) and 
   scale (s) parameters (for all models except the exponential, which only 
