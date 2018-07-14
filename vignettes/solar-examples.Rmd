@@ -1,12 +1,12 @@
 ---
-title: "Gen Est - A Solar Example with Carcass Size"
-author: "D Dalthorp, J Mintz, J Simonis"
+title: "GenEst - Tutorial with Solar Example (including Carcass Size)"
+author: "J Mintz, D Dalthorp, J Simonis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Gen Est - A Solar Example with Carcass Size}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include = FALSE}
@@ -39,7 +39,7 @@ The general steps in the analysis are:
 3. Estimate mortality
 4. Specify the type of summary desired (for example, by season and species)
 
-There are five files in total which make up the example dataset, located in `\GenEst\inst\extdata\solar_PV`. For convenience, these files have been made 
+There are five files in total which make up the example dataset, located in `\GenEst\inst\extdata\solar_PV`. For convenience, these files have been made
 available in R as a list, 
 
 ```{r}

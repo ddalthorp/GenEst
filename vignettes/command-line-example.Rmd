@@ -1,11 +1,12 @@
 ---
 title: "GenEst - Command Line Walkthrough"
 author: "Juniper L. Simonis"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{GenEst - Command Line Walkthrough}
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  \usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include=FALSE}
