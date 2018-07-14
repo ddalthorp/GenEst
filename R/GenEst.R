@@ -40,40 +40,40 @@
 #'
 #' @section Useful command-line functions:
 #' \code{\link{pkm}}\cr
-#' \code{\link[plot.pkm]{plot(pkm...)}} S3 function\cr
+#' \code{\link[=plot.pkm]{plot(pkm...)}} S3 function\cr
 #' \code{\link{pkmSet}}\cr
 #' \code{\link{pkmSetAICcTab}}\cr
-#' \code{\link[plot.pkmSet]{plot(pkmSet...)}} S3 function\cr
+#' \code{\link[=plot.pkmSet]{plot(pkmSet...)}} S3 function\cr
 #' \code{\link{pkmSetSize}}\cr
 #' \code{\link{rpk}}\cr
 #' \code{\link{SEsi}}\cr
 #'
 #' \code{\link{cpm}}\cr
-#' \code{\link[plot.cpm]{plot(cpm...)}} S3 function\cr
+#' \code{\link[=plot.cpm]{plot(cpm...)}} S3 function\cr
 #' \code{\link{cpmSet}}\cr
 #' \code{\link{cpmSetAICcTab}}\cr
-#' \code{\link[plot.cpmSet]{plot(cpmSet...)}} S3 function\cr
+#' \code{\link[=plot.cpmSet]{plot(cpmSet...)}} S3 function\cr
 #' \code{\link{cpmSetSize}}\cr
 #' \code{\link{rcp}}\cr
 #' \code{\link{ppersist}}\cr
 #'
 #' \code{\link{SS}}\cr
 #' \code{\link{estM}}\cr
-#' \code{\link[summary.estM]{summary(estM...)}} S3 function\cr
-#' \code{\link[plot.estM]{plot(estM...)}} S3 function\cr
+#' \code{\link[=summary.estM]{summary(estM...)}} S3 function\cr
+#' \code{\link[=plot.estM]{plot(estM...)}} S3 function\cr
 #' \code{\link{calcSplits}} returns \code{splitFull} object\cr
-#' \code{\link{summary(splitFull...)}} \cr
-#' \code{\link[plot.splitFull]{plot(splitFull...)}} S3 function\cr
+#' \code{\link[=summary.splitFull]{summary(splitFull...)}} \cr
+#' \code{\link[=plot.splitFull]{plot(splitFull...)}} S3 function\cr
 #' \code{\link{transposeSplits}}\cr
 #'
 #' \code{\link{estg}}\cr
 #' \code{\link{averageSS}}\cr
 #' \code{\link{estgGeneric}}\cr
-#' \code{\link[summary.gGeneric]{summary(gGeneric...)}} S3 function\cr
-#' \code{\link[plot.gGeneric]{plot(gGeneric...)}} S3 function\cr
+#' \code{\link[=summary.gGeneric]{summary(gGeneric...)}} S3 function\cr
+#' \code{\link[=plot.gGeneric]{plot(gGeneric...)}} S3 function\cr
 #' \code{\link{estgGenericSize}}\cr
-#' \code{\link[summary.gGenericSize]{summary(gGenericSize...)}} S3 function\cr
-#' \code{\link[plot.gGenericSize]{plot(gGenericSize...)}} S3 function\cr
+#' \code{\link[=summary.gGenericSize]{summary(gGenericSize...)}} S3 function\cr
+#' \code{\link[=plot.gGenericSize]{plot(gGenericSize...)}} S3 function\cr
 #'
 #' @section Potentially useful calculation functions:
 #' \code{\link{pkLogLik}}\cr
