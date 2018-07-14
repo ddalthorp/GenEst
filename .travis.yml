@@ -10,3 +10,7 @@ addons:
       - libgsl0-dbg
       - libgsl0-dev
       - libgsl0ldbl
+
+r_packages:
+  testthat
+
