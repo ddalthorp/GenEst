@@ -49,7 +49,7 @@ install.packages(file.choose())
 To start the GUI, open R and enter the command:
 ```
 library(GenEst)
-GenEst::runGenEst()
+runGenEst()
 ```
 
 Download the User Guide from the "user" folder at to learn about opening GenEst, data requirements, examples, etc.
