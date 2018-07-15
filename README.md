@@ -25,7 +25,7 @@ Several third-party pacakges are required; all are free and open source and avai
 package_new <- c("cbinom", "digest", "DT", "gsl", "gtools", "htmltools", "lubridate", 
    "matrixStats", "mvtnorm", "Rcpp", "shiny", "shinydashboard", "sticky", "survival")
 package_new <- package_new[!(package_new %in% installed.packages()[,"Package"])] 
-if(length(new_packages) > 0) install.packages(new_packages)
+if(length(package_new) > 0) install.packages(package_new)
 ```
 -- If asked about a "CRAN mirror", choose the nearest location.
 
