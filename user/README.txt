@@ -42,7 +42,8 @@ Several third-party pacakges are required; all are free and open source and avai
 # Graphical user interface (GUI): easy-to-use buttons and menus
 To start the GUI, open R and enter the command:
 
-   GenEst::runGenEst()
+   library(GenEst)
+   runGenEst()
 
 Download the User Guide to learn about opening GenEst, data requirements, examples, etc.
 
