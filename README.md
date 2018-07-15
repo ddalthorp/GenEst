@@ -48,6 +48,7 @@ install.packages(file.choose())
 
 To start the GUI, open R and enter the command:
 ```
+library(GenEst)
 GenEst::runGenEst()
 ```
 
