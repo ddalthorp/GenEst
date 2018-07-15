@@ -28,13 +28,27 @@ Several third-party pacakges are required; all are free and open source and avai
 
 ### REQUIRED: GenEst package
 
--- For Windows, download the compressed folder GenEst_0.1.0.zip (do not unzip) and install from the local .zip folder by running the following command in R:
+-- For Windows, download the compressed folder GenEst_0.1.0.zip from the "User" folder (do not unzip) and note where it is stored. You will install from the local .zip folder. 
 
-   install.packages(file.choose()) # <-- select GenEst_0.1.0.zip to install
+-- For Mac OS or Unix-like OS, download the compressed file GenEst_0.1.0.tar.gz from the "User" folder, and note where it is stored. You 
+will install from the local .tar.gz file. 
 
--- For Mac OS or Unix-like OS, download the compressed file GenEst_0.1.0.tar.gz and install from the local .tar.gz file by running the following command in R:
+If you are working directly in R (not R Studio), run the following command:
+```
+install.packages(file.choose()) # and navigate to the package archive file you just downloaded: GenEst_0.1.0.xxx
+```
 
-   install.packages(file.choose()) # <-- select GenEst_0.1.0.tar.gz to install
+If you are working in R Studio:
+
+Click Install in the Packages pane.
+
+Select "Package Archive File (.zip; .tar.gz)" as "Install from:" in the dialog box.
+
+Browse to where you saved the zip file, and open it so it appears in the "Package archive" space.
+
+Click the Install button on the dialog box.
+
+NOTE: This will all be more straightforward when the package is published on CRAN.
 
 
 ######## Getting Started
