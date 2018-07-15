@@ -34,15 +34,38 @@ if(length(package_new) > 0) install.packages(package_new)
 -- If you are on Windows and are asked whether you want to install packages and their dependencies "from source", choose "No" (unless you are ready to go to lunch, in which case, you can select "Yes" and the installation may well be done by the time you get back).
 
 ### GenEst: 
--- For Windows, download the compressed folder GenEst_0.1.0.zip from the "User" folder (do not unzip) and install from the local .zip folder by running the following command in R:
+-- For Windows, download the compressed folder GenEst_0.1.0.zip from the "User" folder (do not unzip) and install from the local .zip 
+folder. If you are working directly in R (not R Studio), run the following command:
 ```
 install.packages(file.choose())
 ```
--- For Mac OS or Unix-like OS, download the compressed file GenEst_0.1.0.tar.gz from the "User" folder and install from the local .tar.gz file by running the following command in R:
+If you are working in R Studio for Windows:
+
+Click Install in the Packages pane.
+
+Select "Package Archive File (.zip; .tar.gz)" as "Install from:" in the dialog box.
+
+Browse to where you saved the zip file, and open it so it appears in the "Package archive" space.
+
+Click the Install button on the dialog box.
+
+-- For Mac OS or Unix-like OS, download the compressed file GenEst_0.1.0.tar.gz from the "User" folder and install from the local .tar.gz file by running the following command in R (not R Studio):
 ```
 install.packages(file.choose())
 
 ```
+If you are working in R Studio for Mac or Linux, 
+
+Click Install in the Packages pane.
+
+Select "Package Archive File (.zip; .tar.gz)" as "Install from:" in the dialog box.
+
+Browse to where you saved the zip file, and open it so it appears in the "Package archive" space.
+
+Click the Install button on the dialog box.
+
+NOTE: This will all be much more straightforward when the package is published on CRAN.
+
 ## Getting Started
 ### Graphical user interface (GUI): easy-to-use buttons and menus
 
