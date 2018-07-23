@@ -17,7 +17,7 @@ With this preliminary version of GenEst, setup and installation require several 
 ### Updated version of R (>= 3.5.0, released on 23 April 2018):
 R is free and open source software for statistical computing. If R is not installed on your computer or if your version of R is <3.5.0, download and install the latest version from https://cran.r-project.org/, following the instructions provided at the site. In particular, "Download" and then "install R for the first time" (if working in Windows), or "Download" and then follow the further instructions on the subsequent web page (if working on Mac OS or Linux-like OS). If you already have an older copy of R installed on your computer, the new version will be installed alongside the old. Unless you know a reason why you want to keep both versions, it is usually a good idea to uninstall the old version to avoid confusion and clutter. 
 
-NOTE TO EXPERIENCED R USERS: When you install a new version of R, packages that you previously installed in an older version may not be immediately available to the new R. If not, the easiest way to make them available is may be to copy the package folders in your old "library" folder into the "library" folder in your new R installation. Then, enter `update.packages()` in R. If asked about a CRAN mirror, choose the nearest location. If you are working in Windows OS and are asked whether you want to install packages "from source", choose "No".
+NOTE TO EXPERIENCED R USERS: When you install a new version of R, packages that you previously installed under an older version may not be immediately available to the new R. If not, the easiest way to make them available is to copy the package folders in your old "library" folder into the "library" folder in your new R installation. Then, enter `update.packages()` in R. If asked about a CRAN mirror, choose the nearest location. If you are working in Windows OS and are asked whether you want to install packages "from source", choose "No".
 
 
 ### Third-party packages: 
@@ -36,8 +36,11 @@ if(length(package_new) > 0) install.packages(package_new)
 -- If you are on Windows and are asked whether you want to install packages and their dependencies "from source", choose "No" (unless you are ready to go to lunch, in which case, you can select "Yes" and the installation may well be done by the time you get back).
 
 ### GenEst: 
--- For Windows, download the compressed folder GenEst_0.1.0.zip from the "User" folder (do not unzip) and note where it is stored. You will install from the local .zip folder. 
--- For Mac OS or Unix-like OS, download the compressed file GenEst_0.1.0.tar.gz from the "User" folder, and note where it is stored. You will install from the local .tar.gz file. 
+Click on "Releases" and then click the link for the specific release want. 
+
+-- For Windows, download the compressed folder GenEst_0.1.0.zip (do not unzip) and note where it is stored. You will install from the local .zip folder. 
+
+-- For Mac OS or Unix-like OS, download the compressed file GenEst_0.1.0.tar.gz and note where it is stored. You will install from the local .tar.gz file. 
 
 If you are working directly in R (not R Studio), run the following command:
 ```
@@ -46,7 +49,7 @@ install.packages(file.choose()) # and navigate to the package archive file you j
 
 If you are working in R Studio:
 
-Click Install in the Packages pane.
+Click "Install" in the Packages pane.
 
 Select "Package Archive File (.zip; .tar.gz)" as "Install from:" in the dialog box.
 
@@ -54,7 +57,7 @@ Browse to where you saved the zip file, and open it so it appears in the "Packag
 
 Click the Install button on the dialog box.
 
-NOTE: This will all be more straightforward when the package is published on CRAN.
+NOTE: This will all be more straightforward once the package is published on CRAN.
 
 ## Getting Started
 ### Graphical user interface (GUI): easy-to-use buttons and menus
@@ -78,4 +81,4 @@ Also, help files for GenEst functions are accessible in the standard R way, for 
 help(pkm)
 ```
 ## Further Reading
-For further reading about the models that GenEst is based on and about how to use the software, download the guides available in the "user" folder. 
+For further reading about the models that GenEst is based on and about how to use the software, download the guides available in the release "assets". 
