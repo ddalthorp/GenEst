@@ -443,7 +443,7 @@ update_rv_run_g <- function(rv, input){
                             estgGeneric(nsim = rv$nsim, days = rv$SS,
                               model_SE = rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
                               model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
-                              kFill = rv$kFill
+                              kFill = rv$kFill_g
                             ), 
                             error = function(x){NULL}
                           )
