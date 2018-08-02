@@ -247,7 +247,8 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
       if (sum(data_DWP[, DWPCol] <= 0 | data_DWP[, DWPCol] > 1) > 0){
         stop("data_DWP[, DWPCol] values must be in (0, 1]")
       }
-      DWPbyCarc <- data_DWP[ , DWPCol]
+      rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+      DWPbyCarc <- data_DWP[rowind, DWPCol]
     } else {
       possibleNames <- colnames(data_DWP)
       for (coli in possibleNames){
@@ -267,7 +268,7 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
       }
       # DWPCol and unitCol have been error-checked, so
       rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-      DWPbyCarc <- as.numeric(data_DWP[rowind , DWPCol])
+      DWPbyCarc <- as.numeric(data_DWP[rowind, DWPCol])
     }
   }
   return(DWPbyCarc)
