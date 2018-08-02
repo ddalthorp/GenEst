@@ -4,7 +4,7 @@ author: "J Mintz, D Dalthorp, J Simonis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Gen Est - A Solar Example with Carcass Size}
+  %\VignetteIndexEntry{GenEst - A Solar Example with Carcass Size}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
