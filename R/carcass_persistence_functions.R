@@ -441,7 +441,10 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
   psurv_t2[which(is.na(psurv_t2))] <- 1
   lik <- psurv_t2 - psurv_t1
   too_small <- (t1 + 0.0001) >= t2
-  lik[too_small] <- survival::dsurvreg(t2, Beta_l, exp(Beta_s), dist)
+  if (any(too_small)){
+    lik[too_small] <- survival::dsurvreg(t2[too_small], Beta_l[too_small],
+      exp(Beta_s)[too_small], dist)
+  }
   lik <- pmax(lik, .Machine$double.eps) 
   nll <- -sum(log(lik))
   return(nll)

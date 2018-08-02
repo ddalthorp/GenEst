@@ -416,7 +416,7 @@ update_rv_useSSinputs <- function(rv, input){
 update_rv_run_g <- function(rv, input){
   rv$CL <- input$CL
   rv$kFill_g <- NA
-  if (length(rv$obsCols_SE) == 1 | rv$kFixedChoice == 1){
+  if (length(rv$obsCols_SE) == 1){
     rv$kFill_g <- input$kFill_g
   }
   rv$sizeclasses_g <- rv$sizeclasses
@@ -487,7 +487,7 @@ update_rv_run_M <- function(rv, input){
 
   rv$M <- NULL
   rv$kFill <- NULL
-  if (length(rv$obsCols_SE) == 1 | rv$kFixedChoice == 1){
+  if (length(rv$obsCols_SE) == 1){
     rv$kFill <- input$kFill
   }
   rv$nsizeclasses <- length(rv$sizeclasses)
