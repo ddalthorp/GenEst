@@ -70,16 +70,15 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  nsim = 1, max_intervals = 8){
 
-  sizeCol <- sizeclassCol # changed here simply for ease of typing and reading
   SSdat <- SS(data_SS) # SSdat name distinguishes this as pre-formatted data
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
   COdat <- data_CO # format data_CO
   COdat[ , dateFoundCol] <- dateToDay(COdat[ , dateFoundCol], t0date)
   names(COdat)[names(COdat) == dateFoundCol] <- "day" # distinguish integers
-  if (is.null(sizeCol)){
-    sizeCol <- "placeholder"
-    COdat[ , sizeCol] <- "value"
+  if (is.null(sizeclassCol) || is.na(sizeclassCol)){
+    sizeclassCol <- "placeholder"
+    COdat[ , sizeclassCol] <- "value"
     model_SE <- list("value" = model_SE)
     model_CP <- list("value" = model_CP)
     if (!is.null(kFill)) names(kFill) <- "value"
@@ -87,8 +86,14 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     if (!(sizeclassCol %in% colnames(COdat))){
       stop("size class column not in carcass data.")
     }
+    if (length(setdiff(names(model_SE), names(model_CP))) > 0) {
+      stop("model_SE and model_CP must encompass the same size classes")
+    }
+    if (!all(COdat[, sizeclassCol] %in% names(model_SE))){
+      stop("no SE model for some size class represented in data_CO")
+    }
   }
-  sizeclass <- as.list(as.character(COdat[, sizeCol]))
+  sizeclass <- as.list(as.character(COdat[, sizeclassCol]))
   sizeclasses <- unique(unlist(sizeclass))
   nsizeclass <- length(sizeclasses)
 
@@ -147,15 +152,15 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   if (sum(unlist(lapply(SSpreds, length))) == 0){
     for (xi in 1:X){
       cells[[xi]] <- list()
-      cells[[xi]][[sizeCol]] <- COdat[xi, sizeCol]
-      pcol <- preds_SE[[COdat[xi, sizeCol]]]
+      cells[[xi]][[sizeclassCol]] <- COdat[xi, sizeclassCol]
+      pcol <- preds_SE[[COdat[xi, sizeclassCol]]]
       if (length(pcol) == 0) {
         cells[[xi]]$SEcell <- "all"
       } else {
         cells[[xi]]$SEcell <- paste(COdat[xi, pcol], sep = ".")
       }
       cells[[xi]]$SErep <- length(days[[xi]]) - 1
-      pcol <- preds_CP[[COdat[xi, sizeCol]]]
+      pcol <- preds_CP[[COdat[xi, sizeclassCol]]]
       if (length(pcol) == 0) {
         cells[[xi]]$CPcell <- "all"
       } else {
@@ -167,8 +172,8 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     for (xi in 1:X){
       cells[[xi]] <- list()
       SEc <- SEr <- CPc <- CPr <- NULL
-      sz <- as.character(COdat[xi, sizeCol])
-      cells[[xi]][[sizeCol]] <- sz
+      sz <- as.character(COdat[xi, sizeclassCol])
+      cells[[xi]][[sizeclassCol]] <- sz
       # interpret the SE predictors
       nse <- length(preds_SE[[sz]])
       if (nse == 0){
@@ -232,7 +237,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     SSxi <- SSdat$searches_unit[COdat[xi, unitCol], ] * SSdat$days
     SSxi <- c(0, SSxi[SSxi > 0])
     # calculate SE
-    sz <- cells[[xi]][[sizeCol]]
+    sz <- cells[[xi]][[sizeclassCol]]
     SEr <- cells[[xi]]$SErep
     oi <- length(days[[xi]]) - 1
     rng <- 0

@@ -110,6 +110,8 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   if (!is.null(sizeclassCol)){
     if (!(sizeclassCol %in% colnames(data_CO))){
       stop("size class column not in carcass data.")
+    } else if (!all(data_CO[, sizeclassCol] %in% names(data_DWP))){
+      stop("a size class in data_CO is missing from data_DWP")
     } else {
       sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
       nsizeclass <- length(sizeclasses)
