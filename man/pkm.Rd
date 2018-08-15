@@ -35,9 +35,9 @@ entered as a vector of names, like \code{c("s1", "s2", "s3")},
 \item{kFixed}{Parameter for user-specified \code{k} value (optional). If a
 value is provided, \code{formula_k} is ignored and the model is fit under
 the assumption that the \code{k} parameter is fixed and known to be
-\code{fix_k}.}
+\code{kFixed}.}
 
-\item{kInit}{Initial value used for \code{k} in the optimization.}
+\item{kInit}{Initial value used for numerical optimization of \code{k}.}
 
 \item{CL}{confidence level}
 

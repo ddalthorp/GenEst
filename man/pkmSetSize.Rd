@@ -36,10 +36,12 @@ entered as a vector of names, like \code{c("s1", "s2", "s3")},
 \item{sizeclassCol}{Name of colum in \code{data} where the size classes
 are recorded}
 
-\item{kFixed}{Parameter for user-specified \code{k} value (optional). If a
-value is provided, \code{formula_k} is ignored and the model is fit 
-under the assumption that the \code{k} parameter is fixed and known to
-be \code{fix_k}.}
+\item{kFixed}{Parameters (vector) for user-specified fixed \code{k} values
+(optional). Class names must be provided for each class that is to have
+a \code{kFixed} value associated with it. For classes that are unnamed in
+the \code{kFixed} vector, \code{k} will be fit using \code{pkm}. If
+\code{kFixed} is an unnamed scalar, then \code{k} is assumed fixed at
+\code{kFixed} for all size classes.}
 
 \item{kInit}{Initial value used for \code{k} in the optimization.}
 
