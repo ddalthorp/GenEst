@@ -6,8 +6,8 @@
 \alias{GenEst-package}
 \title{Generalized estimation of mortality}
 \description{
-This package is designed to analyze searcher efficiency, 
-  carcass persistence, search schedule, and carcass observation data for 
+This package is designed to analyze searcher efficiency,
+  carcass persistence, search schedule, and carcass observation data for
   the estimation of mortality.
 }
 \section{Data sets}{

@@ -62,9 +62,9 @@
 #' @param kFixed Parameter for user-specified \code{k} value (optional). If a
 #'   value is provided, \code{formula_k} is ignored and the model is fit under
 #'   the assumption that the \code{k} parameter is fixed and known to be
-#'   \code{fix_k}.
+#'   \code{kFixed}.
 #'
-#' @param kInit Initial value used for \code{k} in the optimization.
+#' @param kInit Initial value used for numerical optimization of \code{k}.
 #'
 #' @param CL confidence level
 #'
@@ -139,6 +139,7 @@
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
                 kFixed = NULL, kInit = 0.7, CL = 0.95, quiet = FALSE){
+  if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
   if(sum(obsCol %in% colnames(data)) != length(obsCol)){
     stop("Observation column provided not in data.")
   }
@@ -154,20 +155,20 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     stop("User-supplied formula includes predictor(s) not found in data.")
   }
   if (length(kFixed) >= 1){
-    if (!is.numeric(kFixed[1]) || is.na(kFixed[1])){
+    if (!is.numeric(kFixed[1])){
       stop("User-supplied kFixed must be numeric (or NULL)")
     }
-    if (kFixed[1] < 0 | kFixed[1] > 1){
+    if (kFixed[1] < 0 || kFixed[1] > 1){
       stop("User-supplied kFixed is outside the supported range [0, 1].")
-   }
-    if (length(formula_k) > 0 & quiet == FALSE){
-      message("Formula and fixed value provided for k, fixed value used.")
-      formula_k <- NULL
-    }
-    if (length(kFixed) > 1){
-      kFixed <- kFixed[1]
-      if (!quiet){
-        message("Vector-valued kFixed. Only the first element will be used.")
+      if (length(formula_k) > 0 & quiet == FALSE){
+        message("Formula and fixed value provided for k, fixed value used.")
+        formula_k <- NULL
+      }
+      if (length(kFixed) > 1){
+        kFixed <- kFixed[1]
+        if (!quiet){
+          message("Vector-valued kFixed. Only the first element will be used.")
+        }
       }
     }
   }
@@ -320,6 +321,8 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   AIC <- 2*nparam - 2*llik
   AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
   AICc <- round(AIC + AICcOffset, 3)
+#  AICc <- AIC + AICcOffset
+
 
   betahat_p <- betahat[1:nbeta_p]
   names(betahat_p) <- colnames(dataMM_p)
@@ -455,7 +458,7 @@ print.pkm <- function(x, ...){
 #'
 pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, 
                      cellMM, kFixed = NULL){
-
+  if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
   if (length(kFixed) == 1){
     beta <- c(beta, logit(kFixed))
   }
@@ -552,20 +555,29 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
                    kFixed = NULL, kInit = 0.7, CL = 0.95, quiet = FALSE){
-
-  if (length(kFixed) == 1 & length(formula_k) > 0 & quiet == FALSE){
-    message("Formula and fixed value provided for k, fixed value used.")
-    formula_k <- NULL
-  }
-  if (length(which(obsCol %in% colnames(data))) == 1){
-    if (length(formula_k) > 0 & quiet == FALSE){
-      message("Only one observation, k not estimated.")
+  if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
+  if (length(kFixed) > 0){
+    if (length(kFixed) > 1){
+      warning(
+        "More than one fixed kFixed value provided by user. ",
+        "Only the first element will be used."
+      )
+      kFixed <- kFixed[1]
     }
-    if (length(kFixed) == 1 & quiet == FALSE){
-      message("Only one observation, kFixed input ignored.")
+    if (is.numeric(kFixed) && !is.na(kFixed) && length(formula_k) > 0 && quiet == FALSE){
+      message("Formula and fixed value provided for k, fixed value used.")
+      formula_k <- NULL
     }
-    formula_k <- NULL
-    kFixed <- NULL
+    if (length(which(obsCol %in% colnames(data))) == 1){
+      if (length(formula_k) > 0 & quiet == FALSE){
+        message("Only one search occasion for each carcass; k not estimated.")
+      }
+      if (length(kFixed) == 1 & quiet == FALSE){
+        message("Only one search occasion for each carcass; kFixed ignored.")
+      }
+      formula_k <- NULL
+      kFixed <- NULL
+    }
   }
   unfixk <- FALSE
   if (length(formula_k) == 0){
@@ -645,7 +657,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     for (kepti in 1:nkeepFormula_k){
       keptFormula_k[[kepti]] <- optionFormula_k[[whichKeepFormula_k[kepti]]]
     }
-  }else{
+  } else {
     keptFormula_k <- optionFormula_k
   }
   if (length(kFixed) == 1){
@@ -678,7 +690,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     name_p <- gsub("    ", "", name_p)
     name_k <- paste(format(formi_k), collapse = "")
     name_k <- gsub("    ", "", name_k)
-    if(length(kFixed) == 1){
+    if (length(kFixed) == 1){
       name_k <- paste("k fixed at ", kFixed, sep = "")
     }
     modName <- paste(name_p, "; ", name_k, sep = "")
@@ -723,10 +735,12 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'   \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch", 
 #'   "lastSearch")}.
 #'
-#' @param kFixed Parameter for user-specified \code{k} value (optional). If a
-#'   value is provided, \code{formula_k} is ignored and the model is fit 
-#'   under the assumption that the \code{k} parameter is fixed and known to
-#'   be \code{fix_k}.
+#' @param kFixed Parameters (vector) for user-specified fixed \code{k} values
+#'  (optional). Class names must be provided for each class that is to have
+#'  a \code{kFixed} value associated with it. For classes that are unnamed in
+#'  the \code{kFixed} vector, \code{k} will be fit using \code{pkm}. If
+#'  \code{kFixed} is an unnamed scalar, then \code{k} is assumed fixed at
+#'  \code{kFixed} for all size classes.
 #'
 #' @param kInit Initial value used for \code{k} in the optimization.
 #'
@@ -755,34 +769,46 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
                        sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, 
                        CL = 0.95, quiet = FALSE){
 
-  if (length(sizeclassCol) == 0){
-    out <- vector("list", length = 1)
-    names(out) <- "all"
-    out[[1]] <- pkmSet(formula_p, formula_k, data, obsCol, kFixed, kInit, 
-                  CL, quiet = TRUE
-                )
+  if (length(sizeclassCol) == 0 || is.na(sizeclassCol)){
+    out <- list()
+    out[["all"]] <- pkmSet(formula_p = formula_p, formula_k = formula_k,
+      data = data, obsCol = obsCol, kFixed = kFixed, kInit = kInit,
+      CL = CL, quiet = TRUE)
     return(out)
   }
   if ((sizeclassCol %in% colnames(data)) == FALSE){
     stop("sizeclassCol not in data set.")
   }
-  nsearch <- length(obsCol)
-  ncarc <- nrow(data)
-  obsData <- data[ , obsCol]
-  obsData <- as.matrix(obsData, ncol = nsearch)
 
   sizeclassData <- as.character(data[ , sizeclassCol])
   sizeclasses <- unique(sizeclassData)
   nsizeclasses <- length(sizeclasses)
 
-  out <- vector("list", nsizeclasses)
-  names(out) <- sizeclasses
-  for (sci in 1:nsizeclasses){
-    sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
-    data_i <- data[sizeclassMatch, ]
-    out[[sci]] <- pkmSet(formula_p, formula_k, data_i, obsCol, kFixed, 
-                    kInit, CL, quiet
-                  )
+  if (all(is.na(kFixed))) kFixed <- NULL
+  if (length(kFixed) >= 1){
+    kFixed <- kFixed[!is.na(kFixed)]
+    if (length(kFixed) == 1 && is.null(names(kFixed))){
+    # if exactly one kFixed is provided and no name is given,
+    # all sizes take on the same kFixed value
+      kFixed <- rep(kFixed, nsizeclasses) 
+      names(kFixed) <- sizeclasses
+      message(
+        "One unnamed kFixed value provided by user. ",
+        "All classes are assumed to have kFixed = ", kFixed[1], ". ",
+        "To specify specific classes to apply kFixed values to, ",
+        "class names must be provided in kFixed vector."
+      )
+    } else {
+      if (is.null(names(kFixed)) || !all(names(kFixed) %in% sizeclasses)){
+        stop("kFixed names must be names of size classes.")
+      }
+    }
+  }
+  out <- list()
+  for (sci in sizeclasses){
+    out[[sci]] <- pkmSet(formula_p = formula_p, formula_k = formula_k,
+      data = data[data[, sizeclassCol] == sci, ], obsCol = obsCol,
+      kFixed = kFixed[sci], kInit = kInit, CL = CL, quiet = quiet)
   }
   class(out) <- c("pkmSetSize", "list")
   return(out)
