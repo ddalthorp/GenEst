@@ -356,13 +356,11 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   cellTable_p <- lapply(probs, qnorm, mean = cellMean_p, sd = cellSD_p)
   cellTable_p <- matrix(unlist(cellTable_p), ncol = 3)
   cellTable_p <- round(alogit(cellTable_p), 3)
-#  cellTable_p <- alogit(cellTable_p)
   colnames(cellTable_p) <- c("p_median", "p_lower", "p_upper")
   if (!pOnly){
     cellTable_k <- lapply(probs, qnorm, mean = cellMean_k, sd = cellSD_k)
     cellTable_k <- matrix(unlist(cellTable_k), nrow = ncell, ncol = 3)
     cellTable_k <- round(alogit(cellTable_k), 3)
-#    cellTable_k <- alogit(cellTable_k)
     colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
     if (nsearch == 1){
       cellTable_k[ , names(cellTable_k)] <- kFixed
@@ -669,7 +667,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   expandedKeptFormulae <- expand.grid(keptFormula_p, keptFormula_k)
   keptFormula_p <- expandedKeptFormulae[ , 1]
   keptFormula_k <- expandedKeptFormulae[ , 2]
-  if (is.numeric(kFixed)){
+  if (length(kFixed) == 1){
     keptFormula_k <- NULL
   }
   if (unfixk == TRUE){
@@ -692,7 +690,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     name_p <- gsub("    ", "", name_p)
     name_k <- paste(format(formi_k), collapse = "")
     name_k <- gsub("    ", "", name_k)
-    if (is.numeric(kFixed)){
+    if (length(kFixed) == 1){
       name_k <- paste("k fixed at ", kFixed, sep = "")
     }
     modName <- paste(name_p, "; ", name_k, sep = "")
@@ -790,8 +788,8 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (length(kFixed) >= 1){
     kFixed <- kFixed[!is.na(kFixed)]
     if (length(kFixed) == 1 && is.null(names(kFixed))){
-    # if exactly one kFixed is provided and no name is given, all sizes take on
-    # the same kFixed value
+    # if exactly one kFixed is provided and no name is given,
+    # all sizes take on the same kFixed value
       kFixed <- rep(kFixed, nsizeclasses) 
       names(kFixed) <- sizeclasses
       message(
@@ -808,13 +806,9 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   out <- list()
   for (sci in sizeclasses){
-    out[[sci]] <- pkmSet(
-      formula_p = formula_p, formula_k = formula_k,
-      data = data[data[, sizeclassCol] == sci, ],
-      obsCol = obsCol,
-      kFixed = kFixed[sci],
-      kInit = kInit, CL = CL, quiet = quiet
-    )
+    out[[sci]] <- pkmSet(formula_p = formula_p, formula_k = formula_k,
+      data = data[data[, sizeclassCol] == sci, ], obsCol = obsCol,
+      kFixed = kFixed[sci], kInit = kInit, CL = CL, quiet = quiet)
   }
   class(out) <- c("pkmSetSize", "list")
   return(out)
@@ -866,7 +860,6 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
     }
     AICcOrder <- order(AICc)
     deltaAICc <- round(AICc - min(AICc), 3)
-#    deltaAICc <- AICc - min(AICc)
     which_fails <- which(AICc == 1e7)
     AICc[which_fails] <- NA
     deltaAICc[which_fails] <- NA
