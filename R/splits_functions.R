@@ -18,7 +18,7 @@
 #'   search interval in the given simulation rep (indexed by column). Arrival 
 #'   interval indices (j) are relative to indexed carcasses' search schedules.
 #'
-#' @param data_SS \code{\link{SS}} object that contains formatted data for 
+#' @param data_SS \code{\link{prepSS}} object that contains formatted data for
 #'   calculating splits. Optional argument. Alternatively, user may provide 
 #'   \code{days} and \code{searches_carcass}.
 #'
@@ -44,7 +44,7 @@
 #'
 calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL, 
                      data_SS = NULL){
-  if (!is.null(data_SS) && ("SS" %in% class(data_SS))){
+  if (!is.null(data_SS) && ("prepSS" %in% class(data_SS))){
     days <- data_SS$days
     unit <- rownames(Aj)
     x <- nrow(Aj)
@@ -55,7 +55,7 @@ calcRate <- function(M, Aj, days = NULL, searches_carcass = NULL,
     searches_carcass[, 1] <- 1
   } else if (!is.null(data_SS)){
     stop(
-      "In arg list, data_SS must be an SS object. Alternatively, user may ",
+      "In arg list, data_SS must be an prepSS object. Alternatively, user may ",
       "provide 'days' and 'carcass_searches'."
     )
   }
@@ -246,7 +246,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   # class estM
 
   if (!is.null(split_SS) || !is.null(split_time)){
-    if (!("SS" %in% class(data_SS))) data_SS <- SS(data_SS)
+    if (!("prepSS" %in% class(data_SS))) data_SS <- prepSS(data_SS)
   }
   ### declare traffic directing variables (updated after parsing inputs)
   # number of valid split variables:

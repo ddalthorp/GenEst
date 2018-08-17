@@ -283,10 +283,10 @@ plot(M_species)
 Mortality estimates may also be split by temporal variables that are represented
 as columns in ``data_SS`` or as numeric vectors spanning the monitoring
 season (from day 0 to length of monitoring season). If several temporal splits
-are to be calculated, creating a specially formatted ``SS`` object for the
+are to be calculated, creating a specially formatted ``prepSS`` object for the
 search schedule can streamline the calculations.
 ```{r}
-SSdat <- SS(data_SS)
+SSdat <- prepSS(data_SS)
 ```
 
 Season (a SS split because it is a column in the SS file):

@@ -75,7 +75,7 @@ summary(M_species)
 plot(M_species)
 
 ## ------------------------------------------------------------------------
-SSdat <- SS(data_SS)
+SSdat <- prepSS(data_SS)
 
 ## ----Season Split, fig.width = 4, fig.height = 4, fig.align = 'center'----
 M_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,

@@ -75,7 +75,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
                  dateFoundCol = "DateFound", model_SE, model_CP, kFill = NULL,
                  unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL,
                  DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-                 seed_M = NULL, nsim = 1, max_intervals = 8){
+                 seed_M = NULL, nsim = 1000, max_intervals = 8){
 
 
   if (!(dateFoundCol %in% colnames(data_CO))){
@@ -292,9 +292,9 @@ summary.estM <- function(object, ..., CL = 0.95){
   Xmin <- object$Xtot
   Mtot[Mtot < Xmin] <- Xmin
   out <- c(
-    "Median" = round(median(Mtot), 2),
-    "lwr" = round(quantile(Mtot, alpha/2), 2), 
-    "upr" = round(quantile(Mtot, 1 - alpha/2), 2),
+    "Median" = median(Mtot),
+    "lwr" = quantile(Mtot, alpha/2),
+    "upr" = quantile(Mtot, 1 - alpha/2),
     "CL" = CL
    )
   return(out)
