@@ -29,7 +29,7 @@ For example, row i = \code{c(1, 0, 1, 0, 1)} indicates that the search
 schedule for the location (unit) where carcass i was found would be 
 \code{days[c(1, 3, 5)]}.}
 
-\item{data_SS}{\code{\link{SS}} object that contains formatted data for 
+\item{data_SS}{\code{\link{prepSS}} object that contains formatted data for
 calculating splits. Optional argument. Alternatively, user may provide 
 \code{days} and \code{searches_carcass}.}
 }

@@ -29,7 +29,7 @@ model(s)}
 
 \item{datesSearchedCol}{Column name for the date searched data. Optional.
 If not provided, \code{estg} will try to find the datesSearchedCol among
-the columns in data_SS. See \code{\link{SS}}.}
+the columns in data_SS. See \code{\link{prepSS}}.}
 
 \item{sizeclassCol}{Name of column in \code{data_CO} where the size classes
 are recorded. Optional. If not provided, no distinctions are made among

@@ -41,7 +41,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{rcp}}\cr
 \code{\link{ppersist}}\cr
 
-\code{\link{SS}}\cr
+\code{\link{prepSS}}\cr
 \code{\link{estM}}\cr
 \code{\link[=summary.estM]{summary}} S3 function for \code{estM} object\cr
 \code{\link[=plot.estM]{plot}} S3 function\cr
