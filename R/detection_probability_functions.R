@@ -251,20 +251,18 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
       ))
     }
     # multiply by ppersist
-    for (i in 1:length(cells[[xi]]$CPrep)){ # old index was cpi...correct?!
-      CPr <- cells[[xi]]$CPrep
-      rng <- 0
-      for (cpi in 1:length(CPr)){
-        rng <- max(rng) + 1:CPr[cpi]
-        pOigAj[, rng] <- pOigAj[, rng] * t(ppersist(
-          pda = cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][ , "pda"],
-          pdb = cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][ , "pdb"],
-          dist = model_CP[[sz]]$distribution,
-          t_arrive0 = days[[xi]][rng],
-          t_arrive1 = days[[xi]][rng + 1],
-          t_search = rep(max(days[[xi]]), length(rng))
-        ))
-      }
+    CPr <- cells[[xi]]$CPrep
+    rng <- 0
+    for (cpi in 1:length(CPr)){
+      rng <- max(rng) + 1:CPr[cpi]
+      pOigAj[, rng] <- pOigAj[, rng] * t(ppersist(
+        pda = cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][ , "pda"],
+        pdb = cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][ , "pdb"],
+        dist = model_CP[[sz]]$distribution,
+        t_arrive0 = days[[xi]][rng],
+        t_arrive1 = days[[xi]][rng + 1],
+        t_search = rep(max(days[[xi]]), length(rng))
+      ))
     }
     parrive <- diff(days[[xi]][1:(oi+1)])/days[[xi]][oi+1]
     pAjgOi <- t(pOigAj) * parrive; pAjgOi <- t(t(pAjgOi)/colSums(pAjgOi))
