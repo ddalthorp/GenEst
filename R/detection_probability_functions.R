@@ -22,7 +22,7 @@
 #'
 #' @param datesSearchedCol Column name for the date searched data. Optional.
 #'   If not provided, \code{estg} will try to find the datesSearchedCol among
-#'   the columns in data_SS. See \code{\link{SS}}.
+#'   the columns in data_SS. See \code{\link{prepSS}}.
 #'
 #' @param sizeclassCol Name of column in \code{data_CO} where the size classes
 #'   are recorded. Optional. If not provided, no distinctions are made among
@@ -68,9 +68,9 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
                  model_SE, model_CP, kFill = NULL, unitCol = NULL, 
                  datesSearchedCol = NULL, sizeclassCol = NULL,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-                 nsim = 1, max_intervals = 8){
+                 nsim = 1000, max_intervals = 8){
 
-  SSdat <- SS(data_SS) # SSdat name distinguishes this as pre-formatted data
+  SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted data
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
   COdat <- data_CO # format data_CO
@@ -157,14 +157,14 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
       if (length(pcol) == 0) {
         cells[[xi]]$SEcell <- "all"
       } else {
-        cells[[xi]]$SEcell <- paste(COdat[xi, pcol], sep = ".")
+        cells[[xi]]$SEcell <- paste(COdat[xi, pcol], collapse = ".")
       }
       cells[[xi]]$SErep <- length(days[[xi]]) - 1
       pcol <- preds_CP[[COdat[xi, sizeclassCol]]]
       if (length(pcol) == 0) {
         cells[[xi]]$CPcell <- "all"
       } else {
-        cells[[xi]]$CPcell <- paste(COdat[xi, pcol], sep = ".")
+        cells[[xi]]$CPcell <- paste(COdat[xi, pcol], collapse = ".")
       }
       cells[[xi]]$CPrep <- length(days[[xi]]) - 1
     }
@@ -251,7 +251,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
       ))
     }
     # multiply by ppersist
-    for (cpi in 1:length(cells[[xi]]$CPrep)){
+    for (i in 1:length(cells[[xi]]$CPrep)){ # old index was cpi...correct?!
       CPr <- cells[[xi]]$CPrep
       rng <- 0
       for (cpi in 1:length(CPr)){
@@ -458,7 +458,7 @@ SEsi_right <- function(nsi, pk){
 #'
 #' @export
 #'
-estgGeneric <- function(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
+estgGeneric <- function(nsim = 1000, days, model_SE, model_CP, seed_SE = NULL,
                          seed_CP = NULL, kFill = NULL){
 
   if (!is.vector(days) || !is.numeric(days))
@@ -702,7 +702,7 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @export
 #'
-estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
+estgGenericSize <- function(nsim = 1000, days, modelSetSize_SE,
                             modelSetSize_CP, modelSizeSelections_SE, 
                             modelSizeSelections_CP, seed_SE = NULL, 
                             seed_CP = NULL, kFill = NULL){
@@ -782,7 +782,7 @@ estgGenericSize <- function(nsim = 1, days, modelSetSize_SE,
 #' @export
 #'
 averageSS <- function(data_SS, datesSearchedCol = NULL){
-  SSdat <- SS(data_SS, datesSearchedCol = datesSearchedCol)
+  SSdat <- prepSS(data_SS, datesSearchedCol = datesSearchedCol)
   schedules <- t(SSdat$searches_unit) * SSdat$days
   nintervals <- length(SSdat$days) - matrixStats::colCounts(schedules, value = 0)
   maxdays <- matrixStats::colMaxs(schedules)
@@ -841,9 +841,12 @@ summary.gGeneric <- function(object, ..., CL = 0.95){
   gTab <- matrix(NA, ncell, 2)
   for (celli in 1:ncell){
     gspec <- ghats[[celli]]
-    gmedian <- round(median(gspec), 3)
-    gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
-    gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
+#    gmedian <- round(median(gspec), 3)
+#    gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
+#    gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
+    gmedian <- median(gspec)
+    gCLlow <- quantile(gspec, prob = (1 - CL) / 2)
+    gCLup <- quantile(gspec, prob = 1 - (1 - CL) / 2)
     gsummary <- paste0(gmedian, " [", gCLlow, " - ", gCLup, "]")
     gTabi <- c(cells[celli], gsummary)
     gTab[celli, ] <- gTabi
@@ -916,11 +919,11 @@ summary.gGenericSize <- function(object, ..., CL = 0.95){
   return(out)
 }
 
-#' @title Create search schedule data into an SS object for convenient splits
+#' @title Create search schedule data into an prepSS object for convenient splits
 #'  analyses
 #'
 #' @description Since data_SS columns largely have a specific, required
-#'   format, the \code{SS} function can often decipher the data automatically,
+#'   format, the \code{prepSS} function can often decipher the data automatically,
 #'   but the user may specify explicit instructions for parsing the data for
 #'   safety if desired. If the data are formatted properly, the automatic
 #'   parsing is reliable in most cases. There are two exceptions. (1) If
@@ -938,10 +941,10 @@ summary.gGenericSize <- function(object, ..., CL = 0.95){
 #'  whether the given unit was searched (= 1) or not (= 0) on the given date)
 #'
 #' @param datesSearchedCol name of the column with the search dates in it
-#'  (optional). If no \code{datesSearchedCol} is given, \code{SS} will attempt
+#'  (optional). If no \code{datesSearchedCol} is given, \code{prepSS} will attempt
 #'  to find the date column based on data formats. If there is exactly one
 #'  column that can be interpreted as dates, that column will be taken as the
-#'  dates searched. If more than one date column is found, \code{SS} exits 
+#'  dates searched. If more than one date column is found, \code{prepSS} exits
 #'  with an error message.
 #'
 #' @param preds vector of character strings giving the names of columns to be
@@ -950,18 +953,18 @@ summary.gGenericSize <- function(object, ..., CL = 0.95){
 #'  to identify specific columns of 1s and 0s as covariates rather than as
 #'  search schedules.
 #'
-#' @return \code{SS} object that can be conveniently used in the splitting
+#' @return \code{prepSS} object that can be conveniently used in the splitting
 #'  functions.
 #'
 #' @examples
 #'  data(mock)
-#'  SS(mock$SS)
+#'  prepSS(mock$SS)
 #'
 #' @export
 #'
-SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
+prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   dateCol <- datesSearchedCol # to make typing easier
-  if ("SS" %in% class(data_SS)) return(data_SS)
+  if ("prepSS" %in% class(data_SS)) return(data_SS)
   if (length(intersect(class(data_SS), c("data.frame", "matrix"))) == 0){
     stop("data_SS must be a data frame or matrix")
   } else if (is.null(colnames(data_SS))){
@@ -1023,6 +1026,6 @@ SS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   }
   ans$searches_unit <- t(as.matrix(data_SS[, unitNames]))
   ans$unit <- unitNames
-  class(ans) <- "SS"
+  class(ans) <- "prepSS"
   return(ans)
 }
