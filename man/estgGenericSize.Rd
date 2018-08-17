@@ -4,7 +4,7 @@
 \alias{estgGenericSize}
 \title{Estimate generic detection probability for multiple size classes}
 \usage{
-estgGenericSize(nsim = 1, days, modelSetSize_SE, modelSetSize_CP,
+estgGenericSize(nsim = 1000, days, modelSetSize_SE, modelSetSize_CP,
   modelSizeSelections_SE, modelSizeSelections_CP, seed_SE = NULL,
   seed_CP = NULL, kFill = NULL)
 }
