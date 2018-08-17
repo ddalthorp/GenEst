@@ -59,7 +59,7 @@
 #'              )
 #'  ghat <- estg(data_CO = mock$CO, data_SS = mock$SS, 
 #'            dateFoundCol = "DateFound", unitCol = "Unit", 
-#'            model_SE = model_SE, model_CP = model_CP, nsim = 10 
+#'            model_SE = model_SE, model_CP = model_CP, nsim = 1000
 #'          )
 #'
 #' @export
