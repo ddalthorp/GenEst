@@ -8,7 +8,7 @@ estM(data_CO, data_SS, data_DWP, frac = 1, dateFoundCol = "DateFound",
   model_SE, model_CP, kFill = NULL, unitCol = NULL,
   datesSearchedCol = NULL, sizeclassCol = NULL, DWPCol = NULL,
   seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-  nsim = 1, max_intervals = 8)
+  nsim = 1000, max_intervals = 8)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}
