@@ -271,7 +271,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   }
   AIC <- 2 * nparam - 2 * llik
   AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
-  AICc <- round(AIC + AICcOffset, 3)
+  AICc <- AIC + AICcOffset
 
   betahat_l <- betahat[1:nbeta_l]
   names(betahat_l) <- colnames(dataMM_l)
@@ -301,9 +301,11 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
   cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
   cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
+#  cellTable_l <- matrix(cellTable_l, nrow = ncell, ncol = 3)
   colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
   cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
   cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
+#  cellTable_s <- matrix(cellTable_s, nrow = ncell, ncol = 3)
   colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
   cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
 
@@ -311,24 +313,31 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
     cellTable_b <- round(exp(cellTable_l), 3)
+#    cellTable_b <- exp(cellTable_l)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "weibull"){
     cellTable_a <- round(1 / cellTable_s, 3)
+#    cellTable_a <- 1 / cellTable_s
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
     cellTable_b <- round(exp(cellTable_l), 3)
+#    cellTable_b <- exp(cellTable_l)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "lognormal"){
     cellTable_a <- round(cellTable_s^2, 3)
+#    cellTable_a <- cellTable_s^2
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
     cellTable_b <- round(cellTable_l, 3)
+#    cellTable_b <- cellTable_l
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "loglogistic"){
     cellTable_a <- round(1 / cellTable_s, 3)
+#    cellTable_a <- 1 / cellTable_s
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
     cellTable_b <- round(exp(cellTable_l), 3)
+#    cellTable_b <- exp(cellTable_l)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }  
   cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
@@ -852,6 +861,7 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE){
     }
     AICcOrder <- order(AICc)
     deltaAICc <- round(AICc - min(AICc), 3)
+#    deltaAICc <- AICc - min(AICc)
     which_fails <- which(AICc == 1e7)
     AICc[which_fails] <- NA
     deltaAICc[which_fails] <- NA
