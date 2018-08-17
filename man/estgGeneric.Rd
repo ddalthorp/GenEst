@@ -4,7 +4,7 @@
 \alias{estgGeneric}
 \title{Estimate generic g}
 \usage{
-estgGeneric(nsim = 1, days, model_SE, model_CP, seed_SE = NULL,
+estgGeneric(nsim = 1000, days, model_SE, model_CP, seed_SE = NULL,
   seed_CP = NULL, kFill = NULL)
 }
 \arguments{

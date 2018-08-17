@@ -7,7 +7,7 @@
 estg(data_CO, data_SS, dateFoundCol = "DateFound", model_SE, model_CP,
   kFill = NULL, unitCol = NULL, datesSearchedCol = NULL,
   sizeclassCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-  nsim = 1, max_intervals = 8)
+  nsim = 1000, max_intervals = 8)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}
@@ -70,7 +70,7 @@ Estimate g values and arrival intervals for a set of carcasses
              )
  ghat <- estg(data_CO = mock$CO, data_SS = mock$SS, 
            dateFoundCol = "DateFound", unitCol = "Unit", 
-           model_SE = model_SE, model_CP = model_CP, nsim = 10 
+           model_SE = model_SE, model_CP = model_CP, nsim = 1000
          )
 
 }
