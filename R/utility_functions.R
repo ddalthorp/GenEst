@@ -169,10 +169,10 @@ Etcbinom <- function(prob){
 #'  size = 1/g and truncated at g
 #'
 #' @description Random draw from a continuous binomial random variable with
-#'  size = 1/g and truncated at g
+#'  size = 1/g and truncated at g = prob
 #'
 #' @param n number of random draws
-#' @param g Vector of probabilities
+#' @param prob Vector of probabilities
 #'
 #' @return mean
 #'
