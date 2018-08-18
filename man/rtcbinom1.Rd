@@ -3,14 +3,14 @@
 \name{rtcbinom1}
 \alias{rtcbinom1}
 \title{Random draw from a continuous binomial random variable with
- size = 1/g and truncated at g}
+ size = 1/prob and truncated at prob = g}
 \usage{
 rtcbinom1(n, prob)
 }
 \arguments{
 \item{n}{number of random draws}
 
-\item{g}{Vector of probabilities}
+\item{prob}{Vector of probabilities}
 }
 \value{
 mean
