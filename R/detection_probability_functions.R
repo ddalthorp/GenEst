@@ -264,6 +264,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
         t_search = rep(max(days[[xi]]), length(rng))
       ))
     }
+
     parrive <- diff(days[[xi]][1:(oi+1)])/days[[xi]][oi+1]
     pAjgOi <- t(pOigAj) * parrive; pAjgOi <- t(t(pAjgOi)/colSums(pAjgOi))
     Aj[xi, ] <- # sim arrival intervals (relative to cind's ss)
