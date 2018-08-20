@@ -2,17 +2,17 @@
 % Please edit documentation in R/utility_functions.R
 \name{Ecbinom}
 \alias{Ecbinom}
-\title{Expected value of a continuous binomial}
+\title{Expected value of a continuous binomial with size = 1/g}
 \usage{
 Ecbinom(prob)
 }
 \arguments{
-\item{prob}{probability}
+\item{prob}{Vector of probabilities}
 }
 \value{
 mean
 }
 \description{
-Calculates the expected value of a continuous binomial. Uses 
-  internal-only data
+Calculates the expected value of a continuous binomial random
+ variable with size = 1/g. Uses internal-only data
 }

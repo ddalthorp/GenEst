@@ -128,12 +128,12 @@ yyyymmdd <- function(x){
   return(x)
 }
 
-#' @title Expected value of a continuous binomial
+#' @title Expected value of a continuous binomial with size = 1/g
 #'
-#' @description Calculates the expected value of a continuous binomial. Uses 
-#'   internal-only data
+#' @description Calculates the expected value of a continuous binomial random
+#'  variable with size = 1/g. Uses internal-only data
 #'
-#' @param prob probability
+#' @param prob Vector of probabilities
 #'
 #' @return mean 
 #'
@@ -146,3 +146,44 @@ Ecbinom <- function(prob){
   interp(prob)
 }
 
+#' @title Expected value of a truncated continuous binomial with size = 1/g and
+#'  truncated below at g.
+#'
+#' @description Calculates the expected value of a truncated continuous
+#'  binomial. Uses internal-only data
+#'
+#' @param prob Vector of probabilities
+#'
+#' @return mean
+#'
+#' @export
+#'
+Etcbinom <- function(prob){
+  X <- EtcbinomXY$X
+  Y <- EtcbinomXY$Y
+  interp <- approxfun(x = X, y = Y)
+  interp(prob)
+}
+
+#' @title Random draw from a continuous binomial random variable with
+#'  size = 1/g and truncated at g
+#'
+#' @description Random draw from a continuous binomial random variable with
+#'  size = 1/g and truncated at g = prob
+#'
+#' @param n number of random draws
+#' @param prob Vector of probabilities
+#'
+#' @return mean
+#'
+#' @export
+#'
+rtcbinom1 <- function(n, prob){
+  tmp <- cbinom::rcbinom(n, 1/prob, prob)
+  ind <- which(tmp < prob)
+  while (length(ind) > 0) {
+    tmp[ind] <- cbinom::rcbinom(length(ind), 1/prob[ind], prob[ind])
+    ind <- ind[which(tmp[ind] < prob[ind])]
+  }
+  tmp
+}
