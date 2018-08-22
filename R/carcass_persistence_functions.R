@@ -134,15 +134,13 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
 
   if (length(formula_s) != 0 & dist == "exponential" & quiet == FALSE){
-    msg <- paste("Formula given for scale, but exponential distribution ",
-             "chosen, which does have a scale parameter. Formula ignored.", 
-             sep = "")
-    message(msg)
+    message("Formula given for scale, but exponential distribution ",
+            "chosen, which does have a scale parameter. Formula ignored.")
     formula_s <- formula(s ~ 1)
   } 
   if (length(formula_s) == 0){
     if (dist != "exponential" & quiet == FALSE){
-      message("No formula given for scale, intercept-only model used.")
+      message("No formula given for scale; intercept-only model used.")
     }
     formula_s <- formula(s ~ 1)
   } 
@@ -168,9 +166,8 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   if (length(left) == 0){
     left <- "left"
     if (!"left" %in% colnames(data)){
-      msg <- paste("No column name provided for first time observed ", 
-               "(left) and no column in data is named \"left\".", sep = "")
-      stop(msg)
+      stop("No column name provided for first time observed ",
+           "(left) and no column in data is named \"left\".")
     }
   } else if (length(left) > 1){
     stop("Input for first time observed column can only be length 0 or 1.")
@@ -181,9 +178,8 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   if (length(right) == 0){
     right <- "right"
     if (!"right" %in% colnames(data)){
-      msg <- paste("No column name provided for last time observed ", 
-               "(right) and no column in data is named \"right\".", sep = "")
-      stop(msg)
+      stop("No column name provided for last time observed ",
+           "(right) and no column in data is named \"right\".")
     }
   } else if (length(right) > 1){
     stop("Input for last time absent column can only be length 0 or 1.")
@@ -192,7 +188,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     stop("Column name for last time absent (right) is not in the data.")
   }
   if (sum(predCheck %in% colnames(data)) != length(predCheck)){
-    stop("Predictor(s) in formula(e) not found in data.")
+    stop("Predictor(s) in formula(s) not found in data.")
   }
   if (any(data[ , left] > data[ , right], na.rm = TRUE)){
     stop("Last time observed data are greater than first time absent data.") 
@@ -301,11 +297,9 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
   cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
   cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
-#  cellTable_l <- matrix(cellTable_l, nrow = ncell, ncol = 3)
   colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
   cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
   cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
-#  cellTable_s <- matrix(cellTable_s, nrow = ncell, ncol = 3)
   colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
   cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
 
@@ -313,31 +307,24 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
     cellTable_b <- round(exp(cellTable_l), 3)
-#    cellTable_b <- exp(cellTable_l)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "weibull"){
     cellTable_a <- round(1 / cellTable_s, 3)
-#    cellTable_a <- 1 / cellTable_s
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
     cellTable_b <- round(exp(cellTable_l), 3)
-#    cellTable_b <- exp(cellTable_l)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "lognormal"){
     cellTable_a <- round(cellTable_s^2, 3)
-#    cellTable_a <- cellTable_s^2
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
     cellTable_b <- round(cellTable_l, 3)
-#    cellTable_b <- cellTable_l
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }
   if (dist == "loglogistic"){
     cellTable_a <- round(1 / cellTable_s, 3)
-#    cellTable_a <- 1 / cellTable_s
     colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
     cellTable_b <- round(exp(cellTable_l), 3)
-#    cellTable_b <- exp(cellTable_l)
     colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
   }  
   cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
@@ -861,7 +848,6 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE){
     }
     AICcOrder <- order(AICc)
     deltaAICc <- round(AICc - min(AICc), 3)
-#    deltaAICc <- AICc - min(AICc)
     which_fails <- which(AICc == 1e7)
     AICc[which_fails] <- NA
     deltaAICc[which_fails] <- NA

@@ -840,12 +840,9 @@ summary.gGeneric <- function(object, ..., CL = 0.95){
   gTab <- matrix(NA, ncell, 2)
   for (celli in 1:ncell){
     gspec <- ghats[[celli]]
-#    gmedian <- round(median(gspec), 3)
-#    gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
-#    gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
-    gmedian <- median(gspec)
-    gCLlow <- quantile(gspec, prob = (1 - CL) / 2)
-    gCLup <- quantile(gspec, prob = 1 - (1 - CL) / 2)
+    gmedian <- round(median(gspec), 3)
+    gCLlow <- round(quantile(gspec, prob = (1 - CL) / 2), 3)
+    gCLup <- round(quantile(gspec, prob = 1 - (1 - CL) / 2), 3)
     gsummary <- paste0(gmedian, " [", gCLlow, " - ", gCLup, "]")
     gTabi <- c(cells[celli], gsummary)
     gTab[celli, ] <- gTabi
@@ -998,8 +995,9 @@ prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   }
   # extract units
   unitNames <- NULL
+  preds <- dateCol
   for (coli in colnames(data_SS)){
-    if (coli %in% c(preds, dateCol)) next
+    if (coli %in% preds) next
     if (!is.numeric(data_SS[, coli])){
       preds <- c(preds, coli)
       next
@@ -1025,6 +1023,6 @@ prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   }
   ans$searches_unit <- t(as.matrix(data_SS[, unitNames]))
   ans$unit <- unitNames
-  class(ans) <- "prepSS"
+  class(ans) <- c("prepSS", "list")
   return(ans)
 }

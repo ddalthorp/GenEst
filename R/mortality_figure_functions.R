@@ -61,12 +61,9 @@ simpleMplot <- function(M, ..., Xmin = 0, CL = 0.95){
   maxMtot <- max(Mtot)
   pl <- (1 - CL)/2
   ph <- 1 - (1 - CL)/2
-#  MCLlow <- round(quantile(Mtot, pl), 2)
-#  MCLhi <- round(quantile(Mtot, ph), 2)
-#  Mmed <- round(median(Mtot), 2)
-  MCLlow <- quantile(Mtot, pl)
-  MCLhi <- quantile(Mtot, ph)
-  Mmed <- median(Mtot)
+  MCLlow <- round(quantile(Mtot, pl), 2)
+  MCLhi <- round(quantile(Mtot, ph), 2)
+  Mmed <- round(median(Mtot), 2)
 
   Mtext <- paste0("Median: ", sprintf("%.2f", Mmed), "; ", CL * 100, "% CI: [",
     sprintf("%.2f", MCLlow), ", ", sprintf("%.2f", MCLhi), "]")
