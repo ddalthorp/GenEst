@@ -321,7 +321,6 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   AIC <- 2*nparam - 2*llik
   AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
   AICc <- round(AIC + AICcOffset, 3)
-#  AICc <- AIC + AICcOffset
 
 
   betahat_p <- betahat[1:nbeta_p]
