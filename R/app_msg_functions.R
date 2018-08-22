@@ -253,7 +253,7 @@ msgModWarning <- function(mods, type = "SE", rv = NULL){
 msgModSENobs <- function(rv){
   if (length(rv$obsCols_SE) == 1){
     if(length(rv$formula_k) > 0 & length(rv$kFixed) == 0){
-      return("Only one observation, k not estimated.")
+      return("Only one observation column, k not estimated.")
     }
     if (length(rv$kFixed) == 1){
       return("Only one observation, fix k input ignored.")

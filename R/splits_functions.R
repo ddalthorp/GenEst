@@ -226,7 +226,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     stop("data_SS must be provided if ",
       ifelse(is.null(split_SS), "split_time ", "split_SS "), "is")
   }
-  if (!is.null(split_CO) || !is.null(split_SS) || !is.null(split_time) > 0){
+  if (!is.null(split_CO) || !is.null(split_SS) || !is.null(split_time)){
     if (is.null(data_CO)){
       stop("data_CO must be provided to perform non-null splits")
     } else if (length(cleanInd) > 0){
@@ -257,6 +257,11 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   split_h <- NULL
   split_v <- NULL
   ### error-checking the split variables and interpreting inputs:
+  if (!is.null(split_SS) && lubridate::is.Date(data_SS[[split_SS]])){
+    # split_SS is a temporal split
+    split_time <- as.numeric(data_SS[[split_SS]]-data_SS$date0)
+    split_SS <- NULL
+  }
   if (!is.null(split_time)){
     if (!is.numeric(split_time) || !is.vector(split_time)){
       stop("split_time must be NULL or a numeric vector")
@@ -320,6 +325,9 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     }
     if (!(split_SS %in% names(data_SS))){
       stop(split_SS, " not found in ", data_SS)
+    }
+    if (is.numeric(data_SS[[split_SS]])){
+      stop("split_SS column must be categorical or dates")
     }
     SSlevel <- data_SS[[split_SS]]
     if (min(diff(match(SSlevel, unique(SSlevel)))) < 0){
