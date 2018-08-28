@@ -67,10 +67,10 @@ MSidebar <- function(){
       br(), br(), 
       HTML("<em>Max. two total splits, max. one schedule-based split</em>"),
       br(), br(),
-      selectizeInput("split_SS", "Schedule Variable:", 
+      selectizeInput("split_SS", "Search Schedule (SS) Variable:", 
         " ", multiple = TRUE, options = list(maxItems = 1)
       ),
-      selectizeInput("split_CO", "Observation Variable:", 
+      selectizeInput("split_CO", "Carcass Observation (CO) Variable:", 
         " ", multiple = TRUE, options = list(maxItems = 2)
       ),
       br(),
