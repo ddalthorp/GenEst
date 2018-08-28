@@ -36,7 +36,7 @@ gSidebar <- function(){
     conditionalPanel(    
       condition = "output.data_SS != null",
       br(), 
-      actionButton("useSSdata", "Create Schedule")
+      actionButton("useSSdata", "Create Average Schedule")
     ),
     br(), br(),
     HTML("<strong><u> Generic Search Schedule Inputs: </u></strong>"),
@@ -45,7 +45,7 @@ gSidebar <- function(){
       value = 7, min = 1, max = 400, step = 1),
     numericInput("gSearchMax", "Final Seach (day):", 
       value = 364, min = 1, max = 1000, step = 1),
-    actionButton("useSSinputs", "Create Schedule"),
+    actionButton("useSSinputs", "Create Custom Schedule"),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
       br(), br(),
