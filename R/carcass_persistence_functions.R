@@ -267,7 +267,8 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   }
   AIC <- 2 * nparam - 2 * llik
   AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
-  AICc <- AIC + AICcOffset
+  AICc <- round(AIC + AICcOffset, 2)
+  AIC <- round(AIC, 2)
 
   betahat_l <- betahat[1:nbeta_l]
   names(betahat_l) <- colnames(dataMM_l)
@@ -847,7 +848,7 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE){
       AICc[modi] <- tryCatch(cpmset[[modi]]$AICc, error = function(x) {1e7})
     }
     AICcOrder <- order(AICc)
-    deltaAICc <- round(AICc - min(AICc), 3)
+    deltaAICc <- round(AICc - min(AICc), 2)
     which_fails <- which(AICc == 1e7)
     AICc[which_fails] <- NA
     deltaAICc[which_fails] <- NA

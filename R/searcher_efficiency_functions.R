@@ -320,8 +320,8 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   nparam <- length(betahat)
   AIC <- 2*nparam - 2*llik
   AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
-  AICc <- round(AIC + AICcOffset, 3)
-
+  AICc <- round(AIC + AICcOffset, 2)
+  AIC <- round(AIC, 2)
 
   betahat_p <- betahat[1:nbeta_p]
   names(betahat_p) <- colnames(dataMM_p)
@@ -858,7 +858,7 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
       AICc[modi] <- tryCatch(pkmset[[modi]]$AICc, error = function(x) {1e7})
     }
     AICcOrder <- order(AICc)
-    deltaAICc <- round(AICc - min(AICc), 3)
+    deltaAICc <- round(AICc - min(AICc), 2)
     which_fails <- which(AICc == 1e7)
     AICc[which_fails] <- NA
     deltaAICc[which_fails] <- NA
