@@ -30,7 +30,7 @@ MSidebar <- function(){
       min = 0.01, max = 1.0, step = 0.01
     ),
     selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
-      multiple = FALSE
+      multiple = TRUE, options = list(maxItems = 1)
     ),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
@@ -41,7 +41,7 @@ MSidebar <- function(){
     conditionalPanel(
       condition = "output.DWPNeed == 'yes'",
       selectizeInput("DWPCol", "DWP Column", c("No data input yet"), 
-        multiple = FALSE
+        multiple = TRUE, options = list(maxItems = 1)
       )
     ),
     conditionalPanel(
