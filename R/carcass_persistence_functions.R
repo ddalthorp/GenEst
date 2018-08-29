@@ -810,6 +810,8 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'
 #' @param quiet Logical indicating if messages should be printed
 #'
+#' @param app Logical indicating if the table should have the app model names
+#'
 #' @return AICc table
 #'
 #' @examples
@@ -821,7 +823,7 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'
 #' @export 
 #'
-cpmSetAICcTab <- function(cpmset, quiet = FALSE){
+cpmSetAICcTab <- function(cpmset, quiet = FALSE, app = FALSE){
 
   nmod <- length(cpmset)
   formulas <- names(cpmset)
@@ -854,6 +856,10 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE){
     deltaAICc[which_fails] <- NA
   }
 
+  if (app){
+    formulas_l <- gsub("~ 1", "~ constant", formulas_l)
+    formulas_s <- gsub("~ 1", "~ constant", formulas_s)
+  }
   output <- data.frame(dists, formulas_l, formulas_s, AICc, deltaAICc)
   output <- output[AICcOrder, ]
   colnames(output) <- c("Distribution", "Location Formula", "Scale Formula", 

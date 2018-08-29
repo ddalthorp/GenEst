@@ -164,6 +164,8 @@ plot.cpm <- function(x, col = "black", ...){
 #' @param specificModel the name(s) or index number(s) of specific model(s) to 
 #'   restrict the plot
 #'
+#' @param app logical indicating if the plot is for the app
+#'
 #' @param cols named vector of the colors to use for the distributions
 #'
 #' @param ... to be passed down
@@ -177,7 +179,8 @@ plot.cpm <- function(x, col = "black", ...){
 #'
 #' @export
 #'
-plot.cpmSet <- function(x, specificModel = NULL, cols = CPcols(), ...){
+plot.cpmSet <- function(x, specificModel = NULL, app = FALSE,
+                        cols = CPcols(), ...){
 
   modelSet <- x
   modelSet <- expandModelSetCP(modelSet)
@@ -188,7 +191,7 @@ plot.cpmSet <- function(x, specificModel = NULL, cols = CPcols(), ...){
     if (modi == 2){
       devAskNewPage(TRUE)
     }
-    plotCPFigure(modelSet, specMods[modi], cols)
+    plotCPFigure(modelSet, specMods[modi], app, cols)
   }
   devAskNewPage(FALSE)
 }
@@ -202,14 +205,17 @@ plot.cpmSet <- function(x, specificModel = NULL, cols = CPcols(), ...){
 #'
 #' @param specificModel the name of the specific model for the plot
 #'
+#' @param app logical indicating if the plot is for the app
+#'
 #' @param cols named vector of the colors to use for the distributions
 #'
 #' @return a plot
 #'
 #' @export
 #'
-plotCPFigure <- function(modelSet, specificModel, cols = CPcols()){
-  plotCPHeader(modelSet, specificModel, cols)
+plotCPFigure <- function(modelSet, specificModel, app = FALSE, 
+                         cols = CPcols()){
+  plotCPHeader(modelSet, specificModel, app, cols)
   plotCPCells(modelSet, specificModel, cols)
 }
 
@@ -395,13 +401,16 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
 #'
 #' @param specificModel the name of the specific model for the plot
 #'
+#' @param app logical indicating if the plot is for the app
+#'
 #' @param cols named vector of the colors to use for the distributions
 #'
 #' @return a plot
 #'
 #' @export
 #'
-plotCPHeader <- function(modelSet, specificModel, cols = CPcols()){
+plotCPHeader <- function(modelSet, specificModel, app = FALSE, 
+                         cols = CPcols()){
 
   modelSetNames <- names(modelSet)
   nmodelsInSet <- length(modelSetNames)
@@ -443,6 +452,9 @@ plotCPHeader <- function(modelSet, specificModel, cols = CPcols()){
   text_label <- paste("Labels: ", labelsText, sep = "")
   forms <- modelSetNames_matrix[whichSpecificModel, c("form_l", "form_s")]
   modelsText <- paste(forms, collapse = "; ")
+  if (app){
+    modelsText <- gsub("~ 1", "~ constant", modelsText)
+  }
   text_model <- paste("Model: ", modelsText, sep = "")
   text(x = 0.59, y = 0.1, text_label, adj = 0, cex = 0.75)
   text(x = 0.59, y = 0.5, text_model, adj = 0, cex = 0.75)

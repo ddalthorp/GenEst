@@ -4,13 +4,15 @@
 \alias{cpmSetAICcTab}
 \title{Create the AICc tables for a set of carcass persistence models}
 \usage{
-cpmSetAICcTab(cpmset, quiet = FALSE)
+cpmSetAICcTab(cpmset, quiet = FALSE, app = FALSE)
 }
 \arguments{
 \item{cpmset}{Set of carcass persistence models fit to the same
 observations}
 
 \item{quiet}{Logical indicating if messages should be printed}
+
+\item{app}{Logical indicating if the table should have the app model names}
 }
 \value{
 AICc table

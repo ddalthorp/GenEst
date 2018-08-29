@@ -137,7 +137,7 @@ update_rv_run_SE <- function(rv, input){
     rv$sizeclasses_SE <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
     rv$sizeclass_SE <- rv$sizeclass
-    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass_SE]], TRUE)
+    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass_SE]], TRUE, TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
     rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
     rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
@@ -169,7 +169,7 @@ update_rv_outsc_SE <- function(rv, input){
   if (length(rv$mods_SE) > 0){
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
     rv$sizeclass_SE <- rv$sizeclass
-    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass_SE]], TRUE)
+    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass_SE]], TRUE, TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
     rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
     rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
@@ -256,7 +256,7 @@ update_rv_run_CP <- function(rv, input){
     rv$sizeclasses_CP <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
     rv$sizeclass_CP <- rv$sizeclass
-    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass_CP]], TRUE)
+    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass_CP]], TRUE, TRUE)
     rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "", 
                                            rv$AICcTab_CP[ , "Scale Formula"]
                                          )
@@ -294,7 +294,7 @@ update_rv_outsc_CP <- function(rv, input){
   if (length(rv$mods_CP) > 0){
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
     rv$sizeclass_CP <- rv$sizeclass
-    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass_CP]], TRUE)
+    rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass_CP]], TRUE, TRUE)
     rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
     rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass_CP]])[rv$modOrder_CP]
     rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)
@@ -434,6 +434,9 @@ update_rv_run_g <- function(rv, input){
 
     rv$SEmodToUse_g <- input[[sprintf("modelChoices_SE%d", sci)]]
     rv$CPmodToUse_g <- input[[sprintf("modelChoices_CP%d", sci)]]
+    rv$SEmodToUse_g <- gsub("~ constant", "~ 1", rv$SEmodToUse_g)
+    rv$CPmodToUse_g <- gsub("~ constant", "~ 1", rv$CPmodToUse_g)
+
     if (!grepl("s ~", rv$CPmodToUse_g)){
       rv$CPmodToUse_g <- paste(rv$CPmodToUse_g, "; NULL", sep = "")
     }
@@ -510,6 +513,8 @@ update_rv_run_M <- function(rv, input){
     }
     rv$CPmodToUse[sci] <- paste("dist: ", rv$CPmodToUse[sci], sep = "")
   }
+  rv$SEmodToUse <- gsub("~ constant", "~ 1", rv$SEmodToUse)
+  rv$CPmodToUse <- gsub("~ constant", "~ 1", rv$CPmodToUse)
   names(rv$SEmodToUse) <- rv$sizeclasses
   names(rv$CPmodToUse) <- rv$sizeclasses
 

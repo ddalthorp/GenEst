@@ -4,12 +4,14 @@
 \alias{plotCPFigure}
 \title{Plot results of a single CP model in a set}
 \usage{
-plotCPFigure(modelSet, specificModel, cols = CPcols())
+plotCPFigure(modelSet, specificModel, app = FALSE, cols = CPcols())
 }
 \arguments{
 \item{modelSet}{cp model set of class \code{cpmSet}}
 
 \item{specificModel}{the name of the specific model for the plot}
+
+\item{app}{logical indicating if the plot is for the app}
 
 \item{cols}{named vector of the colors to use for the distributions}
 }
