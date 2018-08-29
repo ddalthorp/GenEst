@@ -1,4 +1,5 @@
 #' @useDynLib GenEst, .registration = TRUE
+#' @importFrom cbinom rcbinom
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics axis mtext par plot points rect text lines polygon
 #'   hist

@@ -525,6 +525,7 @@ update_rv_run_M <- function(rv, input){
     rv$models_SE <- rv$models_SE[[1]]
     rv$models_CP <- rv$models_CP[[1]]
   }
+  rv$CL <- input$CL
 
   rv$M <- tryCatch(
             estM(data_CO = rv$data_CO, data_SS = rv$data_SS, rv$data_DWP,
