@@ -140,7 +140,7 @@
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
                 kFixed = NULL, kInit = 0.7, CL = 0.95, quiet = FALSE){
   if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
-  if(sum(obsCol %in% colnames(data)) != length(obsCol)){
+  if(any(! obsCol %in% colnames(data))){
     stop("Observation column provided not in data.")
   }
   if (length(obsCol) == 0){
@@ -186,6 +186,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
       if(is.null(formula_k) || !is.language(formula_k)){
         pOnly <- TRUE
         obsCol <- obsCol[1] # use data from first search only
+        message("p is estimated from data in first search occasion only.")
         formula_k <- NULL
         kFixed <- 1
       }
