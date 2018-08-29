@@ -43,7 +43,7 @@ gSidebar <- function(){
     br(), br(),
     numericInput("gSearchInterval", "Search Interval (days):", 
       value = 7, min = 1, max = 400, step = 1),
-    numericInput("gSearchMax", "Final Seach (day):", 
+    numericInput("gSearchMax", "Final Search (day):",
       value = 364, min = 1, max = 1000, step = 1),
     actionButton("useSSinputs", "Create Custom Schedule"),
     conditionalPanel(
