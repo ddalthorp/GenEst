@@ -3,7 +3,7 @@
 \name{rtcbinom1}
 \alias{rtcbinom1}
 \title{Random draw from a continuous binomial random variable with
- size = 1/prob and truncated at prob = g}
+ size = 1/g and truncated at g}
 \usage{
 rtcbinom1(n, prob)
 }
@@ -17,5 +17,5 @@ mean
 }
 \description{
 Random draw from a continuous binomial random variable with
- size = 1/g and truncated at g
+ size = 1/g and truncated at g = prob
 }
