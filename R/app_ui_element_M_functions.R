@@ -30,7 +30,7 @@ MSidebar <- function(){
       min = 0.01, max = 1.0, step = 0.01
     ),
     selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
-      multiple = FALSE
+      multiple = TRUE, options = list(maxItems = 1)
     ),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
@@ -41,7 +41,7 @@ MSidebar <- function(){
     conditionalPanel(
       condition = "output.DWPNeed == 'yes'",
       selectizeInput("DWPCol", "DWP Column", c("No data input yet"), 
-        multiple = FALSE
+        multiple = TRUE, options = list(maxItems = 1)
       )
     ),
     conditionalPanel(
@@ -109,8 +109,19 @@ MMainPanel <- function(){
 #' @export
 #'
 MFigurePanel <- function(){
-  tabPanel("Figure", br(), 
-    conditionalPanel(condition = "output.fig_M == null",
+  tabPanel("Figure", br(),
+    conditionalPanel(
+      condition = 
+        "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
+         output.sizeclassesSE != output.sizeclassesCP",
+      HTML("<em>Select SE and CP models fit to matching size classes to run 
+        model</em>"
+      )
+    ), 
+    conditionalPanel(
+      condition = "output.fig_M == null & input.modelChoices_SE1 != null & 
+         input.modelChoices_CP1 != null &
+         output.sizeclassesSE == output.sizeclassesCP",
       HTML("<em>Run estimate to view figure</em>")
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",
@@ -132,7 +143,18 @@ MFigurePanel <- function(){
 #'
 MSummaryPanel <- function(){
   tabPanel("Summary", br(), 
-    conditionalPanel(condition = "output.table_M == null",
+    conditionalPanel(
+      condition = 
+        "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
+         output.sizeclassesSE != output.sizeclassesCP",
+      HTML("<em>Select SE and CP models fit to matching size classes to run 
+        model</em>"
+      )
+    ), 
+    conditionalPanel(
+      condition = "output.fig_M == null & input.modelChoices_SE1 != null & 
+         input.modelChoices_CP1 != null &
+         output.sizeclassesSE == output.sizeclassesCP",
       HTML("<em>Run estimate to view summary</em>")
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",
