@@ -823,6 +823,8 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' 
 #' @param quiet Logical indicating if messages should be printed
 #' 
+#' @param app Logical indicating if the table should have the app model names
+#'
 #' @return AICc table
 #' 
 #' @examples
@@ -834,7 +836,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 #' @export 
 #'
-pkmSetAICcTab <- function(pkmset, quiet = FALSE){
+pkmSetAICcTab <- function(pkmset, quiet = FALSE, app = FALSE){
 
   nmod <- length(pkmset)
   formulas <- names(pkmset)
@@ -862,6 +864,11 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
     which_fails <- which(AICc == 1e7)
     AICc[which_fails] <- NA
     deltaAICc[which_fails] <- NA
+  }
+
+  if (app){
+    formulas_p <- gsub("~ 1", "~ constant", formulas_p)
+    formulas_k <- gsub("~ 1", "~ constant", formulas_k)
   }
 
   output <- data.frame(formulas_p, formulas_k, AICc, deltaAICc)

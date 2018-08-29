@@ -4,12 +4,14 @@
 \alias{plotCPHeader}
 \title{The CP plot header}
 \usage{
-plotCPHeader(modelSet, specificModel, cols = CPcols())
+plotCPHeader(modelSet, specificModel, app = FALSE, cols = CPcols())
 }
 \arguments{
 \item{modelSet}{cp model set of class cpmSet}
 
 \item{specificModel}{the name of the specific model for the plot}
+
+\item{app}{logical indicating if the plot is for the app}
 
 \item{cols}{named vector of the colors to use for the distributions}
 }
