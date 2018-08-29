@@ -198,6 +198,7 @@ modNameSplit <- function(modNames, pos){
     }
   }
   modNames_split <- gsub("NULL", "s ~ 1", modNames_split)
+  modNames_split <- gsub("~ 1", "~ constant", modNames_split)
   modNames_split <- gsub("dist:", "", modNames_split)
   return(modNames_split)
 }
@@ -272,6 +273,7 @@ modNamePaste <- function(parts, type = "SE", tab = FALSE){
   if (type == "CP"){
     out <- paste("dist:", out, sep = "")
   }
+  out <- gsub("~ constant", "~ 1", out)
   return(out)
 }
   

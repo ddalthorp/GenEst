@@ -190,7 +190,7 @@ update_output_run_SE <- function(rv, output, session){
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
     output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
     output$fig_SE <- renderPlot({ 
-                       plot(rv$modSet_SE, specificModel = rv$best_SE)
+                       plot(rv$modSet_SE, specificModel = rv$best_SE, TRUE)
                      }, height = rv$figH_SE, width = rv$figW_SE)
 
     isolate({
@@ -230,7 +230,7 @@ update_output_outsc_SE <- function(rv, output, session){
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
     output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
     output$fig_SE <- renderPlot({ 
-                       plot(rv$modSet_SE, specificModel = rv$best_SE)
+                       plot(rv$modSet_SE, specificModel = rv$best_SE, TRUE)
                      }, height = rv$figH_SE, width = rv$figW_SE)
 
     scText <- renderText(paste0("Size class: ", rv$sizeclass_SE))
@@ -263,7 +263,7 @@ update_output_outpk_SE <- function(rv, output, session){
   if (length(rv$mods_SE) > 0){
     output$fig_SE <- renderPlot({ 
                        tryCatch(
-                         plot(rv$modSet_SE, specificModel = rv$outSEpk),
+                         plot(rv$modSet_SE, specificModel = rv$outSEpk, TRUE),
                          error = function(x){plotNA()}
                        )
                      }, height = rv$figH_SE, width = rv$figW_SE)
@@ -300,7 +300,7 @@ update_output_run_CP <- function(rv, output, session){
     output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})    
     output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
     output$fig_CP <- renderPlot({ 
-                       plot(rv$modSet_CP, specificModel = rv$best_CP)
+                       plot(rv$modSet_CP, specificModel = rv$best_CP, TRUE)
                      }, height = rv$figH_CP, width = rv$figW_CP)
 
     isolate({
@@ -339,7 +339,7 @@ update_output_outsc_CP <- function(rv, output, session){
   if (length(rv$mods_CP) > 0){
     output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
     output$fig_CP <- renderPlot({ 
-                       plot(rv$modSet_CP, specificModel = rv$best_CP)
+                       plot(rv$modSet_CP, specificModel = rv$best_CP, TRUE)
                      }, height = rv$figH_CP, width = rv$figW_CP)
 
     scText <- renderText(paste0("Size class: ", rv$sizeclass_CP))
@@ -374,10 +374,10 @@ update_output_outdls_CP <- function(rv, output, session){
   if (length(rv$mods_CP) > 0){
     output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
     output$fig_CP <- renderPlot({ 
-                       tryCatch(
-                       plot(rv$modSet_CP, specificModel = rv$outCPdlsfig),
-                         error = function(x){plotNA()}
-                       )
+                     tryCatch(
+                     plot(rv$modSet_CP, specificModel = rv$outCPdlsfig, TRUE),
+                     error = function(x){plotNA()}
+                     )
                      }, height = rv$figH_CP, width = rv$figW_CP)
     output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
     output$dlCPfig <- downloadCPFig(rv)

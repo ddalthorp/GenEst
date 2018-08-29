@@ -243,6 +243,8 @@ pkmSECellPlot <- function(model, specificCell, col, axis_y = TRUE,
 #' @param specificModel the name(s) or index number(s) of specific model(s)
 #'   to restrict the plot
 #'
+#' @param app logical indicating if the plot is for the app
+#' 
 #' @param cols named vector of colors to use for the specific and reference
 #'   models
 #'
@@ -259,7 +261,8 @@ pkmSECellPlot <- function(model, specificCell, col, axis_y = TRUE,
 #'
 #' @export
 #'
-plot.pkmSet <- function(x, specificModel = NULL, cols = SEcols(), ...){
+plot.pkmSet <- function(x, specificModel = NULL, app = FALSE, cols = SEcols(),
+                        ...){
 
   modelSet <- x
   specMods <- checkSpecificModelSE(modelSet, specificModel)
@@ -269,7 +272,7 @@ plot.pkmSet <- function(x, specificModel = NULL, cols = SEcols(), ...){
     if (modi == 2){
       devAskNewPage(TRUE)
     }
-    plotSEFigure(modelSet, specMods[modi], cols)
+    plotSEFigure(modelSet, specMods[modi], app, cols)
   }
   devAskNewPage(FALSE)
 }
@@ -284,6 +287,8 @@ plot.pkmSet <- function(x, specificModel = NULL, cols = SEcols(), ...){
 #'
 #' @param specificModel the name of the specific model for the plot
 #'
+#' @param app logical indicating if the plot is for the app
+#'
 #' @param cols named vector of colors to use for the specific and reference
 #'   models
 #'
@@ -291,8 +296,8 @@ plot.pkmSet <- function(x, specificModel = NULL, cols = SEcols(), ...){
 #'
 #' @export
 #'
-plotSEFigure <- function(modelSet, specificModel, cols){
-  plotSEHeader(modelSet, specificModel, cols)
+plotSEFigure <- function(modelSet, specificModel, app, cols){
+  plotSEHeader(modelSet, specificModel, app, cols)
   plotSEBoxPlots(modelSet, specificModel, cols)
   plotSEBoxTemplate(modelSet, specificModel, cols)
   plotSECells(modelSet, specificModel, cols)
@@ -306,6 +311,8 @@ plotSEFigure <- function(modelSet, specificModel, cols){
 #'
 #' @param specificModel the name of the specific model for the plot
 #'
+#' @param app logical indicating if the plot is for the app
+#'
 #' @param cols named vector of colors to use for the specific and reference
 #'   models
 #'
@@ -313,7 +320,8 @@ plotSEFigure <- function(modelSet, specificModel, cols){
 #'
 #' @export
 #'
-plotSEHeader <- function(modelSet, specificModel, cols = SEcols()){
+plotSEHeader <- function(modelSet, specificModel, app = FALSE,
+                         cols = SEcols()){
   par(mar = c(0, 0, 0, 0))
   par(fig = c(0, 1, 0.935, 1))
   plot(1, 1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "",
@@ -322,6 +330,11 @@ plotSEHeader <- function(modelSet, specificModel, cols = SEcols()){
 
   LL <- sapply(modelSet, "[[", "loglik")
   referenceMod <- names(modelSet)[which(LL == max(LL))]
+
+  if (app){
+    specificModel <- gsub("~ 1", "~ constant", specificModel)
+    referenceMod <- gsub("~ 1", "~ constant", referenceMod)
+  }
 
   rect(0.01, 0.725, 0.06, 0.925, lwd = 2, col = cols["spec"], border = NA)
   text_model <- paste("= Selected Model: ", specificModel, sep = "")
