@@ -42,6 +42,7 @@ makeMenu <- function(mods, sizeclasses, type){
       modNames <- names(mods[[sci]])[modOrder]
       modNames <- gsub("; NULL", "", modNames)
       modNames <- gsub("dist: ", "", modNames)
+      modNames <- gsub("~ 1", "~ constant", modNames)
 
       modNames_nchar <- nchar(modNames)
       modNames_maxchar <- max(modNames_nchar)

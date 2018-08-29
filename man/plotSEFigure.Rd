@@ -4,12 +4,14 @@
 \alias{plotSEFigure}
 \title{Plot results of a single SE model in a set}
 \usage{
-plotSEFigure(modelSet, specificModel, cols)
+plotSEFigure(modelSet, specificModel, app, cols)
 }
 \arguments{
 \item{modelSet}{pk model set of class \code{pkmSet}}
 
 \item{specificModel}{the name of the specific model for the plot}
+
+\item{app}{logical indicating if the plot is for the app}
 
 \item{cols}{named vector of colors to use for the specific and reference
 models}
