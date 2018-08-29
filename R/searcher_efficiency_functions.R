@@ -158,35 +158,37 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     if (!is.numeric(kFixed[1])){
       stop("User-supplied kFixed must be numeric (or NULL)")
     }
-    if (kFixed[1] < 0 || kFixed[1] > 1){
+    if (length(kFixed) > 1){
+      kFixed <- kFixed[1]
+      if (!quiet){
+        message("Vector-valued kFixed. Only the first element will be used.")
+      }
+    }
+    if (kFixed < 0 || kFixed > 1){
       stop("User-supplied kFixed is outside the supported range [0, 1].")
-      if (length(formula_k) > 0 & quiet == FALSE){
-        message("Formula and fixed value provided for k, fixed value used.")
-        formula_k <- NULL
-      }
-      if (length(kFixed) > 1){
-        kFixed <- kFixed[1]
-        if (!quiet){
-          message("Vector-valued kFixed. Only the first element will be used.")
-        }
-      }
+    }
+    if (length(formula_k) > 0 & quiet == FALSE){
+      message("Formula and fixed value provided for k, fixed value used.")
+      formula_k <- NULL
     }
   }
   pOnly <- FALSE
-  if (length(obsCol) == 1){
-    if (!is.null(formula_k) && is.language(formula_k) && quiet == FALSE){
-      message("Only one search occasion per carcass. k not estimated.")
-    }
-    pOnly <- TRUE
-    formula_k <- NULL
-    kFixed <- 1
-  } else {
-    # flag to indicate no estimation of k
-    if((is.null(formula_k) || !is.language(formula_k)) & length(kFixed) == 0){
+  if (is.null(kFixed)){
+    if (length(obsCol) == 1){
+      if (!is.null(formula_k) && is.language(formula_k) && quiet == FALSE){
+        message("Only one search occasion per carcass. k not estimated.")
+      }
       pOnly <- TRUE
-      obsCol <- obsCol[1] # use data from first search only
       formula_k <- NULL
       kFixed <- 1
+    } else {
+      # flag to indicate no estimation of k
+      if(is.null(formula_k) || !is.language(formula_k)){
+        pOnly <- TRUE
+        obsCol <- obsCol[1] # use data from first search only
+        formula_k <- NULL
+        kFixed <- 1
+      }
     }
   }
   nsearch <- length(obsCol)
@@ -206,7 +208,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   data0 <- data[!onlyNA, ]
 
   if (nrow(data0) == 0){
-    stop("No non-missing data present in provided data.")
+    stop("No non-missing data present in user-provided data.")
   }
   if (any(rowSums(obsData, na.rm = TRUE) > 1)){
     stop("Carcasses observed more than once. Check data.")
@@ -361,19 +363,10 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     cellTable_k <- matrix(unlist(cellTable_k), nrow = ncell, ncol = 3)
     cellTable_k <- round(alogit(cellTable_k), 3)
     colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
-    if (nsearch == 1){
-      cellTable_k[ , names(cellTable_k)] <- kFixed
-      formula_k <- ""
-      nbeta_k <- 0
-      cellMM_k <- NULL
-      kFixed <- NULL
-    }
     cellTable <- data.frame(cell = cellNames, cellTable_p, cellTable_k)
   } else {
     cellTable <- data.frame(cell = cellNames, cellTable_p)
   }
-
-
   output <- list()
   output$call <- match.call()
   output$data <- data
@@ -823,8 +816,6 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' 
 #' @param quiet Logical indicating if messages should be printed
 #' 
-#' @param app Logical indicating if the table should have the app model names
-#'
 #' @return AICc table
 #' 
 #' @examples
@@ -836,7 +827,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 #' @export 
 #'
-pkmSetAICcTab <- function(pkmset, quiet = FALSE, app = FALSE){
+pkmSetAICcTab <- function(pkmset, quiet = FALSE){
 
   nmod <- length(pkmset)
   formulas <- names(pkmset)
@@ -864,11 +855,6 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE, app = FALSE){
     which_fails <- which(AICc == 1e7)
     AICc[which_fails] <- NA
     deltaAICc[which_fails] <- NA
-  }
-
-  if (app){
-    formulas_p <- gsub("~ 1", "~ constant", formulas_p)
-    formulas_k <- gsub("~ 1", "~ constant", formulas_k)
   }
 
   output <- data.frame(formulas_p, formulas_k, AICc, deltaAICc)
