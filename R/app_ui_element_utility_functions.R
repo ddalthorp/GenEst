@@ -7,11 +7,7 @@
 #' @export
 #'
 navbar <- function(){
-  div(
-    a(href = "https://github.com/ddalthorp/GenEst", 
-      img(src = "GenEst.png", style =  "margin-top: -8px;", height = 40)
-    )
-  )
+  div(img(src = "GenEst.png", style =  "margin-top: -8px;", height = 40))
 }
 
 
