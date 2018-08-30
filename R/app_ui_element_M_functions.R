@@ -56,7 +56,17 @@ MSidebar <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-         output.sizeclassesSE == output.sizeclassesCP",
+         output.sizeclassesSE == output.sizeclassesCP & 
+         (input.DWPCol == null | input.dateFoundCol == null)",
+      br(), 
+      HTML("<center><em>Select input columns to run model</center></em>"
+      )
+    ),
+    conditionalPanel(
+      condition = 
+        "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
+         output.sizeclassesSE == output.sizeclassesCP & input.DWPCol != null &
+         input.dateFoundCol != null",
       br(), 
       actionButton("runMod_M", "Estimate")
     ),
