@@ -43,7 +43,7 @@ aboutPanel <- function(){
         provisional."
       ),
       br(), br(),
-      textOutput("versionInfo"),
+      textOutput("versionInfo_about"),
       br(), 
       HTML("The development of GenEst is being supported by 
         <a href = 'https://www.blm.gov/'>The US Bureau of Land Management</a>,
