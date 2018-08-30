@@ -4,7 +4,7 @@ author: "Juniper L. Simonis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{GenEst - Command Line Walkthrough}
+  %\VignetteIndexEntry{GenEst - 3. Command Line Walkthrough}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
