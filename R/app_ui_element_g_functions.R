@@ -114,7 +114,7 @@ gSchedulePanel <- function(){
     br(), 
     HTML("<big><strong><u> Search Schedule: </u></strong></big>"),
     br(), br(), 
-    box(textOutput("SStext"))
+    textOutput("SStext")
   )
 }
 

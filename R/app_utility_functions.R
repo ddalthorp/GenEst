@@ -23,19 +23,18 @@ prepPredictors <- function(preds = NULL){
 #' @description Based on the number of observation columns, create text output
 #'   of "yes" or "no"
 #'
-#' @param obsCols vector of observation column names
+#' @param rv reactive value list
 #'
 #' @return kFillNeed character of "yes" or "no"
 #'
 #' @export
 #'
-setkFillNeed <- function(obsCols){
-  if(length(obsCols) == 1){
-    return(renderText("yes"))
+setkFillNeed <- function(rv){
+  textout <- "no"
+  if(length(rv$obsCols_SE) == 1 & length(rv$kFixed) == 0){
+    textout <- "yes"
   }
-  if(length(obsCols) > 1){
-    return(renderText("no"))
-  }
+  return(renderText(textout))
 }
 
 #' @title Update the fixed k value

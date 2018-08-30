@@ -151,7 +151,7 @@ plot(M_season)
 
 ## ----Summary - Weekly----------------------------------------------------
 
-SSdat <- prepSS(SS_data) # Creates an object of type SS.
+SSdat <- prepSS(SS_data) # Creates an object of type prepSS.
 schedule <- seq(from = 0, to = max(SSdat$days), by = 7)
 tail(schedule)
 

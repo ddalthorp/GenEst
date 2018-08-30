@@ -4,7 +4,7 @@ author: "J Mintz, D Dalthorp, J Simonis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Gen Est - A Solar Example with Carcass Size}
+  %\VignetteIndexEntry{GenEst - A Solar Example with Carcass Size}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
@@ -345,12 +345,12 @@ for both plots or summaries using the CL argument.
 ```
 
 To get a finer summary of mortality, we need to parse the search schedule, using
-the function SS.  This allows us to specify the exact time intervals over which 
+the function prepSS.  This allows us to specify the exact time intervals over which
 we will split, in this case we will create a weekly summary.
 
 ```{r Summary - Weekly}
 
-SSdat <- SS(SS_data) # Creates an object of type SS.
+SSdat <- prepSS(SS_data) # Creates an object of type prepSS.
 schedule <- seq(from = 0, to = max(SSdat$days), by = 7)
 tail(schedule)
 ```

@@ -116,11 +116,11 @@ Searcher efficiency is modeled as a function of the number of
   \code{k} (akin to aslope).
 }
 \details{
-The probability of finding a carcass that is present at the time of search
-  is \code{p} on the first search after carcass arrival and is assumed to
-  decrease by a factor of \code{k} each time the carcass is missed in 
-  searches. Both \code{p} and \code{k} may depend on covariates such as 
-  ground cover, season, species, etc., and a separate model format 
+The probability of finding a carcass that is present at the time of 
+  search is \code{p} on the first search after carcass arrival and is 
+  assumed todecrease by a factor of \code{k} each time the carcass is  
+  missed insearches. Both \code{p} and \code{k} may depend on covariates 
+  such as ground cover, season, species, etc., and a separate model format 
   (\code{formula_p} and \code{formula_k}) may be entered for each. The 
   models are entered as they would be in the familiar \code{lm} or 
   \code{glm} functions in R. For example, \code{p} might vary with

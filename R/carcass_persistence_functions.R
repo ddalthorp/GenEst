@@ -8,16 +8,16 @@
 #'   "Details"), and model formulas may be entered for both \code{l} 
 #'   ("location") and \code{s} ("scale").
 #'
-#' @details The probability of a carcass persisting to a particular time is dictated
-#'   by the specific distribution chosen and its underlying location (l) and 
-#'   scale (s) parameters (for all models except the exponential, which only 
-#'   has a location parameter). Both \code{l} and \code{s} may depend on 
-#'   covariates such as ground cover, season, species, etc., and a separate 
-#'   model format (\code{formula_l} and \code{formula_s}) may be entered for 
-#'   each. The models are entered as they would be in the familiar \code{lm} 
-#'   or \code{glm} functions in R. For example, \code{l} might vary with 
-#'   \code{visibility}, \code{season}, and \code{site}, while \code{s} varies 
-#'   only with \code{visibility}. A user might then enter 
+#' @details The probability of a carcass persisting to a particular time is 
+#'   dictated by the specific distribution chosen and its underlying location
+#'   (l) and  scale (s) parameters (for all models except the exponential,  
+#'   which only has a location parameter). Both \code{l} and \code{s} may 
+#'   depend on covariates such as ground cover, season, species, etc., and a 
+#'   separate model format (\code{formula_l} and \code{formula_s}) may be 
+#'   entered for each. The models are entered as they would be in the familiar 
+#'   \code{lm} or \code{glm} functions in R. For example, \code{l} might 
+#'   vary with \code{visibility}, \code{season}, and \code{site}, while 
+#'   \code{s} varies only with \code{visibility}. A user might then enter 
 #'   \code{l ~ visibility + season + site} for \code{formula_l} and 
 #'   \code{s ~ visibility} for \code{formula_s}. Other R conventions for 
 #'   defining formulas may also be used, with \code{covar1:covar2} for the 
@@ -230,10 +230,10 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   event[is.na(t2) | is.infinite(t2)] <- 0
   event[round(t1, 3) == round(t2, 3)] <- 1
   t1 <- pmax(t1, 0.0001)
-  tevent <- survival::Surv(time = t1, time2 = t2, event = event, type = "interval")
+  tevent <- Surv(time = t1, time2 = t2, event = event, type = "interval")
   init_formRHS <- as.character(formulaRHS_l)[-1]
   init_form <- reformulate(init_formRHS, response = "tevent")
-  init_mod <- survival::survreg(formula = init_form, data = data, dist = dist)
+  init_mod <- survreg(formula = init_form, data = data, dist = dist)
   init_l <- init_mod$coef
   names(init_l) <- paste("l_", names(init_l), sep = "")
   init_s <- rep(init_mod$scale, nbeta_s)
@@ -433,13 +433,13 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
   dataMM_s <- matrix(dataMM[which_s, ], ncol = nbeta_s, byrow = TRUE)
   Beta_l <- dataMM_l %*% beta_l 
   Beta_s <- dataMM_s %*% beta_s  
-  psurv_t1 <- survival::psurvreg(t1, Beta_l, exp(Beta_s), dist)
-  psurv_t2 <- survival::psurvreg(t2, Beta_l, exp(Beta_s), dist)
+  psurv_t1 <- psurvreg(t1, Beta_l, exp(Beta_s), dist)
+  psurv_t2 <- psurvreg(t2, Beta_l, exp(Beta_s), dist)
   psurv_t2[which(is.na(psurv_t2))] <- 1
   lik <- psurv_t2 - psurv_t1
   too_small <- (t1 + 0.0001) >= t2
   if (any(too_small)){
-    lik[too_small] <- survival::dsurvreg(t2[too_small], Beta_l[too_small],
+    lik[too_small] <- dsurvreg(t2[too_small], Beta_l[too_small],
       exp(Beta_s)[too_small], dist)
   }
   lik <- pmax(lik, .Machine$double.eps) 
@@ -507,7 +507,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
   if (length(seed) > 0){
     set.seed(seed)
   }
-  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
+  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
 
   sim_l <- as.matrix(sim_beta[ , 1:nbeta_l] %*% t(cellMM_l))
   sim_s <- exp(as.matrix(sim_beta[ , which_beta_s] %*% t(cellMM_s)))
@@ -939,10 +939,10 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     t0 <- t_search-t_arrive0
     tob <- outer(pdb, t1, "yox")
     part1 <- t1/t(1 + tob^pda) * 
-               t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+               t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     tob <- outer(pdb, t0, "yox")
     part0 <- t0 / t(1 + tob^pda) *
-               t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+               t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
   }
   return(probs)

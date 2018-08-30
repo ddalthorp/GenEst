@@ -1,24 +1,30 @@
 #' @useDynLib GenEst, .registration = TRUE
 #' @importFrom cbinom rcbinom
 #' @importFrom DT dataTableOutput renderDataTable datatable
-#' @importFrom graphics axis mtext par plot points rect text lines polygon
-#'   hist
-#' @importFrom grDevices rgb devAskNewPage png dev.off
-#' @importFrom htmltools div img br HTML a
+#' @importFrom graphics axis box hist lines mtext par plot points polygon rect
+#'   text
+#' @importFrom grDevices dev.off devAskNewPage png rgb
+#' @importFrom gsl hyperg_2F1
+#' @importFrom gtools mixedsort
+#' @importFrom htmltools a br div HTML img 
+#' @importFrom lubridate is.Date
+#' @importFrom matrixStats colCounts colMaxs rowCounts rowCumprods rowCumsums   
+#'   rowDiffs rowMaxs rowProds rowQuantiles 
+#' @importFrom mvtnorm rmvnorm
 #' @importFrom Rcpp sourceCpp
-#' @importFrom shiny shinyApp shinyAppDir navbarPage tabPanel tabsetPanel
-#'   selectizeInput renderUI showNotification renderText showModal modalDialog
-#'   modalButton updateTabsetPanel updateSelectizeInput observeEvent
-#'   reactiveValues fileInput numericInput radioButtons conditionalPanel
-#'   plotOutput htmlOutput sidebarPanel sidebarLayout mainPanel
-#'   removeNotification outputOptions isolate updateTabsetPanel renderPlot
-#'   updateNumericInput actionButton checkboxGroupInput downloadButton
-#'   downloadHandler column fluidRow textOutput runApp
-#' @importFrom shinydashboard box
-#' @importFrom stats .getXlevels approxfun delete.response formula median
-#'   model.matrix na.omit optim pgamma pnorm qnorm quantile reformulate
-#'   runif terms update.formula weighted.mean as.formula rnorm approxfun
-#'   density
+#' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
+#'   downloadButton downloadHandler fileInput fluidRow htmlOutput isolate 
+#'   mainPanel modalButton modalDialog navbarPage numericInput observeEvent
+#'   outputOptions plotOutput radioButtons reactiveValues removeNotification 
+#'   renderPlot renderText renderUI runApp selectizeInput shinyApp shinyAppDir
+#'   showModal showNotification sidebarLayout sidebarPanel tabPanel 
+#'   tabsetPanel textOutput updateNumericInput updateSelectizeInput 
+#'   updateTabsetPanel 
+#' @importFrom stats .getXlevels approxfun as.formula delete.response density
+#'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
+#'   reformulate rnorm runif terms update.formula weighted.mean  
+#' @importFrom sticky sticky
+#' @importFrom survival dsurvreg psurvreg Surv survfit survreg 
 #' @importFrom utils combn packageDescription read.csv write.csv
 #'
 
