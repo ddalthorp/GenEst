@@ -1,16 +1,14 @@
-#' @title Help Main Panel UI element
+#' @title Downloads Main Panel UI element
 #'
-#' @description create the HTML code for the Help main panel
+#' @description create the HTML code for the Downloads main panel
 #'
 #' @return HTML for the help panel
 #'
 #' @export
 #'
-helpPanel <- function(){
+downloadsPanel <- function(){
   fluidRow(
     column(5, offset = 2,
-      br(), br(), 
-      HTML("<b>DOWNLOADS</b>"),
       br(), br(),
       a(href = "GenEst_User_Guide.pdf", target = "blank", 
         "User Guide (pdf)",
@@ -22,9 +20,7 @@ helpPanel <- function(){
       br(), br(), 
       a(href = "extdata.zip", target = "blank", 
         "Example Datasets (zip)",
-        download  = "extdata.zip"),
-      br(), br(), br(), br(), 
-      textOutput("versionInfo_help")
+        download  = "extdata.zip")
     )
   )
 }
