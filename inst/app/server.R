@@ -2,7 +2,8 @@ function(input, output, session){
 
 modalWelcome("base")
 rv <- createReactiveValues()
-output$versionInfo <- renderText(createvtext())
+output$versionInfo_about <- renderText(createvtext())
+output$versionInfo_help <- renderText(createvtext())
 output$SStext <- renderText(rv$SStext)
 msgs <- msgList()
 
