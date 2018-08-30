@@ -817,6 +817,8 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' 
 #' @param quiet Logical indicating if messages should be printed
 #' 
+#' @param app Logical indicating if the table should have the app model names
+#'
 #' @return AICc table
 #' 
 #' @examples
@@ -828,7 +830,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 #' @export 
 #'
-pkmSetAICcTab <- function(pkmset, quiet = FALSE){
+pkmSetAICcTab <- function(pkmset, quiet = FALSE, app = FALSE){
 
   nmod <- length(pkmset)
   formulas <- names(pkmset)
@@ -858,6 +860,11 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
     deltaAICc[which_fails] <- NA
   }
 
+  if (app){
+    formulas_p <- gsub("~ 1", "~ constant", formulas_p)
+    formulas_k <- gsub("~ 1", "~ constant", formulas_k)
+  }
+
   output <- data.frame(formulas_p, formulas_k, AICc, deltaAICc)
   output <- output[AICcOrder, ]
   colnames(output) <- c("p Formula", "k Formula", "AICc", "Delta AICc")
@@ -873,7 +880,6 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE){
   }
   return(output)  # pkmSetAICcTab
 }
-
 #' @title Simulate parameters from a fitted pk model
 #'
 #' @description Simulate parameters from a \code{\link{pkm}} model object
