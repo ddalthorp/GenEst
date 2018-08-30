@@ -5,8 +5,8 @@ Date: 2018-08-30
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
-    person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"),
     person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
+    person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"),
     person("Paul", "Rabie", , "prabie@west-inc.com", "aut"),
     person("Jeffrey", "Mintz", , "mintzj@oregonstate.edu", "aut"),
     person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"),

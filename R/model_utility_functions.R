@@ -165,11 +165,11 @@ matchCells <- function(specific, modelSet){
 #'
 #' @param data_CP Carcass persistence data.
 #'
-#' @param data_SE Seacher efficiency data.
+#' @param data_SE Searcher efficiency data.
 #'
 #' @param preds_CP Carcass persistence predictor variables.
 #'
-#' @param preds_SE Seacher efficiency predictor variables.
+#' @param preds_SE Searcher efficiency predictor variables.
 #'
 #' @return Factor combination table.
 #' 
