@@ -70,7 +70,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  nsim = 1000, max_intervals = 8){
 
-  SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted data
+  SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
   COdat <- data_CO # format data_CO
@@ -268,7 +268,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     parrive <- diff(days[[xi]][1:(oi+1)])/days[[xi]][oi+1]
     pAjgOi <- t(pOigAj) * parrive; pAjgOi <- t(t(pAjgOi)/colSums(pAjgOi))
     Aj[xi, ] <- # sim arrival intervals (relative to cind's ss)
-       rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(nsim)) +
+       rowSums(rowCumsums(t(pAjgOi)) < runif(nsim)) +
          (sum(SSxi <= min(days[[xi]])))
     xuint <- unique(Aj[xi, ]) # unique xi arrival intervals (in SSxi)
     for (aj in xuint){
@@ -352,10 +352,10 @@ SEsi_left <- function (oi, pk, rng = NULL){
   else {
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
     powk[, 1] <- 1
-    powk <- matrixStats::rowCumprods(powk)
+    powk <- rowCumprods(powk)
     pfind.si <- pk[, 1] * powk * cbind(
       rep(1, npk),
-      matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+      rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
     )
   }
   return(pfind.si[ , oi - rng + 1])
@@ -396,10 +396,10 @@ SEsi_right <- function(nsi, pk){
   else {
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
     powk[, 1] <- 1
-    powk <- matrixStats::rowCumprods(powk)
+    powk <- rowCumprods(powk)
     pfind.si <- pk[, 1] * powk * cbind(
       rep(1, npk),
-      matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+      rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
     )
   }
   return(pfind.si)
@@ -586,10 +586,10 @@ calcg <- function(days, param_SE, param_CP, dist){
   } else {
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(n, maxmiss + 1))
     powk[ , 1] <- 1
-    powk <- matrixStats::rowCumprods(powk)
+    powk <- rowCumprods(powk)
     val <- 1 - (pk[ , 1] * powk[ , 1:maxmiss])
     if (is.null(dim(val))) val <- matrix(val, nrow = 1)
-    pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), matrixStats::rowCumprods(val))
+    pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), rowCumprods(val))
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
@@ -783,8 +783,8 @@ estgGenericSize <- function(nsim = 1000, days, modelSetSize_SE,
 averageSS <- function(data_SS, datesSearchedCol = NULL){
   SSdat <- prepSS(data_SS, datesSearchedCol = datesSearchedCol)
   schedules <- t(SSdat$searches_unit) * SSdat$days
-  nintervals <- length(SSdat$days) - matrixStats::colCounts(schedules, value = 0)
-  maxdays <- matrixStats::colMaxs(schedules)
+  nintervals <- length(SSdat$days) - colCounts(schedules, value = 0)
+  maxdays <- colMaxs(schedules)
   aveSS <- seq(0, max(maxdays), round(mean(maxdays/nintervals)))
   return(aveSS)
 }
@@ -915,13 +915,13 @@ summary.gGenericSize <- function(object, ..., CL = 0.95){
   return(out)
 }
 
-#' @title Create search schedule data into an prepSS object for convenient splits
-#'  analyses
+#' @title Create search schedule data into an prepSS object for convenient 
+#'  splits analyses
 #'
 #' @description Since data_SS columns largely have a specific, required
-#'   format, the \code{prepSS} function can often decipher the data automatically,
-#'   but the user may specify explicit instructions for parsing the data for
-#'   safety if desired. If the data are formatted properly, the automatic
+#'   format, the \code{prepSS} function can often automatically decipher the
+#'   data, but the user may specify explicit instructions for parsing the data
+#'   for safety if desired. If the data are formatted properly, the automatic
 #'   parsing is reliable in most cases. There are two exceptions. (1) If
 #'   there is more than one column with possible dates (formatted as formal
 #'   dates (as class \code{Date}, \code{POSIXlt} or \code{POSIXct}) or
@@ -937,8 +937,8 @@ summary.gGenericSize <- function(object, ..., CL = 0.95){
 #'  whether the given unit was searched (= 1) or not (= 0) on the given date)
 #'
 #' @param datesSearchedCol name of the column with the search dates in it
-#'  (optional). If no \code{datesSearchedCol} is given, \code{prepSS} will attempt
-#'  to find the date column based on data formats. If there is exactly one
+#'  (optional). If no \code{datesSearchedCol} is given, \code{prepSS} will 
+#'  try to find the date column based on data formats. If there is exactly one
 #'  column that can be interpreted as dates, that column will be taken as the
 #'  dates searched. If more than one date column is found, \code{prepSS} exits
 #'  with an error message.

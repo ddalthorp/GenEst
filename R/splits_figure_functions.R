@@ -58,12 +58,12 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
     if ((vartype[1] %in% c("time", "SS")) & rate) {
       hwid <- deltaT/2
       xlim <- range(times)
-      ylim <- range(matrixStats::rowQuantiles(splits[[vi]],
+      ylim <- range(rowQuantiles(splits[[vi]],
         probs = c(alpha/2, 1 - alpha/2))/deltaT)
     } else {
       hwid <- rep(0.45, nlevel_h) # half-width of boxes
       xlim <- c(1, nlevel_h) + hwid[1] * c(-1, 1)
-      ylim <- range(matrixStats::rowQuantiles(splits[[vi]],
+      ylim <- range(rowQuantiles(splits[[vi]],
         probs = c(alpha/2, 1 - alpha/2)))
     }
     plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F,
@@ -108,7 +108,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       axis(4, at = mean(par("usr")[c(3, 4)]), labels = vnames[vi],
         tck = 0, mgp = c(3, 0.5, 0), cex.axis = cex.axis)
     }
-    graphics::box()
+    box()
   }
   mtext(side = 1, vars[1], line = 4.6, cex = 1.2)
   if (vartype[1] == "SS" & rate) {

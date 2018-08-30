@@ -10,11 +10,11 @@
 #'   \code{k} (akin to aslope).
 #'
 #' @details
-#'   The probability of finding a carcass that is present at the time of search
-#'   is \code{p} on the first search after carcass arrival and is assumed to
-#'   decrease by a factor of \code{k} each time the carcass is missed in 
-#'   searches. Both \code{p} and \code{k} may depend on covariates such as 
-#'   ground cover, season, species, etc., and a separate model format 
+#'   The probability of finding a carcass that is present at the time of 
+#'   search is \code{p} on the first search after carcass arrival and is 
+#'   assumed todecrease by a factor of \code{k} each time the carcass is  
+#'   missed insearches. Both \code{p} and \code{k} may depend on covariates 
+#'   such as ground cover, season, species, etc., and a separate model format 
 #'   (\code{formula_p} and \code{formula_k}) may be entered for each. The 
 #'   models are entered as they would be in the familiar \code{lm} or 
 #'   \code{glm} functions in R. For example, \code{p} might vary with
@@ -218,9 +218,8 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   # simplified and vectorized calculations of
   #1. number of times each carcass was missed in searches, and
   #2. which search carcasses were found on (0 if not found)
-  misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
-  foundOn <- matrixStats::rowMaxs(
-    obsData * matrixStats::rowCumsums(1 * !is.na(obsData)), na.rm = T)
+  misses <- rowCounts(obsData, value = 0, na.rm =T)
+  foundOn <- rowMaxs(obsData * rowCumsums(1 * !is.na(obsData)), na.rm = T)
   if (any(misses >= foundOn & foundOn > 0)){
     stop("Searches continue after carcass discovery? Check data.")
   }
@@ -404,7 +403,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     "nbeta_k", "varbeta", "levels_p", "levels_k", "carcCells", "AIC", "cells",
     "ncell", "observations", "loglik", "pOnly")
   return(output)
-} # pkm
+} 
 
 #' @title Print a \code{\link{pkm}} model object
 #'
@@ -473,11 +472,11 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 
   powk <- matrix(k, nrow = ncell, ncol = maxmisses + 1)
   powk[ , 1] <- 1
-  powk <- matrixStats::rowCumprods(powk)
+  powk <- rowCumprods(powk)
 
   pmiss <- matrix(1 - (p * powk[ , 1:(maxmisses + 1)]), nrow = ncell)
-  pmiss <- matrixStats::rowCumprods(pmiss)
-  pfind <- matrixStats::rowDiffs(1 - pmiss)
+  pmiss <- rowCumprods(pmiss)
+  pfind <- rowDiffs(1 - pmiss)
   pfind_si <- cbind(pk[ , 1], pfind)
 
   notFoundCell <- cellByCarc[foundOn == 0]
@@ -557,21 +556,20 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
       )
       kFixed <- kFixed[1]
     }
-    if (is.numeric(kFixed) && !is.na(kFixed) && length(formula_k) > 0 && quiet == FALSE){
-      message("Formula and fixed value provided for k, fixed value used.")
-      formula_k <- NULL
-    }
-    if (length(which(obsCol %in% colnames(data))) == 1){
-      if (length(formula_k) > 0 & quiet == FALSE){
-        message("Only one search occasion for each carcass; k not estimated.")
-      }
-      if (length(kFixed) == 1 & quiet == FALSE){
-        message("Only one search occasion for each carcass; kFixed ignored.")
+    if (is.numeric(kFixed) && !is.na(kFixed) && length(formula_k) > 0){ 
+      if(quiet == FALSE){
+        message("Formula and fixed value provided for k, fixed value used.")
       }
       formula_k <- NULL
-      kFixed <- NULL
     }
   }
+  if (sum(obsCol %in% colnames(data)) == 1 & length(formula_k) > 0){
+    if (quiet == FALSE){
+      message("Only one search occasion for each carcass; k not estimated.")
+    }
+    formula_k <- NULL
+  }
+
   unfixk <- FALSE
   if (length(formula_k) == 0){
     if (length(kFixed) == 0){
@@ -693,7 +691,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   class(output) <- c("pkmSet", "list")
   return(output)
-} # pkmSet
+} 
 
 
 #' @title Fit all possible searcher efficiency models across all size classes
@@ -766,7 +764,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     out <- list()
     out[["all"]] <- pkmSet(formula_p = formula_p, formula_k = formula_k,
       data = data, obsCol = obsCol, kFixed = kFixed, kInit = kInit,
-      CL = CL, quiet = TRUE)
+      CL = CL, quiet = quiet)
     return(out)
   }
   if ((sizeclassCol %in% colnames(data)) == FALSE){
@@ -777,7 +775,9 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   sizeclasses <- unique(sizeclassData)
   nsizeclasses <- length(sizeclasses)
 
-  if (all(is.na(kFixed))) kFixed <- NULL
+  if (all(is.na(kFixed))){
+    kFixed <- NULL
+  }
   if (length(kFixed) >= 1){
     kFixed <- kFixed[!is.na(kFixed)]
     if (length(kFixed) == 1 && is.null(names(kFixed))){
@@ -785,12 +785,14 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     # all sizes take on the same kFixed value
       kFixed <- rep(kFixed, nsizeclasses) 
       names(kFixed) <- sizeclasses
-      message(
-        "One unnamed kFixed value provided by user. ",
-        "All classes are assumed to have kFixed = ", kFixed[1], ". ",
-        "To specify specific classes to apply kFixed values to, ",
-        "class names must be provided in kFixed vector."
-      )
+      if (quiet == FALSE){
+        message(
+          "One unnamed kFixed value provided by user. ",
+          "All classes are assumed to have kFixed = ", kFixed[1], ". ",
+          "To specify specific classes to apply kFixed values to, ",
+          "class names must be provided in kFixed vector."
+        )
+      }
     } else {
       if (is.null(names(kFixed)) || !all(names(kFixed) %in% sizeclasses)){
         stop("kFixed names must be names of size classes.")
@@ -805,7 +807,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   class(out) <- c("pkmSetSize", "list")
   return(out)
-} #pkmSetSize
+} 
 
 #' @title Create the AICc tables for a set of searcher efficiency models
 #' 
@@ -947,7 +949,7 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   if (length(seed) > 0 && !is.na(seed[1])){
     set.seed(as.numeric(seed[1]))
   }
-  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
+  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
 
@@ -958,7 +960,8 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   }
   colnames(sim_k) <- cellNames
 
-  output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
+  output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], 
+                   k = sim_k[, x]))
   names(output) <- cellNames
 
   return(output)
@@ -991,7 +994,7 @@ pkmFail <- function(pkmod){
 #' @export
 #'
 pkmSetFail <- function(pkmSetToCheck){
-  unlist(lapply(pkmSetToCheck, pkmFail)) # preserves names
+  unlist(lapply(pkmSetToCheck, pkmFail)) 
 }
 
 #' @title Check if all of the pkm models fail
@@ -1093,9 +1096,9 @@ SEsi <- function(days, pk){
   } else {
       powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
       powk[ , 1] <- 1
-      powk <- matrixStats::rowCumprods(powk)
+      powk <- rowCumprods(powk)
       pfind.si <- pk[, 1] * powk * cbind(
-        rep(1, npk), matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+        rep(1, npk), rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
       )
   }
   return(t(pfind.si)) 

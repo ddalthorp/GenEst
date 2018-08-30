@@ -80,6 +80,12 @@ update_input_data_CO <- function(rv, session){
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
   updateSelectizeInput(session, "splitCol", choices = rv$colNames_CO)
   updateSelectizeInput(session, "dateFoundCol", choices = rv$colNames_COdates)
+  if (length(rv$colNames_COdates == 1)){
+    updateSelectizeInput(session, "dateFoundCol", 
+      choices = rv$colNames_COdates, selected = rv$colNames_COdates
+    )
+  }
+
   updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_all,
     selected = rv$sizeclassCol
   )

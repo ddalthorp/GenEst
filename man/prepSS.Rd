@@ -2,8 +2,8 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{prepSS}
 \alias{prepSS}
-\title{Create search schedule data into an prepSS object for convenient splits
- analyses}
+\title{Create search schedule data into an prepSS object for convenient 
+ splits analyses}
 \usage{
 prepSS(data_SS, datesSearchedCol = NULL, preds = NULL)
 }
@@ -14,8 +14,8 @@ of the search intervals), and each unit (with 1s and 0s to indicate
 whether the given unit was searched (= 1) or not (= 0) on the given date)}
 
 \item{datesSearchedCol}{name of the column with the search dates in it
-(optional). If no \code{datesSearchedCol} is given, \code{prepSS} will attempt
-to find the date column based on data formats. If there is exactly one
+(optional). If no \code{datesSearchedCol} is given, \code{prepSS} will 
+try to find the date column based on data formats. If there is exactly one
 column that can be interpreted as dates, that column will be taken as the
 dates searched. If more than one date column is found, \code{prepSS} exits
 with an error message.}
@@ -32,9 +32,9 @@ search schedules.}
 }
 \description{
 Since data_SS columns largely have a specific, required
-  format, the \code{prepSS} function can often decipher the data automatically,
-  but the user may specify explicit instructions for parsing the data for
-  safety if desired. If the data are formatted properly, the automatic
+  format, the \code{prepSS} function can often automatically decipher the
+  data, but the user may specify explicit instructions for parsing the data
+  for safety if desired. If the data are formatted properly, the automatic
   parsing is reliable in most cases. There are two exceptions. (1) If
   there is more than one column with possible dates (formatted as formal
   dates (as class \code{Date}, \code{POSIXlt} or \code{POSIXct}) or
