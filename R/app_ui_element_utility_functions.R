@@ -7,7 +7,7 @@
 #' @export
 #'
 navbar <- function(){
-  div(img(src = "GenEst.png", style =  "margin-top: -8px;", height = 40))
+  div(img(src = "GenEst.png", style = "margin-top: -8px;", height = 40))
 }
 
 

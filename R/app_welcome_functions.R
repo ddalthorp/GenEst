@@ -88,13 +88,20 @@ modalTextWest <- function(){
 #'
 #' @description Create a text string of the version number and date
 #'
+#' @param type "Full" or "Short"
+#'
 #' @return version text
 #'
 #' @export
 #'
-createvtext <- function(){
+createvtext <- function(type = "Full"){
   vnumber <- packageDescription("GenEst", fields = "Version")
   vdate <- packageDescription("GenEst", fields = "Date")
-  vtext <- paste("This is version ", vnumber, " (", vdate, ")", sep = "")
+  if (type == "Full"){
+    vtext <- paste0("This is version ", vnumber, " (", vdate, ")")
+  }
+  if (type == "Short"){
+    vtext <- paste0("v", vnumber)
+  }
   return(vtext)
 }
