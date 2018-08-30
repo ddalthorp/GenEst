@@ -4,7 +4,10 @@
 \alias{createvtext}
 \title{Create the version text for GenEst}
 \usage{
-createvtext()
+createvtext(type = "Full")
+}
+\arguments{
+\item{type}{"Full" or "Short"}
 }
 \value{
 version text
