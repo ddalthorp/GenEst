@@ -4,7 +4,7 @@ author: "Daniel Dalthorp"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{GenEst - A Tutorial with Wind Examples}
+  %\VignetteIndexEntry{GenEst - 1. A Tutorial with Wind Examples}
   %\VignetteEngine{knitr::rmarkdown}
   \usepackage[utf8]{inputenc}
 ---
