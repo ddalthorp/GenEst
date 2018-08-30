@@ -255,9 +255,6 @@ msgModSENobs <- function(rv){
     if(length(rv$formula_k) > 0 & length(rv$kFixed) == 0){
       return("Only one observation column, k not estimated.")
     }
-    if (length(rv$kFixed) == 1){
-      return("Only one observation, fix k input ignored.")
-    }
   }
   NULL
 }

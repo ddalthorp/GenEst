@@ -110,16 +110,16 @@ Carcass persistence is modeled as survival function where the
   ("location") and \code{s} ("scale").
 }
 \details{
-The probability of a carcass persisting to a particular time is dictated
-  by the specific distribution chosen and its underlying location (l) and 
-  scale (s) parameters (for all models except the exponential, which only 
-  has a location parameter). Both \code{l} and \code{s} may depend on 
-  covariates such as ground cover, season, species, etc., and a separate 
-  model format (\code{formula_l} and \code{formula_s}) may be entered for 
-  each. The models are entered as they would be in the familiar \code{lm} 
-  or \code{glm} functions in R. For example, \code{l} might vary with 
-  \code{visibility}, \code{season}, and \code{site}, while \code{s} varies 
-  only with \code{visibility}. A user might then enter 
+The probability of a carcass persisting to a particular time is 
+  dictated by the specific distribution chosen and its underlying location
+  (l) and  scale (s) parameters (for all models except the exponential,  
+  which only has a location parameter). Both \code{l} and \code{s} may 
+  depend on covariates such as ground cover, season, species, etc., and a 
+  separate model format (\code{formula_l} and \code{formula_s}) may be 
+  entered for each. The models are entered as they would be in the familiar 
+  \code{lm} or \code{glm} functions in R. For example, \code{l} might 
+  vary with \code{visibility}, \code{season}, and \code{site}, while 
+  \code{s} varies only with \code{visibility}. A user might then enter 
   \code{l ~ visibility + season + site} for \code{formula_l} and 
   \code{s ~ visibility} for \code{formula_s}. Other R conventions for 
   defining formulas may also be used, with \code{covar1:covar2} for the 
