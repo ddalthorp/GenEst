@@ -2,8 +2,8 @@
 % Please edit documentation in R/utility_functions.R
 \name{Etcbinom}
 \alias{Etcbinom}
-\title{Expected value of a truncated continuous binomial with size = 1/g and
- truncated below at g.}
+\title{Expected value of a truncated continuous binomial with size = 1/g 
+ and truncated below at g.}
 \usage{
 Etcbinom(prob)
 }

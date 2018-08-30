@@ -9,11 +9,11 @@ combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
 \arguments{
 \item{preds_CP}{Carcass persistence predictor variables.}
 
-\item{preds_SE}{Seacher efficiency predictor variables.}
+\item{preds_SE}{Searcher efficiency predictor variables.}
 
 \item{data_CP}{Carcass persistence data.}
 
-\item{data_SE}{Seacher efficiency data.}
+\item{data_SE}{Searcher efficiency data.}
 }
 \value{
 Factor combination table.

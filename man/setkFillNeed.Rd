@@ -4,10 +4,10 @@
 \alias{setkFillNeed}
 \title{Create the kFillNeed text}
 \usage{
-setkFillNeed(obsCols)
+setkFillNeed(rv)
 }
 \arguments{
-\item{obsCols}{vector of observation column names}
+\item{rv}{reactive value list}
 }
 \value{
 kFillNeed character of "yes" or "no"
