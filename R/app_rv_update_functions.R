@@ -99,6 +99,33 @@ update_rv_data_CO <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when a size class column is selected
+#'
+#' @description Update the rv list when the size class column is selected
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_sizeClassCol <- function(rv, input){
+
+  scCol <- input$sizeclassCol
+  sizeclasses <- unique(c(rv$data_SE[ , scCol], rv$data_CP[ , input$scCol]))
+  rv$nsizeclasses <- length(sizeclasses)
+  if (rv$nsizeclasses > 1 & is.null(rv$DWPCol)){
+    rv$DWPCol <- sizeclasses[1]
+  } 
+  if (rv$nsizeclasses == 0){
+    rv$DWPCol <- NULL
+  }
+  rv
+}
+
+
 #' @title Run the SE Models
 #'
 #' @description Use the inputs to run the SE models requested by the UI
@@ -505,6 +532,9 @@ update_rv_run_M <- function(rv, input){
   rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
   rv$CPmodToUse <- rep(NA, rv$nsizeclasses)
 
+  if (length(rv$SEmodToUse) != length(rv$CPmodToUse)){
+    return(rv)
+  }
   for (sci in 1:rv$nsizeclasses){
     rv$SEmodToUse[sci] <- input[[sprintf("modelChoices_SE%d", sci)]]
     rv$CPmodToUse[sci] <- input[[sprintf("modelChoices_CP%d", sci)]]
@@ -518,8 +548,18 @@ update_rv_run_M <- function(rv, input){
   names(rv$SEmodToUse) <- rv$sizeclasses
   names(rv$CPmodToUse) <- rv$sizeclasses
 
-  rv$models_SE <- trimSetSize(rv$mods_SE, rv$SEmodToUse)
-  rv$models_CP <- trimSetSize(rv$mods_CP, rv$CPmodToUse)
+  rv$models_SE <- tryCatch(
+                    trimSetSize(rv$mods_SE, rv$SEmodToUse), 
+                    error = function(x){NULL}
+                  )
+  rv$models_CP <- tryCatch(
+                    trimSetSize(rv$mods_CP, rv$CPmodToUse), 
+                    error = function(x){NULL}
+                  )
+  if(any(c(is.null(rv$models_SE), is.null(rv$models_CP)))){
+    rv$M <- NULL
+    return(rv)
+  }
 
   if (rv$nsizeclasses > 1){
     rv$DWPCol <- NULL
