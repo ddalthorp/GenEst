@@ -1,5 +1,5 @@
 # GenEst Deploy
-This is a repository for deploying the GenEst app on shinyapps.io.
+This is a subdirectory for deploying the GenEst app on shinyapps.io.
 
 The following instructions assume that you have already created a shinyapps.io
 account and have configured **rsconnect** to work with your account.
@@ -22,17 +22,19 @@ if(length(packages) > 0){
 devtools::install_github("ddalthorp/genest")
 ```
 
-3. Clone this repository to your local machine, and set the working directory
-to the `/GenEst` folder within the repository's location on your local machine.
+3. Open R
+
+4. Set the working directory to the `/deployment/GenEst` folder within the 
+repository's location on your local machine.
 
 
-4. Test that the app can build locally:
+5. Test that the app can build locally:
 
 ```
 shiny::runApp()
 ```
 
-5. Deploy to shinyapps.io:
+6. Deploy to shinyapps.io:
 
 ```
 rsconnect::deployApp()
