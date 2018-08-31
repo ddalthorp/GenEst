@@ -62,7 +62,9 @@ update_input_data_SS <- function(rv, session){
 #' @export
 #'
 update_input_data_DWP <- function(rv, session){
-  updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
+  if (length(rv$nsizeclasses) == 0){
+    updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
+  }
   updateTabsetPanel(session, "LoadedDataViz", "Density Weighted Proportion")
 }
 
@@ -125,6 +127,8 @@ update_input_sizeclassCol <- function(rv, input, session){
   rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_nosel,
     selected = input$preds_CP)
+  updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
+    selected = rv$DWPCol)
 }
 
 #' @title Update the remaining columns when SE data columns are selected
@@ -204,6 +208,8 @@ update_input_run_SE <- function(rv, session){
   if (rv$kFixedChoice == 1){
     updateNumericInput(session, "kFill", value = rv$kFixed)
   }
+  updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
+    selected = rv$DWPCol)
 }
 
 #' @title Update the SE output dropdown selections when the size class is 
