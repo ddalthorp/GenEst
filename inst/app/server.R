@@ -34,6 +34,7 @@ observeEvent(input$file_CO, {
 })
 
 observeEvent(input$sizeclassCol, {
+  rv <- update_rv_sizeClassCol(rv, input)
   output <- update_output_sizeclassCol(rv, input, output)
   update_input_sizeclassCol(rv, input, session)
 })
