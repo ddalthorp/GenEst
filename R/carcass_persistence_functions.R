@@ -131,38 +131,8 @@
 #'
 cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
                 right = NULL, dist = "exponential", CL = 0.95, quiet = FALSE){
-
-
-  if (length(formula_s) != 0 & dist == "exponential" & quiet == FALSE){
-    message("Formula given for scale, but exponential distribution ",
-            "chosen, which does have a scale parameter. Formula ignored.")
-    formula_s <- formula(s ~ 1)
-  } 
-  if (length(formula_s) == 0){
-    if (dist != "exponential" & quiet == FALSE){
-      message("No formula given for scale; intercept-only model used.")
-    }
-    formula_s <- formula(s ~ 1)
-  } 
-
-  formulaRHS_l <- formula(delete.response(terms(formula_l)))
-  preds_l <- all.vars(formulaRHS_l)
-  if (length(preds_l) > 0){
-    for (predi in 1:length(preds_l)){
-      data[ , preds_l[predi]] <- as.character(data[ , preds_l[predi]])
-    }
-  }
-  levels_l <- .getXlevels(terms(formulaRHS_l), data)
-  formulaRHS_s <- formula(delete.response(terms(formula_s)))
-  preds_s <- all.vars(formulaRHS_s)
-  if (length(preds_s) > 0){
-    for (predi in 1:length(preds_s)){
-      data[ , preds_s[predi]] <- as.character(data[ , preds_s[predi]])
-    }
-  }
-  predCheck <- c(preds_l, preds_s)
-  levels_s <- .getXlevels(terms(formulaRHS_s), data)
-
+  dist <- tolower(dist)
+  # initial error-checking
   if (length(left) == 0){
     left <- "left"
     if (!"left" %in% colnames(data)){
@@ -173,7 +143,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     stop("Input for first time observed column can only be length 0 or 1.")
   }
   if (!left %in% colnames(data)){
-    stop("Column name for first time observed (left) is not in the data.")
+    stop("Column for last time observed (left) missing from data.")
   }
   if (length(right) == 0){
     right <- "right"
@@ -187,190 +157,387 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   if (!right %in% colnames(data)){
     stop("Column name for last time absent (right) is not in the data.")
   }
-  if (sum(predCheck %in% colnames(data)) != length(predCheck)){
-    stop("Predictor(s) in formula(s) not found in data.")
+  if (dist == "exponential"){
+    if (!is.null(formula_s) && !quiet){
+      message("Exponential distribution does not have a scale parameter. ",
+              "formula_s ignored.")
+    }
+    formula_s <- formula(s ~ 1)
+  }
+  formulaRHS_l <- formula(delete.response(terms(formula_l)))
+  preds_l <- all.vars(formulaRHS_l)
+  if (is.null(formula_s)) formula_s <- formula(s ~ 1)
+  
+  formulaRHS_s <- formula(delete.response(terms(formula_s)))
+  preds_s <- all.vars(formulaRHS_s)
+
+  if (!all(c(preds_l, preds_s) %in% colnames(data))){
+    stop("Predictor in CP formula not found in CP data.")
+  }
+  if (anyNA(data[, left])){
+    stop("NA not allowed for 'last time present' in CP data.")
   }
   if (any(data[ , left] > data[ , right], na.rm = TRUE)){
-    stop("Last time observed data are greater than first time absent data.") 
-  }
-  if (all(data[ , left] == data[ , right], na.rm = TRUE)){
-    stop("Last time observed data are identical to first time absent data.") 
+    stop("Some carcasses are observed after they have been removed?")
   }
 
-  preds <- unique(c(preds_l, preds_s) )
+  # build the response variable (Surv object)
+  t1 <- data[ , left]
+  t2 <- data[ , right]
+  event <- rep(3, length(t1)) # interval censored
+  event[is.na(t2) | is.infinite(t2)] <- 0 # study ends before removal
+  event[round(t1, 3) == round(t2, 3)] <- 1 # carcass removal observed
+  t1 <- pmax(t1, 0.0001)
+  tevent <- survival::Surv(time = t1, time2 = t2, event = event, type = "interval")
+
+  # in all cases, formula_l is used (with formula_s appended in some cases)
+#  if (length(all.vars(formula_l)) == 1) mod_l <- l ~ 1
+  if (length(all.vars(formula_l)) == 1) mod_l <- "1"
+  mod_l <- paste(attr(terms(formula_l), "term.labels"), collapse = " + ")
+
+  # parsing the formulas and covariates
+  if (length(preds_l) > 0){
+    for (predi in 1:length(preds_l)){
+      data[ , preds_l[predi]] <- as.character(data[ , preds_l[predi]])
+    }
+  }
+  levels_l <- .getXlevels(terms(formulaRHS_l), data)
+  if (length(preds_s) > 0){
+    for (predi in 1:length(preds_s)){
+      data[ , preds_s[predi]] <- as.character(data[ , preds_s[predi]])
+    }
+  }
+  levels_s <- .getXlevels(terms(formulaRHS_s), data)
+
+  preds <- unique(c(preds_l, preds_s))
   cells <- combinePreds(preds, data)
   ncell <- nrow(cells)
   cellNames <- cells$CellNames
-
-  dataMM_l <- model.matrix(formulaRHS_l, data)
-  dataMM_s <- model.matrix(formulaRHS_s, data)
-  dataMM <- t(cbind(dataMM_l, dataMM_s))
   cellMM_l <- model.matrix(formulaRHS_l, cells)
   cellMM_s <- model.matrix(formulaRHS_s, cells)
   cellMM <- cbind(cellMM_l, cellMM_s)
 
-  nbeta_l <- ncol(dataMM_l)
-  nbeta_s <- ncol(dataMM_s)
+  nbeta_l <- ncol(cellMM_l)
+  nbeta_s <- ncol(cellMM_s)
   nbeta <- nbeta_l + nbeta_s
 
-  ncarc <- nrow(data)
-  cellByCarc <- numeric(ncarc)
-  for (celli in 1:ncell){
-    groupPattern <- cellMM[celli, ]
-    matchingMatrix <- dataMM == groupPattern
-    matchingParts <- apply(matchingMatrix, 2, sum)
-    matchingTotal <- matchingParts == ncol(cellMM)
-    cellByCarc[matchingTotal] <- celli
-  }
-  carcCells <- cellNames[cellByCarc]
-
-  t1 <- data[ , left]
-  t2 <- data[ , right]
-  event <- rep(3, length(t1))
-  event[is.na(t2) | is.infinite(t2)] <- 0
-  event[round(t1, 3) == round(t2, 3)] <- 1
-  t1 <- pmax(t1, 0.0001)
-  tevent <- Surv(time = t1, time2 = t2, event = event, type = "interval")
-  init_formRHS <- as.character(formulaRHS_l)[-1]
-  init_form <- reformulate(init_formRHS, response = "tevent")
-  init_mod <- survreg(formula = init_form, data = data, dist = dist)
-  init_l <- init_mod$coef
-  names(init_l) <- paste("l_", names(init_l), sep = "")
-  init_s <- rep(init_mod$scale, nbeta_s)
-  names(init_s) <- paste("s_", colnames(cellMM_s), sep = "")
-  betaInit <- c(init_l, log(init_s))
-
-  MLE <- tryCatch(
-           optim(par = betaInit, fn = cpLogLik, method = "BFGS", 
-             t1 = t1, t2 = t2, cellMM = cellMM, dist = dist, hessian = TRUE,
-             nbeta_l = nbeta_l, cellByCarc = cellByCarc, dataMM = dataMM, 
-             control = list(maxit = 1000)
-           ), error = function(x) {NA}
-         )
-
-  if (length(MLE) == 1 && is.na(MLE)){
-    stop("Failed optimization. Consider simplifying predictors.")
-  }
-
-  betahat <- MLE$par
-  convergence <- MLE$convergence
-  betaHessian <- MLE$hessian
+  # traffic directing:
+  #  use survreg if:
+  #   1. dist == exponential, or
+  #   2. there is no "+" in formula_s and length(preds_s) <= 2
+  #  otherwise, use custom MLE fitting function with optim
   if (dist == "exponential"){
-    which_s <- (nbeta_l + 1):nbeta
-    betaHessian <- betaHessian[-which_s, -which_s]
-  }
-  llik <- -MLE$value  
-
-  nparam <- length(betahat)  
-  if (dist == "exponential"){
-    nparam <- length(betahat) - 1
-  }
-  AIC <- 2 * nparam - 2 * llik
-  AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
-  AICc <- round(AIC + AICcOffset, 2)
-  AIC <- round(AIC, 2)
-
-  betahat_l <- betahat[1:nbeta_l]
-  names(betahat_l) <- colnames(dataMM_l)
-  betahat_s <- betahat[(nbeta_l + 1):(nbeta)]
-  names(betahat_s) <- colnames(dataMM_s)
-
-  varbeta <- tryCatch(solve(betaHessian), error = function(x) {NA})
-  if (is.na(varbeta)[1]){
-    stop("Model generates unstable variance estimate.")
-  }
-  varbeta_l <- varbeta[1:nbeta_l, 1:nbeta_l]
-  cellMean_l <- cellMM_l %*% betahat_l
-  cellVar_l <- cellMM_l %*% varbeta_l %*% t(cellMM_l)
-  cellSD_l <- sqrt(diag(cellVar_l))
-
-  if (dist == "exponential"){
-    cellMean_s <- 1
-    cellSD_s <- 0
+    # use survreg with formula_l
+    use_survreg <- T
+    formula_cp <- reformulate(as.character(formulaRHS_l[-1]), response = "tevent")
+  } else if ("+" %in% all.names(formula_s) || length(preds_s) > 2){
+    # use custom fitting
+    use_survreg <- F
   } else {
-    which_s <- (nbeta_l + 1):(nbeta)
-    varbeta_s <- varbeta[which_s, which_s]
-    cellMean_s <- cellMM_s %*% betahat_s
-    cellVar_s <- cellMM_s %*% varbeta_s %*% t(cellMM_s)
-    cellSD_s <- sqrt(diag(cellVar_s))
+    # use survreg and convert formula_s to 'strata' format
+    use_survreg <- T
+    if (!is.language(formula_s) || length(all.vars(formula_s)) == 1){
+      # scale formula not provided (assumed constant) or is set to constant
+      formula_cp <- reformulate(as.character(formulaRHS_l[-1]),
+        response = "tevent")
+    } else {
+      mod_s <- paste0(
+        "strata(", paste(all.vars(formula_s)[-1], collapse = ", "), ")")
+      formula_cp <- reformulate(paste(mod_l, mod_s, sep = " + "),
+        response = "tevent")
+    }
   }
 
-  probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
-  cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
-  cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
-  colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
-  cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
-  cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
-  colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
-  cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
+  if (use_survreg){
+    cpmod <- tryCatch(
+      survival::survreg(formula = formula_cp, data = data, dist = dist),
+      error = function(x) NA, warning = function (x) NA
+    )
+    if (length(cpmod) == 1){
+      stop("Failed CP optimization. Consider using fewer covariates.")
+    }
+    betahat_l <- cpmod$coefficients
+    npreds_s <- length(all.vars(formula_s)) - 1
+    if (npreds_s == 0){
+      betahat_s <- log(cpmod$scale)
+      varbeta <- cpmod$var
+      carcCells <- rep('all', nrow(data))
+    } else if (npreds_s == 1){
+      tmat <- diag(nbeta)
+      tmat[-(1:(nbeta_l+1)), nbeta_l + 1] <- -1
+      varbeta <- tmat %*% cpmod$var %*% t(tmat)
+      betahat_s <- as.vector(tmat[-(1:nbeta_l), -(1:nbeta_l)] %*% log(cpmod$scale))
+    } else if (npreds_s == 2) {
+      nlev1 <- length(levels_s[[1]])
+      nlev2 <- length(levels_s[[2]])
+      nbeta_s <- nlev1 * nlev2
+      tmat <- matrix(0, nrow = nbeta_s, ncol = nbeta_s)
+      tmat[, 1] <- 1
+      matInd1 <- cbind(rep(1:nlev1, each = nlev2), rep(1:nlev2, nlev1))
+      interactInd <- expand.grid(1:(nlev1-1), 1:(nlev2-1)) + 1
+      for (vvi in 1:nbeta_s){
+        # additive terms
+        i1 <- matInd1[vvi, 1]
+        i2 <- matInd1[vvi, 2]
+        tmat[vvi, i1] <- 1
+        if (i2 > 1){
+          tmat[vvi, nlev1 - 1 + i2] <- 1
+          # interactions
+          if (i1 > 1){
+            tmat[vvi, nlev1 + nlev2 -1 + which(interactInd[,1] ==i1 & interactInd[,2] == i2)] <- 1
+          }
+        }
+      }
+      tmat <- solve(tmat)
+      tM <- diag(nbeta)
+      tM[-(1:nbeta_l), -(1:nbeta_l)] <- tmat
+      varbeta <- tM %*% cpmod$var %*% t(tM)
+      betahat_s <- as.vector(tmat %*% log(cpmod$scale))
+    }
+    varbeta_l <- varbeta[1:nbeta_l, 1:nbeta_l]
+    cellMean_l <- cellMM_l %*% betahat_l
+    cellVar_l <- cellMM_l %*% varbeta_l %*% t(cellMM_l)
+    cellSD_l <- sqrt(diag(cellVar_l))
 
-  if (dist == "exponential"){
-    cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
-    colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- round(exp(cellTable_l), 3)
-    colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
-  }
-  if (dist == "weibull"){
-    cellTable_a <- round(1 / cellTable_s, 3)
-    colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- round(exp(cellTable_l), 3)
-    colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
-  }
-  if (dist == "lognormal"){
-    cellTable_a <- round(cellTable_s^2, 3)
-    colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- round(cellTable_l, 3)
-    colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
-  }
-  if (dist == "loglogistic"){
-    cellTable_a <- round(1 / cellTable_s, 3)
-    colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
-    cellTable_b <- round(exp(cellTable_l), 3)
-    colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
-  }  
-  cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
+    if (dist == "exponential"){
+      cellMean_s <- 1
+      cellSD_s <- 0
+    } else {
+      which_s <- (nbeta_l + 1):nbeta
+      varbeta_s <- varbeta[which_s, which_s]
+      cellMean_s <- cellMM_s %*% betahat_s
+      cellVar_s <- cellMM_s %*% varbeta_s %*% t(cellMM_s)
+      cellSD_s <- sqrt(diag(cellVar_s))
+    }
+
+    probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
+    cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
+    cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
+    colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
+    cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
+    cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
+    colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
+    cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
+    if (dist == "exponential"){
+      cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
+      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_b <- round(exp(cellTable_l), 3)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+    }
+    if (dist == "weibull"){
+      cellTable_a <- round(1 / cellTable_s, 3)
+      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_b <- round(exp(cellTable_l), 3)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+    }
+    if (dist == "lognormal"){
+      cellTable_a <- round(cellTable_s^2, 3)
+      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_b <- round(cellTable_l, 3)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+    }
+    if (dist == "loglogistic"){
+      cellTable_a <- round(1 / cellTable_s, 3)
+      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_b <- round(exp(cellTable_l), 3)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+    }
+    cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
+    if (length(preds) > 0){
+      carcCells <- data[, preds[1]]
+      if (length(preds) > 1){
+        for (pri in 2:length(preds)){
+          carcCells <- paste(carcCells, data[, preds[pri]], sep = '.')
+        }
+      }
+    }
+
+    if (dist == "exponential"){
+      nbeta_s <- 0
+    }
+    output <- list()
+    output$call <- match.call()
+    output$data <- data
+    output$formula_l <- formula_l
+    output$formula_s <- formula_s
+    output$distribution <- dist
+    output$predictors <- preds
+    output$predictors_l <- preds_l
+    output$predictors_s <- preds_s
+    output$AIC <- AIC(cpmod)
+    k <- ifelse(is.null(dim(cpmod$var)), 1, dim(cpmod$var)[1])
+    n <- dim(cpmod$y)[1]
+    output$AICc <- output$AIC + (2*k*(k + 1))/(n - k - 1)
+    output$convergence <- 0 # cpmod previously error-checked
+    output$varbeta <- varbeta
+    output$cellMM_l <- cellMM_l
+    output$cellMM_s <- cellMM_s
+    output$nbeta_l <- nbeta_l
+    output$nbeta_s <- nbeta_s
+    output$betahat_l <- betahat_l
+    output$betahat_s <- betahat_s
+    output$levels_l <- levels_l
+    output$levels_s <- levels_s
+    output$cells <- cells
+    output$ncell <- ncell
+    output$cellwiseTable_ls <- cellTable_ls
+    output$cellwiseTable_ab <- cellTable_ab
+    output$CL <- CL
+    output$observations <- data[ , c(left, right)]
+    output$carcCells <- carcCells
+    output$loglik <- cpmod$loglik[2]
+  } else if (!use_survreg){
+    dataMM_l <- model.matrix(formulaRHS_l, data)
+    dataMM_s <- model.matrix(formulaRHS_s, data)
+    dataMM <- t(cbind(dataMM_l, dataMM_s))
+    ncarc <- nrow(data)
+    cellByCarc <- numeric(ncarc)
+    for (celli in 1:ncell){
+      groupPattern <- cellMM[celli, ]
+      matchingMatrix <- dataMM == groupPattern
+      matchingParts <- apply(matchingMatrix, 2, sum)
+      matchingTotal <- matchingParts == ncol(cellMM)
+      cellByCarc[matchingTotal] <- celli
+    }
+    carcCells <- cellNames[cellByCarc]
+    init_formRHS <- as.character(formulaRHS_l)[-1]
+    init_form <- reformulate(init_formRHS, response = "tevent")
+    init_mod <- survival::survreg(formula = init_form, data = data, dist = dist)
+    init_l <- init_mod$coef
+    names(init_l) <- paste("l_", names(init_l), sep = "")
+    init_s <- rep(init_mod$scale, nbeta_s)
+    names(init_s) <- paste("s_", colnames(cellMM_s), sep = "")
+    betaInit <- c(init_l, log(init_s))
+
+    MLE <- tryCatch(
+             optim(par = betaInit, fn = cpLogLik, method = "BFGS",
+               t1 = t1, t2 = t2, cellMM = cellMM, dist = dist, hessian = TRUE,
+               nbeta_l = nbeta_l, cellByCarc = cellByCarc, dataMM = dataMM,
+               control = list(maxit = 1000)
+             ), error = function(x) {NA}
+           )
+
+    if (length(MLE) == 1 && is.na(MLE)){
+      stop("Failed optimization. Consider simplifying predictors.")
+    }
+
+    betahat <- MLE$par
+    convergence <- MLE$convergence
+    betaHessian <- MLE$hessian
+    if (dist == "exponential"){
+      which_s <- (nbeta_l + 1):nbeta
+      betaHessian <- betaHessian[-which_s, -which_s]
+    }
+    llik <- -MLE$value
+
+    nparam <- length(betahat)
+    if (dist == "exponential"){
+      nparam <- length(betahat) - 1
+    }
+    AIC <- 2 * nparam - 2 * llik
+    AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
+    AICc <- AIC + AICcOffset
+
+    betahat_l <- betahat[1:nbeta_l]
+    names(betahat_l) <- colnames(dataMM_l)
+    betahat_s <- betahat[(nbeta_l + 1):(nbeta)]
+    names(betahat_s) <- colnames(dataMM_s)
+
+    varbeta <- tryCatch(solve(betaHessian), error = function(x) {NA})
+    if (is.na(varbeta)[1]){
+      stop("Model generates unstable variance estimate.")
+    }
+    varbeta_l <- varbeta[1:nbeta_l, 1:nbeta_l]
+    cellMean_l <- cellMM_l %*% betahat_l
+    cellVar_l <- cellMM_l %*% varbeta_l %*% t(cellMM_l)
+    cellSD_l <- sqrt(diag(cellVar_l))
+
+    if (dist == "exponential"){
+      cellMean_s <- 1
+      cellSD_s <- 0
+    } else {
+      which_s <- (nbeta_l + 1):(nbeta)
+      varbeta_s <- varbeta[which_s, which_s]
+      cellMean_s <- cellMM_s %*% betahat_s
+      cellVar_s <- cellMM_s %*% varbeta_s %*% t(cellMM_s)
+      cellSD_s <- sqrt(diag(cellVar_s))
+    }
+
+    probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
+    cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
+    cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
+    colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
+    cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
+    cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
+    colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
+    cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
+
+    if (dist == "exponential"){
+      cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
+      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_b <- round(exp(cellTable_l), 3)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+    }
+    if (dist == "weibull"){
+      cellTable_a <- round(1 / cellTable_s, 3)
+      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_b <- round(exp(cellTable_l), 3)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+    }
+    if (dist == "lognormal"){
+      cellTable_a <- round(cellTable_s^2, 3)
+      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_b <- round(cellTable_l, 3)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+    }
+    if (dist == "loglogistic"){
+      cellTable_a <- round(1 / cellTable_s, 3)
+      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_b <- round(exp(cellTable_l), 3)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+    }
+    cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
 
 
-  if (dist == "exponential"){
-    nbeta_s <- 0
+    if (dist == "exponential"){
+      nbeta_s <- 0
+    }
+    output <- list()
+    output$call <- match.call()
+    output$data <- data
+    output$formula_l <- formula_l
+    output$formula_s <- formula_s
+    output$distribution <- dist
+    output$predictors <- preds
+    output$predictors_l <- preds_l
+    output$predictors_s <- preds_s
+    output$AIC <- AIC
+    output$AICc <- AICc
+    output$convergence <- 0
+    output$varbeta <- varbeta
+    output$cellMM_l <- cellMM_l
+    output$cellMM_s <- cellMM_s
+    output$nbeta_l <- nbeta_l
+    output$nbeta_s <- nbeta_s
+    output$betahat_l <- betahat_l
+    output$betahat_s <- betahat_s
+    output$levels_l <- levels_l
+    output$levels_s <- levels_s
+    output$cells <- cells
+    output$ncell <- ncell
+    output$cellwiseTable_ls <- cellTable_ls
+    output$cellwiseTable_ab <- cellTable_ab
+    output$CL <- CL
+    output$observations <- data[ , c(left, right)]
+    output$carcCells <- carcCells
+    output$loglik <- llik
+
   }
-  output <- list()
-  output$call <- match.call()
-  output$data <- data
-  output$formula_l <- formula_l
-  output$formula_s <- formula_s
-  output$distribution <- dist
-  output$predictors <- preds 
-  output$predictors_l <- preds_l
-  output$predictors_s <- preds_s
-  output$AIC <- AIC
-  output$AICc <- AICc
-  output$convergence <- convergence
-  output$varbeta <- varbeta
-  output$cellMM_l <- cellMM_l
-  output$cellMM_s <- cellMM_s
-  output$nbeta_l <- nbeta_l  
-  output$nbeta_s <- nbeta_s
-  output$betahat_l <- betahat_l
-  output$betahat_s <- betahat_s
-  output$levels_l <- levels_l
-  output$levels_s <- levels_s
-  output$cells <- cells
-  output$ncell <- ncell
-  output$cellwiseTable_ls <- cellTable_ls
-  output$cellwiseTable_ab <- cellTable_ab
-  output$CL <- CL
-  output$observations <- data[ , c(left, right)]
-  output$carcCells <- carcCells
-  output$loglik <- llik
   class(output) <- c("cpm", "list")
-  attr(output, "hidden") <- c("data", "predictors_l", "predictors_s", 
-                              "betahat_l", "betahat_s", "cellMM_l", 
-                              "cellMM_s", "nbeta_l", "nbeta_s", "varbeta",
-                              "levels_l", "levels_s", "carcCells", 
-                              "AIC", "cells", "ncell", "observations",
-                              "loglik"
-                            )
+  attr(output, "hidden") <- c("data", "predictors_l", "predictors_s",
+    "betahat_l", "betahat_s", "cellMM_l", "cellMM_s", "nbeta_l", "nbeta_s",
+    "varbeta", "levels_l", "levels_s", "carcCells", "AIC", "cells", "ncell",
+    "observations", "loglik")
   return(output)
 }
 
@@ -433,8 +600,8 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
   dataMM_s <- matrix(dataMM[which_s, ], ncol = nbeta_s, byrow = TRUE)
   Beta_l <- dataMM_l %*% beta_l 
   Beta_s <- dataMM_s %*% beta_s  
-  psurv_t1 <- psurvreg(t1, Beta_l, exp(Beta_s), dist)
-  psurv_t2 <- psurvreg(t2, Beta_l, exp(Beta_s), dist)
+  psurv_t1 <- survival::psurvreg(t1, Beta_l, exp(Beta_s), dist)
+  psurv_t2 <- survival::psurvreg(t2, Beta_l, exp(Beta_s), dist)
   psurv_t2[which(is.na(psurv_t2))] <- 1
   lik <- psurv_t2 - psurv_t1
   too_small <- (t1 + 0.0001) >= t2
