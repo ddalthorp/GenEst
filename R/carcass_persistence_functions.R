@@ -156,8 +156,13 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   }
   if (!right %in% colnames(data)){
     stop("Column name for last time absent (right) is not in the data.")
+  if (dist == "exponential"){
+    if (!is.null(formula_s) && length(all.vars(formula_s)) > 1 && !quiet){
+      message("Formula given for scale, but exponential distribution ",
+              "chosen, which does have a scale parameter. Formula ignored.")
+    }
+    formula_s <- formula(s ~ 1)
   }
-
   formulaRHS_l <- formula(delete.response(terms(formula_l)))
   preds_l <- all.vars(formulaRHS_l)
   if (length(formula_s) == 0) formula_s <- formula(s ~ 1)
@@ -223,10 +228,6 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     # use survreg with formula_l
     use_survreg <- T
     formula_cp <- reformulate(as.character(formulaRHS_l[-1]), response = "tevent")
-    if (length(all.vars(formula_s)) > 1 && !quiet){
-      message("Formula given for scale, but exponential distribution ",
-              "chosen, which does have a scale parameter. Formula ignored.")
-    }
   } else if ("+" %in% all.names(formula_s) || length(preds_s) > 2){
     # use custom fitting
     use_survreg <- F
