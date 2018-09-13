@@ -158,15 +158,16 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     stop("Column name for last time absent (right) is not in the data.")
   }
   if (dist == "exponential"){
-    if (!is.null(formula_s) && length(all.vars(formula_s)) > 1 && !quiet){
-      message("Formula given for scale, but exponential distribution ",
-              "chosen, which does have a scale parameter. Formula ignored.")
+    if (!is.null(formula_s) && !quiet){
+      message("Exponential distribution does not have a scale parameter. ",
+              "formula_s ignored.")
     }
     formula_s <- formula(s ~ 1)
   }
   formulaRHS_l <- formula(delete.response(terms(formula_l)))
   preds_l <- all.vars(formulaRHS_l)
-  if (length(formula_s) == 0) formula_s <- formula(s ~ 1)
+  if (is.null(formula_s)) formula_s <- formula(s ~ 1)
+  
   formulaRHS_s <- formula(delete.response(terms(formula_s)))
   preds_s <- all.vars(formulaRHS_s)
 
