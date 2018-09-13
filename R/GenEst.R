@@ -24,7 +24,7 @@
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
 #'   reformulate rnorm runif terms update.formula weighted.mean  
 #' @importFrom sticky sticky
-#' @importFrom survival dsurvreg psurvreg Surv survfit survreg 
+#' @importFrom survival dsurvreg psurvreg Surv survfit survreg strata
 #' @importFrom utils combn packageDescription read.csv write.csv
 #'
 
