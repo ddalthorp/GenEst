@@ -156,6 +156,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   }
   if (!right %in% colnames(data)){
     stop("Column name for last time absent (right) is not in the data.")
+  }
   if (dist == "exponential"){
     if (!is.null(formula_s) && length(all.vars(formula_s)) > 1 && !quiet){
       message("Formula given for scale, but exponential distribution ",
