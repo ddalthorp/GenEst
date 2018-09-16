@@ -218,8 +218,9 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   # simplified and vectorized calculations of
   #1. number of times each carcass was missed in searches, and
   #2. which search carcasses were found on (0 if not found)
-  misses <- rowCounts(obsData, value = 0, na.rm =T)
-  foundOn <- rowMaxs(obsData * rowCumsums(1 * !is.na(obsData)), na.rm = T)
+  misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
+  foundOn <- matrixStats::rowMaxs(
+    obsData * matrixStats::rowCumsums(1 * !is.na(obsData)), na.rm = T)
   if (any(misses >= foundOn & foundOn > 0)){
     stop("Searches continue after carcass discovery? Check data.")
   }
@@ -472,11 +473,11 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 
   powk <- matrix(k, nrow = ncell, ncol = maxmisses + 1)
   powk[ , 1] <- 1
-  powk <- rowCumprods(powk)
+  powk <- matrixStats::rowCumprods(powk)
 
   pmiss <- matrix(1 - (p * powk[ , 1:(maxmisses + 1)]), nrow = ncell)
-  pmiss <- rowCumprods(pmiss)
-  pfind <- rowDiffs(1 - pmiss)
+  pmiss <- matrixStats::rowCumprods(pmiss)
+  pfind <- matrixStats::rowDiffs(1 - pmiss)
   pfind_si <- cbind(pk[ , 1], pfind)
 
   notFoundCell <- cellByCarc[foundOn == 0]
@@ -949,7 +950,7 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   if (length(seed) > 0 && !is.na(seed[1])){
     set.seed(as.numeric(seed[1]))
   }
-  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
+  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
 
@@ -1096,9 +1097,9 @@ SEsi <- function(days, pk){
   } else {
       powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
       powk[ , 1] <- 1
-      powk <- rowCumprods(powk)
+      powk <- matrixStats::rowCumprods(powk)
       pfind.si <- pk[, 1] * powk * cbind(
-        rep(1, npk), rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+        rep(1, npk), matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
       )
   }
   return(t(pfind.si)) 

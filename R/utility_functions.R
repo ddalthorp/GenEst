@@ -179,10 +179,10 @@ Etcbinom <- function(prob){
 #' @export
 #'
 rtcbinom1 <- function(n, prob){
-  tmp <- rcbinom(n, 1/prob, prob)
+  tmp <- cbinom::rcbinom(n, 1/prob, prob)
   ind <- which(tmp < prob)
   while (length(ind) > 0) {
-    tmp[ind] <- rcbinom(length(ind), 1/prob[ind], prob[ind])
+    tmp[ind] <- cbinom::rcbinom(length(ind), 1/prob[ind], prob[ind])
     ind <- ind[which(tmp[ind] < prob[ind])]
   }
   tmp

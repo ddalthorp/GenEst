@@ -4,7 +4,7 @@
 \alias{summary.estM}
 \title{Summarize total mortality estimation}
 \usage{
-\method{summary}{estM}(object, ..., CL = 0.95)
+\method{summary}{estM}(object, ..., CL = 0.9)
 }
 \arguments{
 \item{object}{\code{estM} object}

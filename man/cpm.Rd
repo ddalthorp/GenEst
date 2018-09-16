@@ -4,8 +4,8 @@
 \alias{cpm}
 \title{Fit a single carcass persistence model}
 \usage{
-cpm(formula_l, formula_s = NULL, data = NULL, left = NULL, right = NULL,
-  dist = "exponential", CL = 0.95, quiet = FALSE)
+cpm(formula_l, formula_s = NULL, data = NULL, left = NULL,
+  right = NULL, dist = "exponential", CL = 0.95, quiet = FALSE)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 

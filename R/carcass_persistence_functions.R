@@ -606,7 +606,7 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
   lik <- psurv_t2 - psurv_t1
   too_small <- (t1 + 0.0001) >= t2
   if (any(too_small)){
-    lik[too_small] <- dsurvreg(t2[too_small], Beta_l[too_small],
+    lik[too_small] <- survival::dsurvreg(t2[too_small], Beta_l[too_small],
       exp(Beta_s)[too_small], dist)
   }
   lik <- pmax(lik, .Machine$double.eps) 
@@ -674,7 +674,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
   if (length(seed) > 0){
     set.seed(seed)
   }
-  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
+  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
 
   sim_l <- as.matrix(sim_beta[ , 1:nbeta_l] %*% t(cellMM_l))
   sim_s <- exp(as.matrix(sim_beta[ , which_beta_s] %*% t(cellMM_s)))
@@ -1106,10 +1106,10 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     t0 <- t_search-t_arrive0
     tob <- outer(pdb, t1, "yox")
     part1 <- t1/t(1 + tob^pda) * 
-               t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+               t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     tob <- outer(pdb, t0, "yox")
     part0 <- t0 / t(1 + tob^pda) *
-               t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+               t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
   }
   return(probs)
