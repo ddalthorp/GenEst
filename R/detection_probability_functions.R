@@ -268,7 +268,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     parrive <- diff(days[[xi]][1:(oi+1)])/days[[xi]][oi+1]
     pAjgOi <- t(pOigAj) * parrive; pAjgOi <- t(t(pAjgOi)/colSums(pAjgOi))
     Aj[xi, ] <- # sim arrival intervals (relative to cind's ss)
-       rowSums(rowCumsums(t(pAjgOi)) < runif(nsim)) +
+       rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(nsim)) +
          (sum(SSxi <= min(days[[xi]])))
     xuint <- unique(Aj[xi, ]) # unique xi arrival intervals (in SSxi)
     for (aj in xuint){
@@ -352,10 +352,10 @@ SEsi_left <- function (oi, pk, rng = NULL){
   else {
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
     powk[, 1] <- 1
-    powk <- rowCumprods(powk)
+    powk <- matrixStats::rowCumprods(powk)
     pfind.si <- pk[, 1] * powk * cbind(
       rep(1, npk),
-      rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+      matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
     )
   }
   return(pfind.si[ , oi - rng + 1])
@@ -396,10 +396,10 @@ SEsi_right <- function(nsi, pk){
   else {
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(npk, maxmiss + 1))
     powk[, 1] <- 1
-    powk <- rowCumprods(powk)
+    powk <- matrixStats::rowCumprods(powk)
     pfind.si <- pk[, 1] * powk * cbind(
       rep(1, npk),
-      rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
+      matrixStats::rowCumprods(1 - (pk[, 1] * powk[, 1:maxmiss]))
     )
   }
   return(pfind.si)
@@ -586,10 +586,10 @@ calcg <- function(days, param_SE, param_CP, dist){
   } else {
     powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(n, maxmiss + 1))
     powk[ , 1] <- 1
-    powk <- rowCumprods(powk)
+    powk <- matrixStats::rowCumprods(powk)
     val <- 1 - (pk[ , 1] * powk[ , 1:maxmiss])
     if (is.null(dim(val))) val <- matrix(val, nrow = 1)
-    pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), rowCumprods(val))
+    pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), matrixStats::rowCumprods(val))
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
@@ -783,8 +783,8 @@ estgGenericSize <- function(nsim = 1000, days, modelSetSize_SE,
 averageSS <- function(data_SS, datesSearchedCol = NULL){
   SSdat <- prepSS(data_SS, datesSearchedCol = datesSearchedCol)
   schedules <- t(SSdat$searches_unit) * SSdat$days
-  nintervals <- length(SSdat$days) - colCounts(schedules, value = 0)
-  maxdays <- colMaxs(schedules)
+  nintervals <- length(SSdat$days) - matrixStats::colCounts(schedules, value = 0)
+  maxdays <- matrixStats::colMaxs(schedules)
   aveSS <- seq(0, max(maxdays), round(mean(maxdays/nintervals)))
   return(aveSS)
 }

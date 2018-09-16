@@ -135,12 +135,12 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   c_out <- which(rowSums(gDf) == 0)
   if (length(c_out) == 0){
     n <- length(gDf)
-    Mhat <- ((rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
+    Mhat <- ((cbinom::rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   } else {
     Mhat <- array(0, dim = c(dim(data_CO)[1], nsim))
     gDf <- gDf[-c_out, ]
     n <- length(gDf)
-    Mhat[-c_out,] <- ((rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
+    Mhat[-c_out,] <- ((cbinom::rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   }
   out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, Xtot = nrow(data_CO))
   class(out) <- c("estM", "list")
@@ -286,16 +286,11 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
 #'
 #' @export
 #'
-summary.estM <- function(object, ..., CL = 0.95){
+summary.estM <- function(object, ..., CL = 0.90){
   alpha <- 1 - CL
   Mtot <- colSums(object$Mhat) 
-  Xmin <- object$Xtot
-  Mtot[Mtot < Xmin] <- Xmin
-  out <- c(
-    "Median" = median(Mtot),
-    "lwr" = quantile(Mtot, alpha/2),
-    "upr" = quantile(Mtot, 1 - alpha/2),
-    "CL" = CL
-   )
+  Mtot[Mtot < object$Xtot] <- object$Xtot
+  out <- round(quantile(Mtot, probs = c(0.5, alpha/2, 1 - alpha/2)), 2)
+  names(out) <- c("median", paste0(100*c(alpha/2, 1- alpha/2), "%"))
   return(out)
 }

@@ -30,7 +30,7 @@
 #' @export
 #'
 plot.estM <- function(x, ..., CL = 0.95){
-  simpleMplot(x$M, ..., x$Xtot, CL = CL)
+  simpleMplot(x$Mhat, ..., x$Xtot, CL = CL)
 }
 
 #' @title Plot a total mortality estimation for a simple situation
@@ -50,11 +50,14 @@ plot.estM <- function(x, ..., CL = 0.95){
 #' @export
 #'
 simpleMplot <- function(M, ..., Xmin = 0, CL = 0.95){
-  
-  if ("splitSummary" %in% class(M) | "splitFull" %in% class(M)){
-    Mtot <- as.vector(M)
-  } else {
+  if ("splitSummary" %in% class(M) || "splitFull" %in% class(M)){
+    Mtot <- as.vector(M$M)
+  } else if (is.vector(M)){
+    Mtot <- M
+  } else if (is.matrix(M)){
     Mtot <- apply(M, 2, sum)
+  } else {
+    stop("M is not a proper formatted mortality estimate.")
   }
   Mtot[Mtot < Xmin] <- Xmin
   minMtot <- min(Mtot)
