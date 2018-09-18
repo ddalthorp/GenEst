@@ -1,10 +1,110 @@
 function(input, output, session){
 
-modalWelcome("base")
+#modalWelcome("base")
 rv <- createReactiveValues()
 output$versionInfo_about <- renderText(createvtext())
 output$versionInfo_help <- renderText(createvtext())
 output$SStext <- renderText(rv$SStext)
+
+output$download_RPbat <- downloadHandler(
+  filename = "wind_RPbat.zip",
+  content = function(file)  {
+    pth = "../extdata/wind_RPbat/"
+    dir.create(tmp <- tempfile())
+    cat(paste0(pth, "SE_RPbat.csv"), file = file.path(tmp, "SE_RPbat.csv"))
+    cat(paste0(pth, "CP_RPbat.csv"), file = file.path(tmp, "CP_RPbat.csv"))
+    cat(paste0(pth, "DWP_RPbat.csv"), file = file.path(tmp,"DWP_RPbat.csv"))
+    cat(paste0(pth, "SS_RPbat.csv"), file = file.path(tmp, "SS_RPbat.csv"))
+    cat(paste0(pth, "CO_RPbat.csv"), file = file.path(tmp, "CO_RPbat.csv"))
+    zip::zip(zipfile = file, files = tmp)
+  },
+  contentType = "application/zip"
+)
+output$download_RP <- downloadHandler(
+  filename = "wind_RP.zip",
+  content = function(file)  {
+    pth = "../extdata/wind_RP/"
+    dir.create(tmp <- tempfile())
+    cat(paste0(pth, "SE_RP.csv"), file = file.path(tmp, "SE_RP.csv"))
+    cat(paste0(pth, "CP_RP.csv"), file = file.path(tmp, "CP_RP.csv"))
+    cat(paste0(pth, "DWP_RP.csv"), file = file.path(tmp,"DWP_RP.csv"))
+    cat(paste0(pth, "SS_RP.csv"), file = file.path(tmp, "SS_RP.csv"))
+    cat(paste0(pth, "CO_RP.csv"), file = file.path(tmp, "CO_RP.csv"))
+    zip::zip(zipfile = file, files = tmp)
+  },
+  contentType = "application/zip"
+)
+output$download_cleared <- downloadHandler(
+  filename = "wind_cleared.zip",
+  content = function(file)  {
+    pth = "../extdata/wind_cleared/"
+    dir.create(tmp <- tempfile())
+    cat(paste0(pth, "SE_cleared.csv"), file = file.path(tmp, "SE_cleared.csv"))
+    cat(paste0(pth, "CP_cleared.csv"), file = file.path(tmp, "CP_cleared.csv"))
+    cat(paste0(pth, "DWP_cleared.csv"), file = file.path(tmp,"DWP_cleared.csv"))
+    cat(paste0(pth, "SS_cleared.csv"), file = file.path(tmp, "SS_cleared.csv"))
+    cat(paste0(pth, "CO_cleared.csv"), file = file.path(tmp, "CO_cleared.csv"))
+    zip::zip(zipfile = file, files = tmp)
+  },
+  contentType = "application/zip"
+)
+output$download_PV <- downloadHandler(
+  filename = "solar_PV.zip",
+  content = function(file)  {
+    pth = "../extdata/solar_PV/"
+    dir.create(tmp <- tempfile())
+    cat(paste0(pth, "SE_PV.csv"), file = file.path(tmp, "SE_PV.csv"))
+    cat(paste0(pth, "CP_PV.csv"), file = file.path(tmp, "CP_PV.csv"))
+    cat(paste0(pth, "DWP_PV.csv"), file = file.path(tmp,"DWP_PV.csv"))
+    cat(paste0(pth, "SS_PV.csv"), file = file.path(tmp, "SS_PV.csv"))
+    cat(paste0(pth, "CO_PV.csv"), file = file.path(tmp, "CO_PV.csv"))
+    zip::zip(zipfile = file, files = tmp)
+  },
+  contentType = "application/zip"
+)
+output$download_trough <- downloadHandler(
+  filename = "solar_trough.zip",
+  content = function(file)  {
+    pth = "../extdata/solar_trough/"
+    dir.create(tmp <- tempfile())
+    cat(paste0(pth, "SE_trough.csv"), file = file.path(tmp, "SE_trough.csv"))
+    cat(paste0(pth, "CP_trough.csv"), file = file.path(tmp, "CP_trough.csv"))
+    cat(paste0(pth, "DWP_trough.csv"), file = file.path(tmp,"DWP_trough.csv"))
+    cat(paste0(pth, "SS_trough.csv"), file = file.path(tmp, "SS_trough.csv"))
+    cat(paste0(pth, "CO_trough.csv"), file = file.path(tmp, "CO_trough.csv"))
+    zip::zip(zipfile = file, files = tmp)
+  },
+  contentType = "application/zip"
+)
+output$download_powerTower <- downloadHandler(
+  filename = "solar_powerTower.zip",
+  content = function(file)  {
+    pth = "../extdata/solar_powerTower/"
+    dir.create(tmp <- tempfile())
+    cat(paste0(pth, "SE_powerTower.csv"), file = file.path(tmp, "SE_powerTower.csv"))
+    cat(paste0(pth, "CP_powerTower.csv"), file = file.path(tmp, "CP_powerTower.csv"))
+    cat(paste0(pth, "DWP_powerTower.csv"), file = file.path(tmp,"DWP_powerTower.csv"))
+    cat(paste0(pth, "SS_powerTower.csv"), file = file.path(tmp, "SS_powerTower.csv"))
+    cat(paste0(pth, "CO_powerTower.csv"), file = file.path(tmp, "CO_powerTower.csv"))
+    zip::zip(zipfile = file, files = tmp)
+  },
+  contentType = "application/zip"
+)
+output$download_mock <- downloadHandler(
+  filename = "mock.zip",
+  content = function(file)  {
+    pth = "../extdata/mock/"
+    dir.create(tmp <- tempfile())
+    cat(paste0(pth, "SE_mock.csv"), file = file.path(tmp, "SE_mock.csv"))
+    cat(paste0(pth, "CP_mock.csv"), file = file.path(tmp, "CP_mock.csv"))
+    cat(paste0(pth, "DWP_mock.csv"), file = file.path(tmp,"DWP_mock.csv"))
+    cat(paste0(pth, "SS_mock.csv"), file = file.path(tmp, "SS_mock.csv"))
+    cat(paste0(pth, "CO_mock.csv"), file = file.path(tmp, "CO_mock.csv"))
+    zip::zip(zipfile = file, files = tmp)
+  },
+  contentType = "application/zip"
+)
+
 msgs <- msgList()
 
 observeEvent(input$file_SE, {
@@ -144,5 +244,6 @@ observeEvent(input$outsizeclassg, {
   rv <- update_rv_outsc_g(rv, input)
   output <- update_output_outsc_g(rv, output, session)
 })
-
 }
+
+
