@@ -6,18 +6,16 @@
 ##'
 ##' @export
 ##'
-
-USGSpath <- "ftp://ftpext.usgs.gov/pub/wr/or/corvallis/Dalthorp/"
-
 resourcesPanel <- function(){
   tabsetPanel(id = "ResourcesViz",
     tabPanel("Getting Started", HTML(panel_GS)),
     tabPanel("Downloads", panel_downloads()),
-    tabPanel("Help", panel_help()),#page_Help),
+    tabPanel("Help", panel_help()),
     tabPanel("Disclaimers", panel_disclaim())
   )
 }
 
+USGSpath <- "ftp://ftpext.usgs.gov/pub/wr/or/corvallis/Dalthorp/"
 
 panel_GS <- paste0("<br/><br/>",
   "GenEst is an R software package for estimating bird and bat fatalities ",
