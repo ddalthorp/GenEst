@@ -18,7 +18,6 @@
 #'   reformulate rnorm runif terms update.formula weighted.mean  
 #' @importFrom survival strata
 #' @importFrom utils combn packageDescription read.csv write.csv
-#'
 
 #' @title Generalized estimation of mortality
 #'
@@ -205,7 +204,7 @@
 #' \code{\link{MFigurePanel}}\cr
 #' \code{\link{MMainPanel}}\cr
 #' \code{\link{modalTextUSGS}}\cr
-#' \code{\link{modalTextWest}}\cr
+#' \code{\link{modalTextWEST}}\cr
 #' \code{\link{modalWelcome}}\cr
 #' \code{\link{MPanel}}\cr
 #' \code{\link{msgList}}\cr
