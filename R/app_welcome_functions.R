@@ -3,7 +3,7 @@
 #' @description Create a modal welcome and basic info screen for the GenEst
 #'   application
 #'
-#' @param type "base" (just USGS text) or "deploy" (USGS and West text)
+#' @param type "base" (just USGS text) or "deploy" (USGS and WEST text)
 #'
 #' @return Nothing
 #'
@@ -23,7 +23,7 @@ modalWelcome <- function(type = "base"){
     vdate <- packageDescription("GenEst", fields = "Date")
     disclaimer <- paste("GenEst v", vnumber, " (", vdate, ")", sep = "")
     showModal(modalDialog(title = disclaimer, modalTextUSGS(), br(), br(),
-      modalTextWest(), easyClose = FALSE, footer = modalButton("OK"))
+      modalTextWEST(), easyClose = FALSE, footer = modalButton("OK"))
     )
   }
 }
@@ -37,27 +37,28 @@ modalWelcome <- function(type = "base"){
 #' @export
 #'
 modalTextUSGS <- function(){
-  HTML("This software is preliminary or provisional and is subject to
-    revision. It is being provided to meet the need for timely best science.
-    The software has not received final approval by the U.S. Geological
-    Survey (USGS). No warranty, expressed or implied, is made by the USGS or
-    the U.S. Government as to the functionality of the software and related
-    material nor shall the fact of release constitute any such warranty. The
-    software is provided on the condition that neither the USGS nor the U.S.
-    Government shall be held liable for any damages resulting from the
-    authorized or unauthorized use of the software."
+  HTML(
+    "This software has been approved for release by the U.S. Geological Survey
+    (USGS). Although the software has been subjected to rigorous review, the
+    USGS reserves the right to update the software as needed pursuant to further
+    analysis and review. No warranty, expressed or implied, is made by the USGS
+    or the U.S. Government as to the functionality of the software and related
+    material nor shall the fact of release constitute any such warranty.
+    Furthermore, the software is released on condition that neither the USGS nor
+    the U.S. Government shall be held liable for any damages resulting from its
+    authorized or unauthorized use."
   )
 }
 
-#' @title Create West text for the modal welcome
+#' @title Create WEST text for the modal welcome
 #'
-#' @description Create West text for the modal welcome
+#' @description Create WEST text for the modal welcome
 #'
-#' @return HTML element of the West text
+#' @return HTML element of the WEST text
 #'
 #' @export
 #'
-modalTextWest <- function(){
+modalTextWEST <- function(){
   HTML("Western EcoSystems Technology, Inc. does not host nor maintain the 
     Shinyapp.io website. It is advised that users not upload sensitive data 
     containing personally identifiable information (SSN, birthdates, medical 
