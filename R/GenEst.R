@@ -6,9 +6,9 @@
 #' @importFrom htmltools a br div HTML img
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
-#'   downloadButton downloadHandler fileInput fluidRow htmlOutput isolate 
+#'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput isolate
 #'   mainPanel modalButton modalDialog navbarPage numericInput observeEvent
-#'   outputOptions plotOutput radioButtons reactiveValues removeNotification 
+#'   outputOptions p plotOutput radioButtons reactiveValues removeNotification
 #'   renderPlot renderText renderUI runApp selectizeInput shinyApp shinyAppDir
 #'   showModal showNotification sidebarLayout sidebarPanel tabPanel 
 #'   tabsetPanel textOutput updateNumericInput updateSelectizeInput 
@@ -18,7 +18,6 @@
 #'   reformulate rnorm runif terms update.formula weighted.mean  
 #' @importFrom survival strata
 #' @importFrom utils combn packageDescription read.csv write.csv
-#'
 
 #' @title Generalized estimation of mortality
 #'
@@ -205,7 +204,7 @@
 #' \code{\link{MFigurePanel}}\cr
 #' \code{\link{MMainPanel}}\cr
 #' \code{\link{modalTextUSGS}}\cr
-#' \code{\link{modalTextWest}}\cr
+#' \code{\link{modalTextWEST}}\cr
 #' \code{\link{modalWelcome}}\cr
 #' \code{\link{MPanel}}\cr
 #' \code{\link{msgList}}\cr

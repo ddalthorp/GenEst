@@ -1,9 +1,9 @@
-navbarPage(navbar(), collapsible = TRUE, windowTitle = "GenEst", 
+navbarPage(navbar(), collapsible = TRUE,
+  windowTitle = "GenEst",
   tabPanel("Data Input", dataInputPanel()),
   tabPanel("Analyses", analysisPanel()),
-  navbarMenu(paste0("Help (", createvtext("Short"), ")"),
-    tabPanel("About", aboutPanel()),
-    tabPanel("Downloads", downloadsPanel())
-  )
+  tabPanel(createvtext(type = "Short"), resourcesPanel())
 )
+
+
 

@@ -10,8 +10,7 @@
 dataInputPanel <- function(){
   sidebarLayout(dataInputSidebar(), loadedDataPanel())
 }
-
-#' @title Data Input sidebar panel UI element 
+#' @title Data Input sidebar panel UI element
 #'
 #' @description create the HTML code for the Data Input sidebar
 #'
