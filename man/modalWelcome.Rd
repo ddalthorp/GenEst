@@ -7,7 +7,7 @@
 modalWelcome(type = "base")
 }
 \arguments{
-\item{type}{"base" (just USGS text) or "deploy" (USGS and West text)}
+\item{type}{"base" (just USGS text) or "deploy" (USGS and WEST text)}
 }
 \value{
 Nothing
