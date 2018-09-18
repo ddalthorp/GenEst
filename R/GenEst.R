@@ -6,9 +6,9 @@
 #' @importFrom htmltools a br div HTML img
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
-#'   downloadButton downloadHandler fileInput fluidRow htmlOutput isolate 
+#'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput isolate
 #'   mainPanel modalButton modalDialog navbarPage numericInput observeEvent
-#'   outputOptions plotOutput radioButtons reactiveValues removeNotification 
+#'   outputOptions p plotOutput radioButtons reactiveValues removeNotification
 #'   renderPlot renderText renderUI runApp selectizeInput shinyApp shinyAppDir
 #'   showModal showNotification sidebarLayout sidebarPanel tabPanel 
 #'   tabsetPanel textOutput updateNumericInput updateSelectizeInput 
