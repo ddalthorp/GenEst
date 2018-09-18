@@ -1,4 +1,4 @@
-#' @title Analysis Main Panel UI element 
+#' @title Analysis Main Panel UI element
 #'
 #' @description create the HTML code for the Analysis panel
 #'

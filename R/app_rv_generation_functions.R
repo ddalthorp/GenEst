@@ -18,7 +18,7 @@ createReactiveValues <- function(){
     colNames_CO = NULL, colNames_COdates = NULL,
     colNames_all = NULL, 
 
-    nsim = 1000, CL = 0.95, 
+    nsim = 1000, CL = 0.90,
 
     sizeclassCol = NULL, sizeclasses = NULL, sizeclass = NULL, 
     sizeclass_SE = NULL, sizeclass_CP = NULL, sizeclass_g = NULL,
