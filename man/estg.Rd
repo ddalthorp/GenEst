@@ -6,8 +6,8 @@
 \usage{
 estg(data_CO, data_SS, dateFoundCol = "DateFound", model_SE, model_CP,
   kFill = NULL, unitCol = NULL, datesSearchedCol = NULL,
-  sizeclassCol = NULL, seed_SE = NULL, seed_CP = NULL,
-  seed_g = NULL, nsim = 1000, max_intervals = 8)
+  sizeclassCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
+  nsim = 1000, max_intervals = 8)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}

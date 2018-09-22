@@ -4,7 +4,7 @@
 \alias{dlModTabCP}
 \title{Create the download version of the Carcass Persistence model table}
 \usage{
-dlModTabCP(modTab, CL = 0.95)
+dlModTabCP(modTab, CL = 0.9)
 }
 \arguments{
 \item{modTab}{model table}

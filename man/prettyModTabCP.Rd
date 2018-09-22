@@ -4,7 +4,7 @@
 \alias{prettyModTabCP}
 \title{Create the pretty version of the Carcass Persistence model table}
 \usage{
-prettyModTabCP(modTab, CL = 0.95)
+prettyModTabCP(modTab, CL = 0.9)
 }
 \arguments{
 \item{modTab}{model table}
