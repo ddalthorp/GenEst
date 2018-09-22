@@ -7,7 +7,8 @@
 #' @export
 #'
 navbar <- function(){
-  div(img(src = "GenEst.png", style = "margin-top: -8px;", height = 40))
+  div(img(src = "GenEst.png", style = "margin-top: -8px;", alt = "GenEst",
+    height = 40),  h5(createvtext(type = "Short")))
 }
 
 
@@ -50,7 +51,6 @@ makeMenu <- function(mods, sizeclasses, type){
       modSpaces <- sapply(modNames_nspaces, 
                      function(x){paste(rep(" ", x), collapse = "")}
                    )
-
       modDeltaAICcs <- AICcTab[ , "Delta AICc"]
       modLabels <- paste0(modNames, " (delta AICc: ", modDeltaAICcs, ")")
       names(modNames) <- modLabels
@@ -60,7 +60,7 @@ makeMenu <- function(mods, sizeclasses, type){
       widthtxt <- paste0(widthval, "px")
       mtuText <- paste("modelChoices_", type, sci, sep = "") 
       scText <- paste("Model for ", sizeclasses[sci], sep = "")
-      modSelect <- selectizeInput(mtuText, scText, modNames, width = widthtxt)
+      modSelect <- selectizeInput(mtuText, scText, c('', modNames), width = widthtxt)
       modelMenu <- paste(modelMenu, modSelect)  
     }
   }

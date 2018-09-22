@@ -119,7 +119,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   if (max(unlist(lapply(SSpreds, length))) > 1){
     stop("At most 1 SS predictor is allowed per size class.")
   }
-  if (!all(unlist(SSpreds) %in% names(SSdat))){
+  if (length(unlist(SSpreds)) > 0 && !all(unlist(SSpreds) %in% names(SSdat))){
     stop("Model predictor missing from both CO and SS data.")
   }
  # if (!is.null(kFill)) {
@@ -820,7 +820,7 @@ averageSS <- function(data_SS, datesSearchedCol = NULL){
 #'
 #' @export
 #'
-summary.gGeneric <- function(object, ..., CL = 0.95){
+summary.gGeneric <- function(object, ..., CL = 0.90){
 
   ghats <- object$ghat
   preds <- object$predictors
@@ -904,7 +904,7 @@ summary.gGeneric <- function(object, ..., CL = 0.95){
 #'
 #' @export
 #'
-summary.gGenericSize <- function(object, ..., CL = 0.95){
+summary.gGenericSize <- function(object, ..., CL = 0.90){
 
   nsizeclass <- length(object)
   out <- vector("list", length = nsizeclass)

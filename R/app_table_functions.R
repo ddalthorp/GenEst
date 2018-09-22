@@ -11,7 +11,7 @@
 #'
 #' @export
 #'
-prettyModTabSE <- function(modTab, CL = 0.95){
+prettyModTabSE <- function(modTab, CL = 0.90){
 
   kFit <- any(grepl("k_median", colnames(modTab)))
   
@@ -60,7 +60,7 @@ prettyModTabSE <- function(modTab, CL = 0.95){
 #'
 #' @export
 #'
-dlModTabSE <- function(modTab, CL = 0.95){
+dlModTabSE <- function(modTab, CL = 0.90){
 
   kFit <- any(grepl("k_median", colnames(modTab)))
   if (!kFit){
@@ -90,7 +90,7 @@ dlModTabSE <- function(modTab, CL = 0.95){
 #'
 #' @export
 #'
-prettyModTabCP <- function(modTab, CL = 0.95){
+prettyModTabCP <- function(modTab, CL = 0.90){
   out <- modTab[ , c("cell", "l_median", "s_median")]
   ncell <- nrow(out)
 
@@ -130,7 +130,7 @@ prettyModTabCP <- function(modTab, CL = 0.95){
 #'
 #' @export
 #'
-dlModTabCP <- function(modTab, CL = 0.95){
+dlModTabCP <- function(modTab, CL = 0.90){
 
   out <- modTab
   lo <- 100 * (1 - CL) / 2

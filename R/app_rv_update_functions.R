@@ -1,3 +1,24 @@
+#' @title Update the reactive value list for csv type
+#'
+#' @description Update the rv list when csv type is changed
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_csvfun <- function(rv, input){
+  if (input$csvType == "csv"){
+    rv$csvfun <- read.csv
+  } else if (input$csvType == "csv2") {
+    rv$csvfun <- read.csv2
+  }
+  return(rv)
+}
+
 #' @title Update the reactive value list when SE data are read in
 #'
 #' @description Update the rv list when the SE data file is input
@@ -11,10 +32,11 @@
 #' @export
 #'
 update_rv_data_SE <- function(rv, input){
-  rv$data_SE <- read.csv(input$file_SE$datapath, stringsAsFactors = FALSE)
+  rv$data_SE <- rv$csvfun(input$file_SE$datapath, stringsAsFactors = FALSE)
   rv$colNames_SE <- colnames(rv$data_SE)
   rv$colNames_all <- updateColNames_all(rv)
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
+  rv$colNames_size <- updateColNames_size(rv)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
   rv$colNames_SE_sel <- c(rv$sizeclassCol)
   rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
   return(rv)
@@ -36,7 +58,8 @@ update_rv_data_CP <- function(rv, input){
   rv$data_CP <- read.csv(input$file_CP$datapath, stringsAsFactors = FALSE)
   rv$colNames_CP <- colnames(rv$data_CP)
   rv$colNames_all <- updateColNames_all(rv)
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
+  rv$colNames_size <- updateColNames_size(rv)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
   rv$colNames_CP_sel <- c(rv$sizeclassCol)
   rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
   return(rv)
@@ -95,7 +118,8 @@ update_rv_data_CO <- function(rv, input){
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
   rv$colNames_all <- updateColNames_all(rv)
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_all)
+  rv$colNames_size <- updateColNames_size(rv)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
   return(rv)
 }
 

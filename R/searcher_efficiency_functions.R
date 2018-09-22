@@ -138,7 +138,7 @@
 #' @export
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
-                kFixed = NULL, kInit = 0.7, CL = 0.95, quiet = FALSE){
+                kFixed = NULL, kInit = 0.7, CL = 0.90, quiet = FALSE, ...){
   if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
   if(any(! obsCol %in% colnames(data))){
     stop("Observation column provided not in data.")
@@ -304,13 +304,12 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   MLE <- tryCatch(
-           optim(par = betaInit, fn = pkLogLik, method = "BFGS",
+           optim(par = betaInit, fn = pkLogLik,
              hessian = TRUE, cellByCarc = cellByCarc, misses = misses,
              maxmisses = max(misses), foundOn = foundOn, cellMM = cellMM,
-             nbeta_p = nbeta_p, kFixed = kFixed
-           ), error = function(x) {NA}
+             nbeta_p = nbeta_p, kFixed = kFixed,..., method = "BFGS"),
+           error = function(x) {NA}
          )
-
   if (length(MLE) == 1 && is.na(MLE)){
     stop("Failed optimization. Consider simplifying predictors.")
   }
@@ -547,7 +546,7 @@ pkLogLik <- function(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses,
 #' @export 
 #'
 pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
-                   kFixed = NULL, kInit = 0.7, CL = 0.95, quiet = FALSE){
+                   kFixed = NULL, kInit = 0.7, CL = 0.90, quiet = FALSE){
   if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
   if (length(kFixed) > 0){
     if (length(kFixed) > 1){
@@ -759,7 +758,7 @@ pkmSet <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #'
 pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL, 
                        sizeclassCol = NULL, kFixed = NULL, kInit = 0.7, 
-                       CL = 0.95, quiet = FALSE){
+                       CL = 0.90, quiet = FALSE){
 
   if (length(sizeclassCol) == 0 || is.na(sizeclassCol)){
     out <- list()

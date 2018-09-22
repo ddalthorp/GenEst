@@ -107,6 +107,11 @@ output$download_mock <- downloadHandler(
 
 msgs <- msgList()
 
+observeEvent(input$csvType, {
+  rv <- update_rv_csvfun(rv, input)
+#  output <- update_output_csvfun(rv, output)
+#  update_input_csvfun(rv, session)
+})
 observeEvent(input$file_SE, {
   rv <- update_rv_data_SE(rv, input)
   output <- update_output_data_SE(rv, output)
