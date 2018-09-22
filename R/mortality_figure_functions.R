@@ -29,7 +29,7 @@
 #'
 #' @export
 #'
-plot.estM <- function(x, ..., CL = 0.95){
+plot.estM <- function(x, ..., CL = 0.90){
   simpleMplot(x$Mhat, ..., x$Xtot, CL = CL)
 }
 
@@ -49,7 +49,7 @@ plot.estM <- function(x, ..., CL = 0.95){
 #'
 #' @export
 #'
-simpleMplot <- function(M, ..., Xmin = 0, CL = 0.95){
+simpleMplot <- function(M, ..., Xmin = 0, CL = 0.90){
   if ("splitSummary" %in% class(M) || "splitFull" %in% class(M)){
     Mtot <- as.vector(M$M)
   } else if (is.vector(M)){

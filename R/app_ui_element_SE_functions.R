@@ -75,9 +75,9 @@ SEMainPanel <- function(){
   mainPanel(
     tabsetPanel(id = "analyses_SE",
       SESelectedDataPanel(),
+      SEModComparisonPanel(),
       SEFiguresPanel(),
       SEEstimatesPanel(),
-      SEModComparisonPanel(),
       SEModSelectionPanel()
     )
   )

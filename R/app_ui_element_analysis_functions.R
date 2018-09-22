@@ -41,7 +41,7 @@ GeneralInputSidebar <- function(){
     numericInput("nsim", "Number of Iterations:", value = 1000,
       min = 1, max = 10000, step = 1
     ),
-    numericInput("CL", "Confidence Level:", value = 0.95, min = 0, 
+    numericInput("CL", "Confidence Level:", value = 0.90, min = 0,
       max = 1, step = 0.001
     ),
     selectizeInput("sizeclassCol", "Size Class Column (optional):", 

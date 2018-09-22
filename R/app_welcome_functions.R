@@ -67,17 +67,8 @@ modalTextUSGS <- function(){
 #' @export
 #'
 modalTextWEST <- function(){
-  HTML("Western EcoSystems Technology, Inc. does not host nor maintain the 
-    Shinyapp.io website. It is advised that users not upload sensitive data 
-    containing personally identifiable information (SSN, birthdates, medical 
-    information, etc.). Western EcoSystems Technology, Inc. is not liable for 
-    any damages, including but not limited to general, compensatory, special 
-    or punitive damages, sustained by user arising out of another party or 
-    entity using said sensitive data or for the use of any data by another 
-    party or entity which is obtained from viruses, Trojans or other malware. 
-    Shinyapp.io is actively maintained by the RStudio Company on Amazon Web 
-    Services.", "<br>", "<br>", 
-    "This program is an 'AS IS' without warranty of any kind, either expressed
+  HTML("
+    This program is an 'AS IS' without warranty of any kind, either expressed
     or implied, including but not limited to, the implied warranties of 
     merchantability and fitness for a particular purpose. The entire risk as
     to the quality and performance of the program is with you. Should the 

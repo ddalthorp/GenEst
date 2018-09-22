@@ -194,7 +194,7 @@ calcTsplit <- function(rate, days, tsplit){
 #'  the name of the splitting covariate(s)) and \code{type} (which specifies
 #'  whether the covariate(s) are of type \code{split_CO}, \code{split_SS}, or
 #'  \code{split_time}). A summary of a resulting \code{splitFull} object
-#'  is returned from the S3 function \code{summary(splits, CL = 0.95, ...)},
+#'  is returned from the S3 function \code{summary(splits, CL = 0.90, ...)},
 #'  which gives the mean and a 5-number summary for each level of each
 #'  covariate. The 5-number summary includes the alpha/2, 0.25, 0.5, 0.75,
 #'  and 1 - alpha/2 quantiles, where alpha = 1 - CL. A graph summarizing the
@@ -476,7 +476,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
 #'   of splitting covariates such as season, species, or visibility class
 #'   using \code{\link{calcSplits}}, which gives full arrays of simulated M 
 #'   estimates (i.e., for each level of each splitting covariate, each 
-#'   discovered carcass, and each simulation draw). summary(splits, CL = 0.95,
+#'   discovered carcass, and each simulation draw). summary(splits, CL = 0.90,
 #'   ...) gives summary statistics of the estimates.
 #'
 #' @param object A \code{splitFull} object (\code{\link{calcSplits}}) that 

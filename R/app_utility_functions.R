@@ -106,8 +106,7 @@ removeSelCols <- function(colNames, selCols){
   return(out)
 }
 
-
-#' @title Update the string of column names that are in all the needed tables
+                                              #' @title Update the string of column names that are in all the needed tables
 #'
 #' @description Determine the overlap between the column names in the SE, CP,
 #'    and CO data tables.
@@ -137,7 +136,7 @@ updateColNames_all <- function(rv){
   if (length(alltogether) == 0){
     if (is.null(SE) + is.null(CP) + is.null(CO) == 2){
       SECPCO <- unique(c(SE, CP, CO))
-    } 
+    }
   } else{
     if (is.null(SE) + is.null(CP) + is.null(CO) == 1){
       SECPCOa <- c(SE[SECP], SE[SECO], CP[CPSE], CP[CPCO], CO[COSE], CO[COCP])
@@ -148,6 +147,39 @@ updateColNames_all <- function(rv){
     }
   }
 
+  return(SECPCO)
+}
+
+#' @title Update the string of column names that are in all the needed tables
+#'
+#' @description Determine the overlap between the column names in the SE, CP,
+#'    and CO data tables among columns with unique(length(x)) < length(x)
+#'
+#' @param rv reactive values list with elements named \code{data_SE},
+#'    \code{data_CP}, and \code{data_CO}
+#'
+#' @return possible column names
+#'
+#' @export
+#'
+updateColNames_size <- function(rv){
+  # columns with length(x) == length(unique(x)) in SE or CP are not eligible for
+  # size class column
+  SECPCO <- NULL
+  goodInd <- function(x){
+    which(apply(x, FUN = function(x) length(unique(x)) < length(x), MAR = 2))
+  }
+  if (!is.null(rv$data_SE)){
+    SECPCO <- names(goodInd(rv$data_SE))
+  }
+  if (!is.null(rv$data_CP)){
+    tmp <- names(goodInd(rv$data_CP))
+    if (!is.null(SECPCO)) SECPCO <- intersect(SECPCO, tmp) else SECPCO <- tmp
+  }
+  if (!is.null(rv$data_CO)){
+    tmp <- colnames(rv$data_CO)
+    if (!is.null(SECPCO)) SECPCO <- intersect(SECPCO, tmp) else SECPCO <- tmp
+  }
   return(SECPCO)
 }
 

@@ -97,7 +97,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     if (length(unitCol) > 1){
       stop(
         "multiple matching column names in data_CO and data_DWP. ",
-        "Provide a value for unitCol."
+        "Provide a value for unitCol in estM arg list."
       )
     }
   }

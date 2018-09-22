@@ -76,9 +76,9 @@ CPMainPanel <- function(){
   mainPanel(
     tabsetPanel(id = "analyses_CP",
       CPSelectedDataPanel(),
+      CPModComparisonPanel(),
       CPFiguresPanel(),
       CPEstimatesPanel(),
-      CPModComparisonPanel(),
       CPModSelectionPanel()
     )
   )
