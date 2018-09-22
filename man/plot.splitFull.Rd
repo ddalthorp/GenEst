@@ -4,7 +4,7 @@
 \alias{plot.splitFull}
 \title{Plot summary statistics for splits of mortality estimates}
 \usage{
-\method{plot}{splitFull}(x, rate = FALSE, CL = 0.95, ...)
+\method{plot}{splitFull}(x, rate = FALSE, CL = 0.9, ...)
 }
 \arguments{
 \item{x}{A \code{splitSummary} object (result of \code{\link{calcSplits}})

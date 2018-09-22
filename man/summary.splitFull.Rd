@@ -32,6 +32,6 @@ Mortality estimates can be calculated for the various levels
   of splitting covariates such as season, species, or visibility class
   using \code{\link{calcSplits}}, which gives full arrays of simulated M 
   estimates (i.e., for each level of each splitting covariate, each 
-  discovered carcass, and each simulation draw). summary(splits, CL = 0.95,
+  discovered carcass, and each simulation draw). summary(splits, CL = 0.90,
   ...) gives summary statistics of the estimates.
 }

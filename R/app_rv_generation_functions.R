@@ -9,7 +9,6 @@
 #'
 createReactiveValues <- function(){
   reactiveValues(
-    csvfun = read.csv,
     data_SE = NULL, data_CP = NULL, data_SS = NULL, data_DWP = NULL, 
     data_CO = NULL,
     colNames_SE = NULL, colNames_SE_sel = NULL, colNames_SE_nosel = NULL, 

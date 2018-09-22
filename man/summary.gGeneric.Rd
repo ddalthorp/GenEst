@@ -4,7 +4,7 @@
 \alias{summary.gGeneric}
 \title{Summarize the gGeneric list to a simple table}
 \usage{
-\method{summary}{gGeneric}(object, ..., CL = 0.95)
+\method{summary}{gGeneric}(object, ..., CL = 0.9)
 }
 \arguments{
 \item{object}{gGeneric output list (each element is a named vector of 

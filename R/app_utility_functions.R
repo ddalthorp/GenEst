@@ -1,3 +1,50 @@
+#' @title Read in csv files in either format
+#'
+#' @description Handle reading in of a csv that is either comma-decimal or
+#'   semicolon-comma separation style
+#'
+#' @param path file path
+#'
+#' @return read in data table
+#'
+#' @export
+#'
+readCSVs <- function(path){
+  ef <- function(x){"_BAD_READ_"}
+  out1 <- tryCatch(
+            read.csv(path, stringsAsFactors = FALSE), 
+            error = ef, warning = ef
+          )
+  out2 <- tryCatch(
+            read.csv2(path, stringsAsFactors = FALSE), 
+            error = ef, warning = ef
+          )
+  if (is.null(attr(out1, "class")) & is.null(attr(out2, "class"))){
+   stop("File not found or not of either csv type")
+  }
+  if ("data.frame" %in% attr(out1, "class")){
+    if (is.null(attr(out2, "class"))){
+      return(out1)
+    }
+    if ("data.frame" %in% attr(out2, "class")){
+      if (ncol(out2) == 1){
+        return(out1)
+      }
+    }
+  }
+  if ("data.frame" %in% attr(out2, "class")){
+    if (is.null(attr(out1, "class"))){
+      return(out2)
+    }
+    if ("data.frame" %in% attr(out1, "class")){
+      if (ncol(out1) == 1){
+        return(out2)
+      }
+    }
+  }
+  out1
+}
+
 #' @title Prepare predictors based on inputs
 #'
 #' @description Prepare predictor inputs from the app for use in the model
@@ -106,7 +153,7 @@ removeSelCols <- function(colNames, selCols){
   return(out)
 }
 
-                                              #' @title Update the string of column names that are in all the needed tables
+#' @title Update the string of column names that are in all the needed tables
 #'
 #' @description Determine the overlap between the column names in the SE, CP,
 #'    and CO data tables.
@@ -163,8 +210,6 @@ updateColNames_all <- function(rv){
 #' @export
 #'
 updateColNames_size <- function(rv){
-  # columns with length(x) == length(unique(x)) in SE or CP are not eligible for
-  # size class column
   SECPCO <- NULL
   goodInd <- function(x){
     which(apply(x, FUN = function(x) length(unique(x)) < length(x), MAR = 2))

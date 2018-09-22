@@ -6,6 +6,8 @@ output$versionInfo_about <- renderText(createvtext())
 output$versionInfo_help <- renderText(createvtext())
 output$SStext <- renderText(rv$SStext)
 
+
+
 output$download_RPbat <- downloadHandler(
   filename = "wind_RPbat.zip",
   content = function(file)  {
@@ -107,11 +109,6 @@ output$download_mock <- downloadHandler(
 
 msgs <- msgList()
 
-observeEvent(input$csvType, {
-  rv <- update_rv_csvfun(rv, input)
-#  output <- update_output_csvfun(rv, output)
-#  update_input_csvfun(rv, session)
-})
 observeEvent(input$file_SE, {
   rv <- update_rv_data_SE(rv, input)
   output <- update_output_data_SE(rv, output)

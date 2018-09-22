@@ -4,12 +4,12 @@
 \alias{updateSizeclassCol}
 \title{Update the name of the size class column based on available names}
 \usage{
-updateSizeclassCol(sizeclassCol, colNames_all)
+updateSizeclassCol(sizeclassCol, colNames_size)
 }
 \arguments{
 \item{sizeclassCol}{current size class column name}
 
-\item{colNames_all}{updated vector of column names in all needed tables}
+\item{colNames_size}{updated vector of size column names in all needed tables}
 }
 \value{
 updated sizeclassCol

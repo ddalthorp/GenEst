@@ -4,7 +4,7 @@
 \alias{prettyModTabSE}
 \title{Create the pretty version of the Searcher Efficiency model table}
 \usage{
-prettyModTabSE(modTab, CL = 0.95)
+prettyModTabSE(modTab, CL = 0.9)
 }
 \arguments{
 \item{modTab}{model table}
