@@ -11,7 +11,7 @@
 update_input_data_SE <- function(rv, session){
   updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_nosel)
   updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_nosel)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_all,
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
     selected = rv$sizeclassCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
@@ -31,7 +31,7 @@ update_input_data_CP <- function(rv, session){
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_nosel)
   updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_nosel)
   updateSelectizeInput(session, "fta", choices = rv$colNames_CP_nosel)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_all,
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
     selected = rv$sizeclassCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
@@ -88,7 +88,7 @@ update_input_data_CO <- function(rv, session){
     )
   }
 
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_all,
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
     selected = rv$sizeclassCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")

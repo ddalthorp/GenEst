@@ -130,7 +130,7 @@
 #' @export
 #'
 cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
-                right = NULL, dist = "exponential", CL = 0.95, quiet = FALSE){
+                right = NULL, dist = "weibull", CL = 0.90, quiet = FALSE){
   dist <- tolower(dist)
   # initial error-checking
   if (length(left) == 0){
@@ -223,7 +223,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
   # traffic directing:
   #  use survreg if:
-  #   1. dist == exponential, or
+  #   1. dist == "exponential", or
   #   2. there is no "+" in formula_s and length(preds_s) <= 2
   #  otherwise, use custom MLE fitting function with optim
   if (dist == "exponential"){
@@ -769,7 +769,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #'
 cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL, 
                    right = NULL, dists = c("exponential", "weibull",
-                   "lognormal", "loglogistic"), CL = 0.95, quiet = FALSE){
+                   "lognormal", "loglogistic"), CL = 0.90, quiet = FALSE){
 
   if (length(formula_s) == 0){
     formula_s <- formula(s ~ 1)
@@ -939,7 +939,7 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
                        right = NULL, dists = c("exponential", "weibull", 
                        "lognormal", "loglogistic"), sizeclassCol = NULL, 
-                       CL = 0.95, quiet = FALSE){
+                       CL = 0.90, quiet = FALSE){
 
   if (length(sizeclassCol) == 0){
     out <- vector("list", length = 1)

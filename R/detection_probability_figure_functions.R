@@ -27,7 +27,7 @@
 #'
 #' @export
 #'
-plot.gGeneric <- function(x, CL = 0.95, ...){
+plot.gGeneric <- function(x, CL = 0.90, ...){
 
   ghats <- x$ghat
   cells <- names(ghats)
@@ -150,7 +150,7 @@ plot.gGeneric <- function(x, CL = 0.95, ...){
 #'
 #' @export
 #'
-plot.gGenericSize <- function(x, CL = 0.95, ...){
+plot.gGenericSize <- function(x, CL = 0.90, ...){
 
   nsizeclass <- length(x)
 

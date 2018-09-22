@@ -30,13 +30,13 @@ panel_GS <- paste0("<br/><br/>",
         "carcasses observed on each search occasion (CO) and other, optional ",
         "covariates.</li></ol><br/>",
   "Analysis involves several steps:<br/><ul>",
-  "<li>upload data---click the <code>Data Input</code> tab,</li>",
+  "<li>uploading data---click the <code>Data Input</code> tab,</li>",
   "<li>entering <code>General Input</code> parameters---",
       "click the <code>Analyses</code> tab, </li>",
   "<li>fitting searcher efficiency and carcass persistence models---click the ",
   "   <code>Searcher Efficiency</code> and <code>Carcass Persistence</code> ",
       "tabs, and </li>",
-  "<li>estimate total mortality and split the mortality estimate by various ",
+  "<li>estimating total mortality and split the mortality estimate by various ",
   "subcategories (such as species or sector or season) as desired---click ",
   "the <code>Mortality Estimation</code> tab.</li></ul><br/>",
   "Further details can be found in the <a href=\"", USGSpath,
@@ -130,27 +130,27 @@ panel_help <- function(){
       <a href = 'https://oregonstate.edu/'>Oregon State University</a>.")),
     br(), br(), br(),
     p(HTML("<a href='https://www.blm.gov/'>
-       <img src = 'blm.jpg' height = '60'></a>
+       <img src = 'blm.jpg' height = '60', alt = 'BLM logo'></a>
        <a href='https://www.usgs.gov/'>
-       <img src = 'usgs.png' height = '60'></a>
+       <img src = 'usgs.png' height = '60', alt = 'USGS logo'></a>
        <a href='https://www.nrel.gov/'>
-       <img src = 'nrel.jpg' height = '60'> </a>
+       <img src = 'nrel.jpg' height = '60', alt = 'NREL logo'> </a>
        <a href='http://www.westconsultants.com/'>
-       <img src = 'west.png' height = '60'></a>
+       <img src = 'west.png' height = '60', alt = 'WEST logo'></a>
        <a href='http://www.batcon.org/'>
-       <img src = 'bci.jpg' height = '60'></a>
+       <img src = 'bci.jpg' height = '60', alt = 'BCI logo'></a>
        <a href='https://awwi.org/'>
-       <img src = 'awwi.png' height = '60'></a>
+       <img src = 'awwi.png' height = '60', alt = 'AWWI logo'></a>
        <a href='http://www.avangridrenewables.us/'>
-       <img src = 'avangrid.png' height = '60'></a>
+       <img src = 'avangrid.png' height = '60', alt = 'Avangrid logo'></a>
        <a href='http://www.dapperstats.com'>
-       <img src = 'dapper.png' height = '60'></a>
+       <img src = 'dapper.png' height = '60', alt = 'DapperStats logo'></a>
        <a href='http://www.oikostat.ch/'>
-       <img src = 'oikostat.jpg' height = '60'> </a>
+       <img src = 'oikostat.jpg' height = '60', alt = 'Oikostat logo'> </a>
        <a href='https://www.oregonstate.edu/'>
-       <img src = 'osu.jpg' height = '60'> </a>
+       <img src = 'osu.jpg' height = '60', alt = 'OSU logo'> </a>
        <a href='https://www.duke.edu/'>
-       <img src = 'duke.png' height = '60'></a>")
+       <img src = 'duke.png' height = '60', alt = 'Duke U logo'></a>")
     )
   )
 }

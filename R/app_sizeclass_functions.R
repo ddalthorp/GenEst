@@ -51,15 +51,15 @@ pickSizeclass <- function(sizeclasses, choice){
 #'
 #' @param sizeclassCol current size class column name
 #'
-#' @param colNames_all updated vector of column names in all needed tables
+#' @param colNames_size updated vector of size column names in all needed tables
 #'
 #' @return updated sizeclassCol
 #'
 #' @export
 #'
-updateSizeclassCol <- function(sizeclassCol, colNames_all){
+updateSizeclassCol <- function(sizeclassCol, colNames_size){
   if (!is.null(sizeclassCol)){
-    if (!(sizeclassCol %in% colNames_all)){
+    if (!(sizeclassCol %in% colNames_size)){
       NULL
     } else{
       sizeclassCol
