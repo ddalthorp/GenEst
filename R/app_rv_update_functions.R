@@ -55,7 +55,7 @@ update_rv_data_SE <- function(rv, input){
 #' @export
 #'
 update_rv_data_CP <- function(rv, input){
-  rv$data_CP <- read.csv(input$file_CP$datapath, stringsAsFactors = FALSE)
+  rv$data_CP <- csvfun(input$file_CP$datapath, stringsAsFactors = FALSE)
   rv$colNames_CP <- colnames(rv$data_CP)
   rv$colNames_all <- updateColNames_all(rv)
   rv$colNames_size <- updateColNames_size(rv)
@@ -78,7 +78,7 @@ update_rv_data_CP <- function(rv, input){
 #' @export
 #'
 update_rv_data_SS <- function(rv, input){
-  rv$data_SS <- read.csv(input$file_SS$datapath, stringsAsFactors = FALSE)
+  rv$data_SS <- csvfun(input$file_SS$datapath, stringsAsFactors = FALSE)
   rv$colNames_SS <- colnames(rv$data_SS)
   return(rv)
 }
@@ -96,7 +96,7 @@ update_rv_data_SS <- function(rv, input){
 #' @export
 #'
 update_rv_data_DWP <- function(rv, input){
-  rv$data_DWP <- read.csv(input$file_DWP$datapath, stringsAsFactors = FALSE)
+  rv$data_DWP <- csvfun(input$file_DWP$datapath, stringsAsFactors = FALSE)
   rv$colNames_DWP <- colnames(rv$data_DWP)
   return(rv)
 }
@@ -114,7 +114,7 @@ update_rv_data_DWP <- function(rv, input){
 #' @export
 #'
 update_rv_data_CO <- function(rv, input){
-  rv$data_CO <- read.csv(input$file_CO$datapath, stringsAsFactors = FALSE)
+  rv$data_CO <- csvfun(input$file_CO$datapath, stringsAsFactors = FALSE)
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
   rv$colNames_all <- updateColNames_all(rv)
