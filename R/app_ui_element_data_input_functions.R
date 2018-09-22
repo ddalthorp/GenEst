@@ -20,10 +20,6 @@ dataInputPanel <- function(){
 #'
 dataInputSidebar <- function(){
   sidebarPanel(width = 3,
-    radioButtons("csvType", label = ".csv Field and Decimal Separators:",
-      c("Comma ( , ) and Period ( . )" = "csv",
-        "Semicolon ( ; ) and Comma( , )" = "csv2")
-    ),
     fileInput("file_SE", "Searcher Efficiency Data File",
       accept = c("text/csv", "text/comma-separated-values", ".csv")
     ), 
