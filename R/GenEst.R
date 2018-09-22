@@ -6,18 +6,20 @@
 #' @importFrom htmltools a br div HTML img
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
-#'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput isolate
-#'   mainPanel modalButton modalDialog navbarPage numericInput observeEvent
-#'   outputOptions p plotOutput radioButtons reactiveValues removeNotification
-#'   renderPlot renderText renderUI runApp selectizeInput shinyApp shinyAppDir
-#'   showModal showNotification sidebarLayout sidebarPanel tabPanel 
-#'   tabsetPanel textOutput updateNumericInput updateSelectizeInput 
-#'   updateTabsetPanel 
+#'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput 
+#'   isolate mainPanel modalButton modalDialog navbarPage numericInput
+#'   observeEvent outputOptions p plotOutput radioButtons reactiveValues 
+#'   removeNotification renderPlot renderText renderUI runApp selectizeInput
+#'   shinyApp shinyAppDir showModal showNotification sidebarLayout 
+#'   sidebarPanel tabPanel tabsetPanel textOutput updateNumericInput 
+#'   updateSelectizeInput updateTabsetPanel 
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
 #'   reformulate rnorm runif terms update.formula weighted.mean  
 #' @importFrom survival strata
 #' @importFrom utils combn packageDescription read.csv write.csv
+#' @importFrom zip zip
+#'
 
 #' @title Generalized estimation of mortality
 #'

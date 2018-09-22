@@ -59,7 +59,7 @@ An object of class \code{splitFull} is returned. If one splitting
  the name of the splitting covariate(s)) and \code{type} (which specifies
  whether the covariate(s) are of type \code{split_CO}, \code{split_SS}, or
  \code{split_time}). A summary of a resulting \code{splitFull} object
- is returned from the S3 function \code{summary(splits, CL = 0.95, ...)},
+ is returned from the S3 function \code{summary(splits, CL = 0.90, ...)},
  which gives the mean and a 5-number summary for each level of each
  covariate. The 5-number summary includes the alpha/2, 0.25, 0.5, 0.75,
  and 1 - alpha/2 quantiles, where alpha = 1 - CL. A graph summarizing the

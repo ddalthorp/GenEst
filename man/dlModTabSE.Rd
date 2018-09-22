@@ -4,7 +4,7 @@
 \alias{dlModTabSE}
 \title{Create the download version of the Searcher Efficiency model table}
 \usage{
-dlModTabSE(modTab, CL = 0.95)
+dlModTabSE(modTab, CL = 0.9)
 }
 \arguments{
 \item{modTab}{model table}
