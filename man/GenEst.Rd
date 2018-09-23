@@ -246,6 +246,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{setFigW}}\cr
 \code{\link{setkFillNeed}}\cr
 \code{\link{setkFix}}\cr
+\code{\link{small}}\cr
 \code{\link{ul}}\cr
 \code{\link{update_input_cols_CP}}\cr
 \code{\link{update_input_cols_SE}}\cr
