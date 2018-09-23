@@ -3,7 +3,7 @@
 #' @importFrom graphics axis box hist lines mtext par plot points polygon rect
 #'   text
 #' @importFrom grDevices dev.off devAskNewPage png rgb
-#' @importFrom htmltools a br div HTML img
+#' @importFrom htmltools a br code div em h3 h4 HTML img p tags
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
 #'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput 
@@ -17,7 +17,7 @@
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
 #'   reformulate rnorm runif terms update.formula weighted.mean  
 #' @importFrom survival strata
-#' @importFrom utils combn packageDescription read.csv write.csv
+#' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
 #' @importFrom zip zip
 #'
 
@@ -84,15 +84,13 @@
 #' @section Potentially useful calculation functions:
 #' \code{\link{pkLogLik}}\cr
 #' \code{\link{cpLogLik}}\cr
-
 #' \code{\link{alogit}}\cr
 #' \code{\link{logit}}\cr
-
 #' \code{\link{calcg}}\cr
 #' \code{\link{Ecbinom}}\cr
+#' \code{\link{Etcbinom}}\cr
 #' \code{\link{calcRate}}\cr
 #' \code{\link{calcTsplit}}\cr
-#'
 #' \code{\link{ltranspose}}\cr
 #'
 #' @section Potentially useful editing functions:
@@ -117,15 +115,11 @@
 #' \code{\link{cpmSetFail}}\cr
 #' \code{\link{cpmSetSizeFail}}\cr
 #' \code{\link{cpmSetSpecCPCellPlot}}\cr
-#' \code{\link{expandModelSetCP}}\cr
-#' \code{\link{GeneralInputSidebar}}\cr
-#' \code{\link{GeneralInputsPanel}}\cr
+#' \code{\link{isNeverDecreasing}}\cr
 #' \code{\link{modelSetCells}}\cr
 #' \code{\link{modelSetModelCells}}\cr
 #' \code{\link{modelSetModelPredictors}}\cr
 #' \code{\link{modelSetPredictors}}\cr
-#' \code{\link{modNamePaste}}\cr
-#' \code{\link{modNameSplit}}\cr
 #' \code{\link{pkmSetAllFail}}\cr
 #' \code{\link{pkmSetFail}}\cr
 #' \code{\link{pkmSetSizeFail}}\cr
@@ -137,36 +131,29 @@
 #' \code{\link{plotCPCells}}\cr
 #' \code{\link{plotCPFigure}}\cr
 #' \code{\link{plotCPHeader}}\cr
-#' \code{\link{plotNA}}\cr
 #' \code{\link{plotSEBoxPlots}}\cr
 #' \code{\link{plotSEBoxTemplate}}\cr
 #' \code{\link{plotSECells}}\cr
 #' \code{\link{plotSEFigure}}\cr
 #' \code{\link{plotSEHeader}}\cr
-#' \code{\link{prettyModTabCP}}\cr
-#' \code{\link{prettyModTabSE}}\cr
-#' \code{\link{prettySplitSpecTab}}\cr
-#' \code{\link{prettySplitTab}}\cr
 #' \code{\link{print.cpm}}\cr
 #' \code{\link{print.pkm}}\cr
-#' \code{\link{removeSelCols}}\cr
 #' \code{\link{refMod}}\cr
+#' \code{\link{rtcbinom1}}\cr
 #' \code{\link{SEcols}}\cr
 #' \code{\link{simpleMplot}}\cr
 #' \code{\link{trueLength}}\cr
 #' \code{\link{SEsi_left}}\cr
 #' \code{\link{SEsi_right}}\cr
 #' \code{\link{SEsi0}}\cr
-#' \code{\link{setFigH}}\cr
-#' \code{\link{setFigW}}\cr
-#' \code{\link{setkFillNeed}}\cr
-#' \code{\link{setkFix}}\cr
-#'
+
 #' @section GUI-specific commands:
 #' \code{\link{runGenEst}}\cr
 #'
+#' \code{\link{aboutMainPanel}}\cr
 #' \code{\link{aboutPanel}}\cr
 #' \code{\link{analysisPanel}}\cr
+#' \code{\link{b}}\cr
 #' \code{\link{clearNotifications}}\cr
 #' \code{\link{CPdistOptions}}\cr
 #' \code{\link{CPEstimatesPanel}}\cr
@@ -186,28 +173,47 @@
 #' \code{\link{dataTabPanel}}\cr
 #' \code{\link{dateCols}}\cr
 #' \code{\link{dateToDay}}\cr
+#' \code{\link{disclaimerDeploy}}\cr
+#' \code{\link{disclaimerUSGS}}\cr
+#' \code{\link{disclaimerWEST}}\cr
+#' \code{\link{disclaimers}}\cr
+#' \code{\link{disclaimersMainPanel}}\cr
+#' \code{\link{disclaimersPanel}}\cr
 #' \code{\link{dlModTabCP}}\cr
 #' \code{\link{dlModTabSE}}\cr
 #' \code{\link{downloadCPFig}}\cr
+#' \code{\link{downloadData}}\cr
 #' \code{\link{downloadgFig}}\cr
 #' \code{\link{downloadMFig}}\cr
 #' \code{\link{downloadSEFig}}\cr
 #' \code{\link{downloadTable}}\cr
+#' \code{\link{downloadsMainPanel}}\cr
+#' \code{\link{downloadsPanel}}\cr
+#' \code{\link{downloadsRow}}\cr
+#' \code{\link{expandModelSetCP}}\cr
+#' \code{\link{ftpLink}}\cr
+#' \code{\link{GenEstAcknowledgements}}\cr
+#' \code{\link{GenEstAuthors}}\cr
+#' \code{\link{GenEstGUIauthors}}\cr
+#' \code{\link{GenEstLicense}}\cr
+#' \code{\link{GenEstLogos}}\cr
+#' \code{\link{GeneralInputSidebar}}\cr
+#' \code{\link{GeneralInputsPanel}}\cr
 #' \code{\link{gFigurePanel}}\cr
 #' \code{\link{gMainPanel}}\cr
 #' \code{\link{gPanel}}\cr
 #' \code{\link{gSchedulePanel}}\cr
 #' \code{\link{gSidebar}}\cr
 #' \code{\link{gSummaryPanel}}\cr
-#' \code{\link{isNeverDecreasing}}\cr
+#' \code{\link{li}}\cr
 #' \code{\link{loadedDataPanel}}\cr
 #' \code{\link{makeMenu}}\cr
 #' \code{\link{matchCells}}\cr
 #' \code{\link{MFigurePanel}}\cr
 #' \code{\link{MMainPanel}}\cr
-#' \code{\link{modalTextUSGS}}\cr
-#' \code{\link{modalTextWEST}}\cr
 #' \code{\link{modalWelcome}}\cr
+#' \code{\link{modNamePaste}}\cr
+#' \code{\link{modNameSplit}}\cr
 #' \code{\link{MPanel}}\cr
 #' \code{\link{msgList}}\cr
 #' \code{\link{msgModDone}}\cr
@@ -217,15 +223,23 @@
 #' \code{\link{msgModSENobs}}\cr
 #' \code{\link{msgModWarning}}\cr
 #' \code{\link{msgSampleSize}}\cr
-#' \code{\link{msgsplitFail}}\cr
+#' \code{\link{msgSplitFail}}\cr
 #' \code{\link{msgSSavgFail}}\cr
 #' \code{\link{msgSSinputFail}}\cr
 #' \code{\link{MSidebar}}\cr
 #' \code{\link{MSummaryPanel}}\cr
 #' \code{\link{navbar}}\cr
+#' \code{\link{ol}}\cr
 #' \code{\link{pickSizeclass}}\cr
+#' \code{\link{plotNA}}\cr
 #' \code{\link{prepPredictors}}\cr
 #' \code{\link{prepSizeclassText}}\cr
+#' \code{\link{prettyModTabCP}}\cr
+#' \code{\link{prettyModTabSE}}\cr
+#' \code{\link{prettySplitSpecTab}}\cr
+#' \code{\link{prettySplitTab}}\cr
+#' \code{\link{readCSVs}}\cr
+#' \code{\link{removeSelCols}}\cr
 #' \code{\link{SEEstimatesPanel}}\cr
 #' \code{\link{SEFiguresPanel}}\cr
 #' \code{\link{selectData}}\cr
@@ -235,6 +249,11 @@
 #' \code{\link{SEPanel}}\cr
 #' \code{\link{SESelectedDataPanel}}\cr
 #' \code{\link{SESidebar}}\cr
+#' \code{\link{setFigH}}\cr
+#' \code{\link{setFigW}}\cr
+#' \code{\link{setkFillNeed}}\cr
+#' \code{\link{setkFix}}\cr
+#' \code{\link{ul}}\cr
 #' \code{\link{update_input_cols_CP}}\cr
 #' \code{\link{update_input_cols_SE}}\cr
 #' \code{\link{update_input_data_CO}}\cr
@@ -288,7 +307,9 @@
 #' \code{\link{update_rv_transpose_split}}\cr
 #' \code{\link{update_rv_useSSdata}}\cr
 #' \code{\link{update_rv_useSSinputs}}\cr
+#' \code{\link{update_rv_sizeClassCol}}\cr
 #' \code{\link{updateColNames_all}}\cr
+#' \code{\link{updateColNames_size}}\cr
 #' \code{\link{updateSizeclassCol}}\cr
 #' \code{\link{updateSizeclasses}}\cr
 #' @docType package

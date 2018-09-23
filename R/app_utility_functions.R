@@ -1,3 +1,31 @@
+#' @title Create the version text for GenEst 
+#'
+#' @description Create a text string of the version number and date
+#'
+#' @param type "Full" or "Short" or "Name" or "NameDate"
+#'
+#' @return version text
+#'
+#' @export
+#'
+createvtext <- function(type = "Full"){
+  vnumber <- packageDescription("GenEst", fields = "Version")
+  vdate <- packageDescription("GenEst", fields = "Date")
+  if (type == "Full"){
+    vtext <- paste0("This is version ", vnumber, " (", vdate, ")")
+  }
+  if (type == "Short"){
+    vtext <- paste0("v", vnumber)
+  }
+  if (type == "Name"){
+    vtext <- paste0("GenEst ", "v", vnumber)
+  }
+  if (type == "NameDate"){
+    vtext <- paste0("GenEst ", "v", vnumber, " (", vdate, ")")
+  }
+  return(vtext)
+}
+
 #' @title Read in csv files in either format
 #'
 #' @description Handle reading in of a csv that is either comma-decimal or
@@ -158,8 +186,7 @@ removeSelCols <- function(colNames, selCols){
 #' @description Determine the overlap between the column names in the SE, CP,
 #'    and CO data tables.
 #'
-#' @param rv reactive values list with elements named \code{colnames_SE},
-#'    \code{colnames_CP}, and \code{colnames_CO}
+#' @param rv reactive values list
 #'
 #' @return possible column names
 #'
@@ -202,8 +229,7 @@ updateColNames_all <- function(rv){
 #' @description Determine the overlap between the column names in the SE, CP,
 #'    and CO data tables among columns with unique(length(x)) < length(x)
 #'
-#' @param rv reactive values list with elements named \code{data_SE},
-#'    \code{data_CP}, and \code{data_CO}
+#' @param rv reactive values list
 #'
 #' @return possible column names
 #'
@@ -212,18 +238,26 @@ updateColNames_all <- function(rv){
 updateColNames_size <- function(rv){
   SECPCO <- NULL
   goodInd <- function(x){
-    which(apply(x, FUN = function(x) length(unique(x)) < length(x), MAR = 2))
+    which(apply(x, 2, function(x) length(unique(x)) < length(x)))
   }
   if (!is.null(rv$data_SE)){
     SECPCO <- names(goodInd(rv$data_SE))
   }
   if (!is.null(rv$data_CP)){
     tmp <- names(goodInd(rv$data_CP))
-    if (!is.null(SECPCO)) SECPCO <- intersect(SECPCO, tmp) else SECPCO <- tmp
+    if (!is.null(SECPCO)){
+      SECPCO <- intersect(SECPCO, tmp)
+    } else{
+      SECPCO <- tmp 
+    }
   }
   if (!is.null(rv$data_CO)){
     tmp <- colnames(rv$data_CO)
-    if (!is.null(SECPCO)) SECPCO <- intersect(SECPCO, tmp) else SECPCO <- tmp
+    if (!is.null(SECPCO)){
+      SECPCO <- intersect(SECPCO, tmp)
+    } else{
+      SECPCO <- tmp
+    }
   }
   return(SECPCO)
 }
@@ -367,7 +401,6 @@ CPdistOptions <- function(){
     "lognormal" = "lognormal", "loglogistic" = "loglogistic"
   )
 }
-
 
 #' @title Produce a blank plot for unsucessful fits
 #'

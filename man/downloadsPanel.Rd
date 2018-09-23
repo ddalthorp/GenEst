@@ -2,13 +2,13 @@
 % Please edit documentation in R/app_ui_element_downloads_functions.R
 \name{downloadsPanel}
 \alias{downloadsPanel}
-\title{Downloads Main Panel UI element}
+\title{Help Downloads Main Panel UI element}
 \usage{
 downloadsPanel()
 }
 \value{
-HTML for the help panel
+HTML for the Help Downloads panel
 }
 \description{
-create the HTML code for the Downloads main panel
+create the HTML code for the Help Downloads panel
 }

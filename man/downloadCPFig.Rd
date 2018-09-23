@@ -10,7 +10,7 @@ downloadCPFig(rv)
 \item{rv}{the reactive values list}
 }
 \value{
-an updated reactive values list
+a download handler function
 }
 \description{
 Handle the CP figure downloading

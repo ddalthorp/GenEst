@@ -117,10 +117,10 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
   }
   if (type == "split"){
     if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
-      return(msgsplitFail("setup"))
+      return(msgSplitFail("setup"))
     }
     if (is.null(rv$Msplit)){
-      return(msgsplitFail("run"))
+      return(msgSplitFail("run"))
     }
   }
   if (type == "g"){
@@ -360,7 +360,7 @@ msgSSinputFail <- function(msgs, rv, clear = TRUE){
 #'
 #' @export
 #'
-msgsplitFail <- function(type = NULL){
+msgSplitFail <- function(type = NULL){
 
   if (is.null(type)){
     return(NULL)
