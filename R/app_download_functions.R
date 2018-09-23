@@ -4,7 +4,7 @@
 #'
 #' @param rv the reactive values list
 #'
-#' @return an updated reactive values list
+#' @return a download handler function
 #'
 #' @export
 #'
@@ -24,7 +24,7 @@ downloadCPFig <- function(rv){
 #'
 #' @param rv the reactive values list
 #'
-#' @return an updated reactive values list
+#' @return a download handler function
 #'
 #' @export
 #'
@@ -49,7 +49,7 @@ downloadSEFig <- function(rv){
 #'
 #' @param sc size class
 #'
-#' @return an updated reactive values list
+#' @return a download handler function
 #'
 #' @export
 #'
@@ -73,7 +73,7 @@ downloadgFig <- function(rv, sc){
 #'
 #' @param transpose logical indicator if to transpose the output or not
 #'
-#' @return an updated reactive values list
+#' @return a download handler function
 #'
 #' @export
 #'
@@ -125,7 +125,7 @@ downloadMFig <- function(rv, split = TRUE, transpose = FALSE){
 #'
 #' @param tablename the name of the table in the rv list
 #'
-#' @return an updated reactive values list
+#' @return a download handler function
 #'
 #' @export
 #'
@@ -135,5 +135,41 @@ downloadTable <- function(filename, tablename){
                               write.csv(tablename, file, row.names = FALSE)
                             }
                   )
+}
+
+#' @title Download a zipped data set
+#'
+#' @description Handle the downloading of a data set
+#'
+#' @param set the name of the data set to download
+#'
+#' @param tablename the name of the table in the rv list
+#'
+#' @return a download handler function
+#'
+#' @export
+#'
+downloadData <- function(set){
+
+  SE <- paste0("SE_", set, ".csv")
+  CP <- paste0("CP_", set, ".csv")
+  DWP <- paste0("DWP_", set, ".csv")
+  SS <- paste0("SS_", set, ".csv")
+  CO <- paste0("CO_", set, ".csv")
+
+  downloadHandler(
+    filename = "wind_RPbat.zip",
+    content = function(file)  {
+      pth = "../extdata/wind_RPbat/"
+      dir.create(tmp <- tempfile())
+      cat(paste0(pth, SE), file = file.path(tmp, SE))
+      cat(paste0(pth, CP), file = file.path(tmp, CP))
+      cat(paste0(pth, DWP), file = file.path(tmp, DWP))
+      cat(paste0(pth, SS), file = file.path(tmp, SS))
+      cat(paste0(pth, CO), file = file.path(tmp, CO))
+      zip(zipfile = file, files = tmp)
+    },
+    contentType = "application/zip"
+  )
 }
 

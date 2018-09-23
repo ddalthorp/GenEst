@@ -1,5 +1,3 @@
-
-
 #' @title Update the reactive value list when SE data are read in
 #'
 #' @description Update the rv list when the SE data file is input

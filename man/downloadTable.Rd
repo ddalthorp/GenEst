@@ -12,7 +12,7 @@ downloadTable(filename, tablename)
 \item{tablename}{the name of the table in the rv list}
 }
 \value{
-an updated reactive values list
+a download handler function
 }
 \description{
 Handle the downloading of a table

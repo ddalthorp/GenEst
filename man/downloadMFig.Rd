@@ -14,7 +14,7 @@ downloadMFig(rv, split = TRUE, transpose = FALSE)
 \item{transpose}{logical indicator if to transpose the output or not}
 }
 \value{
-an updated reactive values list
+a download handler function
 }
 \description{
 Handle the M figure downloading

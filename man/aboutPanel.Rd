@@ -2,13 +2,13 @@
 % Please edit documentation in R/app_ui_element_about_functions.R
 \name{aboutPanel}
 \alias{aboutPanel}
-\title{About Main Panel UI element}
+\title{Help About Main Panel UI element}
 \usage{
 aboutPanel()
 }
 \value{
-HTML for the about panel
+HTML for the Help About panel
 }
 \description{
-create the HTML code for the About main panel
+create the HTML code for the Help About panel
 }

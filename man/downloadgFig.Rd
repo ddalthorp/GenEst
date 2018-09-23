@@ -12,7 +12,7 @@ downloadgFig(rv, sc)
 \item{sc}{size class}
 }
 \value{
-an updated reactive values list
+a download handler function
 }
 \description{
 Handle the g figure downloading

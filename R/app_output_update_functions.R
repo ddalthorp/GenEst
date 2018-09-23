@@ -1,3 +1,29 @@
+#' @title Update the output list upon initiation of the app
+#'
+#' @description Update the output list when the app is started
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+initialOutput <- function(rv, output){
+  output$SStext <- renderText(rv$SStext)
+  output$download_RP <- downloadData("RP")
+  output$download_RPbat <- downloadData("RPbat")
+  output$download_cleared <- downloadData("cleared")
+  output$download_powerTower <- downloadData("powerTower")
+  output$download_PV <- downloadData("PV")
+  output$download_trough <- downloadData("trough")
+  output$download_mock <- downloadData("mock")
+  output$download_mock2 <- downloadData("mock2")
+  output
+}
+
+
 #' @title Update the output list when SE data are read in
 #'
 #' @description Update the output list when the SE data file is input

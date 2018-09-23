@@ -3,7 +3,7 @@
 #' @importFrom graphics axis box hist lines mtext par plot points polygon rect
 #'   text
 #' @importFrom grDevices dev.off devAskNewPage png rgb
-#' @importFrom htmltools a br div HTML img
+#' @importFrom htmltools a br div h3 h4 HTML img p tags
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
 #'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput 
@@ -17,7 +17,7 @@
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
 #'   reformulate rnorm runif terms update.formula weighted.mean  
 #' @importFrom survival strata
-#' @importFrom utils combn packageDescription read.csv write.csv
+#' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
 #' @importFrom zip zip
 #'
 
