@@ -153,7 +153,7 @@ dateCols <- function(data){
               as.Date(yyyymmdd(data[ , coli])),
               error = function(x){FALSE}
             )
-    dateTF[coli] <- lubridate::is.Date(temp)
+    dateTF[coli] <- is.Date(temp)
   }
   out <- colnames(data)[dateTF]
   return(out)
