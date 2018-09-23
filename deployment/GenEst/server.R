@@ -4,13 +4,10 @@ library(shiny)
 library(GenEst)
 
 shinyServer(
-  function(input, output, session) {
+  function(input, output, session){
 
-    modalWelcome("deploy")
     rv <- createReactiveValues()
-    output$versionInfo_about <- renderText(createvtext())
-    output$versionInfo_help <- renderText(createvtext())
-    output$SStext <- renderText(rv$SStext)
+    output <- initialOutput(rv, output)
     msgs <- msgList()
 
     observeEvent(input$file_SE, {

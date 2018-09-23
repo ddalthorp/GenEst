@@ -4,12 +4,10 @@ library(shiny)
 library(GenEst)
 
 shinyUI(
-  navbarPage(navbar(), collapsible = TRUE, windowTitle = "GenEst", 
+  navbarPage(navbar(), collapsible = TRUE, windowTitle = createvtext("Name"),
     tabPanel("Data Input", dataInputPanel()),
     tabPanel("Analyses", analysisPanel()),
-    navbarMenu(paste0("Help (", createvtext("Short"), ")"),
-      tabPanel("About", aboutPanel()),
-      tabPanel("Downloads", downloadsPanel())
-    )
+    tabPanel("Help", helpPanel("deploy")),
+    selected = "Help"
   )
 )
