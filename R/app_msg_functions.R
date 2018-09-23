@@ -111,6 +111,9 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     }
   }  
   if (type == "M"){
+    if (!is.null(rv$fracNote)){
+      return(msgFracNote(rv$fracNote))
+    }
     if (is.null(rv$M)){
       return(msgModFail(rv$M, "M"))
     }
@@ -375,4 +378,20 @@ msgSplitFail <- function(type = NULL){
     msg <- "Splits calculation failed. Check split selections."
   }
   return(showNotification(msg, type = "error", duration = NULL))
+}
+
+
+#' @title Create the message for when an incorrect FFS is input
+#'
+#' @description Produces a notification for improper input for fraction 
+#'   facility surveyed
+#'
+#' @param fracNote the note regarding the input
+#'
+#' @return a message regarding the input issue
+#'
+#' @export
+#'
+msgFracNote <- function(fracNote){
+  return(showNotification(fracNote, type = "warning", duration = NULL))
 }
