@@ -15,7 +15,7 @@ modalWelcome <- function(type = "base"){
     vdate <- packageDescription("GenEst", fields = "Date")
     disclaimer <- paste("GenEst v", vnumber, " (", vdate, ")", sep = "")
     showModal(modalDialog(title = disclaimer, disclaimerUSGS(), br(), br(),
-      disclaimerWEST("base"), easyClose = FALSE, footer = modalButton("OK"))
+      disclaimerWEST(), easyClose = FALSE, footer = modalButton("OK"))
     )
   }
   if (type == "deploy"){
@@ -23,7 +23,8 @@ modalWelcome <- function(type = "base"){
     vdate <- packageDescription("GenEst", fields = "Date")
     disclaimer <- paste("GenEst v", vnumber, " (", vdate, ")", sep = "")
     showModal(modalDialog(title = disclaimer, disclaimerUSGS(), br(), br(),
-      disclaimerWEST("deploy"), easyClose = FALSE, footer = modalButton("OK"))
+      disclaimerWEST(), br(), br(), disclaimerDeploy(), easyClose = FALSE, 
+      footer = modalButton("OK"))
     )
   }
 }

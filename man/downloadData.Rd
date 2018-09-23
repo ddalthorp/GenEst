@@ -8,8 +8,6 @@ downloadData(set)
 }
 \arguments{
 \item{set}{the name of the data set to download}
-
-\item{tablename}{the name of the table in the rv list}
 }
 \value{
 a download handler function

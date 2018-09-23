@@ -40,6 +40,9 @@ downloadsMainPanel <- function(){
 #' @description create the HTML code for a specific download row within 
 #'   the Help Downloads main panel
 #'
+#' @param set name of data set "RP", "RPbat", "cleared", "powerTower", "PV",
+#'   "trough", "mock", or "mock2"
+#'
 #' @return HTML for the Help Downloads specific download row
 #'
 #' @export
