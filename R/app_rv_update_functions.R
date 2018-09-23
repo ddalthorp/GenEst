@@ -532,6 +532,16 @@ update_rv_run_M <- function(rv, input){
   rv$dateFoundCol <- input$dateFoundCol
   rv$nsim <- input$nsim
   rv$frac <- input$frac
+  rv$fracNote <- NULL
+  if (rv$frac < 0.01){
+    rv$frac <- 0.01
+    rv$fracNote <- "Fraction facility surveyed set to minimum value (0.01)"
+  }
+  if (rv$frac > 1){
+    rv$frac <- 1
+    rv$fracNote <- "Fraction facility surveyed set to maximum value (1.0)"
+  }
+
   rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
   rv$CPmodToUse <- rep(NA, rv$nsizeclasses)
 

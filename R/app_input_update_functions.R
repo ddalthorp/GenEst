@@ -299,9 +299,11 @@ update_input_run_g <- function(rv, session){
 }
 
 
-#' @title Update the M output dropdown selections when the model is run
+#' @title Update the M output dropdown selections and the Fraction Surveyed
+#'   when the model is run
 #'
-#' @description Update the M output dropdown selections when the model is run
+#' @description Update the M output dropdown selections and the Fraction 
+#'   Surveyed when the model is run
 #'
 #' @param rv reactive values list
 #'
@@ -310,6 +312,7 @@ update_input_run_g <- function(rv, session){
 #' @export
 #'
 update_input_run_M <- function(rv, session){
+  updateNumericInput(session, "frac", value = rv$frac)
   updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
   updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
 }
