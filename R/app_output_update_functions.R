@@ -37,6 +37,8 @@ initialOutput <- function(rv, output){
 #'
 update_output_data_SE <- function(rv, output){
   output$data_SE <- renderDataTable(datatable(rv$data_SE))
+  output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
+  outputOptions(output, "filename_SE", suspendWhenHidden = FALSE)
   return(output)
 }
 
@@ -54,6 +56,8 @@ update_output_data_SE <- function(rv, output){
 #'
 update_output_data_CP <- function(rv, output){
   output$data_CP <- renderDataTable(datatable(rv$data_CP))
+  output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
+  outputOptions(output, "filename_CP", suspendWhenHidden = FALSE)
   return(output)
 }
 
