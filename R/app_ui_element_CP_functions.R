@@ -95,10 +95,18 @@ CPMainPanel <- function(){
 #'
 CPSelectedDataPanel <- function(){
   tabPanel("Selected Data", br(), 
-    conditionalPanel(condition = "input.ltp == null & input.fta == null",
+    conditionalPanel(condition = "input.ltp == null | input.fta == null",
       HTML("<em>Select observation columns to view data</em>")
-    ), br(), 
-    dataTableOutput("selected_CP")
+    ), 
+    conditionalPanel(
+      condition = "output.filename_CP != null & input.ltp != null & 
+        input.fta != null",
+      em(textOutput("filename_CP"))
+    ), 
+    br(), 
+    conditionalPanel(condition = "input.ltp != null & input.fta != null",
+      dataTableOutput("selected_CP")
+    )
   )
 }
 
