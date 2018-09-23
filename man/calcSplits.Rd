@@ -85,8 +85,8 @@ Arrival intervals (\code{Aj}) are given as integers, j, that
  in the given simulation draw (indexed by column). Arrival interval indices
  (j) are relative to indexed carcasses' search schedules.
 
- No more than two splitting variables (\code{split_CO}, \code{split_SS}, and
- \code{split_time}) in total may be used. \code{split_CO} variables
+ No more than two splitting variables (\code{split_CO}, \code{split_SS}, 
+ and \code{split_time}) in total may be used. \code{split_CO} variables
  describe qualitative characteristics of the observed carcasses or where
  they were found. Some examples include searcher (DHD, JPS, MMH), carcass
  size (S, M, L), species, age (fresh/dry or immature/mature), unit,
@@ -113,8 +113,9 @@ Arrival intervals (\code{Aj}) are given as integers, j, that
   model_SE <- pkm(p ~ 1, k ~ 1, data = wind_RPbat$SE)
   model_CP <- cpm(l ~ 1, s ~ 1, data = wind_RPbat$CP, dist = "weibull",
     left = "Left", right = "Right")
-  Mhat <- estM(nsim = 1000, data_CO = wind_RPbat$CO, data_SS = wind_RPbat$SS,
-    data_DWP = wind_RPbat$DWP, model_SE = model_SE, model_CP = model_CP,
+  Mhat <- estM(nsim = 1000, data_CO = wind_RPbat$CO, 
+    data_SS = wind_RPbat$SS, data_DWP = wind_RPbat$DWP, 
+    model_SE = model_SE, model_CP = model_CP,
     unitCol = "Turbine", dateFoundCol = "DateFound")
 
   M_spp <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
