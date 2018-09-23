@@ -11,6 +11,7 @@ createReactiveValues <- function(){
   reactiveValues(
     data_SE = NULL, data_CP = NULL, data_SS = NULL, data_DWP = NULL, 
     data_CO = NULL,
+    filename_SE = NULL, filename_CP = NULL,
     colNames_SE = NULL, colNames_SE_sel = NULL, colNames_SE_nosel = NULL, 
     colNames_CP = NULL, colNames_CP_sel = NULL, colNames_CP_nosel = NULL,    
     colNames_SS = NULL, colNames_SS_sel = NULL, colNames_SS_nosel = NULL, 
