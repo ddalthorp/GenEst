@@ -1,87 +1,215 @@
-#' @title About Main Panel UI element
+#' @title Help About Main Panel UI element 
 #'
-#' @description create the HTML code for the About main panel
+#' @description create the HTML code for the Help About panel
 #'
-#' @return HTML for the about panel
+#' @return HTML for the Help About panel
 #'
 #' @export
 #'
 aboutPanel <- function(){
-  fluidRow(
-    HTML("GenEst is a tool for estimating mortality from efficiency,
-      persistence, search schedule, and carcass data."
-    ),
-    HTML("<b>Authors:</b>
-      Daniel Dalthorp
-        <a href = 'http://www.USGS.gov', title = 'USGS'>(USGS)</a>,
-      Juniper Simonis 
-        <a href = 'http://www.dapperstats.com', title 'DAPPER Stats'> (DAPPER Stats)</a>,
-      Manuela Huso
-        <a href = 'http://www.USGS.gov', title = 'USGS'>(USGS)</a>,
-      Lisa Madsen
-        <a href = 'http://www.oregonstate.edu', title = 'OSU'>(OSU)</a>,
-      Paul Rabie 
-        <a href = 'http://www.west-inc.com', title = 'WEST'>(WEST)</a>,
-      Jeffrey Mintz
-        <a href = 'http://www.USGS.gov', title = 'USGS'>(USGS)</a>,
-      Robert Wolpert
-        <a href = 'http://www2.stat.duke.edu/~rlw/', title = 'Duke'>(Duke)</a>,
-      Jared Studyvin
-        <a href = 'http://www.west-inc.com', title = 'WEST'>(WEST)</a>,
-      and Franzi Korner-Nievergelt
-        <a href = 'http://www.oikostat.ch/', title = 'oikostat'>(oikostat)</a>"),
-    br(), br(),
-    HTML("<b>Web Design and Graphics User Interface Programming:</b>  
-      Juniper Simonis 
-        <a href = 'http://www.dapperstats.com', title = 'DAPPER Stats'>
-          (DAPPER Stats)</a>"
-    ),
-    br(), br(),
-    HTML("The development of GenEst was supported by
-      <a href = 'https://www.blm.gov/', title = 'BLM'>
-        The US Bureau of Land Management</a>,
-      <a href = 'https://www.usgs.gov/', title = 'USGS'>
-        The US Geological Survey</a>,
-      <a href = 'https://www.nrel.gov/', title = 'NREL'>
-        National Renewable Energy Laboratory</a>,
-      <a href = 'http://www.westconsultants.com/', title = 'WEST' >WEST, Inc.</a>,
-      <a href = 'http://www.batcon.org/', title = 'BCI'>
-        Bat Conservation International</a>,
-      <a href = 'http://www.avangridrenewables.us/', title = 'Avangrid'>
-        Avangrid Renewables</a>,
-      <a href = 'https://awwi.org/', title = 'AWWI'>
-        American Wind Wildlife Institute</a>,
-      and
-      <a href = 'https://oregonstate.edu/', title = 'OSU'>
-        Oregon State University</a>."),
-    br(), br(),
-    HTML("GenEst is provided under universal public domain, license
-      <a href = 'https://creativecommons.org/publicdomain/zero/1.0/legalcode'>
-      CC0 1.0.</a>"),
-    br(), br(), br(), br(),
-    HTML("<a href='https://www.blm.gov/', title = 'BLM'>
-       <img src = 'blm.jpg' height = '60', alt = 'BLM logo'></a>
-       <a href='https://www.usgs.gov/', title = 'USGS'>
-       <img src = 'usgs.png' height = '60', alt = 'USGS logo'></a>
-       <a href='https://www.nrel.gov/', title = 'NREL'>
-       <img src = 'nrel.jpg' height = '60', alt = 'NREL logo'> </a>
-       <a href='http://www.westconsultants.com/', title = 'WEST'>
-       <img src = 'west.png' height = '60', alt = 'WEST logo'></a>
-       <a href='http://www.batcon.org/', title = 'BCI'>
-       <img src = 'bci.jpg' height = '60', alt = 'BCI logo'></a>
-       <a href='https://awwi.org/', title = 'AWWI'>
-       <img src = 'awwi.png' height = '60', alt = 'AWWI logo'></a>
-       <a href='http://www.avangridrenewables.us/', title = 'Avangrid'>
-       <img src = 'avangrid.png' height = '60', alt = 'Avangrid logo'></a>
-       <a href='http://www.dapperstats.com', , title = 'DAPPER Stats'>
-       <img src = 'dapper.png' height = '60', alt = 'DapperStats logo'></a>
-       <a href='http://www.oikostat.ch/', title = 'Oikostat'>
-       <img src = 'oikostat.jpg' height = '60', alt = 'Oikostat logo'> </a>
-       <a href='https://www.oregonstate.edu/', title = 'OSU'>
-       <img src = 'osu.jpg' height = '60', alt = 'OSU logo'> </a>
-       <a href='https://www.duke.edu/', title = 'Duke University'>
-       <img src = 'duke.png' height = '60', alt = 'Duke U. logo'></a>"
-     )
+  tabPanel("About", aboutMainPanel())
+}
+
+#' @title Help About main panel UI element
+#'
+#' @description create the HTML code for the Help About main panel
+#'
+#' @return HTML for the Help About main panel
+#'
+#' @export
+#'
+aboutMainPanel <- function(){
+  mainPanel(
+    column(10, offset = 0,
+      br(), 
+      h3(createvtext("NameDate")),
+      h4(a("User Guide", href = ftpLink("UserGuide"), target = "_blank")),
+      h4(a("GenEst Statistical Models", href = ftpLink("Models"), 
+           target = "_blank"
+         )
+      ),
+      GenEstAuthors(),
+      GenEstGUIauthors(),
+      GenEstLicense(),
+      GenEstAcknowledgements(),
+      GenEstLogos()
+    )
   )
 }
 
+
+#' @title Help About authors
+#'
+#' @description create the HTML code for the Help About authors
+#'
+#' @return HTML for the authors on the About panel
+#'
+#' @export
+#'
+GenEstAuthors <- function(){
+  HTML(
+    paste0(br(), 
+      b("Authors:"),
+      "Daniel Dalthorp ", 
+      a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
+      ", Juniper Simonis ",
+      a("(DAPPER Stats)", href = "https://www.dapperstats.com", 
+        target = "_blank"
+      ),
+      ", Manuela Huso ",
+      a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
+      ", Lisa Madsen ",
+      a("(OSU)", href = "https://oregonstate.edu", target = "_blank"),
+      ", Paul Rabie ",
+      a("(WEST)", href = "https://www.west-inc.com", target = "_blank"),
+      ", Jeffrey Mintz ",
+      a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
+      ", Robert Wolpert ",
+      a("(Duke)", href = "http://www2.stat.duke.edu/~rlw/", 
+        target = "_blank"
+      ),
+      ", Jared Studyvin ",
+      a("(WEST)", href = "https://www.west-inc.com", target = "_blank"),
+      ", and Franzi Korner-Nievergelt ",
+      a("(oikostat)", href = "http://www.oikostat.ch", target = "_blank"), 
+      "."
+    )
+  )
+}
+
+#' @title Help About GUI authors
+#'
+#' @description create the HTML code for the Help About GUI authors
+#'
+#' @return HTML for the GUI authors on the About panel
+#'
+#' @export
+#'
+GenEstGUIauthors <- function(){
+  HTML(
+    paste0(br(), br(),
+      b("Web Design and Graphics User Interface Programming:"), 
+      " Juniper Simonis ",
+      a("(DAPPER Stats)", href = "http://www.dapperstats.com", 
+        target = "_blank"
+      ), 
+      "."
+    )
+  )
+}
+
+#' @title Help About acknowledgements
+#'
+#' @description create the HTML code for the Help About acknowledgements
+#'
+#' @return HTML for the acknowledgements on the About panel
+#'
+#' @export
+#'
+GenEstAcknowledgements <- function(){
+  HTML(
+    paste0(br(), br(),
+      "The development of GenEst was supported by ",
+      a("The US Bureau of Land Management",
+        href = "https://www.blm.gov", target = "_blank"
+      ), 
+      ", ",    
+      a("The US Geological Survey",
+        href = "https://www.usgs.gov", target = "_blank"
+      ), 
+      ", ",
+      a("The National Renewable Energy",
+        href = "https://www.nrel.gov", target = "_blank"
+      ), 
+      ", ",
+      a("WEST Inc.",
+        href = "https://www.west-inc.com", target = "_blank"
+      ), 
+      ", ",
+      a("Bat Conservation International",
+        href = "https://www.batcon.org", target = "_blank"
+      ), 
+      ", ",
+      a("Avangrid Renewables",
+        href = "http://www.avangridrenewables.us", target = "_blank"
+      ), 
+      ", ",
+      a("American Wind Wildlife Institute",
+        href = "https://www.awwi.org", target = "_blank"
+      ), 
+      ", and ",
+      a("Oregon State University",
+        href = "https://oregonstate.edu", target = "_blank"
+      ), 
+      "."
+    )
+  )
+}
+
+#' @title Help About license
+#'
+#' @description create the HTML code for the Help About license
+#'
+#' @return HTML for the license on the About panel
+#'
+#' @export
+#'
+GenEstLicense <- function(){
+  HTML(
+    paste0(br(), br(),
+      "GenEst is provided under universal public domain, license ",
+      a("CC0 1.0",
+        href = "https://creativecommons.org/publicdomain/zero/1.0/legalcode",
+        target = "_blank"
+      ), "."
+    )
+  )
+}
+
+#' @title Help About logos
+#'
+#' @description create the HTML code for the Help About logos
+#'
+#' @return HTML for the logos on the About panel
+#'
+#' @export
+#'
+GenEstLogos <- function(){
+  HTML(
+    paste0(br(), br(),
+      a(img(src = "blm.jpg", height = "60", alt = "BLM logo"),
+        href = "https://www.blm.gov", target = "_blank"
+      ),
+      a(img(src = "usgs.png", height = "60", alt = "USGS logo"),
+        href = "https://www.usgs.gov", target = "_blank"
+      ),
+      a(img(src = "nrel.jpg", height = "60", alt = "NREL logo"),
+        href = "https://www.nrel.gov", target = "_blank"
+      ),
+      a(img(src = "west.png", height = "60", alt = "WEST logo"),
+        href = "https://www.west-inc.com", target = "_blank"
+      ),
+      a(img(src = "bci.jpg", height = "60", alt = "BCI logo"),
+        href = "https://www.batcon.org", target = "_blank"
+      ),
+      a(img(src = "awwi.png", height = "60", alt = "AWWI logo"),
+        href = "https://www.awwi.org", target = "_blank"
+      ),
+      a(img(src = "avangrid.png", height = "60", alt = "Avangrid logo"),
+        href = "http://www.avangridrenewables.us", target = "_blank"
+      ),
+      a(img(src = "dapper.png", height = "60", alt = "DAPPER stats logo"),
+        href = "https://www.dapperstats.com", target = "_blank"
+      ),
+      a(img(src = "oikostat.jpg", height = "60", alt = "oikostat logo"),
+        href = "http://www.oikostat.ch", target = "_blank"
+      ),
+      a(img(src = "osu.jpg", height = "60", alt = "Oregon State logo"),
+        href = "https://oregonstate.edu/", target = "_blank"
+      ),
+      a(img(src = "duke.png", height = "60", alt = "Duke logo"),
+        href = "https://www.duke.edu", target = "_blank"
+      )
+    )
+  )
+}

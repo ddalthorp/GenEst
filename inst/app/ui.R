@@ -1,8 +1,8 @@
-navbarPage(navbar(), collapsible = TRUE, windowTitle = "GenEst",
+navbarPage(navbar(), collapsible = TRUE, windowTitle = createvtext("Name"),
   tabPanel("Data Input", dataInputPanel()),
   tabPanel("Analyses", analysisPanel()),
-  tabPanel("Help/Resources", resourcesPanel()),
-  selected = "Help/Resources"
+  tabPanel("Help", helpPanel()),
+  selected = "Help"
 )
 
 

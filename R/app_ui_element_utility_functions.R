@@ -8,9 +8,10 @@
 #'
 navbar <- function(){
   div(img(src = "GenEst.png", style = "margin-top: -8px;", alt = "GenEst",
-    height = 40),  h5(createvtext(type = "Short")))
+          height = 40
+      )
+  )
 }
-
 
 #' @title Make a model menu
 #'
@@ -60,10 +61,92 @@ makeMenu <- function(mods, sizeclasses, type){
       widthtxt <- paste0(widthval, "px")
       mtuText <- paste("modelChoices_", type, sci, sep = "") 
       scText <- paste("Model for ", sizeclasses[sci], sep = "")
-      modSelect <- selectizeInput(mtuText, scText, c('', modNames), width = widthtxt)
+      modNames <- c("", modNames)
+      modSelect <- selectizeInput(mtuText, scText, modNames, width = widthtxt)
       modelMenu <- paste(modelMenu, modSelect)  
     }
-  }
-          
+  }        
   return(renderUI({HTML(modelMenu)}))
+}
+
+
+#' @title HTML ol function
+#'
+#' @description Generate an ordered list HTML object. This simply pulls the
+#'   function definition from the tag environment in htmltools
+#'
+#' @param ... attributes and children of the element
+#'
+#' @return HTML ordered list
+#'
+#' @export
+#'
+ol <- function(...){
+  tags$ol(...)
+}
+
+#' @title HTML ul function
+#'
+#' @description Generate an unordered list HTML object. This simply pulls the
+#'   function definition from the tag environment in htmltools
+#'
+#' @param ... attributes and children of the element
+#'
+#' @return HTML unordered list
+#'
+#' @export
+#'
+ul <- function(...){
+  tags$ul(...)
+}
+
+#' @title HTML li function
+#'
+#' @description Generate an HTML list element. This simply pulls the
+#'   function definition from the tag environment in htmltools
+#'
+#' @param ... attributes and children of the element
+#'
+#' @return HTML ordered list
+#'
+#' @export
+#'
+li <- function(...){
+  tags$li(...)
+}
+
+#' @title HTML b function
+#'
+#' @description Generate an HTML bolded text element. This simply pulls 
+#'   the function definition from the tag environment in htmltools
+#'
+#' @param ... attributes and children of the element
+#'
+#' @return HTML ordered list
+#'
+#' @export
+#'
+b <- function(...){
+  tags$b(...)
+}
+
+#' @title Creates a link to the FTP document of interest
+#'
+#' @description create the FTP link for the User Guide or Models document
+#'
+#' @param doc "UserGuide" or "Models"
+#'
+#' @return link to the document
+#'
+#' @export
+#'
+ftpLink <- function(doc = "UserGuide"){
+  mainLink <- "ftp://ftpext.usgs.gov/pub/wr/or/corvallis/Dalthorp/"
+  if (doc == "UserGuide"){
+    docLink <- paste0(mainLink, "GenEst_User_Guide%200.2.0.pdf")
+  }
+  if (doc == "Models"){
+    docLink <- paste0(mainLink, "GenEst_Statistical_Models.pdf")
+  }
+  docLink
 }

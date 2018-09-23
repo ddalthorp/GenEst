@@ -7,8 +7,7 @@
 updateColNames_all(rv)
 }
 \arguments{
-\item{rv}{reactive values list with elements named \code{colnames_SE},
-\code{colnames_CP}, and \code{colnames_CO}}
+\item{rv}{reactive values list}
 }
 \value{
 possible column names

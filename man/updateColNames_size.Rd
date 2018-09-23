@@ -7,8 +7,7 @@
 updateColNames_size(rv)
 }
 \arguments{
-\item{rv}{reactive values list with elements named \code{data_SE},
-\code{data_CP}, and \code{data_CO}}
+\item{rv}{reactive values list}
 }
 \value{
 possible column names

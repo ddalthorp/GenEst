@@ -42,6 +42,8 @@ the assumption that the \code{k} parameter is fixed and known to be
 \item{CL}{confidence level}
 
 \item{quiet}{Logical indicator of whether or not to print messsages}
+
+\item{...}{additional arguments passed to subfunctions}
 }
 \value{
 \code{pkm} returns an object of class "\code{pkm}", which is a list

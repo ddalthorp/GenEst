@@ -70,6 +70,8 @@
 #'
 #' @param quiet Logical indicator of whether or not to print messsages
 #'
+#' @param ... additional arguments passed to subfunctions
+#'
 #' @return \code{pkm} returns an object of class "\code{pkm}", which is a list
 #'   whose components characterize the fit of the model. Due to the large
 #'   number and complexity of components, only a subset of them is printed 
