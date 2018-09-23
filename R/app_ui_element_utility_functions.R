@@ -61,8 +61,8 @@ makeMenu <- function(mods, sizeclasses, type){
       widthtxt <- paste0(widthval, "px")
       mtuText <- paste("modelChoices_", type, sci, sep = "") 
       scText <- paste("Model for ", sizeclasses[sci], sep = "")
-      modNames <- c("", modNames)
-      modSelect <- selectizeInput(mtuText, scText, modNames, width = widthtxt)
+      modSelect <- selectizeInput(mtuText, scText, modNames, multiple = TRUE, 
+                     width = widthtxt, options = list(maxItems = 1))
       modelMenu <- paste(modelMenu, modSelect)  
     }
   }        
