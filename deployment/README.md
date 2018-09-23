@@ -9,7 +9,7 @@ account and have configured **rsconnect** to work with your account.
 ```
 packages <- c("cbinom", "devtools", "digest", "DT", "gsl", "gtools", 
                  "htmltools", "lubridate", "matrixStats", "mvtnorm", "Rcpp",
-                 "rsconnect", "shiny", "sticky", "survival")
+                 "rsconnect", "shiny", "sticky", "survival", "zip")
 packages <- package_new[!(packages %in% installed.packages()[,"Package"])] 
 if(length(packages) > 0){
   install.packages(packages)
