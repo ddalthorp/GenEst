@@ -5,8 +5,8 @@
 \title{Run a set of cpm models based on predictor inputs}
 \usage{
 cpmSet(formula_l, formula_s = NULL, data, left = NULL, right = NULL,
-  dists = c("exponential", "weibull", "lognormal", "loglogistic"), CL = 0.9,
-  quiet = FALSE)
+  dists = c("exponential", "weibull", "lognormal", "loglogistic"),
+  CL = 0.9, quiet = FALSE)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 

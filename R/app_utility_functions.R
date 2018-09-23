@@ -1,3 +1,31 @@
+#' @title Create the version text for GenEst 
+#'
+#' @description Create a text string of the version number and date
+#'
+#' @param type "Full" or "Short" or "Name" or "NameDate"
+#'
+#' @return version text
+#'
+#' @export
+#'
+createvtext <- function(type = "Full"){
+  vnumber <- packageDescription("GenEst", fields = "Version")
+  vdate <- packageDescription("GenEst", fields = "Date")
+  if (type == "Full"){
+    vtext <- paste0("This is version ", vnumber, " (", vdate, ")")
+  }
+  if (type == "Short"){
+    vtext <- paste0("v", vnumber)
+  }
+  if (type == "Name"){
+    vtext <- paste0("GenEst ", "v", vnumber)
+  }
+  if (type == "NameDate"){
+    vtext <- paste0("GenEst ", "v", vnumber, " (", vdate, ")")
+  }
+  return(vtext)
+}
+
 #' @title Read in csv files in either format
 #'
 #' @description Handle reading in of a csv that is either comma-decimal or
@@ -212,7 +240,7 @@ updateColNames_all <- function(rv){
 updateColNames_size <- function(rv){
   SECPCO <- NULL
   goodInd <- function(x){
-    which(apply(x, FUN = function(x) length(unique(x)) < length(x), MAR = 2))
+    which(apply(x, 2, function(x) length(unique(x)) < length(x)))
   }
   if (!is.null(rv$data_SE)){
     SECPCO <- names(goodInd(rv$data_SE))
