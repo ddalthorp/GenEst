@@ -7,9 +7,13 @@
 #' @export
 #'
 navbar <- function(){
-  div(img(src = "GenEst.png", style = "margin-top: -8px;", alt = "GenEst",
-          height = 40
-      )
+  div(
+    div(
+      img(src = "GenEst.png", style = "margin-top: -8px;", alt = "GenEst",
+        height = 40
+       ), 
+      small(createvtext("Short"))
+    )
   )
 }
 
@@ -69,7 +73,6 @@ makeMenu <- function(mods, sizeclasses, type){
   return(renderUI({HTML(modelMenu)}))
 }
 
-
 #' @title HTML ol function
 #'
 #' @description Generate an ordered list HTML object. This simply pulls the
@@ -128,6 +131,21 @@ li <- function(...){
 #'
 b <- function(...){
   tags$b(...)
+}
+
+#' @title HTML small function
+#'
+#' @description Generate a small text HTML object. This simply pulls the
+#'   function definition from the tag environment in htmltools
+#'
+#' @param ... attributes and children of the element
+#'
+#' @return HTML small text
+#'
+#' @export
+#'
+small <- function(...){
+  tags$small(...)
 }
 
 #' @title Creates a link to the FTP document of interest
