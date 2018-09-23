@@ -12,6 +12,7 @@
 #'
 update_rv_data_SE <- function(rv, input){
   rv$data_SE <- readCSVs(input$file_SE$datapath)
+  rv$filename_SE <- input$file_SE$name
   rv$colNames_SE <- colnames(rv$data_SE)
   rv$colNames_all <- updateColNames_all(rv)
   rv$colNames_size <- updateColNames_size(rv)
@@ -35,6 +36,7 @@ update_rv_data_SE <- function(rv, input){
 #'
 update_rv_data_CP <- function(rv, input){
   rv$data_CP <- readCSVs(input$file_CP$datapath)
+  rv$filename_CP <- input$file_CP$name
   rv$colNames_CP <- colnames(rv$data_CP)
   rv$colNames_all <- updateColNames_all(rv)
   rv$colNames_size <- updateColNames_size(rv)

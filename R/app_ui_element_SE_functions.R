@@ -96,7 +96,12 @@ SESelectedDataPanel <- function(){
   tabPanel("Selected Data", br(), 
     conditionalPanel(condition = "input.obsCols_SE == null",
       HTML("<em>Select observation columns to view data</em>")
-    ), br(), 
+    ), 
+    conditionalPanel(
+      condition = "output.filename_SE != null & input.obsCols_SE != null",
+      em(textOutput("filename_SE"))
+    ), 
+    br(), 
     dataTableOutput("selected_SE")
   )
 }
