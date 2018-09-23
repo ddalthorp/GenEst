@@ -6,6 +6,10 @@
 \usage{
 downloadsRow(set)
 }
+\arguments{
+\item{set}{name of data set "RP", "RPbat", "cleared", "powerTower", "PV",
+"trough", "mock", or "mock2"}
+}
 \value{
 HTML for the Help Downloads specific download row
 }

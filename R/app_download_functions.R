@@ -143,8 +143,6 @@ downloadTable <- function(filename, tablename){
 #'
 #' @param set the name of the data set to download
 #'
-#' @param tablename the name of the table in the rv list
-#'
 #' @return a download handler function
 #'
 #' @export

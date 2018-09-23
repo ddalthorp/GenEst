@@ -3,7 +3,7 @@
 #' @importFrom graphics axis box hist lines mtext par plot points polygon rect
 #'   text
 #' @importFrom grDevices dev.off devAskNewPage png rgb
-#' @importFrom htmltools a br div h3 h4 HTML img p tags
+#' @importFrom htmltools a br code div em h3 h4 HTML img p tags
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
 #'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput 
@@ -84,15 +84,13 @@
 #' @section Potentially useful calculation functions:
 #' \code{\link{pkLogLik}}\cr
 #' \code{\link{cpLogLik}}\cr
-
 #' \code{\link{alogit}}\cr
 #' \code{\link{logit}}\cr
-
 #' \code{\link{calcg}}\cr
 #' \code{\link{Ecbinom}}\cr
+#' \code{\link{Etcbinom}}\cr
 #' \code{\link{calcRate}}\cr
 #' \code{\link{calcTsplit}}\cr
-#'
 #' \code{\link{ltranspose}}\cr
 #'
 #' @section Potentially useful editing functions:
@@ -118,8 +116,7 @@
 #' \code{\link{cpmSetSizeFail}}\cr
 #' \code{\link{cpmSetSpecCPCellPlot}}\cr
 #' \code{\link{expandModelSetCP}}\cr
-#' \code{\link{GeneralInputSidebar}}\cr
-#' \code{\link{GeneralInputsPanel}}\cr
+
 #' \code{\link{modelSetCells}}\cr
 #' \code{\link{modelSetModelCells}}\cr
 #' \code{\link{modelSetModelPredictors}}\cr
@@ -165,8 +162,10 @@
 #' @section GUI-specific commands:
 #' \code{\link{runGenEst}}\cr
 #'
+#' \code{\link{aboutMainPanel}}\cr
 #' \code{\link{aboutPanel}}\cr
 #' \code{\link{analysisPanel}}\cr
+#' \code{\link{b}}\cr
 #' \code{\link{clearNotifications}}\cr
 #' \code{\link{CPdistOptions}}\cr
 #' \code{\link{CPEstimatesPanel}}\cr
@@ -186,6 +185,8 @@
 #' \code{\link{dataTabPanel}}\cr
 #' \code{\link{dateCols}}\cr
 #' \code{\link{dateToDay}}\cr
+#' \code{\link{disclaimerUSGS}}\cr
+#' \code{\link{disclaimerWEST}}\cr
 #' \code{\link{dlModTabCP}}\cr
 #' \code{\link{dlModTabSE}}\cr
 #' \code{\link{downloadCPFig}}\cr
@@ -193,6 +194,13 @@
 #' \code{\link{downloadMFig}}\cr
 #' \code{\link{downloadSEFig}}\cr
 #' \code{\link{downloadTable}}\cr
+#' \code{\link{GenEstAcknowledgements}}\cr
+#' \code{\link{GenEstAuthors}}\cr
+#' \code{\link{GenEstGUIauthors}}\cr
+#' \code{\link{GenEstLicense}}\cr
+#' \code{\link{GenEstLogos}}\cr
+#' \code{\link{GeneralInputSidebar}}\cr
+#' \code{\link{GeneralInputsPanel}}\cr
 #' \code{\link{gFigurePanel}}\cr
 #' \code{\link{gMainPanel}}\cr
 #' \code{\link{gPanel}}\cr
@@ -205,8 +213,6 @@
 #' \code{\link{matchCells}}\cr
 #' \code{\link{MFigurePanel}}\cr
 #' \code{\link{MMainPanel}}\cr
-#' \code{\link{modalTextUSGS}}\cr
-#' \code{\link{modalTextWEST}}\cr
 #' \code{\link{modalWelcome}}\cr
 #' \code{\link{MPanel}}\cr
 #' \code{\link{msgList}}\cr

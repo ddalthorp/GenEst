@@ -74,9 +74,9 @@ This package is designed to analyze searcher efficiency,
 \code{\link{logit}}\cr
 \code{\link{calcg}}\cr
 \code{\link{Ecbinom}}\cr
+\code{\link{Etcbinom}}\cr
 \code{\link{calcRate}}\cr
 \code{\link{calcTsplit}}\cr
-
 \code{\link{ltranspose}}\cr
 }
 
@@ -106,8 +106,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{cpmSetSizeFail}}\cr
 \code{\link{cpmSetSpecCPCellPlot}}\cr
 \code{\link{expandModelSetCP}}\cr
-\code{\link{GeneralInputSidebar}}\cr
-\code{\link{GeneralInputsPanel}}\cr
 \code{\link{modelSetCells}}\cr
 \code{\link{modelSetModelCells}}\cr
 \code{\link{modelSetModelPredictors}}\cr
@@ -155,8 +153,10 @@ This package is designed to analyze searcher efficiency,
 
 \code{\link{runGenEst}}\cr
 
+\code{\link{aboutMainPanel}}\cr
 \code{\link{aboutPanel}}\cr
 \code{\link{analysisPanel}}\cr
+\code{\link{b}}\cr
 \code{\link{clearNotifications}}\cr
 \code{\link{CPdistOptions}}\cr
 \code{\link{CPEstimatesPanel}}\cr
@@ -176,6 +176,8 @@ This package is designed to analyze searcher efficiency,
 \code{\link{dataTabPanel}}\cr
 \code{\link{dateCols}}\cr
 \code{\link{dateToDay}}\cr
+\code{\link{disclaimerUSGS}}\cr
+\code{\link{disclaimerWEST}}\cr
 \code{\link{dlModTabCP}}\cr
 \code{\link{dlModTabSE}}\cr
 \code{\link{downloadCPFig}}\cr
@@ -183,6 +185,13 @@ This package is designed to analyze searcher efficiency,
 \code{\link{downloadMFig}}\cr
 \code{\link{downloadSEFig}}\cr
 \code{\link{downloadTable}}\cr
+\code{\link{GenEstAcknowledgements}}\cr
+\code{\link{GenEstAuthors}}\cr
+\code{\link{GenEstGUIauthors}}\cr
+\code{\link{GenEstLicense}}\cr
+\code{\link{GenEstLogos}}\cr
+\code{\link{GeneralInputSidebar}}\cr
+\code{\link{GeneralInputsPanel}}\cr
 \code{\link{gFigurePanel}}\cr
 \code{\link{gMainPanel}}\cr
 \code{\link{gPanel}}\cr
@@ -195,8 +204,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{matchCells}}\cr
 \code{\link{MFigurePanel}}\cr
 \code{\link{MMainPanel}}\cr
-\code{\link{modalTextUSGS}}\cr
-\code{\link{modalTextWEST}}\cr
 \code{\link{modalWelcome}}\cr
 \code{\link{MPanel}}\cr
 \code{\link{msgList}}\cr
