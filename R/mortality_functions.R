@@ -135,12 +135,12 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   c_out <- which(rowSums(gDf) == 0)
   if (length(c_out) == 0){
     n <- length(gDf)
-    Mhat <- ((cbinom::rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
+    Mhat <- ((rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   } else {
     Mhat <- array(0, dim = c(dim(data_CO)[1], nsim))
     gDf <- gDf[-c_out, ]
     n <- length(gDf)
-    Mhat[-c_out,] <- ((cbinom::rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
+    Mhat[-c_out,] <- ((rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   }
   out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, Xtot = nrow(data_CO))
   class(out) <- c("estM", "list")

@@ -1,9 +1,16 @@
 #' @useDynLib GenEst, .registration = TRUE
+#' @importFrom cbinom rcbinom
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics axis box hist lines mtext par plot points polygon rect
 #'   text
 #' @importFrom grDevices dev.off devAskNewPage png rgb
+#' @importFrom gsl hyperg_2F1
+#' @importFrom gtools mixedsort
 #' @importFrom htmltools a br code div em h3 h4 HTML img p tags
+#' @importFrom lubridate is.Date
+#' @importFrom matrixStats colCounts colMaxs rowCumprods rowMaxs rowProds
+#'   rowCumsums rowDiffs rowQuantiles rowCounts
+#' @importFrom mvtnorm rmvnorm
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
 #'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput 
@@ -16,7 +23,8 @@
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
 #'   reformulate rnorm runif terms update.formula weighted.mean  
-#' @importFrom survival strata
+#' @importFrom sticky sticky
+#' @importFrom survival dsurvreg psurvreg strata Surv survfit survreg
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
 #' @importFrom zip zip
 #'
