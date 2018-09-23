@@ -186,8 +186,7 @@ removeSelCols <- function(colNames, selCols){
 #' @description Determine the overlap between the column names in the SE, CP,
 #'    and CO data tables.
 #'
-#' @param rv reactive values list with elements named \code{colnames_SE},
-#'    \code{colnames_CP}, and \code{colnames_CO}
+#' @param rv reactive values list
 #'
 #' @return possible column names
 #'
@@ -230,8 +229,7 @@ updateColNames_all <- function(rv){
 #' @description Determine the overlap between the column names in the SE, CP,
 #'    and CO data tables among columns with unique(length(x)) < length(x)
 #'
-#' @param rv reactive values list with elements named \code{data_SE},
-#'    \code{data_CP}, and \code{data_CO}
+#' @param rv reactive values list
 #'
 #' @return possible column names
 #'
@@ -247,11 +245,19 @@ updateColNames_size <- function(rv){
   }
   if (!is.null(rv$data_CP)){
     tmp <- names(goodInd(rv$data_CP))
-    if (!is.null(SECPCO)) SECPCO <- intersect(SECPCO, tmp) else SECPCO <- tmp
+    if (!is.null(SECPCO)){
+      SECPCO <- intersect(SECPCO, tmp)
+    } else{
+      SECPCO <- tmp 
+    }
   }
   if (!is.null(rv$data_CO)){
     tmp <- colnames(rv$data_CO)
-    if (!is.null(SECPCO)) SECPCO <- intersect(SECPCO, tmp) else SECPCO <- tmp
+    if (!is.null(SECPCO)){
+      SECPCO <- intersect(SECPCO, tmp)
+    } else{
+      SECPCO <- tmp
+    }
   }
   return(SECPCO)
 }
@@ -395,7 +401,6 @@ CPdistOptions <- function(){
     "lognormal" = "lognormal", "loglogistic" = "loglogistic"
   )
 }
-
 
 #' @title Produce a blank plot for unsucessful fits
 #'

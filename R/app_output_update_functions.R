@@ -23,7 +23,6 @@ initialOutput <- function(rv, output){
   output
 }
 
-
 #' @title Update the output list when SE data are read in
 #'
 #' @description Update the output list when the SE data file is input

@@ -155,10 +155,17 @@ downloadData <- function(set){
   SS <- paste0("SS_", set, ".csv")
   CO <- paste0("CO_", set, ".csv")
 
+  fpre <- switch(set, "mock" = "", "mock2" = "", "powerTower" = "solar_", 
+            "PV" = "solar_", "trough" = "solar_", "cleared" = "wind_", 
+            "RP" = "wind_", "RPbat" = "wind_"
+          )
+  filename <- paste0(fpre, set, ".zip")
+  foldername <- paste0("../extdata/", fpre, set, "/")
+
   downloadHandler(
-    filename = "wind_RPbat.zip",
+    filename = filename,
     content = function(file)  {
-      pth = "../extdata/wind_RPbat/"
+      pth = foldername
       dir.create(tmp <- tempfile())
       cat(paste0(pth, SE), file = file.path(tmp, SE))
       cat(paste0(pth, CP), file = file.path(tmp, CP))
