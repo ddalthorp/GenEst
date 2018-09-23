@@ -223,6 +223,7 @@
 #' \code{\link{modNamePaste}}\cr
 #' \code{\link{modNameSplit}}\cr
 #' \code{\link{MPanel}}\cr
+#' \code{\link{msgFracNote}}\cr
 #' \code{\link{msgList}}\cr
 #' \code{\link{msgModDone}}\cr
 #' \code{\link{msgModFail}}\cr

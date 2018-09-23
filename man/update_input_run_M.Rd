@@ -2,7 +2,8 @@
 % Please edit documentation in R/app_input_update_functions.R
 \name{update_input_run_M}
 \alias{update_input_run_M}
-\title{Update the M output dropdown selections when the model is run}
+\title{Update the M output dropdown selections and the Fraction Surveyed
+  when the model is run}
 \usage{
 update_input_run_M(rv, session)
 }
@@ -12,5 +13,6 @@ update_input_run_M(rv, session)
 \item{session}{session}
 }
 \description{
-Update the M output dropdown selections when the model is run
+Update the M output dropdown selections and the Fraction 
+  Surveyed when the model is run
 }
