@@ -229,10 +229,21 @@ update_output_run_SE <- function(rv, output, session){
       output$modelMenu_SE <- makeMenu(rv$mods_SE, rv$sizeclasses_SE, "SE")
     })
 
-    scText <- renderText(paste0("Size class: ", rv$sizeclass_SE))
+    preText <- paste0("Size class: ", rv$sizeclass_SE)
+    if (length(rv$sizeclasses_SE) == 1){
+      preText <- ""
+    }    
+    scText <- renderText(preText)
     output$sizeclass_SE1 <- scText
     output$sizeclass_SE2 <- scText
     output$sizeclass_SE3 <- scText
+
+    if (length(rv$sizeclasses_SE) == 1){
+      output$sizeclass_SEyn <- renderText("NO")
+    } else{
+      output$sizeclass_SEyn <- renderText("YES")
+    }
+    outputOptions(output, "sizeclass_SEyn", suspendWhenHidden = FALSE)
 
     output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
     output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
@@ -264,7 +275,11 @@ update_output_outsc_SE <- function(rv, output, session){
                          app = TRUE)
                      }, height = rv$figH_SE, width = rv$figW_SE)
 
-    scText <- renderText(paste0("Size class: ", rv$sizeclass_SE))
+    preText <- paste0("Size class: ", rv$sizeclass_SE)
+    if (length(rv$sizeclasses_SE) == 1){
+      preText <- ""
+    }    
+    scText <- renderText(preText)
     output$sizeclass_SE1 <- scText
     output$sizeclass_SE2 <- scText
     output$sizeclass_SE3 <- scText
@@ -342,10 +357,22 @@ update_output_run_CP <- function(rv, output, session){
       output$modelMenu_CP <- makeMenu(rv$mods_CP, rv$sizeclasses_CP, "CP")
     })
 
-    scText <- renderText(paste0("Size class: ", rv$sizeclass_CP))
+    preText <- paste0("Size class: ", rv$sizeclass_CP)
+    if (length(rv$sizeclasses_CP) == 1){
+      preText <- ""
+    }    
+    scText <- renderText(preText)
     output$sizeclass_CP1 <- scText
     output$sizeclass_CP2 <- scText
     output$sizeclass_CP3 <- scText
+
+    if (length(rv$sizeclasses_CP) == 1){
+      output$sizeclass_CPyn <- renderText("NO")
+    } else{
+      output$sizeclass_CPyn <- renderText("YES")
+    }
+    outputOptions(output, "sizeclass_CPyn", suspendWhenHidden = FALSE)
+
 
     output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP)
     output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
@@ -376,7 +403,11 @@ update_output_outsc_CP <- function(rv, output, session){
                          app = TRUE)
                      }, height = rv$figH_CP, width = rv$figW_CP)
 
-    scText <- renderText(paste0("Size class: ", rv$sizeclass_CP))
+    preText <- paste0("Size class: ", rv$sizeclass_CP)
+    if (length(rv$sizeclasses_CP) == 1){
+      preText <- ""
+    }    
+    scText <- renderText(preText)
     output$sizeclass_CP1 <- scText
     output$sizeclass_CP2 <- scText
     output$sizeclass_CP3 <- scText
@@ -474,7 +505,18 @@ update_output_run_g <- function(rv, output, session){
     output$gModDone <- renderText("OK")
     outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
 
-    scText <- renderText(paste0("Size class: ", rv$sizeclass_g))
+    if (length(rv$sizeclasses_SE) == 1){
+      output$sizeclass_gyn <- renderText("NO")
+    } else{
+      output$sizeclass_gyn <- renderText("YES")
+    }
+    outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
+
+    preText <- paste0("Size class: ", rv$sizeclass_g)
+    if (length(rv$sizeclasses_g) == 1){
+      preText <- ""
+    }    
+    scText <- renderText(preText)
     output$sizeclass_g1 <- scText
     output$sizeclass_g2 <- scText
 
@@ -513,7 +555,11 @@ update_output_outsc_g <- function(rv, output, session){
     output$gModDone <- renderText("OK")
     outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
 
-    scText <- renderText(paste0("Size class: ", rv$sizeclass_g))
+    preText <- paste0("Size class: ", rv$sizeclass_g)
+    if (length(rv$sizeclasses_g) == 1){
+      preText <- ""
+    }    
+    scText <- renderText(preText)
     output$sizeclass_g1 <- scText
     output$sizeclass_g2 <- scText
 

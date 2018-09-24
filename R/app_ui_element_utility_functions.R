@@ -17,6 +17,31 @@ navbar <- function(){
   )
 }
 
+#' @title Make a model menu header
+#'
+#' @description Produce a size-based model-selection menu header object based 
+#'   on model inputs
+#'
+#' @param n number of size classed
+#'
+#' @return rendered HTML model selection menu object
+#'
+#' @export
+#'
+modelMenuHeader <- function(n){
+ 
+  if (n == 1){
+    ntext <- "model"
+  } else if (n > 1){
+    ntext <- "models"
+  } else{
+    stop("n input is improper")
+  }
+  prefix <- "Select "
+  suffix <- " for mortality and detection probability estimation"
+  em(paste0(prefix, ntext, suffix))
+}
+
 #' @title Make a model menu
 #'
 #' @description Produce a size-based model-selection menu object based on
@@ -34,8 +59,10 @@ navbar <- function(){
 #'
 makeMenu <- function(mods, sizeclasses, type){
 
-  modelMenu <- ""
   nsizeclasses <- length(sizeclasses)
+
+  menuHeader <- modelMenuHeader(nsizeclasses)
+  modelMenu <- ""
   if (nsizeclasses > 0){
     for(sci in 1:nsizeclasses){
       if (type == "SE"){
@@ -63,14 +90,22 @@ makeMenu <- function(mods, sizeclasses, type){
       labels_maxchar <- max(labels_nchar)
       widthval <- max(c(400, labels_maxchar * 7 + 20))
       widthtxt <- paste0(widthval, "px")
-      mtuText <- paste("modelChoices_", type, sci, sep = "") 
-      scText <- paste("Model for ", sizeclasses[sci], sep = "")
+      mtuText <- paste0("modelChoices_", type, sci) 
+      scText <- paste0(sizeclasses[sci], ":")
+      if (nsizeclasses == 1){
+        scText <- ""
+      }
       modSelect <- selectizeInput(mtuText, scText, modNames, multiple = TRUE, 
                      width = widthtxt, options = list(maxItems = 1))
       modelMenu <- paste(modelMenu, modSelect)  
     }
-  }        
-  return(renderUI({HTML(modelMenu)}))
+  }
+  menuBreak <- NULL
+  if (nsizeclasses > 1){
+    menuBreak <- br("")
+  }      
+  fullMenu <- paste(menuHeader, menuBreak, modelMenu)
+  return(renderUI({HTML(fullMenu)}))
 }
 
 #' @title HTML ol function
