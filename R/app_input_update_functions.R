@@ -121,6 +121,9 @@ update_input_sizeclassCol <- function(rv, input, session){
     selected = input$preds_CP)
   updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
     selected = rv$DWPCol)
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
+    selected = rv$sizeclassCol
+  )
 }
 
 #' @title Update the predictor options when SE observation columns are 
@@ -139,6 +142,9 @@ update_input_cols_SE_obs <- function(rv, session){
       selected = rv$preds_SE)
   updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
       selected = rv$obsCols_SE)
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
+    selected = rv$sizeclassCol
+  )
 }
 
 #' @title Update the observation options when SE predictor columns are 
@@ -157,6 +163,9 @@ update_input_cols_SE_preds <- function(rv, session){
       selected = rv$obsCols_SE)
   updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
       selected = rv$preds_SE)
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
+    selected = rv$sizeclassCol
+  )
 }
 
 #' @title Update the predictor options and First Time Absent options when the 
@@ -178,6 +187,9 @@ update_input_cols_ltp <- function(rv, session){
       selected = rv$ltp)
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
       selected = rv$preds_CP)
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
+    selected = rv$sizeclassCol
+  )
 }
 
 #' @title Update the predictor options and Last Time Present options when the 
@@ -199,6 +211,9 @@ update_input_cols_fta <- function(rv, session){
       selected = rv$ltp)
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
       selected = rv$preds_CP)
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
+    selected = rv$sizeclassCol
+  )
 }
 
 #' @title Update the observation options when CP predictor columns are 
@@ -219,6 +234,9 @@ update_input_cols_CP_preds <- function(rv, session){
       selected = rv$ltp)
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
       selected = rv$preds_CP)
+  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
+    selected = rv$sizeclassCol
+  )
 }
 
 #' @title Update the SE output dropdown selections when the model is run

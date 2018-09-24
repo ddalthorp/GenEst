@@ -27,9 +27,10 @@ createReactiveValues <- function(){
 
     nsim = 1000, CL = 0.90,
 
-    sizeclassCol = NULL, sizeclasses = NULL, sizeclass = NULL, 
-    sizeclass_SE = NULL, sizeclass_CP = NULL, sizeclass_g = NULL,
-    sizeclass_M = NULL, nsizeclasses = NULL,
+    sizeclassCol = NULL, sizeClassCol0 = NULL, toRemove_sizeClassCol = NULL,
+    sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
+    sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL, 
+    nsizeclasses = NULL,
 
     obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL, 
     formula_p = NULL, formula_k = NULL, kFixedChoice = NULL, kFixed = NULL, 
