@@ -78,7 +78,7 @@ update_rv_data_SS <- function(rv, input){
 #'
 update_rv_data_DWP <- function(rv, input){
   rv$data_DWP <- readCSVs(input$file_DWP$datapath)
-  rv$colNames_DWP <- colnames(rv$data_DWP)
+  rv$colNames_DWP <- DWPCols(rv$data_DWP)
   return(rv)
 }
 

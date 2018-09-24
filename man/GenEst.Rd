@@ -182,6 +182,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{downloadsMainPanel}}\cr
 \code{\link{downloadsPanel}}\cr
 \code{\link{downloadsRow}}\cr
+\code{\link{DWPCols}}\cr
 \code{\link{expandModelSetCP}}\cr
 \code{\link{ftpLink}}\cr
 \code{\link{GenEstAcknowledgements}}\cr

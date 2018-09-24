@@ -65,6 +65,9 @@ update_input_data_DWP <- function(rv, session){
   if (length(rv$nsizeclasses) == 0){
     updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
   }
+  if (length(rv$colNames_DWP) == 1){
+    updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
+  }
   updateTabsetPanel(session, "LoadedDataViz", "Density Weighted Proportion")
 }
 
@@ -210,6 +213,9 @@ update_input_run_SE <- function(rv, session){
   }
   updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
     selected = rv$DWPCol)
+  if (length(rv$colNames_DWP) == 1){
+    updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
+  }
 }
 
 #' @title Update the SE output dropdown selections when the size class is 
