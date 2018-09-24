@@ -13,7 +13,6 @@ MPanel <- function(){
   )
 }
 
-
 #' @title Analysis Mortality sidebar panel UI element 
 #'
 #' @description create the HTML code for the Analysis Mortality sidebar

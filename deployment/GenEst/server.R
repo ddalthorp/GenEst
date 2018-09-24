@@ -29,26 +29,28 @@ shinyServer(
       rv <- update_rv_data_DWP(rv, input)
       output <- update_output_data_DWP(rv, output)
       update_input_data_DWP(rv, session)
-    })
+    })    
     observeEvent(input$file_CO, {
       rv <- update_rv_data_CO(rv, input)
       output <- update_output_data_CO(rv, output)
       update_input_data_CO(rv, session)
     })
-
-    observeEvent(input$sizeclassCol, {
-      rv <- update_rv_sizeClassCol(rv, input)
-      output <- update_output_sizeclassCol(rv, input, output)
+    
+    observeEvent(input$sizeclassCol, ignoreNULL = FALSE, {
+      rv <- update_rv_sizeclassCol(rv, input)
+      output <- update_output_sizeclassCol(rv, output)
       update_input_sizeclassCol(rv, input, session)
     })
-
-    observeEvent(input$obsCols_SE, {
-      output <- update_output_cols_SE(rv, input, output)
-      update_input_cols_SE(rv, input, session, "obsCols")
+    
+    observeEvent(input$obsCols_SE, ignoreNULL = FALSE, {
+      rv <- update_rv_cols_SE_obs(rv, input)
+      output <- update_output_cols_SE(rv, output)
+      update_input_cols_SE_obs(rv, session)
     })
-    observeEvent(input$preds_SE, {
-      output <- update_output_cols_SE(rv, input, output)
-      update_input_cols_SE(rv, input, session, "preds")
+    observeEvent(input$preds_SE, ignoreNULL = FALSE, {
+      rv <- update_rv_cols_SE_preds(rv, input)
+      output <- update_output_cols_SE(rv, output)
+      update_input_cols_SE_preds(rv, session)
     })
     observeEvent(input$runMod_SE, {
       msgs$ModSE <<- msgModRun(msgs, "SE")
@@ -70,18 +72,21 @@ shinyServer(
       rv <- update_rv_outpk_SE(rv, input)
       output <- update_output_outpk_SE(rv, output, session)
     })
-
-    observeEvent(input$ltp, {
-      output <- update_output_cols_CP(rv, input, output)
-      update_input_cols_CP(rv, input, session, "ltp")
+    
+    observeEvent(input$ltp, ignoreNULL = FALSE, {
+      rv <- update_rv_cols_ltp(rv, input)
+      output <- update_output_cols_CP(rv, output)
+      update_input_cols_ltp(rv, session)
     })
-    observeEvent(input$fta, {
-      output <- update_output_cols_CP(rv, input, output)
-      update_input_cols_CP(rv, input, session, "fta")
+    observeEvent(input$fta, ignoreNULL = FALSE, {
+      rv <- update_rv_cols_fta(rv, input)
+      output <- update_output_cols_CP(rv, output)
+      update_input_cols_fta(rv, session)
     })
-    observeEvent(input$preds_CP, {
-      output <- update_output_cols_CP(rv, input, output)
-      update_input_cols_CP(rv, input, session, "preds")
+    observeEvent(input$preds_CP, ignoreNULL = FALSE, {
+      rv <- update_rv_cols_CP_preds(rv, input)
+      output <- update_output_cols_CP(rv, output)
+      update_input_cols_CP_preds(rv, session)
     })
     observeEvent(input$runMod_CP, {
       msgs$ModCP <<- msgModRun(msgs, "CP")
@@ -107,7 +112,7 @@ shinyServer(
       rv <- update_rv_outdls_CP(rv, input)
       output <- update_output_outdls_CP(rv, output, session)
     })
-
+    
     observeEvent(input$runMod_M, {
       msgs$ModM <<- msgModRun(msgs, "M")
       rv <- update_rv_run_M(rv, input)
@@ -124,7 +129,7 @@ shinyServer(
       rv <- update_rv_transpose_split(rv)
       output <- update_output_transpose_split(rv, output, session)
     })
-
+    
     observeEvent(input$useSSdata, {
       rv <- update_rv_useSSdata(rv)
       msgs$SS <<- msgSSavgFail(msgs, rv)

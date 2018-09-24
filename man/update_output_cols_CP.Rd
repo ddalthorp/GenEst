@@ -4,12 +4,10 @@
 \alias{update_output_cols_CP}
 \title{Update the selected CP data when a column is selected}
 \usage{
-update_output_cols_CP(rv, input, output)
+update_output_cols_CP(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}
-
-\item{input}{input list}
 
 \item{output}{output list}
 }

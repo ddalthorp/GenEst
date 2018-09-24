@@ -5,12 +5,10 @@
 \title{Update the selected CP and SE data when a size class column is 
   selected}
 \usage{
-update_output_sizeclassCol(rv, input, output)
+update_output_sizeclassCol(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}
-
-\item{input}{input list}
 
 \item{output}{output list}
 }
