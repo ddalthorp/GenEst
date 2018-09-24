@@ -174,6 +174,14 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   if (!all(c(preds_l, preds_s) %in% colnames(data))){
     stop("Predictor in CP formula not found in CP data.")
   }
+  preds <- unique(c(preds_l, preds_s))
+  if (grepl("[-.]", paste0(preds, collapse = ''))){
+    stop("Hyphen ( - ) and dot ( . ) not allowed in predictor names")
+  }
+  for (pri in preds){
+    if (grepl("[-.]", paste0(data[, pri], collapse = '')))
+      stop("Hyphen ( - ) and dot ( . ) not allowed in predictor levels")
+  }
   if (anyNA(data[, left])){
     stop("NA not allowed for 'last time present' in CP data.")
   }
@@ -209,7 +217,6 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   }
   levels_s <- .getXlevels(terms(formulaRHS_s), data)
 
-  preds <- unique(c(preds_l, preds_s))
   cells <- combinePreds(preds, data)
   ncell <- nrow(cells)
   cellNames <- cells$CellNames

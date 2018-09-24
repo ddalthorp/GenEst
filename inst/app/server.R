@@ -1,6 +1,5 @@
 function(input, output, session){
 
-#modalWelcome("base")
 rv <- createReactiveValues()
 output <- initialOutput(rv, output)
 msgs <- msgList()
