@@ -14,5 +14,5 @@ possible column names
 }
 \description{
 Determine the overlap between the column names in the SE, CP,
-   and CO data tables among columns with unique(length(x)) < length(x)
+   and CO data tables.
 }
