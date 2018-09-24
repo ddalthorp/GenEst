@@ -159,6 +159,37 @@ dateCols <- function(data){
   return(out)
 }
 
+#' @title Select the potential size class columns from a data table
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be size class values from a data table
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be size class values
+#'
+#' @export
+#'
+sizeclassCols <- function(data){
+
+  if (is.null(data)){
+    return(NULL)
+  }
+  ncols <- ncol(data)
+  scTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (length(unique(tmp)) < nrow(data)){
+      scTF[coli] <- TRUE
+    } else{
+      scTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[scTF]
+  return(out)
+}
+
+
 #' @title Select the DWP-ok columns from a data table
 #'
 #' @description Simple function to facilitate selection of columns that could
@@ -171,7 +202,6 @@ dateCols <- function(data){
 #' @export
 #'
 DWPCols <- function(data){
-
   ncols <- ncol(data)
   dwpTF <- rep(NA, ncols)
   for (coli in 1:ncols){
@@ -186,6 +216,123 @@ DWPCols <- function(data){
   return(out)
 }
 
+#' @title Select the predictor-ok columns from a data table
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be predictors for SE or CP models from a data table
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be predictors
+#'
+#' @export
+#'
+predsCols <- function(data){
+  ncols <- ncol(data)
+  predTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    cont <- FALSE
+    if (is.numeric(tmp) && any(na.omit(tmp %% 1 != 0))){
+      cont <- TRUE
+    }
+    if (length(unique(tmp)) == nrow(data)){
+      reps <- FALSE
+    } else{
+      reps <- TRUE
+    }
+    if (!any(is.na(tmp)) & !cont & reps){
+      predTF[coli] <- TRUE
+    } else{
+      predTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[predTF]
+  return(out)
+}
+
+#' @title Select the columns from a data table that could be SE observations
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be observations for an SE model
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be observations
+#'
+#' @export
+#'
+obsCols_SE <- function(data){
+  ncols <- ncol(data)
+  obsTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (any(tmp == 0) | any(tmp == 1) & all(tmp == 0 | tmp == 1)){
+      obsTF[coli] <- TRUE
+    } else{
+      obsTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[obsTF]
+  return(out)
+}
+
+#' @title Select the columns from a data table that could be CP Last Time
+#'   Present observations
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be Last Time Present observations for a CP model
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be observations
+#'
+#' @export
+#'
+obsCols_ltp <- function(data){
+  ncols <- ncol(data)
+  obsTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (is.numeric(tmp) && is.finite(tmp) && all(na.omit(tmp) >= 0)){
+      obsTF[coli] <- TRUE
+    } else{
+      obsTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[obsTF]
+  return(out)
+}
+
+
+#' @title Select the columns from a data table that could be CP First Time
+#'   Absent observations
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be First Time Absent observations for a CP model
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be observations
+#'
+#' @export
+#'
+obsCols_fta <- function(data){
+  ncols <- ncol(data)
+  obsTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (is.numeric(tmp) && all(na.omit(tmp) > 0)){
+      obsTF[coli] <- TRUE
+    } else{
+      obsTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[obsTF]
+  return(out)
+}
+
+
 #' @title Remove selected columns from column names
 #'
 #' @description Simple function to facilitate removal of columns selected
@@ -198,7 +345,7 @@ DWPCols <- function(data){
 #'
 #' @export
 #'
-removeSelCols <- function(colNames, selCols){
+removeCols <- function(colNames, selCols){
   which_sel <- which(colNames %in% selCols)
   if (length(which_sel) > 0){
     out <- colNames[-which_sel]
@@ -219,12 +366,12 @@ removeSelCols <- function(colNames, selCols){
 #'
 #' @export
 #'
-updateColNames_all <- function(rv){
+updateColNames_size <- function(rv){
 
   SECPCO <- NULL
-  SE <- rv$colNames_SE
-  CP <- rv$colNames_CP
-  CO <- rv$colNames_CO
+  SE <- sizeclassCols(rv$data_SE)
+  CP <- sizeclassCols(rv$data_CP)
+  CO <- sizeclassCols(rv$data_CO)
 
   SECP <- which(SE %in% CP)
   SECO <- which(SE %in% CO)
@@ -248,44 +395,6 @@ updateColNames_all <- function(rv){
     }
   }
 
-  return(SECPCO)
-}
-
-#' @title Update the string of column names that are in all the needed tables
-#'
-#' @description Determine the overlap between the column names in the SE, CP,
-#'    and CO data tables among columns with unique(length(x)) < length(x)
-#'
-#' @param rv reactive values list
-#'
-#' @return possible column names
-#'
-#' @export
-#'
-updateColNames_size <- function(rv){
-  SECPCO <- NULL
-  goodInd <- function(x){
-    which(apply(x, 2, function(x) length(unique(x)) < length(x)))
-  }
-  if (!is.null(rv$data_SE)){
-    SECPCO <- names(goodInd(rv$data_SE))
-  }
-  if (!is.null(rv$data_CP)){
-    tmp <- names(goodInd(rv$data_CP))
-    if (!is.null(SECPCO)){
-      SECPCO <- intersect(SECPCO, tmp)
-    } else{
-      SECPCO <- tmp 
-    }
-  }
-  if (!is.null(rv$data_CO)){
-    tmp <- colnames(rv$data_CO)
-    if (!is.null(SECPCO)){
-      SECPCO <- intersect(SECPCO, tmp)
-    } else{
-      SECPCO <- tmp
-    }
-  }
   return(SECPCO)
 }
 

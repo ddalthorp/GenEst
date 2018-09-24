@@ -4,12 +4,10 @@
 \alias{update_output_cols_SE}
 \title{Update the selected SE data when a column is selected}
 \usage{
-update_output_cols_SE(rv, input, output)
+update_output_cols_SE(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}
-
-\item{input}{input list}
 
 \item{output}{output list}
 }
