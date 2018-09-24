@@ -159,6 +159,34 @@ dateCols <- function(data){
   return(out)
 }
 
+
+#' @title Select the potential size class columns from a data table
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be size class values from a data table
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be size class values
+#'
+#' @export
+#'
+sizeclassCols <- function(data){
+  ncols <- ncol(data)
+  scTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (length(unique(tmp)) < nrow(data)){
+      scTF[coli] <- TRUE
+    } else{
+      scTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[scTF]
+  return(out)
+}
+
+
 #' @title Select the DWP-ok columns from a data table
 #'
 #' @description Simple function to facilitate selection of columns that could

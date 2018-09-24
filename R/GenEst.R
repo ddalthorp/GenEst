@@ -331,7 +331,7 @@
 #' \code{\link{update_rv_transpose_split}}\cr
 #' \code{\link{update_rv_useSSdata}}\cr
 #' \code{\link{update_rv_useSSinputs}}\cr
-#' \code{\link{update_rv_sizeClassCol}}\cr
+#' \code{\link{update_rv_sizeclassCol}}\cr
 #' \code{\link{updateColNames_all}}\cr
 #' \code{\link{updateColNames_size}}\cr
 #' \code{\link{updateSizeclassCol}}\cr
