@@ -120,23 +120,21 @@ update_output_data_CO <- function(rv, output){
 #'
 #' @param rv reactive values list
 #'
-#' @param input input list
-#'
 #' @param output output list
 #'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_sizeclassCol <- function(rv, input, output){
-  if (!is.null(input$obsCols_SE)){
-    selectedCols <- c(input$obsCols_SE, input$sizeclassCol, input$preds_SE)
+update_output_sizeclassCol <- function(rv, output){
+  if (!is.null(rv$obsCols_SE)){
+    selectedCols <- c(rv$obsCols_SE, rv$sizeclassCol, rv$preds_SE)
     selectedData <- selectData(rv$data_SE, selectedCols)
     output$selected_SE <- renderDataTable(datatable(selectedData))
   }
-  if (!is.null(c(input$ltp, input$fta))){
-    obsColsSelected <- c(input$ltp, input$fta)
-    selectedCols <- c(obsColsSelected, input$sizeclassCol, input$preds_CP)
+  if (!is.null(c(rv$ltp, rv$fta))){
+    obsColsSelected <- c(rv$ltp, rv$fta)
+    selectedCols <- c(obsColsSelected, rv$sizeclassCol, rv$preds_CP)
     selectedData <- selectData(rv$data_CP, selectedCols)
     output$selected_CP <- renderDataTable(datatable(selectedData))
   }
@@ -157,8 +155,8 @@ update_output_sizeclassCol <- function(rv, input, output){
 #'
 #' @export
 #'
-update_output_cols_SE <- function(rv, input, output){
-  selectedCols <- c(input$obsCols_SE, input$sizeclassCol, input$preds_SE)
+update_output_cols_SE <- function(rv, output){
+  selectedCols <- c(rv$obsCols_SE, rv$sizeclassCol, rv$preds_SE)
   selectedData <- selectData(rv$data_SE, selectedCols)
   output$selected_SE <- renderDataTable(datatable(selectedData))
   return(output)
@@ -170,17 +168,14 @@ update_output_cols_SE <- function(rv, input, output){
 #'
 #' @param rv reactive values list
 #'
-#' @param input input list
-#'
 #' @param output output list
 #'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_cols_CP <- function(rv, input, output){
-  obsColsSelected <- c(input$ltp, input$fta)
-  selectedCols <- c(obsColsSelected, input$sizeclassCol, input$preds_CP)
+update_output_cols_CP <- function(rv, output){
+  selectedCols <- c(rv$ltp, rv$fta, rv$sizeclassCol, rv$preds_CP)
   selectedData <- selectData(rv$data_CP, selectedCols)
   output$selected_CP <- renderDataTable(datatable(selectedData))
   return(output)
