@@ -159,7 +159,6 @@ dateCols <- function(data){
   return(out)
 }
 
-
 #' @title Select the potential size class columns from a data table
 #'
 #' @description Simple function to facilitate selection of columns that could
@@ -172,6 +171,10 @@ dateCols <- function(data){
 #' @export
 #'
 sizeclassCols <- function(data){
+
+  if (is.null(data)){
+    return(NULL)
+  }
   ncols <- ncol(data)
   scTF <- rep(NA, ncols)
   for (coli in 1:ncols){
@@ -363,12 +366,12 @@ removeCols <- function(colNames, selCols){
 #'
 #' @export
 #'
-updateColNames_all <- function(rv){
+updateColNames_size <- function(rv){
 
   SECPCO <- NULL
-  SE <- rv$colNames_SE
-  CP <- rv$colNames_CP
-  CO <- rv$colNames_CO
+  SE <- sizeclassCols(rv$data_SE)
+  CP <- sizeclassCols(rv$data_CP)
+  CO <- sizeclassCols(rv$data_CO)
 
   SECP <- which(SE %in% CP)
   SECO <- which(SE %in% CO)
@@ -392,44 +395,6 @@ updateColNames_all <- function(rv){
     }
   }
 
-  return(SECPCO)
-}
-
-#' @title Update the string of column names that are in all the needed tables
-#'
-#' @description Determine the overlap between the column names in the SE, CP,
-#'    and CO data tables among columns with unique(length(x)) < length(x)
-#'
-#' @param rv reactive values list
-#'
-#' @return possible column names
-#'
-#' @export
-#'
-updateColNames_size <- function(rv){
-  SECPCO <- NULL
-  goodInd <- function(x){
-    which(apply(x, 2, function(x) length(unique(x)) < length(x)))
-  }
-  if (!is.null(rv$data_SE)){
-    SECPCO <- names(goodInd(rv$data_SE))
-  }
-  if (!is.null(rv$data_CP)){
-    tmp <- names(goodInd(rv$data_CP))
-    if (!is.null(SECPCO)){
-      SECPCO <- intersect(SECPCO, tmp)
-    } else{
-      SECPCO <- tmp 
-    }
-  }
-  if (!is.null(rv$data_CO)){
-    tmp <- colnames(rv$data_CO)
-    if (!is.null(SECPCO)){
-      SECPCO <- intersect(SECPCO, tmp)
-    } else{
-      SECPCO <- tmp
-    }
-  }
   return(SECPCO)
 }
 

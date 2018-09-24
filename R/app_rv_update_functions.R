@@ -18,7 +18,6 @@ update_rv_data_SE <- function(rv, input){
   rv$colNames_SE_preds0 <- predsCols(rv$data_SE)
   rv$colNames_SE_obs <- obsCols_SE(rv$data_SE)
   rv$colNames_SE_obs0 <- obsCols_SE(rv$data_SE)
-  rv$colNames_all <- updateColNames_all(rv)
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
@@ -49,7 +48,6 @@ update_rv_data_CP <- function(rv, input){
   rv$colNames_ltp <- obsCols_ltp(rv$data_CP)
   rv$colNames_fta0 <- obsCols_fta(rv$data_CP)
   rv$colNames_ltp0 <- obsCols_ltp(rv$data_CP)
-  rv$colNames_all <- updateColNames_all(rv)
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
@@ -111,7 +109,6 @@ update_rv_data_CO <- function(rv, input){
   rv$data_CO <- readCSVs(input$file_CO$datapath)
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
-  rv$colNames_all <- updateColNames_all(rv)
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
 

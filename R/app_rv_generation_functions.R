@@ -23,7 +23,7 @@ createReactiveValues <- function(){
     colNames_SS = NULL, colNames_SS_sel = NULL, colNames_SS_nosel = NULL, 
     colNames_DWP = NULL,
     colNames_CO = NULL, colNames_COdates = NULL,
-    colNames_all = NULL, colNames_size = NULL,
+    colNames_size = NULL,
 
     nsim = 1000, CL = 0.90,
 
