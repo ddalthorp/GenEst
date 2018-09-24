@@ -159,6 +159,33 @@ dateCols <- function(data){
   return(out)
 }
 
+#' @title Select the DWP-ok columns from a data table
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be DWP values from a data table
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be DWP values
+#'
+#' @export
+#'
+DWPCols <- function(data){
+
+  ncols <- ncol(data)
+  dwpTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (!is.factor(tmp) && is.numeric(tmp) &&( all(tmp > 0) & all(tmp <= 1))){
+      dwpTF[coli] <- TRUE
+    } else{
+      dwpTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[dwpTF]
+  return(out)
+}
+
 #' @title Remove selected columns from column names
 #'
 #' @description Simple function to facilitate removal of columns selected
