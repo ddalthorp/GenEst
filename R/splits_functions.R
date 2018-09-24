@@ -223,6 +223,9 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
                        ...){
   ##### read data and check for errors
   cleanInd <- which(Aj[, 1] == 0)
+  if (length(intersect(split_CO, split_SS)) > 0){
+    stop("CO and SS splitting variables must have distinct names")
+  }
   if ((!is.null(split_SS) || !is.null(split_time)) & is.null(data_SS)){
     stop("data_SS must be provided if ",
       ifelse(is.null(split_SS), "split_time ", "split_SS "), "is")
