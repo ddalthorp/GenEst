@@ -171,7 +171,6 @@ dateCols <- function(data){
 #' @export
 #'
 DWPCols <- function(data){
-
   ncols <- ncol(data)
   dwpTF <- rep(NA, ncols)
   for (coli in 1:ncols){
@@ -186,6 +185,123 @@ DWPCols <- function(data){
   return(out)
 }
 
+#' @title Select the predictor-ok columns from a data table
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be predictors for SE or CP models from a data table
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be predictors
+#'
+#' @export
+#'
+predsCols <- function(data){
+  ncols <- ncol(data)
+  predTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    cont <- FALSE
+    if (is.numeric(tmp) && any(na.omit(tmp %% 1 != 0))){
+      cont <- TRUE
+    }
+    if (length(unique(tmp)) == nrow(data)){
+      reps <- FALSE
+    } else{
+      reps <- TRUE
+    }
+    if (!any(is.na(tmp)) & !cont & reps){
+      predTF[coli] <- TRUE
+    } else{
+      predTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[predTF]
+  return(out)
+}
+
+#' @title Select the columns from a data table that could be SE observations
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be observations for an SE model
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be observations
+#'
+#' @export
+#'
+obsCols_SE <- function(data){
+  ncols <- ncol(data)
+  obsTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (any(tmp == 0) | any(tmp == 1) & all(tmp == 0 | tmp == 1)){
+      obsTF[coli] <- TRUE
+    } else{
+      obsTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[obsTF]
+  return(out)
+}
+
+#' @title Select the columns from a data table that could be CP Last Time
+#'   Present observations
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be Last Time Present observations for a CP model
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be observations
+#'
+#' @export
+#'
+obsCols_ltp <- function(data){
+  ncols <- ncol(data)
+  obsTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (is.numeric(tmp) && is.finite(tmp) && all(na.omit(tmp) >= 0)){
+      obsTF[coli] <- TRUE
+    } else{
+      obsTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[obsTF]
+  return(out)
+}
+
+
+#' @title Select the columns from a data table that could be CP First Time
+#'   Absent observations
+#'
+#' @description Simple function to facilitate selection of columns that could
+#'   be First Time Absent observations for a CP model
+#'
+#' @param data data table
+#'
+#' @return column names of columns that can be observations
+#'
+#' @export
+#'
+obsCols_fta <- function(data){
+  ncols <- ncol(data)
+  obsTF <- rep(NA, ncols)
+  for (coli in 1:ncols){
+    tmp <- data[ , coli]
+    if (is.numeric(tmp) && all(na.omit(tmp) > 0)){
+      obsTF[coli] <- TRUE
+    } else{
+      obsTF[coli] <- FALSE
+    }
+  }
+  out <- colnames(data)[obsTF]
+  return(out)
+}
+
+
 #' @title Remove selected columns from column names
 #'
 #' @description Simple function to facilitate removal of columns selected
@@ -198,7 +314,7 @@ DWPCols <- function(data){
 #'
 #' @export
 #'
-removeSelCols <- function(colNames, selCols){
+removeCols <- function(colNames, selCols){
   which_sel <- which(colNames %in% selCols)
   if (length(which_sel) > 0){
     out <- colNames[-which_sel]

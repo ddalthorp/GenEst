@@ -33,17 +33,19 @@ observeEvent(input$file_CO, {
 
 observeEvent(input$sizeclassCol, {
   rv <- update_rv_sizeClassCol(rv, input)
-  output <- update_output_sizeclassCol(rv, input, output)
+  output <- update_output_sizeclassCol(rv, output)
   update_input_sizeclassCol(rv, input, session)
 })
 
-observeEvent(input$obsCols_SE, {
-  output <- update_output_cols_SE(rv, input, output)
-  update_input_cols_SE(rv, input, session, "obsCols")
+observeEvent(input$obsCols_SE, ignoreNULL = FALSE, {
+  rv <- update_rv_cols_SE_obs(rv, input)
+  output <- update_output_cols_SE(rv, output)
+  update_input_cols_SE_obs(rv, session)
 })
-observeEvent(input$preds_SE, {
-  output <- update_output_cols_SE(rv, input, output)
-  update_input_cols_SE(rv, input, session, "preds")
+observeEvent(input$preds_SE, ignoreNULL = FALSE, {
+  rv <- update_rv_cols_SE_preds(rv, input)
+  output <- update_output_cols_SE(rv, output)
+  update_input_cols_SE_preds(rv, session)
 })
 observeEvent(input$runMod_SE, {
   msgs$ModSE <<- msgModRun(msgs, "SE")
@@ -66,17 +68,20 @@ observeEvent(input$outSEk, {
   output <- update_output_outpk_SE(rv, output, session)
 })
 
-observeEvent(input$ltp, {
-  output <- update_output_cols_CP(rv, input, output)
-  update_input_cols_CP(rv, input, session, "ltp")
+observeEvent(input$ltp, ignoreNULL = FALSE, {
+  rv <- update_rv_cols_ltp(rv, input)
+  output <- update_output_cols_CP(rv, output)
+  update_input_cols_ltp(rv, session)
 })
-observeEvent(input$fta, {
-  output <- update_output_cols_CP(rv, input, output)
-  update_input_cols_CP(rv, input, session, "fta")
+observeEvent(input$fta, ignoreNULL = FALSE, {
+  rv <- update_rv_cols_fta(rv, input)
+  output <- update_output_cols_CP(rv, output)
+  update_input_cols_fta(rv, session)
 })
-observeEvent(input$preds_CP, {
-  output <- update_output_cols_CP(rv, input, output)
-  update_input_cols_CP(rv, input, session, "preds")
+observeEvent(input$preds_CP, ignoreNULL = FALSE, {
+  rv <- update_rv_cols_CP_preds(rv, input)
+  output <- update_output_cols_CP(rv, output)
+  update_input_cols_CP_preds(rv, session)
 })
 observeEvent(input$runMod_CP, {
   msgs$ModCP <<- msgModRun(msgs, "CP")

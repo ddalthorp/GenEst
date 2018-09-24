@@ -14,11 +14,15 @@ update_rv_data_SE <- function(rv, input){
   rv$data_SE <- readCSVs(input$file_SE$datapath)
   rv$filename_SE <- input$file_SE$name
   rv$colNames_SE <- colnames(rv$data_SE)
+  rv$colNames_SE_preds <- predsCols(rv$data_SE)
+  rv$colNames_SE_preds0 <- predsCols(rv$data_SE)
+  rv$colNames_SE_obs <- obsCols_SE(rv$data_SE)
+  rv$colNames_SE_obs0 <- obsCols_SE(rv$data_SE)
   rv$colNames_all <- updateColNames_all(rv)
   rv$colNames_size <- updateColNames_size(rv)
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
-  rv$colNames_SE_sel <- c(rv$sizeclassCol)
-  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
+  rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs, rv$sizeclassCol)
+  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds, rv$sizeclassCol)
   return(rv)
 }
 
@@ -38,11 +42,18 @@ update_rv_data_CP <- function(rv, input){
   rv$data_CP <- readCSVs(input$file_CP$datapath)
   rv$filename_CP <- input$file_CP$name
   rv$colNames_CP <- colnames(rv$data_CP)
+  rv$colNames_CP_preds <- predsCols(rv$data_CP)
+  rv$colNames_CP_preds0 <- predsCols(rv$data_CP)
+  rv$colNames_fta <- obsCols_fta(rv$data_CP)
+  rv$colNames_ltp <- obsCols_ltp(rv$data_CP)
+  rv$colNames_fta0 <- obsCols_fta(rv$data_CP)
+  rv$colNames_ltp0 <- obsCols_ltp(rv$data_CP)
   rv$colNames_all <- updateColNames_all(rv)
   rv$colNames_size <- updateColNames_size(rv)
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
-  rv$colNames_CP_sel <- c(rv$sizeclassCol)
-  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
+  rv$colNames_CP_fta <- removeCols(rv$colNames_fta, rv$sizeclassCol)
+  rv$colNames_CP_ltp <- removeCols(rv$colNames_ltp, rv$sizeclassCol)
+  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds, rv$sizeclassCol)
   return(rv)
 }
 
@@ -117,9 +128,14 @@ update_rv_data_CO <- function(rv, input){
 #' @export
 #'
 update_rv_sizeClassCol <- function(rv, input){
-
+  rv$sizeClassCol <- input$sizeclassCol
+  rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs, rv$sizeClassCol)
+  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds, rv$sizeClassCol)
+  rv$colNames_fta <- removeCols(rv$colNames_fta, rv$sizeClassCol)
+  rv$colNames_ltp <- removeCols(rv$colNames_ltp, rv$sizeClassCol)
+  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds, rv$sizeClassCol)
   scCol <- input$sizeclassCol
-  sizeclasses <- unique(c(rv$data_SE[ , scCol], rv$data_CP[ , input$scCol]))
+  sizeclasses <- unique(c(rv$data_SE[ , scCol], rv$data_CP[ , scCol]))
   rv$nsizeclasses <- length(sizeclasses)
   if (rv$nsizeclasses > 1 & is.null(rv$DWPCol)){
     rv$DWPCol <- sizeclasses[1]
@@ -130,6 +146,124 @@ update_rv_sizeClassCol <- function(rv, input){
   rv
 }
 
+#' @title Update the reactive value list when an SE observation column is 
+#'   selected
+#'
+#' @description Update the rv list when an SE observation column is selected
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_cols_SE_obs <- function(rv, input){
+  rv$obsCols_SE <- input$obsCols_SE
+  rv$preds_SE <- input$preds_SE
+  rv$toRemove_SE_preds <- c(rv$obsCols_SE)
+  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0, 
+                            rv$toRemove_SE_preds)
+  return(rv)
+}
+
+#' @title Update the reactive value list when an SE predictor column is 
+#'   selected
+#'
+#' @description Update the rv list when an SE predictor column is selected
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_cols_SE_preds <- function(rv, input){
+  rv$obsCols_SE <- input$obsCols_SE
+  rv$preds_SE <- input$preds_SE
+  rv$toRemove_SE_obs <- c(rv$preds_SE)
+  rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs0, rv$toRemove_SE_obs)
+  return(rv)
+}
+
+#' @title Update the reactive value list when a CP Last Time Present column is 
+#'   selected
+#'
+#' @description Update the rv list when a CP Last Time Present column is 
+#'   selected
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_cols_ltp <- function(rv, input){
+  rv$ltp <- input$ltp
+  rv$fta <- input$fta 
+  rv$preds_CP <- input$preds_CP
+  rv$toRemove_fta <- c(rv$preds_CP, rv$ltp)
+  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta)
+  rv$colNames_fta <- removeCols(rv$colNames_fta0, rv$toRemove_fta)
+  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0, 
+                            rv$toRemove_CP_preds)
+  return(rv)
+}
+
+#' @title Update the reactive value list when a CP First Time Absent column is 
+#'   selected
+#'
+#' @description Update the rv list when a CP First Time Absent column is 
+#'   selected
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_cols_fta <- function(rv, input){
+  rv$ltp <- input$ltp
+  rv$fta <- input$fta 
+  rv$preds_CP <- input$preds_CP
+  rv$toRemove_ltp <- c(rv$preds_CP, rv$fta)
+  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta) 
+  rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
+  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0, 
+                            rv$toRemove_CP_preds)
+  return(rv)
+}
+
+#' @title Update the reactive value list when a CP predictor column is 
+#'   selected
+#'
+#' @description Update the rv list when a CP predictor column is selected
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_cols_CP_preds <- function(rv, input){
+  rv$ltp <- input$ltp
+  rv$fta <- input$fta 
+  rv$preds_CP <- input$preds_CP
+  rv$toRemove_ltp <- c(rv$preds_CP, rv$fta)
+  rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
+  rv$toRemove_fta <- c(rv$preds_CP, rv$ltp)
+  rv$colNames_fta <- removeCols(rv$colNames_fta0, rv$toRemove_fta)
+  return(rv)
+}
 
 #' @title Run the SE Models
 #'

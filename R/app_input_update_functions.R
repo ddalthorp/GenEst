@@ -9,8 +9,8 @@
 #' @export
 #'
 update_input_data_SE <- function(rv, session){
-  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_nosel)
-  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_nosel)
+  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds)
+  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs)
   updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
     selected = rv$sizeclassCol
   )
@@ -28,9 +28,9 @@ update_input_data_SE <- function(rv, session){
 #' @export
 #'
 update_input_data_CP <- function(rv, session){
-  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_nosel)
-  updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_nosel)
-  updateSelectizeInput(session, "fta", choices = rv$colNames_CP_nosel)
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds)
+  updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_ltp)
+  updateSelectizeInput(session, "fta", choices = rv$colNames_CP_fta)
   updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
     selected = rv$sizeclassCol
   )
@@ -90,7 +90,6 @@ update_input_data_CO <- function(rv, session){
       choices = rv$colNames_COdates, selected = rv$colNames_COdates
     )
   }
-
   updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
     selected = rv$sizeclassCol
   )
@@ -110,86 +109,116 @@ update_input_data_CO <- function(rv, session){
 #' @export
 #'
 update_input_sizeclassCol <- function(rv, input, session){
-  rv$colNames_SE_sel <- c(input$obsCols_SE, input$sizeclassCol)
-  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
-  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_nosel,
+  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
     selected = input$preds_SE)
-  rv$colNames_SE_sel <- c(input$preds_SE, input$sizeclassCol)
-  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
-  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_nosel,
+  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
     selected = input$obsCols_SE)
-  rv$colNames_CP_sel <- c(input$preds_CP, input$fta, input$sizeclassCol)
-  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
   updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_nosel,
     selected = input$ltp)
-  rv$colNames_CP_sel <- c(input$preds_CP, input$ltp, input$sizeclassCol)
-  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
   updateSelectizeInput(session, "fta", choices = rv$colNames_CP_nosel,
     selected = input$fta)
-  rv$colNames_CP_sel <- c(input$ltp, input$fta, input$sizeclassCol)
-  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
-  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_nosel,
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
     selected = input$preds_CP)
   updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
     selected = rv$DWPCol)
 }
 
-#' @title Update the remaining columns when SE data columns are selected
+#' @title Update the predictor options when SE observation columns are 
+#'   selected
 #'
-#' @description Update the inputs when the SE data columns are selected
+#' @description Update the inputs when the SE observation columns are selected
 #'
 #' @param rv reactive values list
 #'
-#' @param input input list
-#'
 #' @param session session
-#'
-#' @param x specific column
 #'
 #' @export
 #'
-update_input_cols_SE <- function(rv, input, session, x = "obsCols"){
-
-  notx <- switch(x, "obsCols" = "preds_SE", "preds" = "obsCols_SE")
-  x <- paste0(x, "_SE")
-  rv$colNames_SE_sel <- c(input[[x]], input$sizeclassCol)
-  rv$colNames_SE_nosel <- removeSelCols(rv$colNames_SE, rv$colNames_SE_sel)
-  updateSelectizeInput(session, notx, choices = rv$colNames_SE_nosel,
-    selected = input[[notx]])
+update_input_cols_SE_obs <- function(rv, session){
+  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
+      selected = rv$preds_SE)
+  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
+      selected = rv$obsCols_SE)
 }
 
-#' @title Update the remaining columns when CP data columns are selected
+#' @title Update the observation options when SE predictor columns are 
+#'   selected
 #'
-#' @description Update the inputs when the CP data columns are selected
+#' @description Update the inputs when the SE predictor columns are selected
 #'
 #' @param rv reactive values list
 #'
-#' @param input input list
-#'
 #' @param session session
-#'
-#' @param x specific column
 #'
 #' @export
 #'
-update_input_cols_CP <- function(rv, input, session, x = "ltp"){
+update_input_cols_SE_preds <- function(rv, session){
+  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
+      selected = rv$obsCols_SE)
+  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
+      selected = rv$preds_SE)
+}
 
-  notx1 <- switch(x, "ltp" = "fta", "fta" = "ltp", "preds" = "ltp")
-  notx2 <- switch(x, "ltp" = "preds", "fta" = "preds", "preds" = "fta")
+#' @title Update the predictor options and First Time Absent options when the 
+#'   Last Time Present column is selected
+#'
+#' @description Update the inputs when the Last Time Present column is 
+#'   selected
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_cols_ltp <- function(rv, session){
+  updateSelectizeInput(session, "fta", choices = rv$colNames_fta,
+      selected = rv$fta)
+  updateSelectizeInput(session, "ltp", choices = rv$colNames_ltp,
+      selected = rv$ltp)
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
+      selected = rv$preds_CP)
+}
 
-  x <- gsub("preds", "preds_CP", x)
-  notx1 <- gsub("preds", "preds_CP", notx1)
-  notx2 <- gsub("preds", "preds_CP", notx2)
+#' @title Update the predictor options and Last Time Present options when the 
+#'   First Time Absent column is selected
+#'
+#' @description Update the inputs when the First Time Absent column is 
+#'   selected
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_cols_fta <- function(rv, session){
+  updateSelectizeInput(session, "fta", choices = rv$colNames_fta,
+      selected = rv$fta)
+  updateSelectizeInput(session, "ltp", choices = rv$colNames_ltp,
+      selected = rv$ltp)
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
+      selected = rv$preds_CP)
+}
 
-  rv$colNames_CP_sel <- c(input[[x]], input[[notx1]], input$sizeclassCol)
-  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
-  updateSelectizeInput(session, notx2, choices = rv$colNames_CP_nosel,
-    selected = input[[notx2]])
-
-  rv$colNames_CP_sel <- c(input[[x]], input[[notx2]], input$sizeclassCol)
-  rv$colNames_CP_nosel <- removeSelCols(rv$colNames_CP, rv$colNames_CP_sel)
-  updateSelectizeInput(session, notx1, choices = rv$colNames_CP_nosel,
-    selected = input[[notx1]])
+#' @title Update the observation options when CP predictor columns are 
+#'   selected
+#'
+#' @description Update the inputs when the CP predictor columns are selected
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_cols_CP_preds <- function(rv, session){
+  updateSelectizeInput(session, "fta", choices = rv$colNames_fta,
+      selected = rv$fta)
+  updateSelectizeInput(session, "ltp", choices = rv$colNames_ltp,
+      selected = rv$ltp)
+  updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
+      selected = rv$preds_CP)
 }
 
 #' @title Update the SE output dropdown selections when the model is run
