@@ -163,7 +163,7 @@ plot.splitFull <- function(x, rate = FALSE, CL = 0.90, ...){
     simpleMplot(x, ..., CL = CL)
   } else{
     splitSum <- summary(x, CL)
-    if (length(splitSum) > 100){
+    if (nvar == 2 & length(splitSum) > 100){
       stop("Split too reticulated for plotting. Consider transposing.")
     } else{
       plot(splitSum, rate)
