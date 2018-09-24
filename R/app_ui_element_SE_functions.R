@@ -55,7 +55,9 @@ SESidebar <- function(){
       HTML("<big><strong><u> Table & Figure Selection:
       </u></strong></big>"), 
       br(), br(), 
-      selectizeInput("outsizeclassSE",  "Size Class:", " ", multiple = FALSE),
+      conditionalPanel(condition = "output.sizeclass_SEyn == 'YES'",
+        selectizeInput("outsizeclassSE", "Size Class:", " ", multiple = FALSE)
+      ),
       selectizeInput("outSEp", "p Model:", " ", multiple = FALSE), 
       selectizeInput("outSEk", "k Model:", " ", multiple = FALSE)
     )

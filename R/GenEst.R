@@ -220,6 +220,7 @@
 #' \code{\link{MFigurePanel}}\cr
 #' \code{\link{MMainPanel}}\cr
 #' \code{\link{modalWelcome}}\cr
+#' \code{\link{modelMenuHeader}}\cr
 #' \code{\link{modNamePaste}}\cr
 #' \code{\link{modNameSplit}}\cr
 #' \code{\link{MPanel}}\cr

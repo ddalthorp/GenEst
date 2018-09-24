@@ -55,7 +55,9 @@ CPSidebar <- function(){
       br(), br(), 
       HTML("<big><strong><u> Table & Figure Selection: </u></strong></big>"),
       br(), br(),
-      selectizeInput("outsizeclassCP", "Size Class:",  " ", multiple = FALSE),
+      conditionalPanel(condition = "output.sizeclass_CPyn == 'YES'",
+        selectizeInput("outsizeclassCP", "Size Class:", " ", multiple = FALSE)
+      ),
       selectizeInput("outCPdist", "Distribution:", " ", multiple = FALSE),
       selectizeInput("outCPl", "Location Model:", " ", multiple = FALSE),
       selectizeInput("outCPs", "Scale Model:", " ", multiple = FALSE)        
