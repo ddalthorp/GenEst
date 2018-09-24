@@ -262,6 +262,14 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   preds <- unique(c(preds_p, preds_k))
+  if (grepl("[-.]", paste0(preds, collapse = ''))){
+    stop("Hyphen ( - ) and dot ( . ) not allowed in predictor names")
+  }
+  for (pri in preds){
+    if (grepl("[-.]", paste0(data[, pri], collapse = '')))
+      stop("Hyphen ( - ) and dot ( . ) not allowed in predictor levels")
+  }
+
   cells <- combinePreds(preds, data0)
   ncell <- nrow(cells)
   cellNames <- cells$CellNames
