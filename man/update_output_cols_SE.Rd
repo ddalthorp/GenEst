@@ -10,8 +10,6 @@ update_output_cols_SE(rv, output)
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{input}{input list}
 }
 \value{
 an updated output list

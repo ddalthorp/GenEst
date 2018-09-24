@@ -147,8 +147,6 @@ update_output_sizeclassCol <- function(rv, output){
 #'
 #' @param rv reactive values list
 #'
-#' @param input input list
-#'
 #' @param output output list
 #'
 #' @return an updated output list
