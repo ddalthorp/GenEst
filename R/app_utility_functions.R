@@ -241,7 +241,12 @@ predsCols <- function(data){
     } else{
       reps <- TRUE
     }
-    if (!any(is.na(tmp)) & !cont & reps){
+    if (grepl("[-.]", colnames(data)[coli])){
+      okName <- FALSE
+    } else{
+      okName <- TRUE
+    }    
+    if (!any(is.na(tmp)) & !cont & reps & okName){
       predTF[coli] <- TRUE
     } else{
       predTF[coli] <- FALSE
@@ -542,13 +547,21 @@ CPdistOptions <- function(){
 #'
 #' @description Simply make a blank plot with descriptive text
 #'
+#' @param type "model" or "split"
+#'
 #' @return dummy plot
 #'
 #' @export
 #'
-plotNA <- function(){
+plotNA <- function(type = "model"){
+  if (type == "model"){
+    badText <- "Selected model was not fit successfully."
+  } 
+  if (type == "split"){
+    badText <- "Split too reticulated for plotting. Consider transposing."
+  }
   plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "", 
     ylab = "", ylim = c(0, 1), xlim = c(0,1))
-  text(0.01, 0.9, "Selected model was not fit successfully.", adj = 0)
+  text(0.01, 0.9, badText, adj = 0)
 }
 

@@ -4,7 +4,10 @@
 \alias{plotNA}
 \title{Produce a blank plot for unsucessful fits}
 \usage{
-plotNA()
+plotNA(type = "model")
+}
+\arguments{
+\item{type}{"model" or "split"}
 }
 \value{
 dummy plot
