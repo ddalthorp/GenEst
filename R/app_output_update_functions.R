@@ -618,8 +618,11 @@ update_output_split_M <- function(rv, output, session){
     output$dlMfig <- downloadMFig(rv, split = FALSE)
 
   } else{
-    output$fig_M <- renderPlot({plot(rv$Msplit, CL = rv$CL)},
-                      height = rv$figH_M, width = rv$figW_M
+    output$fig_M <- renderPlot({
+                      tryCatch(plot(rv$Msplit, CL = rv$CL),
+                        error = function(x){plotNA("split")}
+                      )
+                    }, height = rv$figH_M, width = rv$figW_M
                     )
     summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
     output$table_M <- renderDataTable(datatable(summaryTab))
@@ -647,8 +650,11 @@ update_output_split_M <- function(rv, output, session){
 update_output_transpose_split <- function(rv, output, session){
 
   if (!is.null(rv$Msplit)){
-      output$fig_M <- renderPlot({plot(rv$Msplit, CL = rv$CL)},
-                        height = rv$figH_M, width = rv$figW_M
+      output$fig_M <- renderPlot({
+                        tryCatch(plot(rv$Msplit, CL = rv$CL),
+                          error = function(x){plotNA("split")}
+                        )
+                      }, height = rv$figH_M, width = rv$figW_M
                       )
       output$dlMfig <- downloadMFig(rv, TRUE, TRUE)
 

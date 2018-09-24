@@ -204,7 +204,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{matchCells}}\cr
 \code{\link{MFigurePanel}}\cr
 \code{\link{MMainPanel}}\cr
-\code{\link{modalWelcome}}\cr
 \code{\link{modelMenuHeader}}\cr
 \code{\link{modNamePaste}}\cr
 \code{\link{modNameSplit}}\cr
