@@ -1005,6 +1005,9 @@ prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
       unitNames <- c(unitNames, coli)
     }
   }
+  if (grepl("-",paste(unitNames, collapse = ''))){
+    stop("Unit names must not contain hyphens ( - )")
+  }
   dates <- as.Date(yyyymmdd(data_SS[, dateCol]))
   date0 <- min(dates)
   ans <- list()
