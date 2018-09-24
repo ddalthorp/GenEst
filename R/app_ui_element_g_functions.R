@@ -69,7 +69,8 @@ gSidebar <- function(){
       br(), br(),
       actionButton("runMod_g", "Estimate")
     ),
-    conditionalPanel(condition = "output.gModDone == 'OK'", 
+    conditionalPanel(
+      condition = "output.gModDone == 'OK' & output.sizeclass_gyn == 'YES'", 
       br(), br(), 
       HTML("<big><strong><u> Table & Figure Selection: 
         </u></strong></big>"
