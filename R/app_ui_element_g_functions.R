@@ -56,7 +56,7 @@ gSidebar <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
-         output.sizeclassesSE != output.sizeclassesCP",
+         output.sizeclasses_SE != output.sizeclasses_CP",
       br(), 
       HTML("<center><em>Select SE and CP models fit to matching size
         classes to run model</center></em>"
@@ -65,7 +65,7 @@ gSidebar <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-         output.sizeclassesSE == output.sizeclassesCP",
+         output.sizeclasses_SE == output.sizeclasses_CP",
       br(), br(),
       actionButton("runMod_g", "Estimate")
     ),

@@ -4,7 +4,7 @@
 \alias{update_output_run_M}
 \title{Update the output when an M model has been run}
 \usage{
-update_output_run_M(rv, output, session)
+update_output_run_M(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}

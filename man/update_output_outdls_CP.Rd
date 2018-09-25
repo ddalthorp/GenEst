@@ -5,7 +5,7 @@
 \title{Update the CP output when a distribuition or l or s equation is 
   chosen}
 \usage{
-update_output_outdls_CP(rv, output, session)
+update_output_outdls_CP(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}

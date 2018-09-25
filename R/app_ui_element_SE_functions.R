@@ -51,6 +51,7 @@ SESidebar <- function(){
       actionButton("runMod_SE", "Run Model")          
     ),
     conditionalPanel(condition = "output.SEModDone == 'OK'", 
+      actionButton("runMod_SE_clear", "Clear Model", style = cButtonStyle()),
       br(), br(),
       HTML("<big><strong><u> Table & Figure Selection:
       </u></strong></big>"), 

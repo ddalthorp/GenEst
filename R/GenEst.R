@@ -162,7 +162,9 @@
 #' \code{\link{aboutPanel}}\cr
 #' \code{\link{analysisPanel}}\cr
 #' \code{\link{b}}\cr
+#' \code{\link{cButtonStyle}}\cr
 #' \code{\link{clearNotifications}}\cr
+#' \code{\link{cButtonStyle}}\cr
 #' \code{\link{CPdistOptions}}\cr
 #' \code{\link{CPEstimatesPanel}}\cr
 #' \code{\link{CPFiguresPanel}}\cr
@@ -293,6 +295,7 @@
 #' \code{\link{update_input_run_g}}\cr
 #' \code{\link{update_input_run_M}}\cr
 #' \code{\link{update_input_run_SE}}\cr
+#' \code{\link{update_input_run_SE_clear}}\cr
 #' \code{\link{update_input_sizeclassCol}}\cr
 #' \code{\link{update_input_useSSdata}}\cr
 #' \code{\link{update_output_cols_CP}}\cr
@@ -316,6 +319,7 @@
 #' \code{\link{update_output_run_g}}\cr
 #' \code{\link{update_output_run_M}}\cr
 #' \code{\link{update_output_run_SE}}\cr
+#' \code{\link{update_output_run_SE_clear}}\cr
 #' \code{\link{update_output_sizeclassCol}}\cr
 #' \code{\link{update_output_split_M}}\cr
 #' \code{\link{update_output_SS}}\cr
@@ -344,6 +348,7 @@
 #' \code{\link{update_rv_run_g}}\cr
 #' \code{\link{update_rv_run_M}}\cr
 #' \code{\link{update_rv_run_SE}}\cr
+#' \code{\link{update_rv_run_SE_clear}}\cr
 #' \code{\link{update_rv_split_M}}\cr
 #' \code{\link{update_rv_transpose_split}}\cr
 #' \code{\link{update_rv_useSSdata}}\cr

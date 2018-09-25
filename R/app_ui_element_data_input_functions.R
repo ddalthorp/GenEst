@@ -22,7 +22,7 @@ dataInputSidebar <- function(){
   okft <- c("text/csv", "text/comma-separated-values", ".csv")
   llab <- "Load file"
   clab <- "Clear file"
-  cstyle <- "padding:4px; font-size:80%; background-color: #FFCD72"
+  cstyle <- cButtonStyle()
   sidebarPanel(width = 3, 
     h4(b(u("Select Data Files:")), style = "margin-bottom: 20px"),
     h5(b("Searcher Efficiency Data")),
