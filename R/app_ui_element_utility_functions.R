@@ -228,11 +228,11 @@ GenEstShinyJS <- function(...){
 GenEstInlineCSS <- function(...){
   inlineCSS(
     list(".shiny-input-container" = "margin-bottom: 0px", 
-         "#file_SE_progress" = "margin-bottom: 0px", 
-         "#file_CP_progress" = "margin-bottom: 0px",
-         "#file_SS_progress" = "margin-bottom: 0px",
-         "#file_DWP_progress" = "margin-bottom: 0px",
-         "#file_CO_progress" = "margin-bottom: 0px",
+         "#file_SE_progress" = "margin-bottom: 2px", 
+         "#file_CP_progress" = "margin-bottom: 2px",
+         "#file_SS_progress" = "margin-bottom: 2px",
+         "#file_DWP_progress" = "margin-bottom: 2px",
+         "#file_CO_progress" = "margin-bottom: 2px",
          "#nsim" = "margin-bottom: 15px",
          "#CL" = "margin-bottom: 15px",
          "#frac" = "margin-bottom: 15px",

@@ -91,7 +91,7 @@ MSidebar <- function(){
       ),
       br(),
       actionButton("splitM", "Split Estimate"),
-      br(), br(), br(), br(), 
+      br(), br(), 
       actionButton("transposeSplit", "Transpose Split Plot")
     )
   )
