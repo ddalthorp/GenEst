@@ -271,6 +271,7 @@
 #' \code{\link{setkFix}}\cr
 #' \code{\link{small}}\cr
 #' \code{\link{ul}}\cr
+#' \code{\link{u}}\cr
 #' \code{\link{update_input_cols_CP_preds}}\cr
 #' \code{\link{update_input_cols_fta}}\cr
 #' \code{\link{update_input_cols_ltp}}\cr

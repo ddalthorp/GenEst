@@ -160,13 +160,30 @@ li <- function(...){
 #'
 #' @param ... attributes and children of the element
 #'
-#' @return HTML ordered list
+#' @return HTML bolded
 #'
 #' @export
 #'
 b <- function(...){
   tags$b(...)
 }
+
+
+#' @title HTML u function
+#'
+#' @description Generate an HTML underlined text element. This simply pulls 
+#'   the function definition from the tag environment in htmltools
+#'
+#' @param ... attributes and children of the element
+#'
+#' @return HTML underlined
+#'
+#' @export
+#'
+u <- function(...){
+  tags$u(...)
+}
+
 
 #' @title HTML small function
 #'
@@ -233,6 +250,11 @@ GenEstInlineCSS <- function(...){
          "#file_SS_progress" = "margin-bottom: 2px",
          "#file_DWP_progress" = "margin-bottom: 2px",
          "#file_CO_progress" = "margin-bottom: 2px",
+         "#file_SE_clear" = "margin-bottom: 15px", 
+         "#file_CP_clear" = "margin-bottom: 15px",
+         "#file_SS_clear" = "margin-bottom: 15px",
+         "#file_DWP_clear" = "margin-bottom: 15px",
+         "#file_CO_clear" = "margin-bottom: 15px",
          "#nsim" = "margin-bottom: 15px",
          "#CL" = "margin-bottom: 15px",
          "#frac" = "margin-bottom: 15px",
