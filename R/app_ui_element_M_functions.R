@@ -53,6 +53,12 @@ MSidebar <- function(){
       )
     ),
     conditionalPanel(
+      condition = "output.data_SS == null",
+      br(), 
+      HTML("<center><em>Input Search Schedule data to run model</center></em>"
+      )
+    ),
+    conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
          output.sizeclasses_SE == output.sizeclasses_CP & 
@@ -65,6 +71,7 @@ MSidebar <- function(){
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
          output.sizeclasses_SE == output.sizeclasses_CP & 
+         output.data_SS != null & 
          input.DWPCol != null & input.dateFoundCol != null",
       br(), 
       actionButton("runMod_M", "Estimate")

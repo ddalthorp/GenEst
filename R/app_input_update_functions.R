@@ -28,6 +28,7 @@ update_input_data_SE <- function(rv, session){
 #' @export
 #'
 update_input_data_SE_clear <- function(rv, session){
+
   reset("file_SE")
   reset("preds_SE")
   reset("obsCols_SE")
@@ -145,6 +146,22 @@ update_input_data_SS <- function(rv, session){
   updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
 }
 
+#' @title Update the inputs when SS data are cleared out
+#'
+#' @description Update the inputs when the SS data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_data_SS_clear <- function(rv, session){
+  reset("file_SS")
+  reset("gSearchInterval")
+  reset("gSearchMax")
+}
+
 #' @title Update the inputs when DWP data are read in
 #'
 #' @description Update the inputs when the DWP data file is input
@@ -193,10 +210,8 @@ update_input_data_DWP_clear <- function(rv, session){
 #' @export
 #'
 update_input_data_CO <- function(rv, session){
-  updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
-  updateSelectizeInput(session, "splitCol", choices = rv$colNames_CO)
   updateSelectizeInput(session, "dateFoundCol", choices = rv$colNames_COdates)
-  if (length(rv$colNames_COdates == 1)){
+  if (length(rv$colNames_COdates) == 1){
     updateSelectizeInput(session, "dateFoundCol", 
       choices = rv$colNames_COdates, selected = rv$colNames_COdates
     )
@@ -205,6 +220,33 @@ update_input_data_CO <- function(rv, session){
     selected = rv$sizeclassCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
+}
+
+#' @title Update the inputs when CO data are cleared out
+#'
+#' @description Update the inputs when the CO data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_data_CO_clear <- function(rv, session){
+
+  reset("file_CO")
+  reset("dateFoundCol")
+
+  scc <- rv$colNames_size
+  if (is.null(scc)){
+    scc <- ""
+  }
+  scs <- rv$sizeclassCol
+  if (is.null(scc)){
+    scs <- ""
+  }
+  updateSelectizeInput(session, "sizeclassCol", choices = scc, selected = scs)
+  updateSelectizeInput(session, "dateFoundCol", choices = "")
 }
 
 #' @title Update the inputs when the size class column is selected

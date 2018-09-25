@@ -268,6 +268,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{update_input_data_SE}}\cr
 \code{\link{update_input_data_SE_clear}}\cr
 \code{\link{update_input_data_SS}}\cr
+\code{\link{update_input_data_SS_clear}}\cr
 \code{\link{update_input_outsc_CP}}\cr
 \code{\link{update_input_outsc_SE}}\cr
 \code{\link{update_input_run_CP}}\cr
@@ -286,6 +287,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{update_output_data_DWP_clear}}\cr
 \code{\link{update_output_data_SE}}\cr
 \code{\link{update_output_data_SS}}\cr
+\code{\link{update_output_data_SS_clear}}\cr
 \code{\link{update_output_outdls_CP}}\cr
 \code{\link{update_output_outpk_SE}}\cr
 \code{\link{update_output_outsc_CP}}\cr
@@ -312,6 +314,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{update_rv_data_SE}}\cr
 \code{\link{update_rv_data_SE_clear}}\cr
 \code{\link{update_rv_data_SS}}\cr
+\code{\link{update_rv_data_SS_clear}}\cr
 \code{\link{update_rv_outdls_CP}}\cr
 \code{\link{update_rv_outpk_SE}}\cr
 \code{\link{update_rv_outsc_CP}}\cr

@@ -92,7 +92,14 @@ update_rv_data_SE_clear <- function(rv, input){
   rv$figW_M <- 800
 
   rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
   rv$kFill_g <- NULL 
   rv$sizeclasses_g <- NULL 
   rv$nsizeclasses_g <- NULL
@@ -220,7 +227,14 @@ update_rv_data_CP_clear <- function(rv, input){
   rv$figW_M <- 800
 
   rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
   rv$kFill_g <- NULL 
   rv$sizeclasses_g <- NULL 
   rv$nsizeclasses_g <- NULL
@@ -249,6 +263,48 @@ update_rv_data_SS <- function(rv, input){
   rv$data_SS <- readCSVs(input$file_SS$datapath)
   rv$colNames_SS <- colnames(rv$data_SS)
   return(rv)
+}
+
+#' @title Update the reactive value list when SS data are cleared out
+#'
+#' @description Update the rv list when the SS data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_SS_clear <- function(rv, input){
+  rv$data_SS <- NULL
+  rv$colNames_SS <- NULL
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
 }
 
 #' @title Update the reactive value list when DWP data are read in
@@ -317,6 +373,44 @@ update_rv_data_CO <- function(rv, input){
   rv$colNames_size0 <- updateColNames_size(rv)
 
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+  return(rv)
+}
+
+#' @title Update the reactive value list when CO data are cleared out
+#'
+#' @description Update the rv list when the CO data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_CO_clear <- function(rv, input){
+  rv$data_CO <- NULL
+  rv$colNames_CO <- NULL
+  rv$colNames_COdates <- NULL
+  rv$colNames_size <- updateColNames_size(rv)
+  rv$colNames_size0 <- updateColNames_size(rv)
+
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+                                rv$preds_CP)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
   return(rv)
 }
 
