@@ -160,6 +160,10 @@ update_input_data_SS_clear <- function(rv, session){
   reset("file_SS")
   reset("gSearchInterval")
   reset("gSearchMax")
+  reset("split_SS")
+  reset("split_CO")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
 }
 
 #' @title Update the inputs when DWP data are read in
@@ -197,6 +201,10 @@ update_input_data_DWP_clear <- function(rv, session){
   reset("file_DWP")
   reset("DWPCol")
   updateSelectizeInput(session, "DWPCol", choices = "")
+  reset("split_SS")
+  reset("split_CO")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
 }
 
 #' @title Update the inputs when CO data are read in
@@ -247,6 +255,10 @@ update_input_data_CO_clear <- function(rv, session){
   }
   updateSelectizeInput(session, "sizeclassCol", choices = scc, selected = scs)
   updateSelectizeInput(session, "dateFoundCol", choices = "")
+  reset("split_SS")
+  reset("split_CO")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
 }
 
 #' @title Update the inputs when the size class column is selected
@@ -416,6 +428,13 @@ update_input_run_SE <- function(rv, session){
   if (length(rv$colNames_DWP) == 1){
     updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
   }
+
+  reset("outsizeclassg")
+  reset("gSearchInterval")
+  reset("gSearchMax")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
 }
 
 #' @title Update the SE output dropdown selections when the size class is 
@@ -451,6 +470,13 @@ update_input_run_CP <- function(rv, session){
   updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)
   updateSelectizeInput(session, "outCPdist", choices = rv$modNames_CPdist)
   updateSelectizeInput(session, "outsizeclassCP", choices = rv$sizeclasses)
+
+  reset("outsizeclassg")
+  reset("gSearchInterval")
+  reset("gSearchMax")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
 }
 
 #' @title Update the CP output dropdown selections when the size class is 

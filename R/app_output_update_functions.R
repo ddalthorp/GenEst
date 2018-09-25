@@ -459,6 +459,31 @@ update_output_run_SE <- function(rv, output, session){
     output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
     output$dlSEfig <- downloadSEFig(rv)
   }
+
+
+  output$fig_M <- NULL
+  output$table_M <- NULL
+  output$dlMtab <- NULL
+  output$dlMfig <- NULL
+  output$MModDone <- NULL
+  outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+
+  output$table_g <- NULL
+  output$fig_g <- NULL
+  output$gModDone <- NULL
+  output$sizeclass_gyn <- NULL
+  output$sizeclass_g1 <- NULL
+  output$sizeclass_g2 <- NULL
+  output$dlgtab <- NULL
+  output$dlgfig <- NULL
+
+  outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "table_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+
+
   return(output)
 }
 
@@ -588,6 +613,30 @@ update_output_run_CP <- function(rv, output, session){
     output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP)
     output$dlCPfig <- downloadCPFig(rv)
   }
+
+
+  output$fig_M <- NULL
+  output$table_M <- NULL
+  output$dlMtab <- NULL
+  output$dlMfig <- NULL
+  output$MModDone <- NULL
+  outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+
+  output$table_g <- NULL
+  output$fig_g <- NULL
+  output$gModDone <- NULL
+  output$sizeclass_gyn <- NULL
+  output$sizeclass_g1 <- NULL
+  output$sizeclass_g2 <- NULL
+  output$dlgtab <- NULL
+  output$dlgfig <- NULL
+
+  outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "table_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+
   return(output)
 }
 
