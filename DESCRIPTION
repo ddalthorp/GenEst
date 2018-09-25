@@ -1,6 +1,6 @@
 Package: GenEst
 Title: Generalized Fatality Estimator
-Version: 0.2.12
+Version: 0.2.13
 Date: 2018-09-24
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
@@ -30,6 +30,7 @@ Imports:
     mvtnorm,
     Rcpp,
     shiny,
+    shinyjs,
     sticky,
     survival,
     zip

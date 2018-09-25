@@ -9,25 +9,50 @@ observeEvent(input$file_SE, {
   output <- update_output_data_SE(rv, output)
   update_input_data_SE(rv, session)
 })
+observeEvent(input$file_SE_clear, {
+  rv <- update_rv_data_SE_clear(rv, input)
+  output <- update_output_data_SE_clear(rv, output)
+  update_input_data_SE_clear(rv, session)
+})
 observeEvent(input$file_CP, {
   rv <- update_rv_data_CP(rv, input)
   output <- update_output_data_CP(rv, output)
   update_input_data_CP(rv, session)
+})
+observeEvent(input$file_CP_clear, {
+  rv <- update_rv_data_CP_clear(rv, input)
+  output <- update_output_data_CP_clear(rv, output)
+  update_input_data_CP_clear(rv, session)
 })
 observeEvent(input$file_SS, {
   rv <- update_rv_data_SS(rv, input)
   output <- update_output_data_SS(rv, output)
   update_input_data_SS(rv, session)
 })
+observeEvent(input$file_SS_clear, {
+  rv <- update_rv_data_SS_clear(rv, input)
+  output <- update_output_data_SS_clear(rv, output)
+  update_input_data_SS_clear(rv, session)
+})
 observeEvent(input$file_DWP, {
   rv <- update_rv_data_DWP(rv, input)
   output <- update_output_data_DWP(rv, output)
   update_input_data_DWP(rv, session)
 })
+observeEvent(input$file_DWP_clear, {
+  rv <- update_rv_data_DWP_clear(rv, input)
+  output <- update_output_data_DWP_clear(rv, output)
+  update_input_data_DWP_clear(rv, session)
+})
 observeEvent(input$file_CO, {
   rv <- update_rv_data_CO(rv, input)
   output <- update_output_data_CO(rv, output)
   update_input_data_CO(rv, session)
+})
+observeEvent(input$file_CO_clear, {
+  rv <- update_rv_data_CO_clear(rv, input)
+  output <- update_output_data_CO_clear(rv, output)
+  update_input_data_CO_clear(rv, session)
 })
 
 observeEvent(input$sizeclassCol, ignoreNULL = FALSE, {

@@ -57,6 +57,7 @@ createReactiveValues <- function(){
     figH_M = 600, figW_M = 800,
 
     SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "),
+    avgSI = NULL, SStemp = NULL, gSearchInterval = 7, gSearchMax = 364,
     kFill_g = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
     gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
     figH_g = 400, figW_g = 800

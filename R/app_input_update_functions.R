@@ -17,6 +17,53 @@ update_input_data_SE <- function(rv, session){
   updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
 }
 
+#' @title Update the inputs when SE data are cleared out
+#'
+#' @description Update the inputs when the SE data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_data_SE_clear <- function(rv, session){
+
+  reset("file_SE")
+  reset("preds_SE")
+  reset("obsCols_SE")
+  reset("outSEp")
+  reset("outSEk")
+  reset("outsizeclassSE")
+  reset("kFill")
+  reset("DWPCol")
+  reset("split_SS")
+  reset("split_CO")
+  reset("modelChoices_SE1")
+  reset("outsizeclassg")
+
+  updateSelectizeInput(session, "preds_SE", choices = "")
+  updateSelectizeInput(session, "obsCols_SE", choices = "")
+  scc <- rv$colNames_size
+  if (is.null(scc)){
+    scc <- ""
+  }
+  scs <- rv$sizeclassCol
+  if (is.null(scc)){
+    scs <- ""
+  }
+  updateSelectizeInput(session, "sizeclassCol", choices = scc, selected = scs)
+  updateSelectizeInput(session, "modelChoices_SE1", choices = "")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outSEp", choices = "")
+  updateSelectizeInput(session, "outSEk", choices = "")
+  updateSelectizeInput(session, "outsizeclassSE", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
+
+}
+
+
 #' @title Update the inputs when CP data are read in
 #'
 #' @description Update the inputs when the CP data file is input
@@ -37,6 +84,54 @@ update_input_data_CP <- function(rv, session){
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
 }
 
+#' @title Update the inputs when CP data are cleared out
+#'
+#' @description Update the inputs when the CP data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_data_CP_clear <- function(rv, session){
+
+  reset("file_CP")
+  reset("preds_CP")
+  reset("ltp")
+  reset("fta")
+  reset("modelChoices_CP1")
+  reset("outCPl")
+  reset("outCPs")
+  reset("outCPdist")
+  reset("outsizeclassCP")
+  updateSelectizeInput(session, "preds_CP", choices = "")
+  updateSelectizeInput(session, "ltp", choices = "")
+  updateSelectizeInput(session, "fta", choices = "")
+  scc <- rv$colNames_size
+  if (is.null(scc)){
+    scc <- ""
+  }
+  scs <- rv$sizeclassCol
+  if (is.null(scc)){
+    scs <- ""
+  }
+  updateSelectizeInput(session, "sizeclassCol", choices = scc, selected = scs)
+  updateSelectizeInput(session, "modelChoices_CP1", choices = "")
+  updateSelectizeInput(session, "outCPl", choices = "")
+  updateSelectizeInput(session, "outCPs", choices = "")
+  updateSelectizeInput(session, "outCPdist", choices = "")
+  updateSelectizeInput(session, "outsizeclassCP", choices = "")
+
+  reset("split_SS")
+  reset("split_CO")
+  reset("outsizeclassg")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
+
+}
+
 #' @title Update the inputs when SS data are read in
 #'
 #' @description Update the inputs when the SS data file is input
@@ -51,6 +146,26 @@ update_input_data_SS <- function(rv, session){
   updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
 }
 
+#' @title Update the inputs when SS data are cleared out
+#'
+#' @description Update the inputs when the SS data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_data_SS_clear <- function(rv, session){
+  reset("file_SS")
+  reset("gSearchInterval")
+  reset("gSearchMax")
+  reset("split_SS")
+  reset("split_CO")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+}
+
 #' @title Update the inputs when DWP data are read in
 #'
 #' @description Update the inputs when the DWP data file is input
@@ -62,13 +177,34 @@ update_input_data_SS <- function(rv, session){
 #' @export
 #'
 update_input_data_DWP <- function(rv, session){
-  if (length(rv$nsizeclasses) == 0){
-    updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
-  }
+  updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
   if (length(rv$colNames_DWP) == 1){
     updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
   }
+  if (rv$nsizeclasses > 1){
+    updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP[1])
+  }
   updateTabsetPanel(session, "LoadedDataViz", "Density Weighted Proportion")
+}
+
+#' @title Update the inputs when DWP data are cleared out
+#'
+#' @description Update the inputs when the DWP data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_data_DWP_clear <- function(rv, session){
+  reset("file_DWP")
+  reset("DWPCol")
+  updateSelectizeInput(session, "DWPCol", choices = "")
+  reset("split_SS")
+  reset("split_CO")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
 }
 
 #' @title Update the inputs when CO data are read in
@@ -82,10 +218,8 @@ update_input_data_DWP <- function(rv, session){
 #' @export
 #'
 update_input_data_CO <- function(rv, session){
-  updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
-  updateSelectizeInput(session, "splitCol", choices = rv$colNames_CO)
   updateSelectizeInput(session, "dateFoundCol", choices = rv$colNames_COdates)
-  if (length(rv$colNames_COdates == 1)){
+  if (length(rv$colNames_COdates) == 1){
     updateSelectizeInput(session, "dateFoundCol", 
       choices = rv$colNames_COdates, selected = rv$colNames_COdates
     )
@@ -94,6 +228,37 @@ update_input_data_CO <- function(rv, session){
     selected = rv$sizeclassCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
+}
+
+#' @title Update the inputs when CO data are cleared out
+#'
+#' @description Update the inputs when the CO data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_data_CO_clear <- function(rv, session){
+
+  reset("file_CO")
+  reset("dateFoundCol")
+
+  scc <- rv$colNames_size
+  if (is.null(scc)){
+    scc <- ""
+  }
+  scs <- rv$sizeclassCol
+  if (is.null(scc)){
+    scs <- ""
+  }
+  updateSelectizeInput(session, "sizeclassCol", choices = scc, selected = scs)
+  updateSelectizeInput(session, "dateFoundCol", choices = "")
+  reset("split_SS")
+  reset("split_CO")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
 }
 
 #' @title Update the inputs when the size class column is selected
@@ -263,6 +428,13 @@ update_input_run_SE <- function(rv, session){
   if (length(rv$colNames_DWP) == 1){
     updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
   }
+
+  reset("outsizeclassg")
+  reset("gSearchInterval")
+  reset("gSearchMax")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
 }
 
 #' @title Update the SE output dropdown selections when the size class is 
@@ -298,6 +470,13 @@ update_input_run_CP <- function(rv, session){
   updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)
   updateSelectizeInput(session, "outCPdist", choices = rv$modNames_CPdist)
   updateSelectizeInput(session, "outsizeclassCP", choices = rv$sizeclasses)
+
+  reset("outsizeclassg")
+  reset("gSearchInterval")
+  reset("gSearchMax")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
 }
 
 #' @title Update the CP output dropdown selections when the size class is 

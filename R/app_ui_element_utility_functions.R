@@ -203,3 +203,42 @@ ftpLink <- function(doc = "UserGuide"){
   }
   docLink
 }
+
+#' @title Shiny Java Script (via shinyjs) enabler
+#'
+#' @description Enable the use of the \code{shinyjs} package within GenEst.
+#'   Simply a wrapper to bring function into namespace.
+#'
+#' @param ... to be passed down
+#'
+#' @export
+#'
+GenEstShinyJS <- function(...){
+  useShinyjs(...)
+}
+
+#' @title Inline CSS definition
+#'
+#' @description Define the inline CSS code for GenEst.
+#'
+#' @param ... to be passed down
+#'
+#' @export
+#'
+GenEstInlineCSS <- function(...){
+  inlineCSS(
+    list(".shiny-input-container" = "margin-bottom: 0px", 
+         "#file_SE_progress" = "margin-bottom: 2px", 
+         "#file_CP_progress" = "margin-bottom: 2px",
+         "#file_SS_progress" = "margin-bottom: 2px",
+         "#file_DWP_progress" = "margin-bottom: 2px",
+         "#file_CO_progress" = "margin-bottom: 2px",
+         "#nsim" = "margin-bottom: 15px",
+         "#CL" = "margin-bottom: 15px",
+         "#frac" = "margin-bottom: 15px",
+         "#gSearchInterval" = "margin-bottom: 15px",
+         "#gSearchMax" = "margin-bottom: 15px",
+         "#kFill_g" = "margin-bottom: 15px"
+    ), ...
+  )
+}
