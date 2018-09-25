@@ -262,7 +262,8 @@ GenEstInlineCSS <- function(...){
          "#kFill" = "margin-bottom: 15px",
          "#gSearchMax" = "margin-bottom: 15px",
          "#kFill_g" = "margin-bottom: 15px",
-         "#runMod_SE" = "margin-bottom: 10px"
+         "#runMod_SE" = "margin-bottom: 10px",
+         "#runMod_CP" = "margin-bottom: 10px"
     ), ...
   )
 }

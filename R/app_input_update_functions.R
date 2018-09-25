@@ -512,6 +512,36 @@ update_input_run_CP <- function(rv, session){
   updateSelectizeInput(session, "outsizeclassg", choices = "")
 }
 
+#' @title Update the inputs when CP model is cleared
+#'
+#' @description Update the inputs when the CP model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_CP_clear <- function(rv, session){
+  reset("outCPl")
+  reset("outCPs")
+  reset("outCPdist")
+  reset("outsizeclassCP")
+  reset("split_SS")
+  reset("split_CO")
+  reset("modelChoices_CP1")
+  reset("outsizeclassg")
+
+  updateSelectizeInput(session, "modelChoices_CP1", choices = "")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outCPl", choices = "")
+  updateSelectizeInput(session, "outCPs", choices = "")
+  updateSelectizeInput(session, "outCPdist", choices = "")
+  updateSelectizeInput(session, "outsizeclassCP", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
+}
+
 #' @title Update the CP output dropdown selections when the size class is 
 #'   chosen
 #'

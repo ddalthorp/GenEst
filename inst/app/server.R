@@ -120,6 +120,12 @@ observeEvent(input$runMod_CP, {
   update_input_run_CP(rv, session)
   msgs$ModCP <<- msgModDone(msgs, rv, "CP")
 })
+observeEvent(input$runMod_CP_clear, {
+  clearNotifications(msgs)
+  rv <- update_rv_run_CP_clear(rv, input)
+  output <- update_output_run_CP_clear(rv, output)
+  update_input_run_CP_clear(rv, session)  
+})
 observeEvent(input$outsizeclassCP, {
   rv <- update_rv_outsc_CP(rv, input)
   output <- update_output_outsc_CP(rv, output)

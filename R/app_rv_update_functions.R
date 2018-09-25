@@ -934,6 +934,80 @@ update_rv_run_CP <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when CP model is cleared
+#'
+#' @description Update the rv list when the CP model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_CP_clear <- function(rv, input){
+  rv$dists <- NULL  
+  rv$predictors_CP <- NULL
+  rv$formula_l <- NULL
+  rv$formula_s <- NULL
+
+  rv$mods_CP <- NULL 
+  rv$mods_CP_og <- NULL 
+  rv$sizeclasses_CP <- NULL 
+
+  rv$AICcTab_CP <- NULL 
+  rv$modOrder_CP <- NULL 
+  rv$modNames_CP <- NULL
+  rv$modNames_CPl <- NULL 
+  rv$modNames_CPs <- NULL 
+  rv$modNames_CPdist <- NULL 
+  rv$modSet_CP <- NULL
+  rv$best_CP <- NULL 
+
+  rv$modTab_CP <- NULL 
+  rv$modTabPretty_CP <- NULL
+  rv$modTabDL_CP <- NULL 
+  rv$figH_CP <- 800 
+  rv$figW_CP <- 800
+
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
+  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+                                rv$preds_CP)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+
+  return(rv)
+}
+
 #' @title Update the SE reactive values when the size class is chosen
 #'
 #' @description Update the SE reactive values when the size class is chosen
