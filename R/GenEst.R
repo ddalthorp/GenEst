@@ -292,6 +292,7 @@
 #' \code{\link{update_input_outsc_CP}}\cr
 #' \code{\link{update_input_outsc_SE}}\cr
 #' \code{\link{update_input_run_CP}}\cr
+#' \code{\link{update_input_run_CP_clear}}\cr
 #' \code{\link{update_input_run_g}}\cr
 #' \code{\link{update_input_run_M}}\cr
 #' \code{\link{update_input_run_SE}}\cr
@@ -316,6 +317,7 @@
 #' \code{\link{update_output_outsc_g}}\cr
 #' \code{\link{update_output_outsc_SE}}\cr
 #' \code{\link{update_output_run_CP}}\cr
+#' \code{\link{update_output_run_CP_clear}}\cr
 #' \code{\link{update_output_run_g}}\cr
 #' \code{\link{update_output_run_M}}\cr
 #' \code{\link{update_output_run_SE}}\cr
@@ -345,6 +347,7 @@
 #' \code{\link{update_rv_outsc_g}}\cr
 #' \code{\link{update_rv_outsc_SE}}\cr
 #' \code{\link{update_rv_run_CP}}\cr
+#' \code{\link{update_rv_run_CP_clear}}\cr
 #' \code{\link{update_rv_run_g}}\cr
 #' \code{\link{update_rv_run_M}}\cr
 #' \code{\link{update_rv_run_SE}}\cr

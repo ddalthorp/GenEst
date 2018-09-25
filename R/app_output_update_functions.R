@@ -530,7 +530,6 @@ update_output_run_SE_clear <- function(rv, output){
   outputOptions(output, "modTab_SE", suspendWhenHidden = FALSE)
   outputOptions(output, "SEModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "sizeclasses_SE", suspendWhenHidden = FALSE)
-  outputOptions(output, "filename_SE", suspendWhenHidden = FALSE)
 
   output$fig_M <- NULL
   output$table_M <- NULL
@@ -684,6 +683,63 @@ update_output_run_CP <- function(rv, output){
     output$dlCPfig <- downloadCPFig(rv)
   }
 
+
+  output$fig_M <- NULL
+  output$table_M <- NULL
+  output$dlMtab <- NULL
+  output$dlMfig <- NULL
+  output$MModDone <- NULL
+  outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+
+  output$table_g <- NULL
+  output$fig_g <- NULL
+  output$gModDone <- NULL
+  output$sizeclass_gyn <- NULL
+  output$sizeclass_g1 <- NULL
+  output$sizeclass_g2 <- NULL
+  output$dlgtab <- NULL
+  output$dlgfig <- NULL
+
+  outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "table_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+
+  return(output)
+}
+
+#' @title Update the output list when CP model is cleared
+#'
+#' @description Update the output list when the CP model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_run_CP_clear <- function(rv, output){
+  output$CPModDone <- NULL
+  output$AICcTab_CP <- NULL
+  output$modTab_CP <- NULL
+  output$fig_CP <- NULL
+  output$sizeclasses_CP <- NULL
+  output$modelMenu_CP <- NULL
+  output$sizeclass_CP1 <- NULL
+  output$sizeclass_CP2 <- NULL
+  output$sizeclass_CP3 <- NULL
+  output$sizeclass_CPyn <- NULL
+  output$dlCPest <- NULL
+  output$dlCPAICc <- NULL
+  output$dlCPfig <- NULL
+  outputOptions(output, "AICcTab_CP", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_CP", suspendWhenHidden = FALSE)
+  outputOptions(output, "modTab_CP", suspendWhenHidden = FALSE)
+  outputOptions(output, "CPModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclasses_CP", suspendWhenHidden = FALSE)
 
   output$fig_M <- NULL
   output$table_M <- NULL
