@@ -437,6 +437,39 @@ update_input_run_SE <- function(rv, session){
   updateSelectizeInput(session, "outsizeclassg", choices = "")
 }
 
+
+#' @title Update the inputs when SE model is cleared
+#'
+#' @description Update the inputs when the SE model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_SE_clear <- function(rv, session){
+  reset("outSEp")
+  reset("outSEk")
+  reset("outsizeclassSE")
+  reset("kFill")
+  reset("DWPCol")
+  reset("split_SS")
+  reset("split_CO")
+  reset("modelChoices_SE1")
+  reset("outsizeclassg")
+
+  updateSelectizeInput(session, "modelChoices_SE1", choices = "")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outSEp", choices = "")
+  updateSelectizeInput(session, "outSEk", choices = "")
+  updateSelectizeInput(session, "outsizeclassSE", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
+
+
+}
+
 #' @title Update the SE output dropdown selections when the size class is 
 #'   chosen
 #'

@@ -4,7 +4,7 @@
 \alias{update_output_SS}
 \title{Update the SS text output when the SS is updated}
 \usage{
-update_output_SS(rv, output, session)
+update_output_SS(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}

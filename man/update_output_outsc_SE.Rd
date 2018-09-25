@@ -4,7 +4,7 @@
 \alias{update_output_outsc_SE}
 \title{Update the SE output when a size class is chosen}
 \usage{
-update_output_outsc_SE(rv, output, session)
+update_output_outsc_SE(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}

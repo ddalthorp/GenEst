@@ -259,8 +259,22 @@ GenEstInlineCSS <- function(...){
          "#CL" = "margin-bottom: 15px",
          "#frac" = "margin-bottom: 15px",
          "#gSearchInterval" = "margin-bottom: 15px",
+         "#kFill" = "margin-bottom: 15px",
          "#gSearchMax" = "margin-bottom: 15px",
-         "#kFill_g" = "margin-bottom: 15px"
+         "#kFill_g" = "margin-bottom: 15px",
+         "#runMod_SE" = "margin-bottom: 10px"
     ), ...
   )
+}
+
+#' @title Define the style for the clear buttons
+#'
+#' @description Define the style tag for clear buttons used throughout GenEst.
+#'
+#' @return character element defining the style
+#'
+#' @export
+#'
+cButtonStyle <- function(){
+  "padding:4px; font-size:80%; background-color: #FFCD72"
 }
