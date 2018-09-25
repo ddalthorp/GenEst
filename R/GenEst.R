@@ -13,12 +13,13 @@
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
-#'   downloadButton downloadHandler fileInput fluidRow h3 h4 htmlOutput 
+#'   downloadButton downloadHandler fileInput fluidRow h3 h4 h5 htmlOutput 
 #'   isolate mainPanel navbarPage numericInput observeEvent outputOptions p 
 #'   plotOutput radioButtons reactiveValues removeNotification renderPlot
 #'   renderText renderUI runApp selectizeInput shinyApp shinyAppDir 
 #'   showNotification sidebarLayout sidebarPanel tabPanel tabsetPanel 
 #'   textOutput updateNumericInput updateSelectizeInput updateTabsetPanel 
+#' @importFrom shinyjs inlineCSS reset useShinyjs 
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
 #'   reformulate rnorm runif terms update.formula weighted.mean  
@@ -203,8 +204,10 @@
 #' \code{\link{GenEstAcknowledgements}}\cr
 #' \code{\link{GenEstAuthors}}\cr
 #' \code{\link{GenEstGUIauthors}}\cr
+#' \code{\link{GenEstInlineCSS}}\cr
 #' \code{\link{GenEstLicense}}\cr
 #' \code{\link{GenEstLogos}}\cr
+#' \code{\link{GenEstShinyJS}}\cr
 #' \code{\link{GeneralInputSidebar}}\cr
 #' \code{\link{GeneralInputsPanel}}\cr
 #' \code{\link{gFigurePanel}}\cr
@@ -274,10 +277,15 @@
 #' \code{\link{update_input_cols_SE_preds}}\cr
 #' \code{\link{update_input_cols_SE_obs}}\cr
 #' \code{\link{update_input_data_CO}}\cr
+#' \code{\link{update_input_data_CO_clear}}\cr
 #' \code{\link{update_input_data_CP}}\cr
+#' \code{\link{update_input_data_CP_clear}}\cr
 #' \code{\link{update_input_data_DWP}}\cr
+#' \code{\link{update_input_data_DWP_clear}}\cr
 #' \code{\link{update_input_data_SE}}\cr
+#' \code{\link{update_input_data_SE_clear}}\cr
 #' \code{\link{update_input_data_SS}}\cr
+#' \code{\link{update_input_data_SS_clear}}\cr
 #' \code{\link{update_input_outsc_CP}}\cr
 #' \code{\link{update_input_outsc_SE}}\cr
 #' \code{\link{update_input_run_CP}}\cr
@@ -288,11 +296,16 @@
 #' \code{\link{update_input_useSSdata}}\cr
 #' \code{\link{update_output_cols_CP}}\cr
 #' \code{\link{update_output_cols_SE}}\cr
+#' \code{\link{update_output_data_SE_clear}}\cr
 #' \code{\link{update_output_data_CO}}\cr
+#' \code{\link{update_output_data_CO_clear}}\cr
 #' \code{\link{update_output_data_CP}}\cr
+#' \code{\link{update_output_data_CP_clear}}\cr
 #' \code{\link{update_output_data_DWP}}\cr
+#' \code{\link{update_output_data_DWP_clear}}\cr
 #' \code{\link{update_output_data_SE}}\cr
 #' \code{\link{update_output_data_SS}}\cr
+#' \code{\link{update_output_data_SS_clear}}\cr
 #' \code{\link{update_output_outdls_CP}}\cr
 #' \code{\link{update_output_outpk_SE}}\cr
 #' \code{\link{update_output_outsc_CP}}\cr
@@ -312,10 +325,15 @@
 #' \code{\link{update_rv_cols_SE_obs}}\cr
 #' \code{\link{update_rv_cols_SE_preds}}\cr
 #' \code{\link{update_rv_data_CO}}\cr
+#' \code{\link{update_rv_data_CO_clear}}\cr
 #' \code{\link{update_rv_data_CP}}\cr
+#' \code{\link{update_rv_data_CP_clear}}\cr
 #' \code{\link{update_rv_data_DWP}}\cr
+#' \code{\link{update_rv_data_DWP_clear}}\cr
 #' \code{\link{update_rv_data_SE}}\cr
+#' \code{\link{update_rv_data_SE_clear}}\cr
 #' \code{\link{update_rv_data_SS}}\cr
+#' \code{\link{update_rv_data_SS_clear}}\cr
 #' \code{\link{update_rv_outdls_CP}}\cr
 #' \code{\link{update_rv_outpk_SE}}\cr
 #' \code{\link{update_rv_outsc_CP}}\cr

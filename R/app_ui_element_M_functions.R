@@ -46,16 +46,22 @@ MSidebar <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
-         output.sizeclassesSE != output.sizeclassesCP",
+         output.sizeclasses_SE != output.sizeclasses_CP",
       br(), 
       HTML("<center><em>Select SE and CP models fit to matching size
         classes to run model</center></em>"
       )
     ),
     conditionalPanel(
+      condition = "output.data_SS == null",
+      br(), 
+      HTML("<center><em>Input Search Schedule data to run model</center></em>"
+      )
+    ),
+    conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-         output.sizeclassesSE == output.sizeclassesCP & 
+         output.sizeclasses_SE == output.sizeclasses_CP & 
          (input.DWPCol == null | input.dateFoundCol == null)",
       br(), 
       HTML("<center><em>Select input columns to run model</center></em>"
@@ -64,8 +70,9 @@ MSidebar <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-         output.sizeclassesSE == output.sizeclassesCP & input.DWPCol != null &
-         input.dateFoundCol != null",
+         output.sizeclasses_SE == output.sizeclasses_CP & 
+         output.data_SS != null & 
+         input.DWPCol != null & input.dateFoundCol != null",
       br(), 
       actionButton("runMod_M", "Estimate")
     ),
@@ -84,7 +91,7 @@ MSidebar <- function(){
       ),
       br(),
       actionButton("splitM", "Split Estimate"),
-      br(), br(), br(), br(), 
+      br(), br(), 
       actionButton("transposeSplit", "Transpose Split Plot")
     )
   )
@@ -122,7 +129,7 @@ MFigurePanel <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
-         output.sizeclassesSE != output.sizeclassesCP",
+         output.sizeclasses_SE != output.sizeclasses_CP",
       HTML("<em>Select SE and CP models fit to matching size classes to run 
         model</em>"
       )
@@ -130,7 +137,7 @@ MFigurePanel <- function(){
     conditionalPanel(
       condition = "output.fig_M == null & input.modelChoices_SE1 != null & 
          input.modelChoices_CP1 != null &
-         output.sizeclassesSE == output.sizeclassesCP",
+         output.sizeclasses_SE == output.sizeclasses_CP",
       HTML("<em>Run estimate to view figure</em>")
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",
@@ -155,7 +162,7 @@ MSummaryPanel <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
-         output.sizeclassesSE != output.sizeclassesCP",
+         output.sizeclasses_SE != output.sizeclasses_CP",
       HTML("<em>Select SE and CP models fit to matching size classes to run 
         model</em>"
       )
@@ -163,7 +170,7 @@ MSummaryPanel <- function(){
     conditionalPanel(
       condition = "output.fig_M == null & input.modelChoices_SE1 != null & 
          input.modelChoices_CP1 != null &
-         output.sizeclassesSE == output.sizeclassesCP",
+         output.sizeclasses_SE == output.sizeclasses_CP",
       HTML("<em>Run estimate to view summary</em>")
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",

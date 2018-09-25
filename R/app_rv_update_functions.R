@@ -11,6 +11,7 @@
 #' @export
 #'
 update_rv_data_SE <- function(rv, input){
+  rv <- update_rv_data_SE_clear(rv, input)
   rv$data_SE <- readCSVs(input$file_SE$datapath)
   rv$filename_SE <- input$file_SE$name
   rv$colNames_SE <- colnames(rv$data_SE)
@@ -26,6 +27,96 @@ update_rv_data_SE <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when SE data are cleared out
+#'
+#' @description Update the rv list when the SE data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_SE_clear <- function(rv, input){
+  rv$data_SE <- NULL
+  rv$filename_SE <- NULL
+  rv$colNames_SE <- NULL
+  rv$colNames_SE_preds <- NULL
+  rv$colNames_SE_preds0 <- NULL
+  rv$colNames_SE_obs <- NULL
+  rv$colNames_SE_obs0 <- NULL
+  rv$colNames_size <- updateColNames_size(rv)
+  rv$colNames_size0 <- updateColNames_size(rv)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+  rv$colNames_SE_obs <- NULL
+  rv$colNames_SE_preds <- NULL
+  rv$toRemove_SE_obs <- NULL
+  rv$toRemove_SE_preds <- NULL
+  rv$sizeclass_SE <- NULL
+  rv$obsCols_SE <- NULL
+  rv$preds_SE <- NULL
+  rv$predictors_SE <- NULL
+  rv$formula_p <- NULL
+  rv$formula_k <- NULL
+  rv$kFixedChoice <- NULL 
+  rv$kFixed <- NULL 
+  rv$mods_SE <- NULL 
+  rv$mods_SE_og <- NULL 
+  rv$sizeclasses_SE <- NULL 
+  rv$outSEpk <- NULL 
+  rv$AICcTab_SE <- NULL 
+  rv$modOrder_SE <- NULL 
+  rv$modNames_SE <- NULL
+  rv$modNames_SEp <- NULL 
+  rv$modNames_SEk <- NULL 
+  rv$modSet_SE <- NULL
+  rv$best_SE <- NULL 
+  rv$modTab_SE <- NULL 
+  rv$modTabPretty_SE <- NULL
+  rv$modTabDL_SE <- NULL 
+  rv$figH_SE <- 800 
+  rv$figW_SE <- 800
+  rv$kFill <- NULL 
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
+  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+                                rv$preds_CP)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+
+  return(rv)
+}
+
+
 #' @title Update the reactive value list when CP data are read in
 #'
 #' @description Update the rv list when the CP data file is input
@@ -39,6 +130,8 @@ update_rv_data_SE <- function(rv, input){
 #' @export
 #'
 update_rv_data_CP <- function(rv, input){
+  rv <- update_rv_data_CP_clear(rv, input)
+
   rv$data_CP <- readCSVs(input$file_CP$datapath)
   rv$filename_CP <- input$file_CP$name
   rv$colNames_CP <- colnames(rv$data_CP)
@@ -57,6 +150,106 @@ update_rv_data_CP <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when CP data are cleared out
+#'
+#' @description Update the rv list when the CP data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_CP_clear <- function(rv, input){
+
+  rv$data_CP <- NULL
+  rv$filename_CP <- NULL
+  rv$colNames_CP <- NULL
+  rv$colNames_CP_preds <- NULL
+  rv$colNames_CP_preds0 <- NULL
+  rv$colNames_fta <- NULL
+  rv$colNames_fta0 <- NULL
+  rv$colNames_ltp <- NULL
+  rv$colNames_ltp0 <- NULL
+  rv$colNames_size <- updateColNames_size(rv)
+  rv$colNames_size0 <- updateColNames_size(rv)
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+
+  rv$colNames_fta <- NULL
+  rv$colNames_ltp <- NULL
+  rv$colNames_CP_preds <- NULL
+  rv$toRemove_fta <- NULL
+  rv$toRemove_ltp <- NULL
+  rv$toRemove_CP_preds <- NULL
+
+  rv$sizeclass_CP <- NULL
+  rv$ltp <- NULL
+  rv$fta <- NULL
+  rv$preds_CP <- NULL
+
+  rv$dists <- NULL  
+  rv$predictors_CP <- NULL
+  rv$formula_l <- NULL
+  rv$formula_s <- NULL
+
+  rv$mods_CP <- NULL 
+  rv$mods_CP_og <- NULL 
+  rv$sizeclasses_CP <- NULL 
+
+  rv$AICcTab_CP <- NULL 
+  rv$modOrder_CP <- NULL 
+  rv$modNames_CP <- NULL
+  rv$modNames_CPl <- NULL 
+  rv$modNames_CPs <- NULL 
+  rv$modNames_CPdist <- NULL 
+  rv$modSet_CP <- NULL
+  rv$best_CP <- NULL 
+
+  rv$modTab_CP <- NULL 
+  rv$modTabPretty_CP <- NULL
+  rv$modTabDL_CP <- NULL 
+  rv$figH_CP <- 800 
+  rv$figW_CP <- 800
+
+  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+                                rv$preds_CP)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$CPmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$CPmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
+  return(rv)
+}
+
+
 #' @title Update the reactive value list when SS data are read in
 #'
 #' @description Update the rv list when the SS data file is input
@@ -70,8 +263,52 @@ update_rv_data_CP <- function(rv, input){
 #' @export
 #'
 update_rv_data_SS <- function(rv, input){
+  rv <- update_rv_data_SS_clear(rv, input)
   rv$data_SS <- readCSVs(input$file_SS$datapath)
   rv$colNames_SS <- colnames(rv$data_SS)
+  return(rv)
+}
+
+#' @title Update the reactive value list when SS data are cleared out
+#'
+#' @description Update the rv list when the SS data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_SS_clear <- function(rv, input){
+  rv$data_SS <- NULL
+  rv$colNames_SS <- NULL
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
   return(rv)
 }
 
@@ -88,10 +325,40 @@ update_rv_data_SS <- function(rv, input){
 #' @export
 #'
 update_rv_data_DWP <- function(rv, input){
+  rv <- update_rv_data_DWP_clear(rv, input)
   rv$data_DWP <- readCSVs(input$file_DWP$datapath)
   rv$colNames_DWP <- DWPCols(rv$data_DWP)
   return(rv)
 }
+
+#' @title Update the reactive value list when DWP data are cleared out
+#'
+#' @description Update the rv list when the DWP data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_DWP_clear <- function(rv, input){
+  rv$data_DWP <- NULL
+  rv$colNames_DWP <- NULL
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+  return(rv)
+}
+
 
 #' @title Update the reactive value list when CO data are read in
 #'
@@ -106,6 +373,7 @@ update_rv_data_DWP <- function(rv, input){
 #' @export
 #'
 update_rv_data_CO <- function(rv, input){
+  rv <- update_rv_data_CO_clear(rv, input)
   rv$data_CO <- readCSVs(input$file_CO$datapath)
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
@@ -113,6 +381,44 @@ update_rv_data_CO <- function(rv, input){
   rv$colNames_size0 <- updateColNames_size(rv)
 
   rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+  return(rv)
+}
+
+#' @title Update the reactive value list when CO data are cleared out
+#'
+#' @description Update the rv list when the CO data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_data_CO_clear <- function(rv, input){
+  rv$data_CO <- NULL
+  rv$colNames_CO <- NULL
+  rv$colNames_COdates <- NULL
+  rv$colNames_size <- updateColNames_size(rv)
+  rv$colNames_size0 <- updateColNames_size(rv)
+
+  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+                                rv$preds_CP)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
   return(rv)
 }
 
@@ -158,7 +464,7 @@ update_rv_sizeclassCol <- function(rv, input){
   if (rv$nsizeclasses == 0){
     rv$DWPCol <- NULL
   }
-  rv
+  return(rv)
 }
 
 #' @title Update the reactive value list when an SE observation column is 
@@ -367,6 +673,36 @@ update_rv_run_SE <- function(rv, input){
     rv$figH_SE <- setFigH(rv$modSet_SE)
     rv$figW_SE <- setFigW(rv$modSet_SE)
   }
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
   return(rv)
 }
 
@@ -492,6 +828,36 @@ update_rv_run_CP <- function(rv, input){
     rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
     rv$figW_CP <- setFigW(rv$modSet_CP)
   }
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
   return(rv)
 }
 
@@ -583,7 +949,7 @@ update_rv_useSSdata <- function(rv){
     rv$avgSI <-  mean(diff(rv$SS[-length(rv$SS)]))
     rv$SStext <- paste(rv$SS, collapse = ", ")
   }
-  rv
+  return(rv)
 }
 
 #' @title Update the SS reactive values when the average SS is chosen
@@ -615,7 +981,7 @@ update_rv_useSSinputs <- function(rv, input){
     }
     rv$SStext <- paste(rv$SS, collapse = ", ")
   }
-  rv
+  return(rv)
 }
 
 #' @title Run the g Model
@@ -670,7 +1036,7 @@ update_rv_run_g <- function(rv, input){
   }
   names(rv$gGeneric) <- rv$sizeclasses_g
   rv$sizeclass_g <- rv$sizeclasses_g[1]
-  rv
+  return(rv)
 }
 
 #' @title Update the g reactive values when the size class is chosen
@@ -688,7 +1054,7 @@ update_rv_run_g <- function(rv, input){
 update_rv_outsc_g <- function(rv, input){
   rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$outsizeclassg)
   rv$CL <- input$CL
-  rv
+  return(rv)
 }
 
 #' @title Run the M Model
@@ -794,7 +1160,7 @@ update_rv_run_M <- function(rv, input){
     rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]  
   }
 
-  rv
+  return(rv)
 }
 
 
@@ -830,7 +1196,7 @@ update_rv_split_M <- function(rv, input){
       rv$figH_M <- max(600, 300 * length(rv$Msplit))
     }
   }
-  rv
+  return(rv)
 }
 
 
@@ -848,5 +1214,5 @@ update_rv_transpose_split <- function(rv){
   if (rv$nsplit_CO + rv$nsplit_SS == 2){
     rv$Msplit <- transposeSplits(rv$Msplit)
   } 
-  rv
+  return(rv)
 }

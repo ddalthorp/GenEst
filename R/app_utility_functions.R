@@ -417,6 +417,10 @@ updateColNames_size <- function(rv){
 #' @export
 #'
 selectData <- function(data, cols){
+  if (is.null(data)){
+    return(NULL)
+  }
+
   colNames <- colnames(data)
   selectedTab <- data[ , which(colNames %in% cols)]
   selectedDF <- data.frame(selectedTab)

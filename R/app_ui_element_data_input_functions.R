@@ -19,22 +19,30 @@ dataInputPanel <- function(){
 #' @export
 #'
 dataInputSidebar <- function(){
+  okft <- c("text/csv", "text/comma-separated-values", ".csv")
+  llab <- "Load file"
+  clab <- "Clear file"
+  cstyle <- "padding:4px; font-size:80%; background-color: #FFCD72"
   sidebarPanel(width = 3,
-    fileInput("file_SE", "Searcher Efficiency Data File",
-      accept = c("text/csv", "text/comma-separated-values", ".csv")
-    ), 
-    fileInput("file_CP", "Carcass Persistence Data File",
-      accept = c("text/csv", "text/comma-separated-values", ".csv")
-    ), 
-    fileInput("file_SS", "Search Schedule Data File",
-      accept = c("text/csv", "text/comma-separated-values", ".csv")
-    ), 
-    fileInput("file_DWP", "Density Weighted Proportion Data File",
-      accept = c("text/csv", "text/comma-separated-values", ".csv")
-    ), 
-    fileInput("file_CO", "Carcass Observation Data File",
-      accept = c("text/csv", "text/comma-separated-values", ".csv")
-    )
+    h5(b("Searcher Efficiency Data")),
+    fileInput("file_SE", label = NULL, accept = okft, buttonLabel = llab), 
+    actionButton("file_SE_clear", clab, style = cstyle),
+    br(), br(),
+    h5(b("Carcass Persistence Data")),
+    fileInput("file_CP", label = NULL, accept = okft, buttonLabel = llab), 
+    actionButton("file_CP_clear", clab, style = cstyle),
+    br(), br(),
+    h5(b("Search Schedule Data")),
+    fileInput("file_SS", label = NULL, accept = okft, buttonLabel = llab), 
+    actionButton("file_SS_clear", clab, style = cstyle),
+    br(), br(),
+    h5(b("Density Weighted Proportion Data")),
+    fileInput("file_DWP", label = NULL, accept = okft, buttonLabel = llab), 
+    actionButton("file_DWP_clear", clab, style = cstyle),
+    br(), br(),
+    h5(b("Carcass Observation Data")),
+    fileInput("file_CO", label = NULL, accept = okft, buttonLabel = llab), 
+    actionButton("file_CO_clear", clab, style = cstyle), align = "center"
   )
 }
 
