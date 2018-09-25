@@ -305,6 +305,7 @@ update_rv_data_SS_clear <- function(rv, input){
   rv$SEmodToUse_g <- NULL 
   rv$figH_g <- 400 
   rv$figW_g <- 800
+  return(rv)
 }
 
 #' @title Update the reactive value list when DWP data are read in
@@ -350,6 +351,7 @@ update_rv_data_DWP_clear <- function(rv, input){
   rv$nsplit_SS <- 0 
   rv$figH_M <- 600 
   rv$figW_M <- 800
+  return(rv)
 }
 
 
@@ -456,7 +458,7 @@ update_rv_sizeclassCol <- function(rv, input){
   if (rv$nsizeclasses == 0){
     rv$DWPCol <- NULL
   }
-  rv
+  return(rv)
 }
 
 #' @title Update the reactive value list when an SE observation column is 
@@ -665,6 +667,36 @@ update_rv_run_SE <- function(rv, input){
     rv$figH_SE <- setFigH(rv$modSet_SE)
     rv$figW_SE <- setFigW(rv$modSet_SE)
   }
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
   return(rv)
 }
 
@@ -790,6 +822,36 @@ update_rv_run_CP <- function(rv, input){
     rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
     rv$figW_CP <- setFigW(rv$modSet_CP)
   }
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
   return(rv)
 }
 
@@ -881,7 +943,7 @@ update_rv_useSSdata <- function(rv){
     rv$avgSI <-  mean(diff(rv$SS[-length(rv$SS)]))
     rv$SStext <- paste(rv$SS, collapse = ", ")
   }
-  rv
+  return(rv)
 }
 
 #' @title Update the SS reactive values when the average SS is chosen
@@ -913,7 +975,7 @@ update_rv_useSSinputs <- function(rv, input){
     }
     rv$SStext <- paste(rv$SS, collapse = ", ")
   }
-  rv
+  return(rv)
 }
 
 #' @title Run the g Model
@@ -968,7 +1030,7 @@ update_rv_run_g <- function(rv, input){
   }
   names(rv$gGeneric) <- rv$sizeclasses_g
   rv$sizeclass_g <- rv$sizeclasses_g[1]
-  rv
+  return(rv)
 }
 
 #' @title Update the g reactive values when the size class is chosen
@@ -986,7 +1048,7 @@ update_rv_run_g <- function(rv, input){
 update_rv_outsc_g <- function(rv, input){
   rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$outsizeclassg)
   rv$CL <- input$CL
-  rv
+  return(rv)
 }
 
 #' @title Run the M Model
@@ -1092,7 +1154,7 @@ update_rv_run_M <- function(rv, input){
     rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]  
   }
 
-  rv
+  return(rv)
 }
 
 
@@ -1128,7 +1190,7 @@ update_rv_split_M <- function(rv, input){
       rv$figH_M <- max(600, 300 * length(rv$Msplit))
     }
   }
-  rv
+  return(rv)
 }
 
 
@@ -1146,5 +1208,5 @@ update_rv_transpose_split <- function(rv){
   if (rv$nsplit_CO + rv$nsplit_SS == 2){
     rv$Msplit <- transposeSplits(rv$Msplit)
   } 
-  rv
+  return(rv)
 }
