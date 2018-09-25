@@ -20,7 +20,7 @@ initialOutput <- function(rv, output){
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
   output$download_mock2 <- downloadData("mock2")
-  output
+  return(output)
 }
 
 #' @title Update the output list when SE data are read in
@@ -36,6 +36,7 @@ initialOutput <- function(rv, output){
 #' @export
 #'
 update_output_data_SE <- function(rv, output){
+  output <- update_output_data_SE_clear(rv, output)
   output$data_SE <- renderDataTable(datatable(rv$data_SE))
   output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
   outputOptions(output, "filename_SE", suspendWhenHidden = FALSE)
@@ -117,6 +118,7 @@ update_output_data_SE_clear <- function(rv, output){
 #' @export
 #'
 update_output_data_CP <- function(rv, output){
+  output <- update_output_data_CP_clear(rv, output)
   output$data_CP <- renderDataTable(datatable(rv$data_CP))
   output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
   outputOptions(output, "filename_CP", suspendWhenHidden = FALSE)
@@ -199,6 +201,7 @@ update_output_data_CP_clear <- function(rv, output){
 #' @export
 #'
 update_output_data_SS <- function(rv, output){
+  output <- update_output_data_SS_clear(rv, output)
   output$data_SS <- renderDataTable(datatable(rv$data_SS))
   outputOptions(output, "data_SS", suspendWhenHidden = FALSE)
   return(output)
@@ -242,7 +245,7 @@ update_output_data_SS_clear <- function(rv, output){
   outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
   outputOptions(output, "table_g", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
-
+  return(output)
 }
 
 #' @title Update the output list when DWP data are read in
@@ -258,6 +261,7 @@ update_output_data_SS_clear <- function(rv, output){
 #' @export
 #'
 update_output_data_DWP <- function(rv, output){
+  output <- update_output_data_DWP_clear(rv, output)
   output$data_DWP <- renderDataTable(datatable(rv$data_DWP))
   return(output)
 }
@@ -284,6 +288,7 @@ update_output_data_DWP_clear <- function(rv, output){
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+  return(output)
 }
 
 #' @title Update the output list when CO data are read in
@@ -299,10 +304,10 @@ update_output_data_DWP_clear <- function(rv, output){
 #' @export
 #'
 update_output_data_CO <- function(rv, output){
+  output <- update_output_data_CO_clear(rv, output)
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
   return(output)
 }
-
 
 #' @title Update the output list when CO data are cleared
 #'
@@ -325,6 +330,7 @@ update_output_data_CO_clear <- function(rv, output){
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+  return(output)
 }
 
 #' @title Update the selected CP and SE data when a size class column is 
@@ -732,7 +738,7 @@ update_output_outdls_CP <- function(rv, output, session){
 #'
 update_output_SS <- function(rv, output, session){
   output$SStext <- renderText(rv$SStext)
-  output
+  return(output)
 }
 
 #' @title Update the output when a generic g model has been run
@@ -856,7 +862,7 @@ update_output_run_M <- function(rv, output, session){
     output$dlMtab <- downloadTable("M_table.csv", summaryTab)
     output$dlMfig <- downloadMFig(rv)
   }
-  output
+  return(output)
 }
 
 #' @title Update the output when M has been split
@@ -895,7 +901,7 @@ update_output_split_M <- function(rv, output, session){
     output$dlMtab <- downloadTable("M_table.csv", summaryTab)
     output$dlMfig <- downloadMFig(rv)
   }
-  output
+  return(output)
 }
 
 
@@ -925,5 +931,5 @@ update_output_transpose_split <- function(rv, output, session){
       output$dlMfig <- downloadMFig(rv, TRUE, TRUE)
 
   }
-  output
+  return(output)
 }

@@ -11,6 +11,7 @@
 #' @export
 #'
 update_rv_data_SE <- function(rv, input){
+  rv <- update_rv_data_SE_clear(rv, input)
   rv$data_SE <- readCSVs(input$file_SE$datapath)
   rv$filename_SE <- input$file_SE$name
   rv$colNames_SE <- colnames(rv$data_SE)
@@ -129,6 +130,8 @@ update_rv_data_SE_clear <- function(rv, input){
 #' @export
 #'
 update_rv_data_CP <- function(rv, input){
+  rv <- update_rv_data_CP_clear(rv, input)
+
   rv$data_CP <- readCSVs(input$file_CP$datapath)
   rv$filename_CP <- input$file_CP$name
   rv$colNames_CP <- colnames(rv$data_CP)
@@ -260,6 +263,7 @@ update_rv_data_CP_clear <- function(rv, input){
 #' @export
 #'
 update_rv_data_SS <- function(rv, input){
+  rv <- update_rv_data_SS_clear(rv, input)
   rv$data_SS <- readCSVs(input$file_SS$datapath)
   rv$colNames_SS <- colnames(rv$data_SS)
   return(rv)
@@ -321,6 +325,7 @@ update_rv_data_SS_clear <- function(rv, input){
 #' @export
 #'
 update_rv_data_DWP <- function(rv, input){
+  rv <- update_rv_data_DWP_clear(rv, input)
   rv$data_DWP <- readCSVs(input$file_DWP$datapath)
   rv$colNames_DWP <- DWPCols(rv$data_DWP)
   return(rv)
@@ -368,6 +373,7 @@ update_rv_data_DWP_clear <- function(rv, input){
 #' @export
 #'
 update_rv_data_CO <- function(rv, input){
+  rv <- update_rv_data_CO_clear(rv, input)
   rv$data_CO <- readCSVs(input$file_CO$datapath)
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
