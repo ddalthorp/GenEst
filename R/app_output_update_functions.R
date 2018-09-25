@@ -87,7 +87,6 @@ update_output_data_SE_clear <- function(rv, output){
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
-  output$SStext <- renderText(rv$SStext)
   output$table_g <- NULL
   output$fig_g <- NULL
   output$gModDone <- NULL
@@ -167,7 +166,6 @@ update_output_data_CP_clear <- function(rv, output){
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
-  output$SStext <- renderText(rv$SStext)
   output$table_g <- NULL
   output$fig_g <- NULL
   output$gModDone <- NULL
@@ -202,7 +200,49 @@ update_output_data_CP_clear <- function(rv, output){
 #'
 update_output_data_SS <- function(rv, output){
   output$data_SS <- renderDataTable(datatable(rv$data_SS))
+  outputOptions(output, "data_SS", suspendWhenHidden = FALSE)
   return(output)
+}
+
+#' @title Update the output list when SS data are cleared
+#'
+#' @description Update the output list when the SS data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_data_SS_clear <- function(rv, output){
+  output$data_SS <- NULL
+
+  output$fig_M <- NULL
+  output$table_M <- NULL
+  output$dlMtab <- NULL
+  output$dlMfig <- NULL
+  output$MModDone <- NULL
+  outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+
+  output$table_g <- NULL
+  output$fig_g <- NULL
+  output$gModDone <- NULL
+  output$sizeclass_gyn <- NULL
+  output$sizeclass_g1 <- NULL
+  output$sizeclass_g2 <- NULL
+  output$dlgtab <- NULL
+  output$dlgfig <- NULL
+
+  outputOptions(output, "data_SS", suspendWhenHidden = FALSE)
+  outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "table_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+
 }
 
 #' @title Update the output list when DWP data are read in
@@ -244,7 +284,6 @@ update_output_data_DWP_clear <- function(rv, output){
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
-
 }
 
 #' @title Update the output list when CO data are read in
@@ -262,6 +301,30 @@ update_output_data_DWP_clear <- function(rv, output){
 update_output_data_CO <- function(rv, output){
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
   return(output)
+}
+
+
+#' @title Update the output list when CO data are cleared
+#'
+#' @description Update the output list when the CO data file input is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_data_CO_clear <- function(rv, output){
+  output$data_CO <- NULL
+  output$fig_M <- NULL
+  output$table_M <- NULL
+  output$dlMtab <- NULL
+  output$dlMfig <- NULL
+  output$MModDone <- NULL
+  outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
 }
 
 #' @title Update the selected CP and SE data when a size class column is 
