@@ -263,6 +263,7 @@ update_output_data_SS_clear <- function(rv, output){
 update_output_data_DWP <- function(rv, output){
   output <- update_output_data_DWP_clear(rv, output)
   output$data_DWP <- renderDataTable(datatable(rv$data_DWP))
+  outputOptions(output, "data_DWP", suspendWhenHidden = FALSE)
   return(output)
 }
 
@@ -286,6 +287,7 @@ update_output_data_DWP_clear <- function(rv, output){
   output$dlMtab <- NULL
   output$dlMfig <- NULL
   output$MModDone <- NULL
+  outputOptions(output, "data_DWP", suspendWhenHidden = FALSE)
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
   return(output)
@@ -306,6 +308,7 @@ update_output_data_DWP_clear <- function(rv, output){
 update_output_data_CO <- function(rv, output){
   output <- update_output_data_CO_clear(rv, output)
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
+  outputOptions(output, "data_CO", suspendWhenHidden = FALSE)
   return(output)
 }
 
@@ -329,6 +332,7 @@ update_output_data_CO_clear <- function(rv, output){
   output$dlMfig <- NULL
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "data_CO", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
   return(output)
 }
