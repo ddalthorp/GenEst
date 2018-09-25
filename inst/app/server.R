@@ -9,10 +9,20 @@ observeEvent(input$file_SE, {
   output <- update_output_data_SE(rv, output)
   update_input_data_SE(rv, session)
 })
+observeEvent(input$file_SE_clear, {
+  rv <- update_rv_data_SE_clear(rv, input)
+  output <- update_output_data_SE_clear(rv, output)
+  update_input_data_SE_clear(rv, session)
+})
 observeEvent(input$file_CP, {
   rv <- update_rv_data_CP(rv, input)
   output <- update_output_data_CP(rv, output)
   update_input_data_CP(rv, session)
+})
+observeEvent(input$file_CP_clear, {
+  rv <- update_rv_data_CP_clear(rv, input)
+  output <- update_output_data_CP_clear(rv, output)
+  update_input_data_CP_clear(rv, session)
 })
 observeEvent(input$file_SS, {
   rv <- update_rv_data_SS(rv, input)
@@ -23,6 +33,11 @@ observeEvent(input$file_DWP, {
   rv <- update_rv_data_DWP(rv, input)
   output <- update_output_data_DWP(rv, output)
   update_input_data_DWP(rv, session)
+})
+observeEvent(input$file_DWP_clear, {
+  rv <- update_rv_data_DWP_clear(rv, input)
+  output <- update_output_data_DWP_clear(rv, output)
+  update_input_data_DWP_clear(rv, session)
 })
 observeEvent(input$file_CO, {
   rv <- update_rv_data_CO(rv, input)
