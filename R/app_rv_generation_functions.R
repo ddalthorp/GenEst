@@ -50,7 +50,7 @@ createReactiveValues <- function(){
     best_CP = NULL, modTab_CP = NULL, modTabPretty_CP = NULL, 
     modTabDL_CP = NULL, figH_CP = 700, figW_CP = 800,
 
-    M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, fracNote = NULL,
+    M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, 
     sizeclassCol_M = NULL, DWPCol = NULL, dateFoundCol = NULL, 
     SEmodToUse = NULL, CPmodToUse = NULL,
     split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0, 

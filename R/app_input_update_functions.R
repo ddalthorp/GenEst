@@ -420,7 +420,6 @@ update_input_run_SE <- function(rv, session){
   updateSelectizeInput(session, "outSEk", choices = rv$modNames_SEk)
   updateSelectizeInput(session, "outsizeclassSE", choices = rv$sizeclasses)
 
-
   updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
     selected = rv$DWPCol)
   if (length(rv$colNames_DWP) == 1){

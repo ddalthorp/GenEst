@@ -675,6 +675,7 @@ update_rv_run_SE <- function(rv, input){
     rv$kFixedChoice[sci] <- input[[sprintf("kFixed_yn_%d", sci)]]
   }
   names(rv$kFixed) <- rv$sizeclasses_k
+
   names(rv$kFixedChoice) <- rv$sizeclasses_k
   rv$kFixed <- setkFix(rv$kFixedChoice, rv$kFixed)
 
@@ -697,8 +698,8 @@ update_rv_run_SE <- function(rv, input){
                   pkmSetSize(formula_p = rv$formula_p,
                     formula_k = rv$formula_k, data = rv$data_SE, 
                     obsCol = rv$obsCols_SE, sizeclassCol = rv$sizeclassCol,
-                    kFixed = rv$kFixed, kInit = 0.7, CL = rv$CL, 
-                    quiet = TRUE
+                    kFixed = rv$kFixed, kInit = 0.7, 
+                    CL = rv$CL, quiet = TRUE
                   ) 
                 ) 
   rv$mods_SE_og <- rv$mods_SE
@@ -1168,8 +1169,19 @@ update_rv_useSSinputs <- function(rv, input){
 update_rv_run_g <- function(rv, input){
   rv$CL <- input$CL
   rv$kFill_g <- NA
-  if (length(rv$obsCols_SE) == 1 & length(rv$kFixed) == 0){
-    rv$kFill_g <- input$kFill_g
+  if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
+    counter <- 1
+    for (sci in 1:rv$nsizeclasses_k){
+      if (is.na(rv$kFixed[sci])){
+        rv$kFill_g[sci] <- input[[sprintf("kFill_g_%d", counter)]]
+        counter <- counter + 1
+      }
+    }
+    names(rv$kFill_g) <- rv$sizeclasses_k
+    rv$kFill_g <- na.omit(rv$kFill_g)
+    if (length(rv$kFill_g) == 0){
+      return(rv)
+    }
   }
   rv$sizeclasses_g <- rv$sizeclasses
   rv$nsizeclasses_g <- length(rv$sizeclasses_g)
@@ -1265,9 +1277,20 @@ update_rv_outsc_g <- function(rv, input){
 update_rv_run_M <- function(rv, input){
 
   rv$M <- NULL
-  rv$kFill <- NULL
-  if (length(rv$obsCols_SE) == 1 & length(rv$kFixed) == 0){
-    rv$kFill <- input$kFill
+  rv$kFill <- NA
+  if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
+    counter <- 1
+    for (sci in 1:rv$nsizeclasses_k){
+      if (is.na(rv$kFixed[sci])){
+        rv$kFill[sci] <- input[[sprintf("kFill_%d", counter)]]
+        counter <- counter + 1
+      }
+    }
+    names(rv$kFill) <- rv$sizeclasses_k
+    rv$kFill <- na.omit(rv$kFill)
+    if (length(rv$kFill) == 0){
+      return(rv)
+    }
   }
   rv$nsizeclasses <- length(rv$sizeclasses)
   if (length(rv$nsizeclasses) == 1){
@@ -1278,14 +1301,8 @@ update_rv_run_M <- function(rv, input){
   rv$dateFoundCol <- input$dateFoundCol
   rv$nsim <- input$nsim
   rv$frac <- input$frac
-  rv$fracNote <- NULL
-  if (rv$frac < 0.01){
-    rv$frac <- 0.01
-    rv$fracNote <- "Fraction facility surveyed set to minimum value (0.01)"
-  }
-  if (rv$frac > 1){
-    rv$frac <- 1
-    rv$fracNote <- "Fraction facility surveyed set to maximum value (1.0)"
+  if (rv$frac < 0.01 | rv$frac > 1){
+    return(rv)
   }
 
   rv$SEmodToUse <- rep(NA, rv$nsizeclasses)

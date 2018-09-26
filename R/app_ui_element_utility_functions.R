@@ -58,7 +58,6 @@ modelMenuHeader <- function(n){
 #' @export
 #'
 makeMenu <- function(mods, sizeclasses, type){
-
   nsizeclasses <- length(sizeclasses)
 
   menuHeader <- modelMenuHeader(nsizeclasses)
@@ -108,18 +107,19 @@ makeMenu <- function(mods, sizeclasses, type){
   return(renderUI({HTML(fullMenu)}))
 }
 
-#' @title Make a k selection menu
+#' @title Make a kFixed selection menu
 #'
-#' @description Produce a size-based k-selection menu object based on
+#' @description Produce a size-based kFixed selection menu object based on
 #'   column selection
 #'
-#' @param sizeclasses size class names
+#' @param rv reactive values list
 #'
 #' @return rendered HTML k selection menu object
 #'
 #' @export
 #'
-makekInput <- function(sizeclasses){
+makekFixedInput <- function(rv){
+  sizeclasses <- rv$sizeclasses_k
   nsizeclasses <- length(sizeclasses)
 
   if (nsizeclasses == 1){
@@ -179,6 +179,81 @@ makekInput <- function(sizeclasses){
     }
   }
   renderUI({HTML(fullk)})
+}
+
+
+#' @title Make a kFill selection menu
+#'
+#' @description Produce a size-based kFill selection menu object based on
+#'   column selection
+#'
+#' @param rv reactive values list
+#'
+#' @param type "g" or "M"
+#'
+#' @return rendered HTML k selection menu object
+#'
+#' @export
+#'
+makekFillInput <- function(rv, type = "g"){
+  sizeclasses <- rv$sizeclasses_k
+  nsizeclasses <- length(sizeclasses)
+  addin <- switch(type, "g" = "g_", "M" = NULL)
+
+  if (nsizeclasses == 1){
+    fullk <- ""
+    mvText <- paste0("kFill_", addin, 1) 
+    speck <- paste(
+             fluidRow(
+               column(width = 10,  
+                 div(id = "kFill_yn_1", b("Assumed k:")),
+                 style(type='text/css', "#kFill_yn_1 { margin-top: 0px;}")
+               )), fluidRow(
+               column(width = 12, align = "center", 
+                 numericInput(mvText, "", value = "", 
+                   min = 0, max = 1, step = 0.001),
+                 style(type='text/css', 
+                     paste0("#", mvText, 
+                       " {margin-top: -15px;margin-bottom: 15px;}")
+               ))
+             )
+)
+ 
+      fullk <- paste(fullk, speck)
+  }
+
+  if (nsizeclasses > 1){
+    fullk <- fluidRow( 
+               column(width = 6, div(id = "kfillHead", b("Assumed k(s):")),
+                 style(type='text/css', "#kfillHead { margin-bottom: 4px;}")
+               )
+             )
+    for(sci in 1:nsizeclasses){
+      if (is.na(rv$kFixed[sci])){
+        mvText <- paste0("kFill_", addin, sci) 
+        scText <- paste0(sizeclasses[sci], ":")
+        rowName <- paste0("string_", sci)
+        speck <- fluidRow(
+                   column(width = 1, div("")),
+                   column(width = 1, 
+                     div(id = rowName, b(scText)), align = "right",
+                     style(type='text/css', 
+                       paste0("#", rowName, " { margin-bottom: 10px;}"))
+                   ),
+                   column(width = 4, align = "center", 
+                     numericInput(mvText, "", value = "", min = 0, max = 1,
+                       step = 0.001),
+                     style(type='text/css', 
+                     paste0("#", mvText, 
+                       " {margin-top: -15px;margin-bottom: 5px;}")))
+                 )
+ 
+        fullk <- paste(fullk, speck)
+      }
+    }
+    fullk <- paste(fullk, br())
+  }
+  renderUI({HTML(paste(fullk))})
 }
 
 

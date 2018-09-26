@@ -106,7 +106,7 @@ prepPredictors <- function(preds = NULL){
 #'
 setkFillNeed <- function(rv){
   textout <- "no"
-  if(length(rv$obsCols_SE) == 1 & length(rv$kFixed) == 0){
+  if(length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
     textout <- "yes"
   }
   return(renderText(textout))
@@ -132,6 +132,7 @@ setkFix <- function(kFixedChoice, kFixed){
       out[i] <- kFixed[i]
     }
   }
+  names(out) <- names(kFixed)
   out
 }
 
