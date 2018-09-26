@@ -641,22 +641,58 @@ update_rv_cols_CP_preds <- function(rv, input){
 #'
 update_rv_run_SE <- function(rv, input){
 
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
   for (sci in 1:rv$nsizeclasses_k){
     rv$kFixed[sci] <- input[[sprintf("kFixed_val_%d", sci)]]
     rv$kFixedChoice[sci] <- input[[sprintf("kFixed_yn_%d", sci)]]
   }
   names(rv$kFixed) <- rv$sizeclasses_k
   names(rv$kFixedChoice) <- rv$sizeclasses_k
+  rv$kFixed <- setkFix(rv$kFixedChoice, rv$kFixed)
+
+  if (any(is.na(rv$kFixed[rv$kFixedChoice]))){
+    return(rv)
+  }
+  if (any(rv$kFixed[rv$kFixedChoice] < 0 | rv$kFixed[rv$kFixedChoice] > 1)){
+    return(rv)
+  }
 
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$predictors_SE <- prepPredictors(rv$preds_SE)
   rv$formula_p <- formula(paste0("p~", rv$predictors_SE))
   rv$formula_k <- formula(paste0("k~", rv$predictors_SE)) 
-  rv$kFixed <- setkFix(rv$kFixedChoice, rv$kFixed)
+
   rv$CL <- input$CL
   rv$sizeclassCol <- input$sizeclassCol
-print(rv$kFixed)
   rv$mods_SE <- suppressWarnings(
                   pkmSetSize(formula_p = rv$formula_p,
                     formula_k = rv$formula_k, data = rv$data_SE, 
@@ -687,34 +723,7 @@ print(rv$kFixed)
     rv$figW_SE <- setFigW(rv$modSet_SE)
   }
 
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$SEmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
-  rv$figW_M <- 800
 
-  rv$SS <- seq(0, 364, 7) 
-  rv$SStemp <- NULL
-  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
-  rv$avgSI <- NULL
-  rv$gSearchInterval <- 7
-  rv$gSearchMax <- 364
-  rv$colNames_SS_sel <- NULL
-  rv$colNames_SS_nosel <- NULL
-
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
-  rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$SEmodToUse_g <- NULL 
-  rv$figH_g <- 400 
-  rv$figW_g <- 800
 
   return(rv)
 }
