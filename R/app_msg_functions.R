@@ -117,33 +117,37 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     }
   }  
   if (type == "M"){
-    if (length(na.omit(rv$kCheck)) != length(rv$kCheck)){
-      return(msgModFail(rv$gGeneric, "M", "NA_kFill"))
-    } else if (any(rv$kFill < 0 | rv$kFill > 1)){
-      return(msgModFail(rv$gGeneric, "M", "NA_kFill"))
-    }
-    if (!is.null(rv$fracNote)){
-      return(msgFracNote(rv$fracNote))
-    }
     if (is.null(rv$M)){
-      return(msgModFail(rv$M, "M"))
+      if (length(na.omit(rv$kCheck)) != length(rv$kCheck)){
+        return(msgModFail(rv$gGeneric, "M", "NA_kFill"))
+      } else if (any(rv$kFill < 0 | rv$kFill > 1)){
+        return(msgModFail(rv$gGeneric, "M", "NA_kFill"))
+      }
+      if (!is.null(rv$fracNote)){
+        return(msgFracNote(rv$fracNote))
+      }
+      if (is.null(rv$M)){
+        return(msgModFail(rv$M, "M"))
+      }
     }
-  }
-  if (type == "split"){
-    if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
-      return(msgSplitFail("setup"))
-    }
-    if (is.null(rv$Msplit)){
-      return(msgSplitFail("run"))
+    if (type == "split"){
+      if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
+        return(msgSplitFail("setup"))
+      }
+      if (is.null(rv$Msplit)){
+        return(msgSplitFail("run"))
+      }
     }
   }
   if (type == "g"){
-    if (length(na.omit(rv$kCheck_g)) != length(rv$kCheck_g)){
-      return(msgModFail(rv$gGeneric, "g", "NA_kFill"))
-    } else if (any(rv$kFill_g < 0 | rv$kFill_g > 1)){
-      return(msgModFail(rv$gGeneric, "g", "NA_kFill"))
-    } else if (is.null(rv$gGeneric[[1]])){    
-      return(msgModFail(rv$gGeneric, "g"))
+    if ((is.null(rv$gGeneric))){
+      if (length(na.omit(rv$kCheck_g)) != length(rv$kCheck_g)){
+        return(msgModFail(rv$gGeneric, "g", "NA_kFill"))
+      } else if (any(rv$kFill_g < 0 | rv$kFill_g > 1)){
+        return(msgModFail(rv$gGeneric, "g", "NA_kFill"))
+      } else if (is.null(rv$gGeneric[[1]])){    
+        return(msgModFail(rv$gGeneric, "g"))
+      }
     }
   }
   NULL
