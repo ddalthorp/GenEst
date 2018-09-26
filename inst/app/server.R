@@ -151,10 +151,22 @@ observeEvent(input$runMod_M, {
   update_input_run_M(rv, session)
   msgs$ModM <<- msgModDone(msgs, rv, "M")
 })
+observeEvent(input$runMod_M_clear, {
+  clearNotifications(msgs)
+  rv <- update_rv_run_M_clear(rv, input)
+  output <- update_output_run_M_clear(rv, output)
+  update_input_run_M_clear(rv, session)  
+})
 observeEvent(input$splitM, {
   rv <- update_rv_split_M(rv, input)
   output <- update_output_split_M(rv, output)
   msgs$ModM <<- msgModDone(msgs, rv, "split")
+})
+observeEvent(input$splitM_clear, {
+  clearNotifications(msgs)
+  rv <- update_rv_split_M_clear(rv, input)
+  output <- update_output_split_M_clear(rv, output)
+  update_input_split_M_clear(rv, session)
 })
 observeEvent(input$transposeSplit, {
   rv <- update_rv_transpose_split(rv)
@@ -178,6 +190,12 @@ observeEvent(input$runMod_g, {
   output <- update_output_run_g(rv, output)
   update_input_run_g(rv, session)
   msgs$Modg <<- msgModDone(msgs, rv, "g")
+})
+observeEvent(input$runMod_g_clear, {
+  clearNotifications(msgs)
+  rv <- update_rv_run_g_clear(rv, input)
+  output <- update_output_run_g_clear(rv, output)
+  update_input_run_g_clear(rv, session)  
 })
 observeEvent(input$outsizeclassg, {
   rv <- update_rv_outsc_g(rv, input)

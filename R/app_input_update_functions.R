@@ -594,6 +594,22 @@ update_input_run_g <- function(rv, session){
 }
 
 
+#' @title Update the inputs when g model is cleared
+#'
+#' @description Update the inputs when the g model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_g_clear <- function(rv, session){
+  reset("outsizeclassg")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
+
+}
+
 #' @title Update the M output dropdown selections and the Fraction Surveyed
 #'   when the model is run
 #'
@@ -608,6 +624,40 @@ update_input_run_g <- function(rv, session){
 #'
 update_input_run_M <- function(rv, session){
   updateNumericInput(session, "frac", value = rv$frac)
+  updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
+  updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
+}
+
+#' @title Update the inputs when M model is cleared
+#'
+#' @description Update the inputs when the M model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_M_clear <- function(rv, session){
+  reset("split_SS")
+  reset("split_CO")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+}
+
+#' @title Update the inputs when M split is cleared
+#'
+#' @description Update the inputs when the M split is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_split_M_clear <- function(rv, session){
+  reset("split_SS")
+  reset("split_CO")
   updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
   updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
 }
