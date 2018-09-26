@@ -1186,6 +1186,30 @@ update_rv_run_g <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when g model is cleared
+#'
+#' @description Update the rv list when the g model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_g_clear <- function(rv, input){
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
+  return(rv)
+}
+
 #' @title Update the g reactive values when the size class is chosen
 #'
 #' @description Update the g reactive values when the size class is chosen
@@ -1310,6 +1334,34 @@ update_rv_run_M <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when M model is cleared
+#'
+#' @description Update the rv list when the M model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_M_clear <- function(rv, input){
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+  return(rv)
+}
+
+
 
 #' @title Update the M reactive values when M is split
 #'
@@ -1346,6 +1398,41 @@ update_rv_split_M <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when M split is cleared
+#'
+#' @description Update the rv list when the M split is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_split_M_clear <- function(rv, input){
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+  rv$Msplit <- NULL
+
+  if (!is.null(rv$M)){
+    rv$Msplit <- tryCatch(
+                   calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
+                     split_SS = NULL, split_CO = NULL,
+                     data_SS = rv$data_SS, data_CO = rv$data_CO
+                   ), error = function(x){NULL}, warning = function(x){NULL}
+                 )
+    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)  
+    rv$colNames_SS_sel <- colnames(rv$data_SS) %in% rv$data_CO[ , rv$unitCol]
+    rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]  
+  }
+
+  return(rv)
+}
 
 #' @title Update the M reactive values when M split is transposed
 #'
