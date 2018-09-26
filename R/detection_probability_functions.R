@@ -130,7 +130,13 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
 #  } else {
 #    pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
 #  }
-  pksim <- lapply(model_SE, rpk, n = nsim, kFill = kFill, seed = seed_SE)
+  pksim <- vector("list", length = nsizeclass)
+  for(sci in 1:nsizeclass){
+    pksim[[sci]] <- rpk(model_SE[[sci]], n = nsim, kFill = kFill[sci], 
+                       seed = seed_SE)
+  }
+  names(pksim) <- names(model_SE)
+
   cpsim <- lapply(model_CP, rcp, n = nsim, seed = seed_CP, type = "ppersist")
 
   X <- dim(COdat)[1]
