@@ -4,10 +4,12 @@
 \alias{makekFillInput}
 \title{Make a kFill selection menu}
 \usage{
-makekFillInput(rv)
+makekFillInput(rv, type = "g")
 }
 \arguments{
 \item{rv}{reactive values list}
+
+\item{type}{"g" or "M"}
 }
 \value{
 rendered HTML k selection menu object
