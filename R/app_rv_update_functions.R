@@ -457,13 +457,18 @@ update_rv_sizeclassCol <- function(rv, input){
   scCol <- input$sizeclassCol
   sizeclasses <- unique(c(rv$data_SE[ , scCol], rv$data_CP[ , scCol]))
   rv$nsizeclasses <- length(sizeclasses)
+  rv$sizeclasses_k <- sizeclasses
+  rv$nsizeclasses_k <- length(sizeclasses)
 
   if (rv$nsizeclasses > 1 & is.null(rv$DWPCol)){
     rv$DWPCol <- sizeclasses[1]
   } 
   if (rv$nsizeclasses == 0){
+    rv$sizeclasses_k <- ""
+    rv$nsizeclasses_k <- 1
     rv$DWPCol <- NULL
   }
+
   return(rv)
 }
 
@@ -635,15 +640,23 @@ update_rv_cols_CP_preds <- function(rv, input){
 #' @export
 #'
 update_rv_run_SE <- function(rv, input){
+
+  for (sci in 1:rv$nsizeclasses_k){
+    rv$kFixed[sci] <- input[[sprintf("kFixed_val_%d", sci)]]
+    rv$kFixedChoice[sci] <- input[[sprintf("kFixed_yn_%d", sci)]]
+  }
+  names(rv$kFixed) <- rv$sizeclasses_k
+  names(rv$kFixedChoice) <- rv$sizeclasses_k
+
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$predictors_SE <- prepPredictors(rv$preds_SE)
   rv$formula_p <- formula(paste0("p~", rv$predictors_SE))
   rv$formula_k <- formula(paste0("k~", rv$predictors_SE)) 
-  rv$kFixedChoice <- input$kFixedChoice
-  rv$kFixed <- setkFix(input$kFixedChoice, input$kFixed)
+  rv$kFixed <- setkFix(rv$kFixedChoice, rv$kFixed)
   rv$CL <- input$CL
   rv$sizeclassCol <- input$sizeclassCol
+print(rv$kFixed)
   rv$mods_SE <- suppressWarnings(
                   pkmSetSize(formula_p = rv$formula_p,
                     formula_k = rv$formula_k, data = rv$data_SE, 

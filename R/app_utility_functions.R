@@ -125,11 +125,14 @@ setkFillNeed <- function(rv){
 #' @export
 #'
 setkFix <- function(kFixedChoice, kFixed){
-  if (kFixedChoice == 1 & is.numeric(kFixed)){
-    return(kFixed)
-  }else{
-    return(NULL)
+  nkFix <- length(kFixed)
+  out <- rep(NA, nkFix)
+  for (i in 1:nkFix){
+    if (kFixedChoice[i] == 1 & is.numeric(kFixed[i])){
+      out[i] <- kFixed[i]
+    }
   }
+  out
 }
 
 #' @title Select the date columns from a data table

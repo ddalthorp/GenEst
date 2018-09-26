@@ -108,6 +108,95 @@ makeMenu <- function(mods, sizeclasses, type){
   return(renderUI({HTML(fullMenu)}))
 }
 
+#' @title Make a k selection menu
+#'
+#' @description Produce a size-based k-selection menu object based on
+#'   column selection
+#'
+#' @param sizeclasses size class names
+#'
+#' @return rendered HTML k selection menu object
+#'
+#' @export
+#'
+makekInput <- function(sizeclasses){
+  nsizeclasses <- length(sizeclasses)
+
+  if (nsizeclasses == 1){
+    fullk <- fluidRow(
+               column(width = 4, align = "center", b("Fix k?")), 
+               column(width = 4, align = "center", b("Value"))
+             )
+    mvText <- "kFixed_val_1" 
+    mynText <- "kFixed_yn_1" 
+    speck <- fluidRow(
+               column(width = 4, align = "center", 
+                 checkboxInput("kFixed_yn_1", ""),
+                 style(type='text/css', "#kFixed_yn_1 { margin-top: 5px;}")
+               ), 
+               column(width = 4, align = "center", 
+                 numericInput("kFixed_val_1", "", value = "", 
+                   min = 0, max = 1, step = 0.001),
+                 style(type='text/css', "#kFixed_val_1 { margin-top: -15px;}")
+               )
+             )
+ 
+      fullk <- paste(fullk, speck)
+  }
+
+  if (nsizeclasses > 1){
+    fullk <- fluidRow(
+             column(width = 2, div("")),
+             column(width = 4, align = "center", b("Fix k?")), 
+             column(width = 4, align = "center", b("Value"))
+           )
+    for(sci in 1:nsizeclasses){
+
+      mvText <- paste0("kFixed_val_", sci) 
+      mynText <- paste0("kFixed_yn_", sci) 
+      scText <- paste0(sizeclasses[sci], ":")
+      rowName <- paste0("string_", sci)
+      speck <- fluidRow(
+                 column(width = 1, div("")),
+                 column(width = 1, 
+                   div(id = rowName, b(scText)), align = "right",
+                   style(type='text/css', 
+                     paste0("#", rowName, " { margin-top: 10px;}"))
+                 ),
+                 column(width = 4, align = "center", 
+                   checkboxInput(mynText, ""),
+                   style(type='text/css', 
+                     paste0("#", mynText, " { margin-top: 5px;}"))
+                 ), 
+                 column(width = 4, align = "center", 
+                   numericInput(mvText, "", value = "", min = 0, max = 1,
+                     step = 0.001),
+                   style(type='text/css', 
+                   paste0("#", mvText, " { margin-top: -15px;}")))
+               )
+ 
+      fullk <- paste(fullk, speck)
+    }
+  }
+  renderUI({HTML(fullk)})
+}
+
+
+
+#' @title HTML style function
+#'
+#' @description Generate HTML inline style for an element
+#'
+#' @param ... attributes and children of the element
+#'
+#' @return HTML style for use with a specific element
+#'
+#' @export
+#'
+style <- function(...){
+  tags$style(...)
+}
+
 #' @title HTML ol function
 #'
 #' @description Generate an ordered list HTML object. This simply pulls the

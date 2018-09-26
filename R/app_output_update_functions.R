@@ -341,6 +341,11 @@ update_output_sizeclassCol <- function(rv, output){
     selectedData <- selectData(rv$data_CP, selectedCols)
     output$selected_CP <- renderDataTable(datatable(selectedData))
   }
+
+  isolate({
+    output$kInput <- makekInput(rv$sizeclasses_k)
+  })
+
   return(output)
 }
 

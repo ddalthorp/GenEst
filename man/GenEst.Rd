@@ -204,6 +204,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{gSummaryPanel}}\cr
 \code{\link{li}}\cr
 \code{\link{loadedDataPanel}}\cr
+\code{\link{makekInput}}\cr
 \code{\link{makeMenu}}\cr
 \code{\link{matchCells}}\cr
 \code{\link{MFigurePanel}}\cr
@@ -256,6 +257,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{setkFillNeed}}\cr
 \code{\link{setkFix}}\cr
 \code{\link{small}}\cr
+\code{\link{style}}\cr
 \code{\link{ul}}\cr
 \code{\link{u}}\cr
 \code{\link{update_input_cols_CP_preds}}\cr
