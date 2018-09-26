@@ -1,8 +1,8 @@
 #' @useDynLib GenEst, .registration = TRUE
 #' @importFrom cbinom rcbinom
 #' @importFrom DT dataTableOutput renderDataTable datatable
-#' @importFrom graphics axis box hist lines mtext par plot points polygon rect
-#'   text
+#' @importFrom graphics axis box hist lines mtext par plot plot.new points
+#'   polygon rect text
 #' @importFrom grDevices dev.off devAskNewPage png rgb
 #' @importFrom gsl hyperg_2F1
 #' @importFrom gtools mixedsort
