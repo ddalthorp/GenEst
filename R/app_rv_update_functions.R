@@ -1170,16 +1170,23 @@ update_rv_run_g <- function(rv, input){
   rv$CL <- input$CL
   rv$kFill_g <- NA
   if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
+    rv$kCheck_g <- rep(NA, rv$nsizeclasses_k)
     counter <- 1
     for (sci in 1:rv$nsizeclasses_k){
       if (is.na(rv$kFixed[sci])){
         rv$kFill_g[sci] <- input[[sprintf("kFill_g_%d", counter)]]
+        rv$kCheck_g[sci] <- input[[sprintf("kFill_g_%d", counter)]]
         counter <- counter + 1
+      } else{
+        rv$kCheck_g[sci] <- rv$kFixed[sci]
       }
     }
     names(rv$kFill_g) <- rv$sizeclasses_k
     rv$kFill_g <- na.omit(rv$kFill_g)
-    if (length(rv$kFill_g) == 0){
+    if (length(na.omit(rv$kCheck_g)) != length(rv$kCheck_g)){
+      return(rv)
+    }
+    if (any(rv$kFill_g < 0 |rv$kFill_g > 1)){
       return(rv)
     }
   }
@@ -1279,19 +1286,27 @@ update_rv_run_M <- function(rv, input){
   rv$M <- NULL
   rv$kFill <- NA
   if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
+    rv$kCheck <- rep(NA, rv$nsizeclasses_k)
     counter <- 1
     for (sci in 1:rv$nsizeclasses_k){
       if (is.na(rv$kFixed[sci])){
         rv$kFill[sci] <- input[[sprintf("kFill_%d", counter)]]
+        rv$kCheck[sci] <- input[[sprintf("kFill_%d", counter)]]
         counter <- counter + 1
+      } else{
+        rv$kCheck[sci] <- rv$kFixed[sci]
       }
     }
     names(rv$kFill) <- rv$sizeclasses_k
     rv$kFill <- na.omit(rv$kFill)
-    if (length(rv$kFill) == 0){
+    if (length(na.omit(rv$kCheck)) != length(rv$kCheck)){
+      return(rv)
+    }
+    if (any(rv$kFill < 0 |rv$kFill > 1)){
       return(rv)
     }
   }
+
   rv$nsizeclasses <- length(rv$sizeclasses)
   if (length(rv$nsizeclasses) == 1){
     if (is.null(rv$sizeclasses)){
@@ -1332,6 +1347,7 @@ update_rv_run_M <- function(rv, input){
                     trimSetSize(rv$mods_CP, rv$CPmodToUse), 
                     error = function(x){NULL}
                   )
+
   if(any(c(is.null(rv$models_SE), is.null(rv$models_CP)))){
     rv$M <- NULL
     return(rv)
@@ -1355,7 +1371,7 @@ update_rv_run_M <- function(rv, input){
               dateFoundCol = rv$dateFoundCol, DWPCol = rv$DWPCol,
               sizeclassCol = rv$sizeclassCol_M, nsim = rv$nsim, 
               max_intervals = 8
-            ), error = function(x){NULL}, warning = function(x){NULL}
+            ), error = function(x){NULL}
           )
 
   if (!is.null(rv$M)){
