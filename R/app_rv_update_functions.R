@@ -706,6 +706,79 @@ update_rv_run_SE <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when SE model is cleared
+#'
+#' @description Update the rv list when the SE model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_SE_clear <- function(rv, input){
+
+  rv$predictors_SE <- NULL
+  rv$formula_p <- NULL
+  rv$formula_k <- NULL
+
+  rv$mods_SE <- NULL 
+  rv$mods_SE_og <- NULL 
+  rv$sizeclasses_SE <- NULL 
+  rv$outSEpk <- NULL 
+  rv$AICcTab_SE <- NULL 
+  rv$modOrder_SE <- NULL 
+  rv$modNames_SE <- NULL
+  rv$modNames_SEp <- NULL 
+  rv$modNames_SEk <- NULL 
+  rv$modSet_SE <- NULL
+  rv$best_SE <- NULL 
+  rv$modTab_SE <- NULL 
+  rv$modTabPretty_SE <- NULL
+  rv$modTabDL_SE <- NULL 
+  rv$figH_SE <- 800 
+  rv$figW_SE <- 800
+  rv$kFill <- NULL 
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
+  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+                                rv$preds_CP)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+
+  return(rv)
+}
+
+
 #' @title Update the SE reactive values when the size class is chosen
 #'
 #' @description Update the SE reactive values when the size class is chosen
@@ -857,6 +930,80 @@ update_rv_run_CP <- function(rv, input){
   rv$SEmodToUse_g <- NULL 
   rv$figH_g <- 400 
   rv$figW_g <- 800
+
+  return(rv)
+}
+
+#' @title Update the reactive value list when CP model is cleared
+#'
+#' @description Update the rv list when the CP model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_CP_clear <- function(rv, input){
+  rv$dists <- NULL  
+  rv$predictors_CP <- NULL
+  rv$formula_l <- NULL
+  rv$formula_s <- NULL
+
+  rv$mods_CP <- NULL 
+  rv$mods_CP_og <- NULL 
+  rv$sizeclasses_CP <- NULL 
+
+  rv$AICcTab_CP <- NULL 
+  rv$modOrder_CP <- NULL 
+  rv$modNames_CP <- NULL
+  rv$modNames_CPl <- NULL 
+  rv$modNames_CPs <- NULL 
+  rv$modNames_CPdist <- NULL 
+  rv$modSet_CP <- NULL
+  rv$best_CP <- NULL 
+
+  rv$modTab_CP <- NULL 
+  rv$modTabPretty_CP <- NULL
+  rv$modTabDL_CP <- NULL 
+  rv$figH_CP <- 800 
+  rv$figW_CP <- 800
+
+
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+
+  rv$SS <- seq(0, 364, 7) 
+  rv$SStemp <- NULL
+  rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  rv$avgSI <- NULL
+  rv$gSearchInterval <- 7
+  rv$gSearchMax <- 364
+  rv$colNames_SS_sel <- NULL
+  rv$colNames_SS_nosel <- NULL
+
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
+  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+                                rv$preds_CP)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
 
   return(rv)
 }
@@ -1039,6 +1186,30 @@ update_rv_run_g <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when g model is cleared
+#'
+#' @description Update the rv list when the g model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_g_clear <- function(rv, input){
+  rv$kFill_g <- NULL 
+  rv$sizeclasses_g <- NULL 
+  rv$nsizeclasses_g <- NULL
+  rv$gGeneric <- NULL 
+  rv$SEmodToUse_g <- NULL 
+  rv$figH_g <- 400 
+  rv$figW_g <- 800
+
+  return(rv)
+}
+
 #' @title Update the g reactive values when the size class is chosen
 #'
 #' @description Update the g reactive values when the size class is chosen
@@ -1163,6 +1334,34 @@ update_rv_run_M <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when M model is cleared
+#'
+#' @description Update the rv list when the M model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_run_M_clear <- function(rv, input){
+  rv$M <- NULL 
+  rv$Msplit <- NULL 
+  rv$unitCol <- NULL 
+  rv$sizeclassCol_M <- NULL 
+  rv$SEmodToUse <- NULL 
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+  return(rv)
+}
+
+
 
 #' @title Update the M reactive values when M is split
 #'
@@ -1199,6 +1398,41 @@ update_rv_split_M <- function(rv, input){
   return(rv)
 }
 
+#' @title Update the reactive value list when M split is cleared
+#'
+#' @description Update the rv list when the M split is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_split_M_clear <- function(rv, input){
+  rv$split_CO <- NULL 
+  rv$split_SS <- NULL 
+  rv$nsplit_CO <- 0 
+  rv$nsplit_SS <- 0 
+  rv$figH_M <- 600 
+  rv$figW_M <- 800
+  rv$Msplit <- NULL
+
+  if (!is.null(rv$M)){
+    rv$Msplit <- tryCatch(
+                   calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
+                     split_SS = NULL, split_CO = NULL,
+                     data_SS = rv$data_SS, data_CO = rv$data_CO
+                   ), error = function(x){NULL}, warning = function(x){NULL}
+                 )
+    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)  
+    rv$colNames_SS_sel <- colnames(rv$data_SS) %in% rv$data_CO[ , rv$unitCol]
+    rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]  
+  }
+
+  return(rv)
+}
 
 #' @title Update the M reactive values when M split is transposed
 #'

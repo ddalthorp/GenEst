@@ -28,9 +28,6 @@ MSidebar <- function(){
     numericInput("frac", "Fraction of Facility Surveyed:", value = 1.0, 
       min = 0.01, max = 1.0, step = 0.01
     ),
-    selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
-      multiple = TRUE, options = list(maxItems = 1)
-    ),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
       numericInput("kFill", "Assumed k:", value = 0.5, 
@@ -39,9 +36,12 @@ MSidebar <- function(){
     ),
     conditionalPanel(
       condition = "output.DWPNeed == 'yes'",
-      selectizeInput("DWPCol", "DWP Column", c("No data input yet"), 
-        multiple = TRUE, options = list(maxItems = 1)
+      selectizeInput("DWPCol", "Density Weighted Proportion:", 
+        c("No data input yet"), multiple = TRUE, options = list(maxItems = 1)
       )
+    ),
+    selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
+      multiple = TRUE, options = list(maxItems = 1)
     ),
     conditionalPanel(
       condition = 
@@ -73,12 +73,14 @@ MSidebar <- function(){
          output.sizeclasses_SE == output.sizeclasses_CP & 
          output.data_SS != null & 
          input.DWPCol != null & input.dateFoundCol != null",
-      br(), 
+      br(),
       actionButton("runMod_M", "Estimate")
     ),
     conditionalPanel(
       condition = "output.MModDone == 'OK'",
-      br(), br(), 
+      actionButton("runMod_M_clear", "Clear Estimate", 
+        style = cButtonStyle()
+      ), br(), br(), 
       HTML("<big><strong><u> Splitting Mortality: </u></strong></big>"),
       br(), br(), 
       HTML("<em>Max. two total splits, max. one schedule-based split</em>"),
@@ -89,10 +91,14 @@ MSidebar <- function(){
       selectizeInput("split_CO", "Carcass Observation (CO) Variable:", 
         " ", multiple = TRUE, options = list(maxItems = 2)
       ),
-      br(),
       actionButton("splitM", "Split Estimate"),
-      br(), br(), 
-      actionButton("transposeSplit", "Transpose Split Plot")
+      conditionalPanel(condition = "output.MSplitDone == 'OK'", 
+        actionButton("splitM_clear", "Clear Split", style = cButtonStyle()),
+        conditionalPanel(condition = "output.nMSplits > 1",
+          br(), 
+          actionButton("transposeSplit", "Transpose Split Plot")
+        )
+      )
     )
   )
 }

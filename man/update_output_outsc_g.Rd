@@ -4,14 +4,12 @@
 \alias{update_output_outsc_g}
 \title{Update the output when a generic g size class is chosen}
 \usage{
-update_output_outsc_g(rv, output, session)
+update_output_outsc_g(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{session}{session}
 }
 \value{
 an updated output list

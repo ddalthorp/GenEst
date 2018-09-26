@@ -4,14 +4,12 @@
 \alias{update_output_run_SE}
 \title{Update the output when an SE model has been run}
 \usage{
-update_output_run_SE(rv, output, session)
+update_output_run_SE(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{session}{session}
 }
 \value{
 an updated output list

@@ -52,7 +52,8 @@ CPSidebar <- function(){
       actionButton("runMod_CP", "Run Model")
     ),
     conditionalPanel(condition = "output.CPModDone == 'OK'", 
-      br(), br(), 
+      actionButton("runMod_CP_clear", "Clear Model", style = cButtonStyle()),
+      br(), br(),
       HTML("<big><strong><u> Table & Figure Selection: </u></strong></big>"),
       br(), br(),
       conditionalPanel(condition = "output.sizeclass_CPyn == 'YES'",
