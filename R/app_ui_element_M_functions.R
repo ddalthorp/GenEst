@@ -89,13 +89,19 @@ MSidebar <- function(){
       selectizeInput("split_CO", "Carcass Observation (CO) Variable:", 
         " ", multiple = TRUE, options = list(maxItems = 2)
       ),
-      actionButton("splitM", "Split Estimate"),
-      conditionalPanel(condition = "output.MSplitDone == 'OK'", 
-        actionButton("splitM_clear", "Clear Split", style = cButtonStyle()),
-        conditionalPanel(condition = "output.nMSplits > 1",
-          br(), 
-          actionButton("transposeSplit", "Transpose Split Plot")
+      fluidRow(
+        column(width = 4,  
+          actionButton("splitM", "Split Estimate")
+        ),
+        column(width = 4,
+          conditionalPanel(
+            condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
+            actionButton("transposeSplit", "Transpose Split Plot")
+          )
         )
+      ),
+      conditionalPanel(condition = "output.MSplitDone == 'OK'", 
+        actionButton("splitM_clear", "Clear Split", style = cButtonStyle())
       )
     )
   )

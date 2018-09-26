@@ -1,3 +1,25 @@
+
+#' @title Update the reactive value list when everything is cleared out
+#'
+#' @description Update the rv list when everything is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param input input list
+#'
+#' @return an updated reactive values list
+#'
+#' @export
+#'
+update_rv_clear_all <- function(rv, input){
+  rv <- update_rv_data_SE_clear(rv, input)
+  rv <- update_rv_data_CP_clear(rv, input)
+  rv <- update_rv_data_DWP_clear(rv, input)
+  rv <- update_rv_data_SS_clear(rv, input)
+  rv <- update_rv_data_CO_clear(rv, input)
+  return(rv)
+}
+
 #' @title Update the reactive value list when SE data are read in
 #'
 #' @description Update the rv list when the SE data file is input
