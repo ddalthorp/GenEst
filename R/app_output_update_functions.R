@@ -1,3 +1,24 @@
+#' @title Update the reactive value list when everything is cleared out
+#'
+#' @description Update the rv list when everything is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_clear_all <- function(rv, output){
+  output <- update_output_data_SE_clear(rv, output)
+  output <- update_output_data_CP_clear(rv, output)
+  output <- update_output_data_DWP_clear(rv, output)
+  output <- update_output_data_SS_clear(rv, output)
+  output <- update_output_data_CO_clear(rv, output)
+  return(output)
+}
+
 #' @title Update the output list upon initiation of the app
 #'
 #' @description Update the output list when the app is started
