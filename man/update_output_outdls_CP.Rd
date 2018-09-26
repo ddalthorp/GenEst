@@ -11,8 +11,6 @@ update_output_outdls_CP(rv, output)
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{session}{session}
 }
 \value{
 an updated output list

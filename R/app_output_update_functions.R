@@ -392,8 +392,6 @@ update_output_cols_CP <- function(rv, output){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
@@ -536,8 +534,6 @@ update_output_run_SE_clear <- function(rv, output){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
@@ -575,8 +571,6 @@ update_output_outsc_SE <- function(rv, output){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
@@ -606,8 +600,6 @@ update_output_outpk_SE <- function(rv, output){
 #' @param rv reactive values list
 #'
 #' @param output output list
-#'
-#' @param session session
 #'
 #' @return an updated output list
 #'
@@ -738,8 +730,6 @@ update_output_run_CP_clear <- function(rv, output){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
@@ -778,8 +768,6 @@ update_output_outsc_CP <- function(rv, output){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
@@ -814,8 +802,6 @@ update_output_outdls_CP <- function(rv, output){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
@@ -832,8 +818,6 @@ update_output_SS <- function(rv, output){
 #' @param rv reactive values list
 #'
 #' @param output output list
-#'
-#' @param session session
 #'
 #' @return an updated output list
 #'
@@ -910,8 +894,6 @@ update_output_run_g_clear <- function(rv, output){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
@@ -952,8 +934,6 @@ update_output_outsc_g <- function(rv, output){
 #' @param rv reactive values list
 #'
 #' @param output output list
-#'
-#' @param session session
 #'
 #' @return an updated output list
 #'
@@ -1005,8 +985,6 @@ update_output_run_M_clear <- function(rv, output){
 #' @param rv reactive values list
 #'
 #' @param output output list
-#'
-#' @param session session
 #'
 #' @return an updated output list
 #'
@@ -1072,8 +1050,6 @@ update_output_split_M_clear <- function(rv, output){
 #' @param rv reactive values list
 #'
 #' @param output output list
-#'
-#' @param session session
 #'
 #' @return an updated output list
 #'
