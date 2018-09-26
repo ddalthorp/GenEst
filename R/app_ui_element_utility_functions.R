@@ -160,13 +160,30 @@ li <- function(...){
 #'
 #' @param ... attributes and children of the element
 #'
-#' @return HTML ordered list
+#' @return HTML bolded
 #'
 #' @export
 #'
 b <- function(...){
   tags$b(...)
 }
+
+
+#' @title HTML u function
+#'
+#' @description Generate an HTML underlined text element. This simply pulls 
+#'   the function definition from the tag environment in htmltools
+#'
+#' @param ... attributes and children of the element
+#'
+#' @return HTML underlined
+#'
+#' @export
+#'
+u <- function(...){
+  tags$u(...)
+}
+
 
 #' @title HTML small function
 #'
@@ -233,12 +250,41 @@ GenEstInlineCSS <- function(...){
          "#file_SS_progress" = "margin-bottom: 2px",
          "#file_DWP_progress" = "margin-bottom: 2px",
          "#file_CO_progress" = "margin-bottom: 2px",
+         "#file_SE_clear" = "margin-bottom: 20px", 
+         "#file_CP_clear" = "margin-bottom: 20px",
+         "#file_SS_clear" = "margin-bottom: 20px",
+         "#file_DWP_clear" = "margin-bottom: 20px",
+         "#file_CO_clear" = "margin-bottom: 20px",
          "#nsim" = "margin-bottom: 15px",
          "#CL" = "margin-bottom: 15px",
          "#frac" = "margin-bottom: 15px",
          "#gSearchInterval" = "margin-bottom: 15px",
-         "#gSearchMax" = "margin-bottom: 15px",
-         "#kFill_g" = "margin-bottom: 15px"
+         "#kFill" = "margin-bottom: 15px",
+         "#gSearchMax" = "margin-bottom: 20px",
+         "#kFill_g" = "margin-bottom: 15px",
+         "#useSSdata" = "margin-bottom: 15px",
+         "#runMod_SE" = "margin-bottom: 10px",
+         "#runMod_CP" = "margin-bottom: 10px",
+         "#runMod_M" = "margin-bottom: 10px",
+         "#splitM" = "margin-bottom: 10px",
+         "#runMod_g" = "margin-bottom: 10px",
+         "#runMod_SE_clear" = "margin-bottom: 20px",
+         "#runMod_CP_clear" = "margin-bottom: 20px",
+         "#runMod_M_clear" = "margin-bottom: 20px",
+         "#runMod_g_clear" = "margin-bottom: 20px",
+         "#split_CO" = "margin-bottom: 15px"
     ), ...
   )
+}
+
+#' @title Define the style for the clear buttons
+#'
+#' @description Define the style tag for clear buttons used throughout GenEst.
+#'
+#' @return character element defining the style
+#'
+#' @export
+#'
+cButtonStyle <- function(){
+  "padding:4px; font-size:80%; background-color: #FFCD72"
 }

@@ -4,14 +4,12 @@
 \alias{update_output_run_CP}
 \title{Update the output when an CP model has been run}
 \usage{
-update_output_run_CP(rv, output, session)
+update_output_run_CP(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{session}{session}
 }
 \value{
 an updated output list

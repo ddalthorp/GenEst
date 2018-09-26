@@ -71,9 +71,6 @@ update_output_data_SE_clear <- function(rv, output){
   output$sizeclass_SE2 <- NULL
   output$sizeclass_SE3 <- NULL
   output$sizeclass_SEyn <- NULL
-  output$dlSEest <- NULL
-  output$dlSEAICc <- NULL
-  output$dlSEfig <- NULL
   outputOptions(output, "AICcTab_SE", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_SE", suspendWhenHidden = FALSE)
   outputOptions(output, "modTab_SE", suspendWhenHidden = FALSE)
@@ -83,8 +80,6 @@ update_output_data_SE_clear <- function(rv, output){
 
   output$fig_M <- NULL
   output$table_M <- NULL
-  output$dlMtab <- NULL
-  output$dlMfig <- NULL
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
@@ -94,8 +89,6 @@ update_output_data_SE_clear <- function(rv, output){
   output$sizeclass_gyn <- NULL
   output$sizeclass_g1 <- NULL
   output$sizeclass_g2 <- NULL
-  output$dlgtab <- NULL
-  output$dlgfig <- NULL
 
   outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
@@ -152,9 +145,6 @@ update_output_data_CP_clear <- function(rv, output){
   output$sizeclass_CP2 <- NULL
   output$sizeclass_CP3 <- NULL
   output$sizeclass_CPyn <- NULL
-  output$dlCPest <- NULL
-  output$dlCPAICc <- NULL
-  output$dlCPfig <- NULL
   outputOptions(output, "AICcTab_CP", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_CP", suspendWhenHidden = FALSE)
   outputOptions(output, "modTab_CP", suspendWhenHidden = FALSE)
@@ -163,8 +153,6 @@ update_output_data_CP_clear <- function(rv, output){
 
   output$fig_M <- NULL
   output$table_M <- NULL
-  output$dlMtab <- NULL
-  output$dlMfig <- NULL
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
@@ -174,8 +162,6 @@ update_output_data_CP_clear <- function(rv, output){
   output$sizeclass_gyn <- NULL
   output$sizeclass_g1 <- NULL
   output$sizeclass_g2 <- NULL
-  output$dlgtab <- NULL
-  output$dlgfig <- NULL
 
   outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
@@ -224,8 +210,6 @@ update_output_data_SS_clear <- function(rv, output){
 
   output$fig_M <- NULL
   output$table_M <- NULL
-  output$dlMtab <- NULL
-  output$dlMfig <- NULL
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
@@ -236,8 +220,6 @@ update_output_data_SS_clear <- function(rv, output){
   output$sizeclass_gyn <- NULL
   output$sizeclass_g1 <- NULL
   output$sizeclass_g2 <- NULL
-  output$dlgtab <- NULL
-  output$dlgfig <- NULL
 
   outputOptions(output, "data_SS", suspendWhenHidden = FALSE)
   outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
@@ -263,6 +245,7 @@ update_output_data_SS_clear <- function(rv, output){
 update_output_data_DWP <- function(rv, output){
   output <- update_output_data_DWP_clear(rv, output)
   output$data_DWP <- renderDataTable(datatable(rv$data_DWP))
+  outputOptions(output, "data_DWP", suspendWhenHidden = FALSE)
   return(output)
 }
 
@@ -283,9 +266,8 @@ update_output_data_DWP_clear <- function(rv, output){
   output$data_DWP <- NULL
   output$fig_M <- NULL
   output$table_M <- NULL
-  output$dlMtab <- NULL
-  output$dlMfig <- NULL
   output$MModDone <- NULL
+  outputOptions(output, "data_DWP", suspendWhenHidden = FALSE)
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
   return(output)
@@ -306,6 +288,7 @@ update_output_data_DWP_clear <- function(rv, output){
 update_output_data_CO <- function(rv, output){
   output <- update_output_data_CO_clear(rv, output)
   output$data_CO <- renderDataTable(datatable(rv$data_CO))
+  outputOptions(output, "data_CO", suspendWhenHidden = FALSE)
   return(output)
 }
 
@@ -325,10 +308,9 @@ update_output_data_CO_clear <- function(rv, output){
   output$data_CO <- NULL
   output$fig_M <- NULL
   output$table_M <- NULL
-  output$dlMtab <- NULL
-  output$dlMfig <- NULL
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "data_CO", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
   return(output)
 }
@@ -410,13 +392,11 @@ update_output_cols_CP <- function(rv, output){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_run_SE <- function(rv, output, session){
+update_output_run_SE <- function(rv, output){
 
   if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
       !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
@@ -469,8 +449,6 @@ update_output_run_SE <- function(rv, output, session){
 
   output$fig_M <- NULL
   output$table_M <- NULL
-  output$dlMtab <- NULL
-  output$dlMfig <- NULL
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
@@ -480,8 +458,6 @@ update_output_run_SE <- function(rv, output, session){
   output$sizeclass_gyn <- NULL
   output$sizeclass_g1 <- NULL
   output$sizeclass_g2 <- NULL
-  output$dlgtab <- NULL
-  output$dlgfig <- NULL
 
   outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
@@ -489,6 +465,63 @@ update_output_run_SE <- function(rv, output, session){
   outputOptions(output, "table_g", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
 
+
+  return(output)
+}
+
+#' @title Update the output list when SE model is cleared
+#'
+#' @description Update the output list when the SE model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_run_SE_clear <- function(rv, output){
+  output$SEModDone <- NULL
+  output$kFillNeed <- setkFillNeed(rv)
+  output$DWPNeed <- NULL
+  output$AICcTab_SE <- NULL
+  output$modTab_SE <- NULL
+  output$fig_SE <- NULL
+  output$sizeclasses_SE <- NULL
+  output$modelMenu_SE <- NULL
+  output$sizeclass_SE1 <- NULL
+  output$sizeclass_SE2 <- NULL
+  output$sizeclass_SE3 <- NULL
+  output$sizeclass_SEyn <- NULL
+  output$dlSEest <- NULL
+  output$dlSEAICc <- NULL
+  output$dlSEfig <- NULL
+  outputOptions(output, "AICcTab_SE", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_SE", suspendWhenHidden = FALSE)
+  outputOptions(output, "modTab_SE", suspendWhenHidden = FALSE)
+  outputOptions(output, "SEModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclasses_SE", suspendWhenHidden = FALSE)
+
+  output$fig_M <- NULL
+  output$table_M <- NULL
+
+  output$MModDone <- NULL
+  outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+
+  output$table_g <- NULL
+  output$fig_g <- NULL
+  output$gModDone <- NULL
+  output$sizeclass_gyn <- NULL
+  output$sizeclass_g1 <- NULL
+  output$sizeclass_g2 <- NULL
+
+
+  outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "table_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
 
   return(output)
 }
@@ -501,13 +534,11 @@ update_output_run_SE <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_outsc_SE <- function(rv, output, session){
+update_output_outsc_SE <- function(rv, output){
   if (length(rv$mods_SE) > 0){
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
     output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
@@ -540,13 +571,11 @@ update_output_outsc_SE <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_outpk_SE <- function(rv, output, session){
+update_output_outpk_SE <- function(rv, output){
   if (length(rv$mods_SE) > 0){
     output$fig_SE <- renderPlot({ 
                        tryCatch(
@@ -572,13 +601,11 @@ update_output_outpk_SE <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_run_CP <- function(rv, output, session){
+update_output_run_CP <- function(rv, output){
 
   if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
 
@@ -623,8 +650,6 @@ update_output_run_CP <- function(rv, output, session){
 
   output$fig_M <- NULL
   output$table_M <- NULL
-  output$dlMtab <- NULL
-  output$dlMfig <- NULL
   output$MModDone <- NULL
   outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
@@ -634,14 +659,65 @@ update_output_run_CP <- function(rv, output, session){
   output$sizeclass_gyn <- NULL
   output$sizeclass_g1 <- NULL
   output$sizeclass_g2 <- NULL
-  output$dlgtab <- NULL
-  output$dlgfig <- NULL
 
   outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
   outputOptions(output, "table_g", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+
+  return(output)
+}
+
+#' @title Update the output list when CP model is cleared
+#'
+#' @description Update the output list when the CP model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_run_CP_clear <- function(rv, output){
+  output$CPModDone <- NULL
+  output$AICcTab_CP <- NULL
+  output$modTab_CP <- NULL
+  output$fig_CP <- NULL
+  output$sizeclasses_CP <- NULL
+  output$modelMenu_CP <- NULL
+  output$sizeclass_CP1 <- NULL
+  output$sizeclass_CP2 <- NULL
+  output$sizeclass_CP3 <- NULL
+  output$sizeclass_CPyn <- NULL
+  output$dlCPest <- NULL
+  output$dlCPAICc <- NULL
+  output$dlCPfig <- NULL
+  outputOptions(output, "AICcTab_CP", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_CP", suspendWhenHidden = FALSE)
+  outputOptions(output, "modTab_CP", suspendWhenHidden = FALSE)
+  outputOptions(output, "CPModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclasses_CP", suspendWhenHidden = FALSE)
+
+  output$fig_M <- NULL
+  output$table_M <- NULL
+  output$MModDone <- NULL
+  outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+
+  output$table_g <- NULL
+  output$fig_g <- NULL
+  output$gModDone <- NULL
+  output$sizeclass_gyn <- NULL
+  output$sizeclass_g1 <- NULL
+  output$sizeclass_g2 <- NULL
+
+  outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "table_g", suspendWhenHidden = FALSE)
 
   return(output)
 }
@@ -654,13 +730,11 @@ update_output_run_CP <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_outsc_CP <- function(rv, output, session){
+update_output_outsc_CP <- function(rv, output){
   if (length(rv$mods_CP) > 0){
     output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
     output$fig_CP <- renderPlot({ 
@@ -694,13 +768,11 @@ update_output_outsc_CP <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_outdls_CP <- function(rv, output, session){
+update_output_outdls_CP <- function(rv, output){
   if (length(rv$mods_CP) > 0){
     output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
     output$fig_CP <- renderPlot({ 
@@ -730,13 +802,11 @@ update_output_outdls_CP <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_SS <- function(rv, output, session){
+update_output_SS <- function(rv, output){
   output$SStext <- renderText(rv$SStext)
   return(output)
 }
@@ -749,13 +819,11 @@ update_output_SS <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_run_g <- function(rv, output, session){
+update_output_run_g <- function(rv, output){
 
   if (!is.null(rv$gGeneric[[1]])){
     summaryTab <- summary(rv$gGeneric[[1]], CL = rv$CL)
@@ -791,6 +859,33 @@ update_output_run_g <- function(rv, output, session){
   return(output)
 }
 
+
+#' @title Update the output list when g model is cleared
+#'
+#' @description Update the output list when the g model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_run_g_clear <- function(rv, output){
+  output$table_g <- NULL
+  output$fig_g <- NULL
+  output$gModDone <- NULL
+  output$sizeclass_gyn <- NULL
+  output$sizeclass_g1 <- NULL
+  output$sizeclass_g2 <- NULL
+  outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
+  outputOptions(output, "table_g", suspendWhenHidden = FALSE)
+  return(output)
+}
+
 #' @title Update the output when a generic g size class is chosen
 #'
 #' @description Update the output table when a generic g size class is chosen
@@ -799,13 +894,11 @@ update_output_run_g <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_outsc_g <- function(rv, output, session){
+update_output_outsc_g <- function(rv, output){
 
   if (class(rv$gGeneric[[rv$sizeclass_g]])[1] == "gGeneric"){
     summaryTab <- summary(rv$gGeneric[[rv$sizeclass_g]], CL = rv$CL)
@@ -842,13 +935,11 @@ update_output_outsc_g <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_run_M <- function(rv, output, session){
+update_output_run_M <- function(rv, output){
 
   if (!is.null(rv$Msplit)){
     output$MModDone <- renderText("OK")
@@ -865,6 +956,28 @@ update_output_run_M <- function(rv, output, session){
   return(output)
 }
 
+#' @title Update the output list when M model is cleared
+#'
+#' @description Update the output list when the M model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_run_M_clear <- function(rv, output){
+  output$fig_M <- NULL
+  output$table_M <- NULL
+  output$MModDone <- NULL
+  outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
+  outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+
+  return(output)
+}
+
 #' @title Update the output when M has been split
 #'
 #' @description Update the output table when M has been split
@@ -873,13 +986,11 @@ update_output_run_M <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_split_M <- function(rv, output, session){
+update_output_split_M <- function(rv, output){
 
   if (is.null(rv$Msplit)){
     output$fig_M <- renderPlot({
@@ -901,9 +1012,36 @@ update_output_split_M <- function(rv, output, session){
     output$dlMtab <- downloadTable("M_table.csv", summaryTab)
     output$dlMfig <- downloadMFig(rv)
   }
+  output$MSplitDone <- renderText("OK")
+  outputOptions(output, "MSplitDone", suspendWhenHidden = FALSE)
+  output$nMSplits <- renderText(as.character(rv$nsplit_CO + rv$nsplit_SS))
+  outputOptions(output, "nMSplits", suspendWhenHidden = FALSE)
   return(output)
 }
 
+
+
+#' @title Update the output list when M split is cleared
+#'
+#' @description Update the output list when the M split is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param output output list
+#'
+#' @return an updated output list
+#'
+#' @export
+#'
+update_output_split_M_clear <- function(rv, output){
+
+  output <- update_output_run_M(rv, output)
+  output$MSplitDone <- NULL
+  outputOptions(output, "MSplitDone", suspendWhenHidden = FALSE)
+  output$nMSplits <- renderText(as.character(0))
+  outputOptions(output, "nMSplits", suspendWhenHidden = FALSE)
+  return(output)
+}
 
 #' @title Update the output when the M split is transposed
 #'
@@ -913,13 +1051,11 @@ update_output_split_M <- function(rv, output, session){
 #'
 #' @param output output list
 #'
-#' @param session session
-#'
 #' @return an updated output list
 #'
 #' @export
 #'
-update_output_transpose_split <- function(rv, output, session){
+update_output_transpose_split <- function(rv, output){
 
   if (!is.null(rv$Msplit)){
       output$fig_M <- renderPlot({

@@ -27,36 +27,25 @@ gSidebar <- function(){
   sidebarPanel(width = 3, 
     HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
     br(), br(),
-    HTML("<strong><u> Search Schedule Data: </u></strong>"),
-    conditionalPanel(    
-      condition = "output.data_SS == null",
-      br(), 
-      HTML("<center><em>Input search schedule data file</center></em>")
-    ),
-    conditionalPanel(    
-      condition = "output.data_SS != null",
-      br(), 
-      actionButton("useSSdata", "Create Average Schedule")
-    ),
-    br(), br(),
-    HTML("<strong><u> Generic Search Schedule Inputs: </u></strong>"),
-    br(), br(),
-    numericInput("gSearchInterval", "Search Interval (days):", 
-      value = 7, min = 1, max = 400, step = 1),
-    numericInput("gSearchMax", "Final Search (day):",
-      value = 364, min = 1, max = 1000, step = 1),
-    actionButton("useSSinputs", "Create Custom Schedule"),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
-      br(), br(),
       numericInput("kFill_g", "Assumed k:", value = 0.5, 
         min = 0, max = 1, step = 0.001
       )
     ),
+    conditionalPanel(    
+      condition = "output.data_SS != null",
+      actionButton("useSSdata", "Create Average Schedule from SS Data")
+    ),
+    numericInput("gSearchInterval", "Generic Search Interval (days):", 
+      value = 7, min = 1, max = 400, step = 1),
+    numericInput("gSearchMax", "Generic Final Search (day):",
+      value = 364, min = 1, max = 1000, step = 1),
+    actionButton("useSSinputs", "Create Custom Generic Schedule"),
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
-         output.sizeclassesSE != output.sizeclassesCP",
+         output.sizeclasses_SE != output.sizeclasses_CP",
       br(), 
       HTML("<center><em>Select SE and CP models fit to matching size
         classes to run model</center></em>"
@@ -65,9 +54,12 @@ gSidebar <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-         output.sizeclassesSE == output.sizeclassesCP",
+         output.sizeclasses_SE == output.sizeclasses_CP",
       br(), br(),
       actionButton("runMod_g", "Estimate")
+    ),
+    conditionalPanel(condition = "output.gModDone == 'OK'",
+      actionButton("runMod_g_clear", "Clear Estimate", style = cButtonStyle())
     ),
     conditionalPanel(
       condition = "output.gModDone == 'OK' & output.sizeclass_gyn == 'YES'", 

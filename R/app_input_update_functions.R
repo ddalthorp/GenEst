@@ -437,6 +437,39 @@ update_input_run_SE <- function(rv, session){
   updateSelectizeInput(session, "outsizeclassg", choices = "")
 }
 
+
+#' @title Update the inputs when SE model is cleared
+#'
+#' @description Update the inputs when the SE model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_SE_clear <- function(rv, session){
+  reset("outSEp")
+  reset("outSEk")
+  reset("outsizeclassSE")
+  reset("kFill")
+  reset("DWPCol")
+  reset("split_SS")
+  reset("split_CO")
+  reset("modelChoices_SE1")
+  reset("outsizeclassg")
+
+  updateSelectizeInput(session, "modelChoices_SE1", choices = "")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outSEp", choices = "")
+  updateSelectizeInput(session, "outSEk", choices = "")
+  updateSelectizeInput(session, "outsizeclassSE", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
+
+
+}
+
 #' @title Update the SE output dropdown selections when the size class is 
 #'   chosen
 #'
@@ -476,6 +509,36 @@ update_input_run_CP <- function(rv, session){
   reset("gSearchMax")
   updateSelectizeInput(session, "split_SS", choices = "")
   updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
+}
+
+#' @title Update the inputs when CP model is cleared
+#'
+#' @description Update the inputs when the CP model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_CP_clear <- function(rv, session){
+  reset("outCPl")
+  reset("outCPs")
+  reset("outCPdist")
+  reset("outsizeclassCP")
+  reset("split_SS")
+  reset("split_CO")
+  reset("modelChoices_CP1")
+  reset("outsizeclassg")
+
+  updateSelectizeInput(session, "modelChoices_CP1", choices = "")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+  updateSelectizeInput(session, "outCPl", choices = "")
+  updateSelectizeInput(session, "outCPs", choices = "")
+  updateSelectizeInput(session, "outCPdist", choices = "")
+  updateSelectizeInput(session, "outsizeclassCP", choices = "")
   updateSelectizeInput(session, "outsizeclassg", choices = "")
 }
 
@@ -531,6 +594,22 @@ update_input_run_g <- function(rv, session){
 }
 
 
+#' @title Update the inputs when g model is cleared
+#'
+#' @description Update the inputs when the g model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_g_clear <- function(rv, session){
+  reset("outsizeclassg")
+  updateSelectizeInput(session, "outsizeclassg", choices = "")
+
+}
+
 #' @title Update the M output dropdown selections and the Fraction Surveyed
 #'   when the model is run
 #'
@@ -545,6 +624,40 @@ update_input_run_g <- function(rv, session){
 #'
 update_input_run_M <- function(rv, session){
   updateNumericInput(session, "frac", value = rv$frac)
+  updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
+  updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
+}
+
+#' @title Update the inputs when M model is cleared
+#'
+#' @description Update the inputs when the M model is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_run_M_clear <- function(rv, session){
+  reset("split_SS")
+  reset("split_CO")
+  updateSelectizeInput(session, "split_SS", choices = "")
+  updateSelectizeInput(session, "split_CO", choices = "")
+}
+
+#' @title Update the inputs when M split is cleared
+#'
+#' @description Update the inputs when the M split is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_split_M_clear <- function(rv, session){
+  reset("split_SS")
+  reset("split_CO")
   updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
   updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
 }

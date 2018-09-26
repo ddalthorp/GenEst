@@ -4,14 +4,12 @@
 \alias{update_output_split_M}
 \title{Update the output when M has been split}
 \usage{
-update_output_split_M(rv, output, session)
+update_output_split_M(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{session}{session}
 }
 \value{
 an updated output list

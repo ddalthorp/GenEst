@@ -54,7 +54,8 @@ gettingStartedMainPanel <- function(){
       p("Further details can be found in the ",
         a("User Guide", href = ftpLink("UserGuide"), target = "_blank"),
         " and in a technical manual that describes the",
-        a("statistical models", href = ftpLink("Models"), target = "_blank") 
+        a("statistical models", href = ftpLink("Models"), target = "_blank"),
+        "." 
       ), 
       br(),
       p("Example data sets are available under the ", code("Downloads"), 

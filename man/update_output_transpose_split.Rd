@@ -4,14 +4,12 @@
 \alias{update_output_transpose_split}
 \title{Update the output when the M split is transposed}
 \usage{
-update_output_transpose_split(rv, output, session)
+update_output_transpose_split(rv, output)
 }
 \arguments{
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{session}{session}
 }
 \value{
 an updated output list

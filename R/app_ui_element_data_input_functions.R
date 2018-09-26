@@ -22,27 +22,34 @@ dataInputSidebar <- function(){
   okft <- c("text/csv", "text/comma-separated-values", ".csv")
   llab <- "Load file"
   clab <- "Clear file"
-  cstyle <- "padding:4px; font-size:80%; background-color: #FFCD72"
-  sidebarPanel(width = 3,
+  cstyle <- cButtonStyle()
+  sidebarPanel(width = 3, 
+    h4(b(u("Select Data Files:")), style = "margin-bottom: 20px"),
     h5(b("Searcher Efficiency Data")),
     fileInput("file_SE", label = NULL, accept = okft, buttonLabel = llab), 
-    actionButton("file_SE_clear", clab, style = cstyle),
-    br(), br(),
+    conditionalPanel(condition = "output.filename_SE != null",
+      actionButton("file_SE_clear", clab, style = cstyle) 
+    ), 
     h5(b("Carcass Persistence Data")),
     fileInput("file_CP", label = NULL, accept = okft, buttonLabel = llab), 
-    actionButton("file_CP_clear", clab, style = cstyle),
-    br(), br(),
+    conditionalPanel(condition = "output.filename_CP != null",
+      actionButton("file_CP_clear", clab, style = cstyle) 
+    ), 
     h5(b("Search Schedule Data")),
     fileInput("file_SS", label = NULL, accept = okft, buttonLabel = llab), 
-    actionButton("file_SS_clear", clab, style = cstyle),
-    br(), br(),
+    conditionalPanel(condition = "output.data_SS != null",
+      actionButton("file_SS_clear", clab, style = cstyle) 
+    ), 
     h5(b("Density Weighted Proportion Data")),
     fileInput("file_DWP", label = NULL, accept = okft, buttonLabel = llab), 
-    actionButton("file_DWP_clear", clab, style = cstyle),
-    br(), br(),
+    conditionalPanel(condition = "output.data_DWP != null",
+      actionButton("file_DWP_clear", clab, style = cstyle) 
+    ), 
     h5(b("Carcass Observation Data")),
     fileInput("file_CO", label = NULL, accept = okft, buttonLabel = llab), 
-    actionButton("file_CO_clear", clab, style = cstyle), align = "center"
+    conditionalPanel(condition = "output.data_CO != null",
+      actionButton("file_CO_clear", clab, style = cstyle)
+    )
   )
 }
 
