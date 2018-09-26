@@ -12,13 +12,14 @@
 #'   rowCumsums rowDiffs rowQuantiles rowCounts
 #' @importFrom mvtnorm rmvnorm
 #' @importFrom Rcpp sourceCpp
-#' @importFrom shiny actionButton checkboxGroupInput column conditionalPanel 
-#'   downloadButton downloadHandler fileInput fluidRow h3 h4 h5 htmlOutput 
-#'   isolate mainPanel navbarPage numericInput observeEvent outputOptions p 
-#'   plotOutput radioButtons reactiveValues removeNotification renderPlot
-#'   renderText renderUI runApp selectizeInput shinyApp shinyAppDir 
-#'   showNotification sidebarLayout sidebarPanel tabPanel tabsetPanel 
-#'   textOutput updateNumericInput updateSelectizeInput updateTabsetPanel 
+#' @importFrom shiny actionButton checkboxInput checkboxGroupInput column 
+#'   conditionalPanel downloadButton downloadHandler fileInput fluidRow 
+#'   h3 h4 h5 htmlOutput isolate mainPanel navbarPage numericInput 
+#'   observeEvent outputOptions p plotOutput radioButtons reactiveValues 
+#'   removeNotification renderPlot renderText renderUI runApp 
+#'   selectizeInput shinyApp shinyAppDir showNotification sidebarLayout
+#'   sidebarPanel tabPanel tabsetPanel textOutput updateNumericInput
+#'   updateSelectizeInput updateTabsetPanel 
 #' @importFrom shinyjs inlineCSS reset useShinyjs 
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
@@ -220,6 +221,7 @@
 #' \code{\link{gSummaryPanel}}\cr
 #' \code{\link{li}}\cr
 #' \code{\link{loadedDataPanel}}\cr
+#' \code{\link{makekInput}}\cr
 #' \code{\link{makeMenu}}\cr
 #' \code{\link{matchCells}}\cr
 #' \code{\link{MFigurePanel}}\cr
@@ -272,6 +274,7 @@
 #' \code{\link{setkFillNeed}}\cr
 #' \code{\link{setkFix}}\cr
 #' \code{\link{small}}\cr
+#' \code{\link{style}}\cr
 #' \code{\link{ul}}\cr
 #' \code{\link{u}}\cr
 #' \code{\link{update_input_cols_CP_preds}}\cr
