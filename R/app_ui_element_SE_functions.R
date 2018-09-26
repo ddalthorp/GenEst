@@ -32,7 +32,7 @@ SESidebar <- function(){
     selectizeInput("preds_SE", "Predictor Variables:", 
       c("No data input yet"), multiple = TRUE
     ),
-    htmlOutput("kInput"),
+    htmlOutput("kFixedInput"),
     conditionalPanel(condition = "input.obsCols_SE == null",
       br(), 
       HTML("<center><em>Select observation columns to run 

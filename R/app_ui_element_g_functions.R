@@ -29,9 +29,7 @@ gSidebar <- function(){
     br(), br(),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
-      numericInput("kFill_g", "Assumed k:", value = 0.5, 
-        min = 0, max = 1, step = 0.001
-      )
+      htmlOutput("kFillInput_g")
     ),
     conditionalPanel(    
       condition = "output.data_SS != null",

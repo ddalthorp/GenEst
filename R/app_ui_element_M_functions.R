@@ -25,14 +25,12 @@ MSidebar <- function(){
   sidebarPanel(width = 3, 
     HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
     br(), br(),
-    numericInput("frac", "Fraction of Facility Surveyed:", value = 1.0, 
-      min = 0.01, max = 1.0, step = 0.01
-    ),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
-      numericInput("kFill", "Assumed k:", value = 0.5, 
-        min = 0, max = 1, step = 0.001
-      )
+      htmlOutput("kFillInput")
+    ),
+    numericInput("frac", "Fraction of Facility Surveyed:", value = 1.0, 
+      min = 0.01, max = 1.0, step = 0.01
     ),
     conditionalPanel(
       condition = "output.DWPNeed == 'yes'",

@@ -221,7 +221,8 @@
 #' \code{\link{gSummaryPanel}}\cr
 #' \code{\link{li}}\cr
 #' \code{\link{loadedDataPanel}}\cr
-#' \code{\link{makekInput}}\cr
+#' \code{\link{makekFixedInput}}\cr
+#' \code{\link{makekFillInput}}\cr
 #' \code{\link{makeMenu}}\cr
 #' \code{\link{matchCells}}\cr
 #' \code{\link{MFigurePanel}}\cr
