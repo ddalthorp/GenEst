@@ -95,7 +95,13 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     clearNotifications(msgs)
   }
   if (type == "SE"){
-    if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
+    if (any(is.na(rv$kFixed[rv$kFixedChoice]))){
+      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
+    } else if (any(rv$kFixed[rv$kFixedChoice] > 1)){
+      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
+    } else if (any(rv$kFixed[rv$kFixedChoice] < 0)){
+      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
+    } else if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
       return(msgModFail(rv$mods_SE_og, "SE"))
     } else if(any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
       return(msgModFail(rv$mods_SE_og, "SE", "size_k"))
@@ -255,7 +261,7 @@ msgModWarning <- function(mods, type = "SE", rv = NULL){
 #'
 msgModSENobs <- function(rv){
   if (length(rv$obsCols_SE) == 1){
-    if(length(rv$formula_k) > 0 & length(rv$kFixed) == 0){
+    if(length(rv$formula_k) > 0 & any(is.na(rv$kFixed))){
       return("Only one observation column, k not estimated.")
     }
   }
@@ -287,6 +293,8 @@ msgModFail <- function(mods, type = "SE", special = NULL){
              )
     } else if (special == "size_k"){
       msg <- "Some size classes had no successful models. Consider a fixed k."
+    } else if (special == "NA_kFixed"){
+      msg <- "Invalid value for fixed k input(s)."
     }
   }
   if (type == "g"){
