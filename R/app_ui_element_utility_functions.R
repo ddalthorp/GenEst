@@ -445,10 +445,18 @@ GenEstInlineCSS <- function(...){
 #'
 #' @description Define the style tag for clear buttons used throughout GenEst.
 #'
+#' @param type "single" or "all"
+#'
 #' @return character element defining the style
 #'
 #' @export
 #'
-cButtonStyle <- function(){
-  "padding:4px; font-size:80%; background-color: #FFCD72"
+cButtonStyle <- function(type = "single"){
+  if (type == "single"){
+    return("padding:4px; font-size:80%; background-color: #FFCD72")
+  } else if (type == "all"){
+    return("padding:6px; font-size:90%; background-color: #FF8484;
+     align: center; margin-top: 20px")
+
+  }
 }

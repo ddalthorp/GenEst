@@ -443,7 +443,8 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     }
     AIC <- 2 * nparam - 2 * llik
     AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
-    AICc <- AIC + AICcOffset
+    AICc <- round(AIC + AICcOffset, 2)
+    AIC <- round(AIC, 2)
 
     betahat_l <- betahat[1:nbeta_l]
     names(betahat_l) <- colnames(dataMM_l)

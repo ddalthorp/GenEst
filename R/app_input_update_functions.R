@@ -1,3 +1,21 @@
+#' @title Update the inputs when everything is cleared out
+#'
+#' @description Update the inputs when everything is cleared
+#'
+#' @param rv reactive values list
+#'
+#' @param session session
+#'
+#' @export
+#'
+update_input_clear_all <- function(rv, session){
+  update_input_data_SE_clear(rv, session)
+  update_input_data_CP_clear(rv, session)
+  update_input_data_DWP_clear(rv, session)
+  update_input_data_SS_clear(rv, session)
+  update_input_data_CO_clear(rv, session)
+}
+
 #' @title Update the inputs when SE data are read in
 #'
 #' @description Update the inputs when the SE data file is input
