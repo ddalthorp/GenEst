@@ -261,6 +261,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{style}}\cr
 \code{\link{ul}}\cr
 \code{\link{u}}\cr
+\code{\link{update_input_clear_all}}\cr
 \code{\link{update_input_cols_CP_preds}}\cr
 \code{\link{update_input_cols_fta}}\cr
 \code{\link{update_input_cols_ltp}}\cr
@@ -289,6 +290,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{update_input_run_SE_clear}}\cr
 \code{\link{update_input_sizeclassCol}}\cr
 \code{\link{update_input_useSSdata}}\cr
+\code{\link{update_output_clear_all}}\cr
 \code{\link{update_output_cols_CP}}\cr
 \code{\link{update_output_cols_SE}}\cr
 \code{\link{update_output_data_SE_clear}}\cr
@@ -319,6 +321,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{update_output_split_M_clear}}\cr
 \code{\link{update_output_SS}}\cr
 \code{\link{update_output_transpose_split}}\cr
+\code{\link{update_rv_clear_all}}\cr
 \code{\link{update_rv_cols_CP_preds}}\cr
 \code{\link{update_rv_cols_fta}}\cr
 \code{\link{update_rv_cols_ltp}}\cr

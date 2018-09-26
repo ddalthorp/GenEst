@@ -23,6 +23,7 @@ dataInputSidebar <- function(){
   llab <- "Load file"
   clab <- "Clear file"
   cstyle <- cButtonStyle()
+  castyle <- cButtonStyle("all")
   sidebarPanel(width = 3, 
     h4(b(u("Select Data Files:")), style = "margin-bottom: 20px"),
     h5(b("Searcher Efficiency Data")),
@@ -49,7 +50,10 @@ dataInputSidebar <- function(){
     fileInput("file_CO", label = NULL, accept = okft, buttonLabel = llab), 
     conditionalPanel(condition = "output.data_CO != null",
       actionButton("file_CO_clear", clab, style = cstyle)
-    )
+    ),
+    br(),
+    actionButton("clear_all", "Clear Entire Application", style = castyle),
+    br()
   )
 }
 

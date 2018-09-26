@@ -4,7 +4,10 @@
 \alias{cButtonStyle}
 \title{Define the style for the clear buttons}
 \usage{
-cButtonStyle()
+cButtonStyle(type = "single")
+}
+\arguments{
+\item{type}{"single" or "all"}
 }
 \value{
 character element defining the style
