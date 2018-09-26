@@ -66,9 +66,13 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       ylim <- range(rowQuantiles(splits[[vi]],
         probs = c(alpha/2, 1 - alpha/2)))
     }
-    plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F,
-      xlab = "", ylab = "")
-    
+    if (vi == 1 && !is.null(try(plot.new(), silent = TRUE))){
+      par(mfrow = c(1,1))
+      return(1) # flags the plot as as an error
+    } else {
+      par(new = (vi == 1))
+      plot(0, xlim = xlim, ylim = ylim, type = "n", axes = F, xlab = "", ylab = "")
+    }
     if (vartype[1] == "CO" | !rate){
       xx <- 1:nlevel_h 
     } else {
@@ -130,6 +134,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
              "% confidence intervals")
            )
   mtext(side = 4, text = vars[2], outer = T, line = 2.5, cex = 1.2)
+  return(NULL)
 }
 
 #' @title Plot summary statistics for splits of mortality estimates
@@ -163,10 +168,8 @@ plot.splitFull <- function(x, rate = FALSE, CL = 0.90, ...){
     simpleMplot(x, ..., CL = CL)
   } else{
     splitSum <- summary(x, CL)
-    if (nvar == 2 & length(splitSum) > 80){
-      stop("Vertical split too reticulated to plot. Consider transposing.")
-    } else{
-      plot(splitSum, rate)
+    if(!is.null(plot(splitSum, rate))){
+      stop("Second split too fine for plotting. Consider transposing.")
     }
   }
 }
