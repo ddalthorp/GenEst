@@ -10,8 +10,6 @@ update_output_outpk_SE(rv, output)
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{session}{session}
 }
 \value{
 an updated output list

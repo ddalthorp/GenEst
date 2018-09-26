@@ -10,8 +10,6 @@ update_output_transpose_split(rv, output)
 \item{rv}{reactive values list}
 
 \item{output}{output list}
-
-\item{session}{session}
 }
 \value{
 an updated output list
