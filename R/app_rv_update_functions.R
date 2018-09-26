@@ -457,13 +457,18 @@ update_rv_sizeclassCol <- function(rv, input){
   scCol <- input$sizeclassCol
   sizeclasses <- unique(c(rv$data_SE[ , scCol], rv$data_CP[ , scCol]))
   rv$nsizeclasses <- length(sizeclasses)
+  rv$sizeclasses_k <- sizeclasses
+  rv$nsizeclasses_k <- length(sizeclasses)
 
   if (rv$nsizeclasses > 1 & is.null(rv$DWPCol)){
     rv$DWPCol <- sizeclasses[1]
   } 
   if (rv$nsizeclasses == 0){
+    rv$sizeclasses_k <- ""
+    rv$nsizeclasses_k <- 1
     rv$DWPCol <- NULL
   }
+
   return(rv)
 }
 
@@ -635,44 +640,6 @@ update_rv_cols_CP_preds <- function(rv, input){
 #' @export
 #'
 update_rv_run_SE <- function(rv, input){
-  rv$obsCols_SE <- input$obsCols_SE
-  rv$preds_SE <- input$preds_SE
-  rv$predictors_SE <- prepPredictors(rv$preds_SE)
-  rv$formula_p <- formula(paste0("p~", rv$predictors_SE))
-  rv$formula_k <- formula(paste0("k~", rv$predictors_SE)) 
-  rv$kFixedChoice <- input$kFixedChoice
-  rv$kFixed <- setkFix(input$kFixedChoice, input$kFixed)
-  rv$CL <- input$CL
-  rv$sizeclassCol <- input$sizeclassCol
-  rv$mods_SE <- suppressWarnings(
-                  pkmSetSize(formula_p = rv$formula_p,
-                    formula_k = rv$formula_k, data = rv$data_SE, 
-                    obsCol = rv$obsCols_SE, sizeclassCol = rv$sizeclassCol,
-                    kFixed = rv$kFixed, kInit = 0.7, CL = rv$CL, 
-                    quiet = TRUE
-                  ) 
-                ) 
-  rv$mods_SE_og <- rv$mods_SE
-  rv$mods_SE <- pkmSetSizeFailRemove(rv$mods_SE)
-  if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
-      !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
-    rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
-    rv$sizeclasses_SE <- rv$sizeclasses
-    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
-    rv$sizeclass_SE <- rv$sizeclass
-    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass_SE]], TRUE, TRUE)
-    rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
-    rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
-    rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
-    rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
-    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass_SE]]
-    rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
-    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cellwiseTable
-    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
-    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
-    rv$figH_SE <- setFigH(rv$modSet_SE)
-    rv$figW_SE <- setFigW(rv$modSet_SE)
-  }
 
   rv$M <- NULL 
   rv$Msplit <- NULL 
@@ -702,6 +669,62 @@ update_rv_run_SE <- function(rv, input){
   rv$SEmodToUse_g <- NULL 
   rv$figH_g <- 400 
   rv$figW_g <- 800
+
+  for (sci in 1:rv$nsizeclasses_k){
+    rv$kFixed[sci] <- input[[sprintf("kFixed_val_%d", sci)]]
+    rv$kFixedChoice[sci] <- input[[sprintf("kFixed_yn_%d", sci)]]
+  }
+  names(rv$kFixed) <- rv$sizeclasses_k
+
+  names(rv$kFixedChoice) <- rv$sizeclasses_k
+  rv$kFixed <- setkFix(rv$kFixedChoice, rv$kFixed)
+
+  if (any(is.na(rv$kFixed[rv$kFixedChoice]))){
+    return(rv)
+  }
+  if (any(rv$kFixed[rv$kFixedChoice] < 0 | rv$kFixed[rv$kFixedChoice] > 1)){
+    return(rv)
+  }
+
+  rv$obsCols_SE <- input$obsCols_SE
+  rv$preds_SE <- input$preds_SE
+  rv$predictors_SE <- prepPredictors(rv$preds_SE)
+  rv$formula_p <- formula(paste0("p~", rv$predictors_SE))
+  rv$formula_k <- formula(paste0("k~", rv$predictors_SE)) 
+
+  rv$CL <- input$CL
+  rv$sizeclassCol <- input$sizeclassCol
+  rv$mods_SE <- suppressWarnings(
+                  pkmSetSize(formula_p = rv$formula_p,
+                    formula_k = rv$formula_k, data = rv$data_SE, 
+                    obsCol = rv$obsCols_SE, sizeclassCol = rv$sizeclassCol,
+                    kFixed = rv$kFixed, kInit = 0.7, 
+                    CL = rv$CL, quiet = TRUE
+                  ) 
+                ) 
+  rv$mods_SE_og <- rv$mods_SE
+  rv$mods_SE <- pkmSetSizeFailRemove(rv$mods_SE)
+  if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
+      !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
+    rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
+    rv$sizeclasses_SE <- rv$sizeclasses
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
+    rv$sizeclass_SE <- rv$sizeclass
+    rv$AICcTab_SE <- pkmSetAICcTab(rv$mods_SE[[rv$sizeclass_SE]], TRUE, TRUE)
+    rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
+    rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
+    rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
+    rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
+    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass_SE]]
+    rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
+    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cellwiseTable
+    rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+    rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
+    rv$figH_SE <- setFigH(rv$modSet_SE)
+    rv$figW_SE <- setFigW(rv$modSet_SE)
+  }
+
+
 
   return(rv)
 }
@@ -1146,8 +1169,26 @@ update_rv_useSSinputs <- function(rv, input){
 update_rv_run_g <- function(rv, input){
   rv$CL <- input$CL
   rv$kFill_g <- NA
-  if (length(rv$obsCols_SE) == 1 & length(rv$kFixed) == 0){
-    rv$kFill_g <- input$kFill_g
+  if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
+    rv$kCheck_g <- rep(NA, rv$nsizeclasses_k)
+    counter <- 1
+    for (sci in 1:rv$nsizeclasses_k){
+      if (is.na(rv$kFixed[sci])){
+        rv$kFill_g[sci] <- input[[sprintf("kFill_g_%d", counter)]]
+        rv$kCheck_g[sci] <- input[[sprintf("kFill_g_%d", counter)]]
+        counter <- counter + 1
+      } else{
+        rv$kCheck_g[sci] <- rv$kFixed[sci]
+      }
+    }
+    names(rv$kFill_g) <- rv$sizeclasses_k
+    rv$kFill_g <- na.omit(rv$kFill_g)
+    if (length(na.omit(rv$kCheck_g)) != length(rv$kCheck_g)){
+      return(rv)
+    }
+    if (any(rv$kFill_g < 0 |rv$kFill_g > 1)){
+      return(rv)
+    }
   }
   rv$sizeclasses_g <- rv$sizeclasses
   rv$nsizeclasses_g <- length(rv$sizeclasses_g)
@@ -1176,7 +1217,7 @@ update_rv_run_g <- function(rv, input){
                             estgGeneric(nsim = rv$nsim, days = rv$SS,
                               model_SE = rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
                               model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
-                              kFill = rv$kFill_g
+                              kFill = rv$kFill_g[sci]
                             ), 
                             error = function(x){NULL}
                           )
@@ -1243,10 +1284,29 @@ update_rv_outsc_g <- function(rv, input){
 update_rv_run_M <- function(rv, input){
 
   rv$M <- NULL
-  rv$kFill <- NULL
-  if (length(rv$obsCols_SE) == 1 & length(rv$kFixed) == 0){
-    rv$kFill <- input$kFill
+  rv$kFill <- NA
+  if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
+    rv$kCheck <- rep(NA, rv$nsizeclasses_k)
+    counter <- 1
+    for (sci in 1:rv$nsizeclasses_k){
+      if (is.na(rv$kFixed[sci])){
+        rv$kFill[sci] <- input[[sprintf("kFill_%d", counter)]]
+        rv$kCheck[sci] <- input[[sprintf("kFill_%d", counter)]]
+        counter <- counter + 1
+      } else{
+        rv$kCheck[sci] <- rv$kFixed[sci]
+      }
+    }
+    names(rv$kFill) <- rv$sizeclasses_k
+    rv$kFill <- na.omit(rv$kFill)
+    if (length(na.omit(rv$kCheck)) != length(rv$kCheck)){
+      return(rv)
+    }
+    if (any(rv$kFill < 0 |rv$kFill > 1)){
+      return(rv)
+    }
   }
+
   rv$nsizeclasses <- length(rv$sizeclasses)
   if (length(rv$nsizeclasses) == 1){
     if (is.null(rv$sizeclasses)){
@@ -1256,14 +1316,8 @@ update_rv_run_M <- function(rv, input){
   rv$dateFoundCol <- input$dateFoundCol
   rv$nsim <- input$nsim
   rv$frac <- input$frac
-  rv$fracNote <- NULL
-  if (rv$frac < 0.01){
-    rv$frac <- 0.01
-    rv$fracNote <- "Fraction facility surveyed set to minimum value (0.01)"
-  }
-  if (rv$frac > 1){
-    rv$frac <- 1
-    rv$fracNote <- "Fraction facility surveyed set to maximum value (1.0)"
+  if (rv$frac < 0.01 | rv$frac > 1){
+    return(rv)
   }
 
   rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
@@ -1293,6 +1347,7 @@ update_rv_run_M <- function(rv, input){
                     trimSetSize(rv$mods_CP, rv$CPmodToUse), 
                     error = function(x){NULL}
                   )
+
   if(any(c(is.null(rv$models_SE), is.null(rv$models_CP)))){
     rv$M <- NULL
     return(rv)
@@ -1316,7 +1371,7 @@ update_rv_run_M <- function(rv, input){
               dateFoundCol = rv$dateFoundCol, DWPCol = rv$DWPCol,
               sizeclassCol = rv$sizeclassCol_M, nsim = rv$nsim, 
               max_intervals = 8
-            ), error = function(x){NULL}, warning = function(x){NULL}
+            ), error = function(x){NULL}
           )
 
   if (!is.null(rv$M)){
