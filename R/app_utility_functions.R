@@ -106,7 +106,7 @@ prepPredictors <- function(preds = NULL){
 #'
 setkFillNeed <- function(rv){
   textout <- "no"
-  if(length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
+  if(length(rv$obsCols_SE) == 1 & length(rv$kFixed) == 0){
     textout <- "yes"
   }
   return(renderText(textout))
@@ -125,15 +125,11 @@ setkFillNeed <- function(rv){
 #' @export
 #'
 setkFix <- function(kFixedChoice, kFixed){
-  nkFix <- length(kFixed)
-  out <- rep(NA, nkFix)
-  for (i in 1:nkFix){
-    if (kFixedChoice[i] == 1 & is.numeric(kFixed[i])){
-      out[i] <- kFixed[i]
-    }
+  if (kFixedChoice == 1 & is.numeric(kFixed)){
+    return(kFixed)
+  }else{
+    return(NULL)
   }
-  names(out) <- names(kFixed)
-  out
 }
 
 #' @title Select the date columns from a data table
@@ -566,7 +562,7 @@ plotNA <- function(type = "model"){
     badText <- "Selected model was not fit successfully."
   } 
   if (type == "split"){
-    badText <- "Split too reticulated for plotting. Consider transposing."
+    badText <- "Second split too fine for plotting. Consider transposing."
   }
   plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "", 
     ylab = "", ylim = c(0, 1), xlim = c(0,1))
