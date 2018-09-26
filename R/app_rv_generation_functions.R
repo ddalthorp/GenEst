@@ -62,6 +62,6 @@ createReactiveValues <- function(){
     gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
     figH_g = 400, figW_g = 800,
 
-    kCheck = NULL, kCheck_g = NULL
+    kCheck = NA, kCheck_g = NA
   )
 }

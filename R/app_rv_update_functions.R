@@ -1167,8 +1167,10 @@ update_rv_useSSinputs <- function(rv, input){
 #' @export
 #'
 update_rv_run_g <- function(rv, input){
+  rv$gGeneric <- NULL
   rv$CL <- input$CL
   rv$kFill_g <- NA
+
   if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
     rv$kCheck_g <- rep(NA, rv$nsizeclasses_k)
     counter <- 1
@@ -1190,6 +1192,7 @@ update_rv_run_g <- function(rv, input){
       return(rv)
     }
   }
+
   rv$sizeclasses_g <- rv$sizeclasses
   rv$nsizeclasses_g <- length(rv$sizeclasses_g)
   if (length(rv$nsizeclasses_g) == 1){
@@ -1213,13 +1216,13 @@ update_rv_run_g <- function(rv, input){
     }
     rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
 
-    rv$gGeneric[[sci]] <- tryCatch(
+    rv$gGeneric[[sci]] <- #tryCatch(
                             estgGeneric(nsim = rv$nsim, days = rv$SS,
                               model_SE = rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
                               model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
                               kFill = rv$kFill_g[sci]
-                            ), 
-                            error = function(x){NULL}
+                           # ), 
+                           # error = function(x){NULL}
                           )
   }
   names(rv$gGeneric) <- rv$sizeclasses_g
