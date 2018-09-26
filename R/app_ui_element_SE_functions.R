@@ -32,14 +32,7 @@ SESidebar <- function(){
     selectizeInput("preds_SE", "Predictor Variables:", 
       c("No data input yet"), multiple = TRUE
     ),
-    radioButtons("kFixedChoice", "Fix k?",
-      choices = list("No" = 0, "Yes" = 1), selected = 0
-    ),
-    conditionalPanel(condition = "input.kFixedChoice == 1",
-      numericInput("kFixed", "Value for fixed k:", value = 0.5, 
-        min = 0, max = 1, step = 0.001
-      )
-    ),
+    htmlOutput("kFixedInput"),
     conditionalPanel(condition = "input.obsCols_SE == null",
       br(), 
       HTML("<center><em>Select observation columns to run 

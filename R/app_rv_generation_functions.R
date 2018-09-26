@@ -39,7 +39,7 @@ createReactiveValues <- function(){
     modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
     best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
     modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
-    kFill = NULL, 
+    kFill = NULL, sizeclasses_k = NULL, nsizeclasses_k = NULL, 
 
     ltp = NULL, fta = NULL, preds_CP = NULL, dists = NULL, 
     predictors_CP = NULL, formula_l = NULL, formula_s = NULL, 
@@ -50,7 +50,7 @@ createReactiveValues <- function(){
     best_CP = NULL, modTab_CP = NULL, modTabPretty_CP = NULL, 
     modTabDL_CP = NULL, figH_CP = 700, figW_CP = 800,
 
-    M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, fracNote = NULL,
+    M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, 
     sizeclassCol_M = NULL, DWPCol = NULL, dateFoundCol = NULL, 
     SEmodToUse = NULL, CPmodToUse = NULL,
     split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0, 
@@ -60,6 +60,8 @@ createReactiveValues <- function(){
     avgSI = NULL, SStemp = NULL, gSearchInterval = 7, gSearchMax = 364,
     kFill_g = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
     gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
-    figH_g = 400, figW_g = 800
+    figH_g = 400, figW_g = 800,
+
+    kCheck = NULL, kCheck_g = NULL
   )
 }

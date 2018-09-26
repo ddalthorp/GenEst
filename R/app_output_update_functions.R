@@ -341,6 +341,11 @@ update_output_sizeclassCol <- function(rv, output){
     selectedData <- selectData(rv$data_CP, selectedCols)
     output$selected_CP <- renderDataTable(datatable(selectedData))
   }
+
+  isolate({
+    output$kFixedInput <- makekFixedInput(rv)
+  })
+
   return(output)
 }
 
@@ -411,6 +416,10 @@ update_output_run_SE <- function(rv, output){
     outputOptions(output, "SEModDone", suspendWhenHidden = FALSE)
     outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
     outputOptions(output, "DWPNeed", suspendWhenHidden = FALSE)
+    isolate({
+      output$kFillInput <- makekFillInput(rv, "M")
+      output$kFillInput_g <- makekFillInput(rv, "g")
+    })
 
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
     output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
@@ -444,6 +453,8 @@ update_output_run_SE <- function(rv, output){
     output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE)
     output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE)
     output$dlSEfig <- downloadSEFig(rv)
+
+
   }
 
 
@@ -494,9 +505,6 @@ update_output_run_SE_clear <- function(rv, output){
   output$sizeclass_SE2 <- NULL
   output$sizeclass_SE3 <- NULL
   output$sizeclass_SEyn <- NULL
-  output$dlSEest <- NULL
-  output$dlSEAICc <- NULL
-  output$dlSEfig <- NULL
   outputOptions(output, "AICcTab_SE", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_SE", suspendWhenHidden = FALSE)
   outputOptions(output, "modTab_SE", suspendWhenHidden = FALSE)

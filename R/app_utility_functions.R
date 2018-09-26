@@ -106,7 +106,7 @@ prepPredictors <- function(preds = NULL){
 #'
 setkFillNeed <- function(rv){
   textout <- "no"
-  if(length(rv$obsCols_SE) == 1 & length(rv$kFixed) == 0){
+  if(length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
     textout <- "yes"
   }
   return(renderText(textout))
@@ -125,11 +125,15 @@ setkFillNeed <- function(rv){
 #' @export
 #'
 setkFix <- function(kFixedChoice, kFixed){
-  if (kFixedChoice == 1 & is.numeric(kFixed)){
-    return(kFixed)
-  }else{
-    return(NULL)
+  nkFix <- length(kFixed)
+  out <- rep(NA, nkFix)
+  for (i in 1:nkFix){
+    if (kFixedChoice[i] == 1 & is.numeric(kFixed[i])){
+      out[i] <- kFixed[i]
+    }
   }
+  names(out) <- names(kFixed)
+  out
 }
 
 #' @title Select the date columns from a data table

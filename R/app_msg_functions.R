@@ -95,7 +95,13 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     clearNotifications(msgs)
   }
   if (type == "SE"){
-    if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
+    if (any(is.na(rv$kFixed[rv$kFixedChoice]))){
+      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
+    } else if (any(rv$kFixed[rv$kFixedChoice] > 1)){
+      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
+    } else if (any(rv$kFixed[rv$kFixedChoice] < 0)){
+      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
+    } else if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
       return(msgModFail(rv$mods_SE_og, "SE"))
     } else if(any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
       return(msgModFail(rv$mods_SE_og, "SE", "size_k"))
@@ -111,6 +117,11 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     }
   }  
   if (type == "M"){
+    if (length(na.omit(rv$kCheck)) != length(rv$kCheck)){
+      return(msgModFail(rv$gGeneric, "M", "NA_kFill"))
+    } else if (any(rv$kFill < 0 | rv$kFill > 1)){
+      return(msgModFail(rv$gGeneric, "M", "NA_kFill"))
+    }
     if (!is.null(rv$fracNote)){
       return(msgFracNote(rv$fracNote))
     }
@@ -127,7 +138,11 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     }
   }
   if (type == "g"){
-    if (is.null(rv$gGeneric[[1]])){    
+    if (length(na.omit(rv$kCheck_g)) != length(rv$kCheck_g)){
+      return(msgModFail(rv$gGeneric, "g", "NA_kFill"))
+    } else if (any(rv$kFill_g < 0 | rv$kFill_g > 1)){
+      return(msgModFail(rv$gGeneric, "g", "NA_kFill"))
+    } else if (is.null(rv$gGeneric[[1]])){    
       return(msgModFail(rv$gGeneric, "g"))
     }
   }
@@ -255,7 +270,7 @@ msgModWarning <- function(mods, type = "SE", rv = NULL){
 #'
 msgModSENobs <- function(rv){
   if (length(rv$obsCols_SE) == 1){
-    if(length(rv$formula_k) > 0 & length(rv$kFixed) == 0){
+    if(length(rv$formula_k) > 0 & any(is.na(rv$kFixed))){
       return("Only one observation column, k not estimated.")
     }
   }
@@ -287,13 +302,23 @@ msgModFail <- function(mods, type = "SE", special = NULL){
              )
     } else if (special == "size_k"){
       msg <- "Some size classes had no successful models. Consider a fixed k."
+    } else if (special == "NA_kFixed"){
+      msg <- "Invalid value for fixed k input(s)."
     }
   }
   if (type == "g"){
-    msg <- "Detection probability not able to be estimated"
+    if (special == "NA_kFill"){
+      msg <- "Invalid value for assumed k input(s)."
+    } else{
+      msg <- "Detection probability not able to be estimated"
+    }
   }
   if (type == "M"){
-    msg <- "Mortality not able to be estimated"
+    if (special == "NA_kFill"){
+      msg <- "Invalid value for assumed k input(s)."
+    } else{
+      msg <- "Mortality not able to be estimated"
+    }
   }
   if(!is.null(msg)){
     return(showNotification(msg, type = "error", duration = NULL))
