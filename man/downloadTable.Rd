@@ -4,7 +4,7 @@
 \alias{downloadTable}
 \title{Download a table}
 \usage{
-downloadTable(filename, tablename)
+downloadTable(filename, tablename, csvformat)
 }
 \arguments{
 \item{filename}{the name for the file writing out}
