@@ -1052,6 +1052,7 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE, app = FALSE){
       formulas_s[modi] <- splitFormulas_i[3]
       AICc[modi] <- tryCatch(cpmset[[modi]]$AICc, error = function(x) {1e7})
     }
+    AICc <- round(AICc, 2)
     AICcOrder <- order(AICc)
     deltaAICc <- round(AICc - min(AICc), 2)
     which_fails <- which(AICc == 1e7)

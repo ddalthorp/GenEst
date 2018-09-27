@@ -166,6 +166,9 @@ update_output_data_CP_clear <- function(rv, output){
   output$sizeclass_CP2 <- NULL
   output$sizeclass_CP3 <- NULL
   output$sizeclass_CPyn <- NULL
+  output$text_CP_est <- NULL
+  outputOptions(output, "text_CP_est", suspendWhenHidden = FALSE)
+
   outputOptions(output, "AICcTab_CP", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_CP", suspendWhenHidden = FALSE)
   outputOptions(output, "modTab_CP", suspendWhenHidden = FALSE)
@@ -636,6 +639,8 @@ update_output_outpk_SE <- function(rv, output){
 #'
 update_output_run_CP <- function(rv, output){
 
+  output$text_CP_est <- NULL
+
   if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
 
     output$CPModDone <- renderText("OK")
@@ -653,6 +658,8 @@ update_output_run_CP <- function(rv, output){
       outputOptions(output, "sizeclasses_CP", suspendWhenHidden = FALSE)
       output$modelMenu_CP <- makeMenu(rv$mods_CP, rv$sizeclasses_CP, "CP")
     })
+
+    output$text_CP_est <- renderText(makeEstText(rv$CL))
 
     preText <- paste0("Size class: ", rv$sizeclass_CP)
     if (length(rv$sizeclasses_CP) == 1){
@@ -676,6 +683,7 @@ update_output_run_CP <- function(rv, output){
     output$dlCPfig <- downloadCPFig(rv)
   }
 
+  outputOptions(output, "text_CP_est", suspendWhenHidden = FALSE)
 
   output$fig_M <- NULL
   output$table_M <- NULL
@@ -729,6 +737,8 @@ update_output_run_CP_clear <- function(rv, output){
   outputOptions(output, "modTab_CP", suspendWhenHidden = FALSE)
   outputOptions(output, "CPModDone", suspendWhenHidden = FALSE)
   outputOptions(output, "sizeclasses_CP", suspendWhenHidden = FALSE)
+  output$text_CP_est <- NULL
+  outputOptions(output, "text_CP_est", suspendWhenHidden = FALSE)
 
   output$fig_M <- NULL
   output$table_M <- NULL

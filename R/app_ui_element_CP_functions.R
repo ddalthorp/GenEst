@@ -151,6 +151,7 @@ CPEstimatesPanel <- function(){
     ),
     conditionalPanel(condition = "output.CPModDone == 'OK'",
       textOutput("sizeclass_CP2"), br(), 
+      textOutput("text_CP_est"), br(), 
       dataTableOutput("modTab_CP"), br(),
       downloadButton("dlCPest", "Download")
     )

@@ -938,8 +938,10 @@ update_rv_run_CP <- function(rv, input){
     rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
-    rv$modTab_CP <- 
-                  rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_ls
+    rv$modTab_CP <- list(
+         ls = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_ls,
+         desc = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_desc
+                     )
     rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
     rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
     rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
@@ -1077,8 +1079,10 @@ update_rv_outsc_CP <- function(rv, input){
     rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
-    rv$modTab_CP <- 
-                  rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_ls
+    rv$modTab_CP <- list(
+         ls = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_ls,
+         desc = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_desc
+                     )
     rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
     rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
     rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
@@ -1110,7 +1114,11 @@ update_rv_outdls_CP <- function(rv, input){
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
 
     if (rv$outCPdlstab %in% names(rv$modSet_CP)){
-      rv$modTab_CP <- rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_ls
+      rv$modTab_CP <- 
+
+    rv$modTab_CP <- list(ls = rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_ls,
+                     desc = rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_desc
+                     )
       rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
       rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
     } else {
