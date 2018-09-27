@@ -161,13 +161,12 @@ downloadData <- function(set){
           )
   filename <- paste0(fpre, set, ".zip")
   foldername <- paste0("../extdata/", fpre, set, "/")
-print(foldername)
+
   downloadHandler(
     filename = filename,
     content = function(file)  {
-      files <- paste0(foldername, c(SE, CP, DWP, SS, CO))
-                
-      zip(zipfile = file, files = files)
+fs <- paste0(foldername, SE)
+      zip(zipfile = file, files = fs)
     },
     contentType = "application/zip"
   )
