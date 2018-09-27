@@ -129,12 +129,10 @@ downloadMFig <- function(rv, split = TRUE, transpose = FALSE){
 #'
 #' @export
 #'
-downloadTable <- function(filename, tablename){
-  downloadHandler(filename = filename,
-                  content = function(file){
-                              write.csv(tablename, file, row.names = FALSE)
-                            }
-                  )
+downloadTable <- function(filename, tablename, csvformat){
+  downloadHandler(filename = filename, content = function(file){
+    get(paste0("write.csv", csvformat))(tablename, file, row.names = FALSE)
+  })
 }
 
 #' @title Download a zipped data set

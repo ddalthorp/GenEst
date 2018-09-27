@@ -206,7 +206,7 @@ makekFillInput <- function(rv, type = "g"){
     speck <- paste(
              fluidRow(
                column(width = 10,  
-                 div(id = "kFill_yn_1", b("Assumed k:")),
+                 div(id = "kFill_yn_1", b("k required for SE model")),
                  style(type='text/css', "#kFill_yn_1 { margin-top: 0px;}")
                )), fluidRow(
                column(width = 12, align = "center", 
@@ -497,20 +497,4 @@ cButtonStyle <- function(type = "single"){
      align: center; margin-top: 20px")
 
   }
-}
-
-#' @title Make the text for an estimate based on CL
-#'
-#' @description Make the character of text for an estimate based on CL
-#'
-#' @param CL confidence Limit
-#'
-#' @return character for the estimate range
-#'
-#' @export
-#'
-makeEstText <- function(CL){
-  paste0("Location and scale estimates are Median [", 100 * (1 - CL) / 2, 
-    "% - ", 100 - 100 * (1 - CL) / 2, "%]"
-  )
 }
