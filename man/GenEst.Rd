@@ -206,7 +206,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{loadedDataPanel}}\cr
 \code{\link{makekFixedInput}}\cr
 \code{\link{makekFillInput}}\cr
-\code{\link{makeEstText}}\cr
 \code{\link{makeMenu}}\cr
 \code{\link{matchCells}}\cr
 \code{\link{MFigurePanel}}\cr
@@ -243,7 +242,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{prettyModTabSE}}\cr
 \code{\link{prettySplitSpecTab}}\cr
 \code{\link{prettySplitTab}}\cr
-\code{\link{readCSVs}}\cr
+\code{\link{readCSV}}\cr
 \code{\link{removeCols}}\cr
 \code{\link{SEEstimatesPanel}}\cr
 \code{\link{SEFiguresPanel}}\cr
