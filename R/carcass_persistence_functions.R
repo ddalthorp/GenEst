@@ -546,7 +546,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$loglik <- llik
 
   }
-  # calculate descriptive statistics for persistence times
+
   Ir <- c(1, 3, 7, 14, 28) # search intervals for calculating r
   t0 <- numeric(length(Ir))
   t1 <- c(1, 3, 7, 14, 28)
