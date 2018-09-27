@@ -49,7 +49,12 @@ The following components are displayed automatically:
  \item{\code{formula_s}}{the model formula for the \code{k} parameter}
  \item{\code{distribution}}{distribution used}
  \item{\code{predictors}}{list of covariates of \code{l} and/or \code{s}}
- \item{\code{cellwiseTable_ls}}{summary statistics for estimated cellwise 
+ \item{\code{AICc}}{the AIC value as corrected for small sample size}
+ \item{\code{convergence}}{convergence status of the numerical optimization
+   to find the maximum likelihood estimates of \code{p} and \code{k}. A
+   value of \code{0} indicates that the model was fit successfully. For
+   help in deciphering other values, see \code{\link{optim}}.}
+ \item{\code{cellwiseTable_ls}}{summary statistics for estimated cellwise
    \code{l} and \code{s}, including the medians and upper & lower bounds
    on CIs for each parameter, indexed by cell (or combination of
    covariate levels).}
@@ -57,11 +62,11 @@ The following components are displayed automatically:
    \code{pda} and \code{pdb}, including the medians and upper & lower 
    bounds on CIs for each parameter, indexed by cell (or combination of
    covariate levels).}
- \item{\code{AICc}}{the AIC value as corrected for small sample size}
- \item{\code{convergence}}{convergence status of the numerical optimization 
-   to find the maximum likelihood estimates of \code{p} and \code{k}. A 
-   value of \code{0} indicates that the model was fit successfully. For 
-   help in deciphering other values, see \code{\link{optim}}.}
+ \item{\code{cellwiseTable_desc}}{Descriptive statistics for estimated
+   cellwise median persistence time and rI for search intervals of 1, 3, 7
+   14, and 28 days, where rI is the probability of that carcass that arrives
+   at a uniform random time in within a search interval of I days persists
+   until the first search after arrival. }
 }
 
 The following components are not printed automatically but can be accessed

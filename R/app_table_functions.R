@@ -82,7 +82,7 @@ dlModTabSE <- function(modTab, CL = 0.90){
 #' @description Format a reader-friendly version of the parameter table from
 #'   a Carcass Persistence model, based on confidence level of interest
 #'
-#' @param modTab model table
+#' @param modTabs model tables
 #'
 #' @param CL Confidence level
 #'
@@ -90,7 +90,9 @@ dlModTabSE <- function(modTab, CL = 0.90){
 #'
 #' @export
 #'
-prettyModTabCP <- function(modTab, CL = 0.90){
+prettyModTabCP <- function(modTabs, CL = 0.90){
+  modTab <- modTabs[["ls"]]
+  modTab_d <- modTabs[["desc"]]
   out <- modTab[ , c("cell", "l_median", "s_median")]
   ncell <- nrow(out)
 
@@ -110,10 +112,15 @@ prettyModTabCP <- function(modTab, CL = 0.90){
     }
   }
 
-  coltxt <- paste0(" (Median [", 100 * (1 - CL) / 2, "% - ", 
-              100 - 100 * (1 - CL) / 2, "%])"
-            )
-  colnames(out) <- c("Cell", paste0(c("Location", "Scale"), coltxt))
+  colnames(out) <- c("Cell", c("Location", "Scale"))
+  cellCol <- which(colnames(modTab_d) == "cell")
+  out_d <- modTab_d[ , -cellCol]
+  for (celli in 1:ncell){
+    cellMatch <- which(out$Cell == modTab_d$cell[celli])
+    out_d[celli, ] <- round(modTab_d[cellMatch, -cellCol], 2)
+  }
+  colnames(out_d)[which(colnames(out_d) == "median")] <- "Median CP"
+  out <- cbind(out, out_d)
   return(out)
 }
 
@@ -122,7 +129,7 @@ prettyModTabCP <- function(modTab, CL = 0.90){
 #' @description Format a user-friendly version of the parameter table from
 #'   a Carcass Persistence model, based on confidence level of interest
 #'
-#' @param modTab model table
+#' @param modTabs model tables
 #'
 #' @param CL Confidence level
 #'
@@ -130,14 +137,24 @@ prettyModTabCP <- function(modTab, CL = 0.90){
 #'
 #' @export
 #'
-dlModTabCP <- function(modTab, CL = 0.90){
-
+dlModTabCP <- function(modTabs, CL = 0.90){
+  modTab <- modTabs[["ls"]]
+  modTab_d <- modTabs[["desc"]]
+  ncell <- nrow(modTab)
   out <- modTab
   lo <- 100 * (1 - CL) / 2
   up <- 100 - 100 * (1 - CL) / 2
   coltypes <- c("Median", paste0(lo, "%"), paste0(up, "%"))
   colnames(out) <- c("Cell", paste0("Location ", coltypes), 
                      paste0("Scale ", coltypes))
+  cellCol <- which(colnames(modTab_d) == "cell")
+  out_d <- modTab_d[ , -cellCol]
+  for (celli in 1:ncell){
+    cellMatch <- which(out$Cell == modTab_d$cell[celli])
+    out_d[celli, ] <- round(modTab_d[cellMatch, -cellCol], 2)
+  }
+  colnames(out_d)[which(colnames(out_d) == "median")] <- "Median CP"
+  out <- cbind(out, out_d)
   return(out)
 }
 

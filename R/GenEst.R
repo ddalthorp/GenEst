@@ -223,6 +223,7 @@
 #' \code{\link{loadedDataPanel}}\cr
 #' \code{\link{makekFixedInput}}\cr
 #' \code{\link{makekFillInput}}\cr
+#' \code{\link{makeEstText}}\cr
 #' \code{\link{makeMenu}}\cr
 #' \code{\link{matchCells}}\cr
 #' \code{\link{MFigurePanel}}\cr
