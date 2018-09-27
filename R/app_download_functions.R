@@ -166,13 +166,13 @@ downloadData <- function(set){
     filename = filename,
     content = function(file)  {
       pth = foldername
-      dir.create(tmp <- tempfile())
-      cat(paste0(pth, SE), file = file.path(tmp, SE))
-      cat(paste0(pth, CP), file = file.path(tmp, CP))
-      cat(paste0(pth, DWP), file = file.path(tmp, DWP))
-      cat(paste0(pth, SS), file = file.path(tmp, SS))
-      cat(paste0(pth, CO), file = file.path(tmp, CO))
-      zip(zipfile = file, files = tmp)
+      cat(paste0(pth, SE), file = file.path(tempdir(), SE))
+      cat(paste0(pth, CP), file = file.path(tempdir(), CP))
+      cat(paste0(pth, DWP), file = file.path(tempdir(), DWP))
+      cat(paste0(pth, SS), file = file.path(tempdir(), SS))
+      cat(paste0(pth, CO), file = file.path(tempdir(), CO))
+      tozip <- paste0(tempdir(), "/", c(SE, CP, DWP, SS, CO))
+      zip(zipfile = file, files = tozip)
     },
     contentType = "application/zip"
   )
