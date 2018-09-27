@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_ui_element_help_functions.R
 \name{helpPanel}
 \alias{helpPanel}
-\title{Resources Main Panel UI element}
+\title{Help Main Panel UI element}
 \usage{
 helpPanel(type = "base")
 }
@@ -10,8 +10,8 @@ helpPanel(type = "base")
 \item{type}{"base" (for local versions) or "deploy" (for hosted version)}
 }
 \value{
-HTML for the Analysis panel
+HTML for the Help panel
 }
 \description{
-create the HTML code for the Resources panel
+create the HTML code for the Help panel
 }

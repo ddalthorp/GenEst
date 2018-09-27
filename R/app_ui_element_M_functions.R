@@ -23,7 +23,7 @@ MPanel <- function(){
 #'
 MSidebar <- function(){
   sidebarPanel(width = 3, 
-    HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+    b(u(big("Model Inputs:"))),
     br(), br(),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
@@ -46,15 +46,14 @@ MSidebar <- function(){
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
          output.sizeclasses_SE != output.sizeclasses_CP",
       br(), 
-      HTML("<center><em>Select SE and CP models fit to matching size
-        classes to run model</center></em>"
+      center(
+       em("Select SE and CP models fit to matching size classes to run model")
       )
     ),
     conditionalPanel(
       condition = "output.data_SS == null",
       br(), 
-      HTML("<center><em>Input Search Schedule data to run model</center></em>"
-      )
+      center(em("Input Search Schedule data to run model"))
     ),
     conditionalPanel(
       condition = 
@@ -62,8 +61,7 @@ MSidebar <- function(){
          output.sizeclasses_SE == output.sizeclasses_CP & 
          (input.DWPCol == null | input.dateFoundCol == null)",
       br(), 
-      HTML("<center><em>Select input columns to run model</center></em>"
-      )
+      center(em("Select input columns to run model"))
     ),
     conditionalPanel(
       condition = 
@@ -79,9 +77,9 @@ MSidebar <- function(){
       actionButton("runMod_M_clear", "Clear Estimate", 
         style = cButtonStyle()
       ), br(), br(), 
-      HTML("<big><strong><u> Splitting Mortality: </u></strong></big>"),
+      b(u(big("Splitting Mortality:"))),
       br(), br(), 
-      HTML("<em>Max. two total splits, max. one schedule-based split</em>"),
+      em("Max. two total splits, max. one schedule-based split"),
       br(), br(),
       selectizeInput("split_SS", "Search Schedule (SS) Variable:", 
         " ", multiple = TRUE, options = list(maxItems = 1)
@@ -140,15 +138,13 @@ MFigurePanel <- function(){
       condition = 
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
          output.sizeclasses_SE != output.sizeclasses_CP",
-      HTML("<em>Select SE and CP models fit to matching size classes to run 
-        model</em>"
-      )
+      em("Select SE and CP models fit to matching size classes to run model")
     ), 
     conditionalPanel(
       condition = "output.fig_M == null & input.modelChoices_SE1 != null & 
          input.modelChoices_CP1 != null &
          output.sizeclasses_SE == output.sizeclasses_CP",
-      HTML("<em>Run estimate to view figure</em>")
+      em("Run estimate to view figure")
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",
       plotOutput("fig_M", inline = TRUE), br(), br(),
@@ -173,15 +169,13 @@ MSummaryPanel <- function(){
       condition = 
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
          output.sizeclasses_SE != output.sizeclasses_CP",
-      HTML("<em>Select SE and CP models fit to matching size classes to run 
-        model</em>"
-      )
+      em("Select SE and CP models fit to matching size classes to run model")
     ), 
     conditionalPanel(
       condition = "output.fig_M == null & input.modelChoices_SE1 != null & 
          input.modelChoices_CP1 != null &
          output.sizeclasses_SE == output.sizeclasses_CP",
-      HTML("<em>Run estimate to view summary</em>")
+      em("Run estimate to view summary")
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",
       br(), dataTableOutput("table_M"), br(),

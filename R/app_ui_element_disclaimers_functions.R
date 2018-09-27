@@ -23,12 +23,7 @@ disclaimersPanel <- function(type){
 #' @export
 #'
 disclaimersMainPanel <- function(type){
-  mainPanel(
-    column(10, offset = 0,
-      br(), 
-      disclaimers(type)
-    )
-  )
+  mainPanel(column(10, offset = 0, br(), disclaimers(type)))
 }
 
 #' @title Help Disclaimers UI element
@@ -42,13 +37,11 @@ disclaimersMainPanel <- function(type){
 #' @export
 #'
 disclaimers <- function(type){
-  extraBR <- switch(type, "base" = NULL, "deploy" = br())
-
+  extraBR <- switch(type, "base" = NULL, "deploy" = c(br(), br()))
   list(h3("US Geological Survey (USGS)"),
-       disclaimerUSGS(), 
-       br(), 
+       disclaimerUSGS(), br(), 
        h3("Western EcoSystems Technology, Inc. (WEST)"),
-       disclaimerDeploy(type), extraBR, extraBR, 
+       disclaimerDeploy(type), extraBR, 
        disclaimerWEST()
   )
 }
