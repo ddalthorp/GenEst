@@ -172,7 +172,7 @@ downloadData <- function(set){
       cat(paste0(pth, SS), file = file.path(tempdir(), SS))
       cat(paste0(pth, CO), file = file.path(tempdir(), CO))
       tozip <- paste0(tempdir(), "/", c(SE, CP, DWP, SS, CO))
-      zip(zipfile = file, files = tozip)
+      zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
     },
     contentType = "application/zip"
   )
