@@ -23,6 +23,7 @@ downloadsMainPanel <- function(){
     column(10, offset = 0,
       br(), 
       h3("Example data sets"),
+      br(), 
       downloadsRow("RP"),
       downloadsRow("RPbat"),
       downloadsRow("cleared"),
