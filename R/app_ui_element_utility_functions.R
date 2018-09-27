@@ -460,3 +460,19 @@ cButtonStyle <- function(type = "single"){
 
   }
 }
+
+#' @title Make the text for an estimate based on CL
+#'
+#' @description Make the character of text for an estimate based on CL
+#'
+#' @param CL confidence Limit
+#'
+#' @return character for the estimate range
+#'
+#' @export
+#'
+makeEstText <- function(CL){
+  paste0("Location and scale estimates are Median [", 100 * (1 - CL) / 2, 
+    "% - ", 100 - 100 * (1 - CL) / 2, "%]"
+  )
+}
