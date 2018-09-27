@@ -72,7 +72,12 @@
 #'  \item{\code{formula_s}}{the model formula for the \code{k} parameter}
 #'  \item{\code{distribution}}{distribution used}
 #'  \item{\code{predictors}}{list of covariates of \code{l} and/or \code{s}}
-#'  \item{\code{cellwiseTable_ls}}{summary statistics for estimated cellwise 
+#'  \item{\code{AICc}}{the AIC value as corrected for small sample size}
+#'  \item{\code{convergence}}{convergence status of the numerical optimization
+#'    to find the maximum likelihood estimates of \code{p} and \code{k}. A
+#'    value of \code{0} indicates that the model was fit successfully. For
+#'    help in deciphering other values, see \code{\link{optim}}.}
+#'  \item{\code{cellwiseTable_ls}}{summary statistics for estimated cellwise
 #'    \code{l} and \code{s}, including the medians and upper & lower bounds
 #'    on CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
@@ -80,11 +85,11 @@
 #'    \code{pda} and \code{pdb}, including the medians and upper & lower 
 #'    bounds on CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
-#'  \item{\code{AICc}}{the AIC value as corrected for small sample size}
-#'  \item{\code{convergence}}{convergence status of the numerical optimization 
-#'    to find the maximum likelihood estimates of \code{p} and \code{k}. A 
-#'    value of \code{0} indicates that the model was fit successfully. For 
-#'    help in deciphering other values, see \code{\link{optim}}.}
+#'  \item{\code{cellwiseTable_desc}}{Descriptive statistics for estimated
+#'    cellwise median persistence time and rI for search intervals of 1, 3, 7
+#'    14, and 28 days, where rI is the probability of that carcass that arrives
+#'    at a uniform random time in within a search interval of I days persists
+#'    until the first search after arrival. }
 #' }
 #'
 #' The following components are not printed automatically but can be accessed
@@ -307,7 +312,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     cellSD_l <- sqrt(diag(cellVar_l))
 
     if (dist == "exponential"){
-      cellMean_s <- 1
+      cellMean_s <- 0
       cellSD_s <- 0
     } else {
       which_s <- (nbeta_l + 1):nbeta
@@ -541,6 +546,28 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$loglik <- llik
 
   }
+  Ir <- c(1, 3, 7, 14, 28) # search intervals for calculating r
+  t0 <- numeric(length(Ir))
+  t1 <- c(1, 3, 7, 14, 28)
+  tf <- t1
+  cell_desc <- matrix(nrow = ncell, ncol = 2 + length(Ir))
+  colnames(cell_desc) <- c("cell", "median", paste0("r", Ir))
+  pda <- output$cellwiseTable_ab[ , "pda_median"]
+  pdb <- output$cellwiseTable_ab[ , "pdb_median"]
+  cell_desc[ , 2 + 1:length(Ir)] <- t(ppersist(pda = pda, pdb = pdb,
+    dist = dist, t_arrive0 = t0, t_arrive1 = t1, t_search = tf))
+  if (dist == "weibull"){
+    cell_desc[ , "median"] <- pdb * log(2)^(1/pda)
+  } else if (dist == "lognormal"){
+    cell_desc[ , "median"] <- exp(pdb)
+  } else if (dist == "loglogistic"){
+    cell_desc[ , "median"] <- exp(pdb)
+  } else if (dist == "exponential"){
+    cell_desc[ , "median"] <- log(2)/pdb
+  }
+  output$cellwiseTable_desc <- data.frame(cell_desc)
+  output$cellwiseTable_desc[ , "cell"] <- cellNames
+
   class(output) <- c("cpm", "list")
   attr(output, "hidden") <- c("data", "predictors_l", "predictors_s",
     "betahat_l", "betahat_s", "cellMM_l", "cellMM_s", "nbeta_l", "nbeta_s",
