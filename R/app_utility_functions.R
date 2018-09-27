@@ -275,8 +275,8 @@ obsCols_SE <- function(data){
   ncols <- ncol(data)
   obsTF <- rep(NA, ncols)
   for (coli in 1:ncols){
-    tmp <- data[ , coli]
-    if (any(tmp == 0) | any(tmp == 1) & all(tmp == 0 | tmp == 1)){
+    tmp <- na.omit(data[ , coli])
+    if (any(tmp == 0 | tmp == 1) & all(tmp == 0 | tmp == 1)){
       obsTF[coli] <- TRUE
     } else{
       obsTF[coli] <- FALSE
