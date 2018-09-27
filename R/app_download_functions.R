@@ -125,6 +125,9 @@ downloadMFig <- function(rv, split = TRUE, transpose = FALSE){
 #'
 #' @param tablename the name of the table in the rv list
 #'
+#' @param csvformat format for .csv file: "" or NULL for comma-separated, 2 for
+#'  semi-colon separated
+#'
 #' @return a download handler function
 #'
 #' @export
