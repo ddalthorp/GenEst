@@ -32,8 +32,7 @@ Imports:
     shiny,
     shinyjs,
     sticky,
-    survival,
-    zip
+    survival
 RoxygenNote: 6.1.0
 Suggests:
     knitr,

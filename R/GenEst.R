@@ -27,7 +27,7 @@
 #' @importFrom sticky sticky
 #' @importFrom survival dsurvreg psurvreg strata Surv survfit survreg
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
-#' @importFrom zip zip
+#'   zip
 #'
 
 #' @title Generalized estimation of mortality
