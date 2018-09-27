@@ -24,7 +24,7 @@ SEPanel <- function(){
 #'
 SESidebar <- function(){
   sidebarPanel(width = 3,
-    HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+    b(u(big("Model Inputs:"))),
     br(), br(),
     selectizeInput("obsCols_SE", "Observations:", c("No data input yet"), 
       multiple = TRUE
@@ -35,9 +35,7 @@ SESidebar <- function(){
     htmlOutput("kFixedInput"),
     conditionalPanel(condition = "input.obsCols_SE == null",
       br(), 
-      HTML("<center><em>Select observation columns to run 
-        model</center></em>"
-      )          
+      center(em("Select observation columns to run model"))
     ),
     conditionalPanel(condition = "input.obsCols_SE != null",
       br(), 
@@ -46,8 +44,7 @@ SESidebar <- function(){
     conditionalPanel(condition = "output.SEModDone == 'OK'", 
       actionButton("runMod_SE_clear", "Clear Model", style = cButtonStyle()),
       br(), br(),
-      HTML("<big><strong><u> Table & Figure Selection:
-      </u></strong></big>"), 
+      b(u(big("Table & Figure Selection:"))),
       br(), br(), 
       conditionalPanel(condition = "output.sizeclass_SEyn == 'YES'",
         selectizeInput("outsizeclassSE", "Size Class:", " ", multiple = FALSE)
@@ -91,7 +88,7 @@ SEMainPanel <- function(){
 SESelectedDataPanel <- function(){
   tabPanel("Selected Data", br(), 
     conditionalPanel(condition = "input.obsCols_SE == null",
-      HTML("<em>Select observation columns to view data</em>")
+      em("Select observation columns to view data")
     ), 
     conditionalPanel(
       condition = "output.filename_SE != null & input.obsCols_SE != null",
@@ -114,7 +111,7 @@ SESelectedDataPanel <- function(){
 SEFiguresPanel <- function(){
   tabPanel("Figures", br(), 
     conditionalPanel(condition = "output.fig_SE == null",
-      HTML("<em>Run model to view figures</em>")
+      em("Run model to view figures")
     ),
     conditionalPanel(condition = "output.SEModDone == 'OK'",
       textOutput("sizeclass_SE1"), br(), 
@@ -136,7 +133,7 @@ SEFiguresPanel <- function(){
 SEEstimatesPanel <- function(){
   tabPanel("Estimates", br(),  
     conditionalPanel(condition = "output.modTab_SE == null",
-      HTML("<em>Run model to view model estimates</em>")
+      em("Run model to view model estimates")
     ),
     conditionalPanel(condition = "output.SEModDone == 'OK'",
       textOutput("sizeclass_SE2"), br(), 
@@ -158,7 +155,7 @@ SEEstimatesPanel <- function(){
 SEModComparisonPanel <- function(){
   tabPanel("Model Comparison", br(), 
     conditionalPanel(condition = "output.AICcTab_SE == null",
-      HTML("<em>Run models to view model comparison</em>")
+      em("Run models to view model comparison")
     ),
     conditionalPanel(condition = "output.SEModDone == 'OK'",
       textOutput("sizeclass_SE3"), br(), 
@@ -180,11 +177,10 @@ SEModComparisonPanel <- function(){
 SEModSelectionPanel <- function(){
   tabPanel("Model Selection", br(), 
     conditionalPanel(condition = "output.modelMenu_SE == null",
-      HTML("<em>Run models to select models</em>")
+      em("Run models to select models")
     ),
     htmlOutput("modelMenu_SE")
   )
 }
-
 
 

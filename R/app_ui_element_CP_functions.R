@@ -24,7 +24,7 @@ CPPanel <- function(){
 #'
 CPSidebar <- function(){
   sidebarPanel(width = 3,
-    HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+    b(u(big("Model Inputs:"))),
     br(), br(),
     selectizeInput("ltp", "Last Time Present:", c("No data input yet"), 
       multiple = TRUE, options = list(maxItems = 1)
@@ -43,8 +43,7 @@ CPSidebar <- function(){
     conditionalPanel(
        condition = "input.ltp == null | input.fta == null",
       br(), 
-      HTML("<center><em>Select observation columns to run model</center></em>"
-      )          
+      center(em("Select observation columns to run model"))
     ),
     conditionalPanel(
       condition = "input.ltp != null & input.fta != null",
@@ -54,7 +53,7 @@ CPSidebar <- function(){
     conditionalPanel(condition = "output.CPModDone == 'OK'", 
       actionButton("runMod_CP_clear", "Clear Model", style = cButtonStyle()),
       br(), br(),
-      HTML("<big><strong><u> Table & Figure Selection: </u></strong></big>"),
+      b(u(big("Table & Figure Selection:"))),
       br(), br(),
       conditionalPanel(condition = "output.sizeclass_CPyn == 'YES'",
         selectizeInput("outsizeclassCP", "Size Class:", " ", multiple = FALSE)
@@ -99,7 +98,7 @@ CPMainPanel <- function(){
 CPSelectedDataPanel <- function(){
   tabPanel("Selected Data", br(), 
     conditionalPanel(condition = "input.ltp == null | input.fta == null",
-      HTML("<em>Select observation columns to view data</em>")
+      em("Select observation columns to view data")
     ), 
     conditionalPanel(
       condition = "output.filename_CP != null & input.ltp != null & 
@@ -125,7 +124,7 @@ CPSelectedDataPanel <- function(){
 CPFiguresPanel <- function(){
   tabPanel("Figures", br(), 
     conditionalPanel(condition = "output.fig_CP == null",
-      HTML("<em>Run model to view figures</em>")
+      em("Run model to view figures")
     ),
     conditionalPanel(condition = "output.CPModDone == 'OK'",
       textOutput("sizeclass_CP1"), br(), 
@@ -147,7 +146,7 @@ CPFiguresPanel <- function(){
 CPEstimatesPanel <- function(){
   tabPanel("Estimates", br(),  
     conditionalPanel(condition = "output.modTab_CP == null",
-      HTML("<em>Run model to view model estimates</em>")
+      em("Run model to view model estimates")
     ),
     conditionalPanel(condition = "output.CPModDone == 'OK'",
       textOutput("sizeclass_CP2"), br(), 
@@ -170,7 +169,7 @@ CPEstimatesPanel <- function(){
 CPModComparisonPanel <- function(){
   tabPanel("Model Comparison", br(), 
     conditionalPanel(condition = "output.AICcTab_CP == null",
-      HTML("<em>Run models to view model comparison</em>")
+      em("Run models to view model comparison")
     ),
     conditionalPanel(condition = "output.CPModDone == 'OK'",
       textOutput("sizeclass_CP3"), br(), 
@@ -192,7 +191,7 @@ CPModComparisonPanel <- function(){
 CPModSelectionPanel <- function(){
   tabPanel("Model Selection", br(), 
     conditionalPanel(condition = "output.modelMenu_CP == null",
-      HTML("<em>Run models to select models</em>")
+      em("Run models to select models")
     ),
     htmlOutput("modelMenu_CP")
   )

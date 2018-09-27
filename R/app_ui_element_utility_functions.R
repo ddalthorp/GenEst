@@ -398,6 +398,37 @@ GenEstShinyJS <- function(...){
   useShinyjs(...)
 }
 
+#' @title HTML big div
+#'
+#' @description Generate a big text HTML object. 
+#'
+#' @param text text to wrap in \code{<big> ... </big>}
+#'
+#' @return HTML small text
+#'
+#' @export
+#'
+big <- function(text){
+  HTML(paste0("<big>", text, "</big>"))
+}
+
+#' @title HTML center div
+#'
+#' @description Generate a center text HTML object. 
+#'
+#' @param text text to wrap in \code{<center> ... </center>}
+#'
+#' @return HTML small text
+#'
+#' @export
+#'
+center <- function(text){
+  HTML(paste0("<center>", text, "</center>"))
+}
+
+
+
+
 #' @title Inline CSS definition
 #'
 #' @description Define the inline CSS code for GenEst.
@@ -421,7 +452,14 @@ GenEstInlineCSS <- function(...){
          "#file_CO_clear" = "margin-bottom: 20px",
          "#nsim" = "margin-bottom: 15px",
          "#CL" = "margin-bottom: 15px",
+         "#sizeclassCol" = "margin-bottom: 15px",
+         "#obsCols_SE" = "margin-bottom: 15px",
+         "#preds_SE" = "margin-bottom: 15px",
+         "#ltp" = "margin-bottom: 15px",
+         "#fta" = "margin-bottom: 15px",
+         "#preds_CP" = "margin-bottom: 15px",
          "#frac" = "margin-bottom: 15px",
+         "#useSSinputs" = "margin-bottom: 20px",
          "#gSearchInterval" = "margin-bottom: 15px",
          "#kFill" = "margin-bottom: 15px",
          "#gSearchMax" = "margin-bottom: 20px",

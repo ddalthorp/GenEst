@@ -1,6 +1,6 @@
 Package: GenEst
 Title: Generalized Fatality Estimator
-Version: 0.2.19
+Version: 0.2.20
 Date: 2018-09-27
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),

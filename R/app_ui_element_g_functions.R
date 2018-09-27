@@ -25,29 +25,29 @@ gPanel <- function(){
 #'
 gSidebar <- function(){
   sidebarPanel(width = 3, 
-    HTML("<big><strong><u> Model Inputs: </u></strong></big>"), 
+    b(u(big("Model Inputs:"))),
     br(), br(),
     conditionalPanel(
       condition = "output.kFillNeed == 'yes'",
       htmlOutput("kFillInput_g")
-    ),
-    conditionalPanel(    
-      condition = "output.data_SS != null",
-      actionButton("useSSdata", "Create Average Schedule from SS Data")
     ),
     numericInput("gSearchInterval", "Generic Search Interval (days):", 
       value = 7, min = 1, max = 400, step = 1),
     numericInput("gSearchMax", "Generic Final Search (day):",
       value = 364, min = 1, max = 1000, step = 1),
     actionButton("useSSinputs", "Create Custom Generic Schedule"),
+    conditionalPanel(    
+      condition = "output.data_SS != null",
+      actionButton("useSSdata", "Create Average Schedule from SS Data")
+    ),
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
          output.sizeclasses_SE != output.sizeclasses_CP",
       br(), 
-      HTML("<center><em>Select SE and CP models fit to matching size
-        classes to run model</center></em>"
-      )
+      center(em("Select SE and CP models fit to matching size
+        classes to run model"))
+      
     ),
     conditionalPanel(
       condition = 
@@ -62,9 +62,8 @@ gSidebar <- function(){
     conditionalPanel(
       condition = "output.gModDone == 'OK' & output.sizeclass_gyn == 'YES'", 
       br(), br(), 
-      HTML("<big><strong><u> Table & Figure Selection: 
-        </u></strong></big>"
-      ), br(), br(),
+      b(u(big("Table & Figure Selection:"))),
+      br(), br(),
       selectizeInput("outsizeclassg", "Size Class:", 
         " ", multiple = FALSE
       )
@@ -103,7 +102,7 @@ gMainPanel <- function(){
 gSchedulePanel <- function(){
   tabPanel("Schedule",         
     br(), 
-    HTML("<big><strong><u> Search Schedule: </u></strong></big>"),
+    b(u(big("Search Schedule:"))),
     br(), br(), 
     textOutput("SStext")
   )
@@ -121,7 +120,7 @@ gSchedulePanel <- function(){
 gFigurePanel <- function(){
   tabPanel("Figure", br(), 
     conditionalPanel(condition = "output.fig_g == null",
-      HTML("<em>Run estimate to view figure</em>")
+      em("Run estimate to view figure")
     ), 
     conditionalPanel(condition = "output.gModDone == 'OK'",
       textOutput("sizeclass_g1"), br(), 
@@ -143,7 +142,7 @@ gFigurePanel <- function(){
 gSummaryPanel <- function(){
   tabPanel("Summary", br(), 
     conditionalPanel(condition = "output.table_g == null",
-      HTML("<em>Run estimate to view summary</em>")
+      em("Run estimate to view summary")
     ), 
     conditionalPanel(condition = "output.gModDone == 'OK'",
       textOutput("sizeclass_g2"), br(), 
