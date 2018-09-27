@@ -159,13 +159,15 @@ downloadData <- function(set){
             "PV" = "solar_", "trough" = "solar_", "cleared" = "wind_", 
             "RP" = "wind_", "RPbat" = "wind_"
           )
-  filename <- paste0(fpre, set, ".zip")
-  foldername <- paste0("../extdata/", fpre, set, "/")
+  zipname <- paste0(fpre, set, ".zip")
+  filenames <- paste0("/", fpre, set, "/", SE)
 
   downloadHandler(
-    filename = filename,
+    filename = zipname,
     content = function(file)  {
-fs <- paste0(foldername, SE)
+
+fs <- system.file("extdata", filenames, package = "GenEst")
+print(fs)
       zip(zipfile = file, files = fs)
     },
     contentType = "application/zip"
