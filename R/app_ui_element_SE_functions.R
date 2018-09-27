@@ -137,6 +137,7 @@ SEEstimatesPanel <- function(){
     ),
     conditionalPanel(condition = "output.SEModDone == 'OK'",
       textOutput("sizeclass_SE2"), br(), 
+      textOutput("text_SE_est"), br(),
       dataTableOutput("modTab_SE"), br(),
       downloadButton("dlSEest", "Download")
     )

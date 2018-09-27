@@ -37,40 +37,37 @@ createvtext <- function(type = "Full"){
 #'
 #' @export
 #'
-readCSVs <- function(path){
+readCSV <- function(path){
   ef <- function(x){"_BAD_READ_"}
-  out1 <- tryCatch(
-            read.csv(path, stringsAsFactors = FALSE), 
-            error = ef, warning = ef
-          )
-  out2 <- tryCatch(
-            read.csv2(path, stringsAsFactors = FALSE), 
-            error = ef, warning = ef
-          )
+  out1 <- tryCatch(read.csv(path, stringsAsFactors = FALSE),
+            error = ef, warning = ef)
+
+  out2 <- tryCatch(read.csv2(path, stringsAsFactors = FALSE),
+            error = ef, warning = ef)
   if (is.null(attr(out1, "class")) & is.null(attr(out2, "class"))){
-   stop("File not found or not of either csv type")
+   stop("File not found or not formatted as a .csv")
   }
   if ("data.frame" %in% attr(out1, "class")){
     if (is.null(attr(out2, "class"))){
-      return(out1)
+      return(list(data = out1, csvformat = ""))
     }
     if ("data.frame" %in% attr(out2, "class")){
       if (ncol(out2) == 1){
-        return(out1)
+        return(list(data = out1, csvformat = ""))
       }
     }
   }
   if ("data.frame" %in% attr(out2, "class")){
     if (is.null(attr(out1, "class"))){
-      return(out2)
+      return(list(data = out2, csvformat = 2))
     }
     if ("data.frame" %in% attr(out1, "class")){
       if (ncol(out1) == 1){
-        return(out2)
+        return(list(data = out2, csvformat = 2))
       }
     }
   }
-  out1
+  return(list(data = out1, csvformat = ""))
 }
 
 #' @title Prepare predictors based on inputs

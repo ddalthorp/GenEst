@@ -52,7 +52,7 @@ dataInputSidebar <- function(){
       actionButton("file_CO_clear", clab, style = cstyle)
     ),
     br(),
-    actionButton("clear_all", "Clear Entire Application", style = castyle),
+    actionButton("clear_all", "Clear All", style = castyle),
     br()
   )
 }
