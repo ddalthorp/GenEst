@@ -562,9 +562,9 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   } else if (dist == "lognormal"){
     cell_desc[ , "median"] <- exp(pdb)
   } else if (dist == "loglogistic"){
-    cell_desc[ , "median"] <- exp(pdb)
+    cell_desc[ , "median"] <- pdb
   } else if (dist == "exponential"){
-    cell_desc[ , "median"] <- log(2)/pdb
+    cell_desc[ , "median"] <- log(2) * pdb
   }
   output$cellwiseTable_desc <- data.frame(cell_desc)
   output$cellwiseTable_desc[ , "cell"] <- cellNames
