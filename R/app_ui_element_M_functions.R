@@ -63,6 +63,11 @@ MSidebar <- function(){
       br(), 
       center(em("Select input columns to run model"))
     ),
+#    conditionalPanel(
+#      condition = "output.data_SS == null",
+#      br(),
+#      center(em("Input Search Schedule data to run model"))
+#    ),
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
@@ -94,7 +99,7 @@ MSidebar <- function(){
         column(width = 4,
           conditionalPanel(
             condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
-            actionButton("transposeSplit", "Transpose Split Plot")
+            actionButton("transposeSplit", "Transpose")
           )
         )
       ),

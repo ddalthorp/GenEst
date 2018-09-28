@@ -34,7 +34,9 @@ update_rv_clear_all <- function(rv, input){
 #'
 update_rv_data_SE <- function(rv, input){
   rv <- update_rv_data_SE_clear(rv, input)
-  rv$data_SE <- readCSVs(input$file_SE$datapath)
+  readdata <- readCSV(input$file_SE$datapath)
+  rv$data_SE <- readdata$data
+  rv$csvformat <- readdata$csvformat
   rv$filename_SE <- input$file_SE$name
   rv$colNames_SE <- colnames(rv$data_SE)
   rv$colNames_SE_preds <- predsCols(rv$data_SE)
@@ -153,8 +155,9 @@ update_rv_data_SE_clear <- function(rv, input){
 #'
 update_rv_data_CP <- function(rv, input){
   rv <- update_rv_data_CP_clear(rv, input)
-
-  rv$data_CP <- readCSVs(input$file_CP$datapath)
+  readdata <- readCSV(input$file_CP$datapath)
+  rv$data_CP <- readdata$data
+  rv$csvformat <- readdata$csvformat
   rv$filename_CP <- input$file_CP$name
   rv$colNames_CP <- colnames(rv$data_CP)
   rv$colNames_CP_preds <- predsCols(rv$data_CP)
@@ -286,7 +289,9 @@ update_rv_data_CP_clear <- function(rv, input){
 #'
 update_rv_data_SS <- function(rv, input){
   rv <- update_rv_data_SS_clear(rv, input)
-  rv$data_SS <- readCSVs(input$file_SS$datapath)
+  readdata <- readCSV(input$file_SS$datapath)
+  rv$data_SS <- readdata$data
+  rv$csvformat <- readdata$csvformat
   rv$colNames_SS <- colnames(rv$data_SS)
   return(rv)
 }
@@ -348,7 +353,9 @@ update_rv_data_SS_clear <- function(rv, input){
 #'
 update_rv_data_DWP <- function(rv, input){
   rv <- update_rv_data_DWP_clear(rv, input)
-  rv$data_DWP <- readCSVs(input$file_DWP$datapath)
+  readdata <- readCSV(input$file_DWP$datapath)
+  rv$data_DWP <- readdata$data
+  rv$csvformat <- readdata$csvformat
   rv$colNames_DWP <- DWPCols(rv$data_DWP)
   return(rv)
 }
@@ -396,7 +403,9 @@ update_rv_data_DWP_clear <- function(rv, input){
 #'
 update_rv_data_CO <- function(rv, input){
   rv <- update_rv_data_CO_clear(rv, input)
-  rv$data_CO <- readCSVs(input$file_CO$datapath)
+  readdata <- readCSV(input$file_CO$datapath)
+  rv$data_CO <- readdata$data
+  rv$csvformat <- readdata$csvformat
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
   rv$colNames_size <- updateColNames_size(rv)

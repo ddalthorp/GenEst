@@ -125,16 +125,17 @@ downloadMFig <- function(rv, split = TRUE, transpose = FALSE){
 #'
 #' @param tablename the name of the table in the rv list
 #'
+#' @param csvformat format for .csv file: "" or NULL for comma-separated, 2 for
+#'  semi-colon separated
+#'
 #' @return a download handler function
 #'
 #' @export
 #'
-downloadTable <- function(filename, tablename){
-  downloadHandler(filename = filename,
-                  content = function(file){
-                              write.csv(tablename, file, row.names = FALSE)
-                            }
-                  )
+downloadTable <- function(filename, tablename, csvformat){
+  downloadHandler(filename = filename, content = function(file){
+    get(paste0("write.csv", csvformat))(tablename, file, row.names = FALSE)
+  })
 }
 
 #' @title Download a zipped data set
