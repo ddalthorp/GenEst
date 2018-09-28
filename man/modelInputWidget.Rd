@@ -9,9 +9,9 @@ modelInputWidget(inType)
 \arguments{
 \item{inType}{Toggle control for the input type of the widget. One of 
 "nsim", "CL", "sizeclassCol", "obsCols_SE", "preds_SE", "kFixed",
-"ltp", "fta", "preds_CP", "dists", "kFill, "frac", "DWPCol", 
+"ltp", "fta", "preds_CP", "dists", "kFill", "frac", "DWPCol", 
 "dateFoundCol", "kFill_g", "gSearchInterval", "gSearchMax", 
-"useSSinputs", "useSSdata".}
+"useSSinputs", or "useSSdata".}
 }
 \value{
 HTML for the model input widget.

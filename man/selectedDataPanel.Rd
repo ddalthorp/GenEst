@@ -7,7 +7,7 @@
 selectedDataPanel(modType)
 }
 \arguments{
-\item{dataType}{Toggle control for the model type of the panel. One of 
+\item{modType}{Toggle control for the model type of the panel. One of 
 "SE", "CP", or "g".}
 }
 \value{

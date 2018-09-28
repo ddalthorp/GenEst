@@ -220,8 +220,6 @@ GenEstAcknowledgements <- function(){
   )
 }
 
-
-
 #' @rdname aboutContent
 #'
 #' @description \code{GenEstLogos} creates the HTML code for the Logos
@@ -286,6 +284,9 @@ GenEstLogos <- function(){
 #' @export
 #'
 disclaimersContent <- function(appType = "base"){
+  if (!appType %in% c("base", "deploy")){
+    stop(paste0("input appType (", appType, ") not supported"))
+  }
   mainPanel(
     column(10, 
       br(),
@@ -340,7 +341,9 @@ disclaimerUSGS <- function(){
 #' @export
 #'
 disclaimerWEST <- function(appType){
-
+  if (!appType %in% c("base", "deploy")){
+    stop(paste0("input appType (", appType, ") not supported"))
+  }
   extraBR <- switch(appType, "base" = NULL, "deploy" = c(br(), br()))
   out <- NULL
 
