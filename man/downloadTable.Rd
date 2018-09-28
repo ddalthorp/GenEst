@@ -11,8 +11,8 @@ downloadTable(filename, tablename, csvformat)
 
 \item{tablename}{the name of the table in the rv list}
 
-\item{csvformat}{format for .csv file: "" or NULL for comma-separated, 2 for
-semi-colon separated}
+\item{csvformat}{format for .csv file: "" or NULL for comma-separated, 2 
+for semi-colon separated}
 }
 \value{
 a download handler function
