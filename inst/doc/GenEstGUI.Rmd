@@ -1,3 +1,15 @@
+---
+title: "GenEst - Graphic User Interface"
+author: "Juniper L. Simonis"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GenEst - 4. Graphic User Interface}
+  %\VignetteEngine{knitr::rmarkdown}
+  \usepackage[utf8]{inputenc}
+---
+
+
 # GenEst: Generalized Fatality Estimator    
 
 This document describes the codebase used to create the GenEst GUI
