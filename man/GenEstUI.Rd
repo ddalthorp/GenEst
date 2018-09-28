@@ -242,7 +242,7 @@ This suite of functions create the HTML code underlying the
 
 \code{downloadsPanel} creates the HTML code for the Help
   panel's Downloads panel, which calls 
-  \code{\link{dataDownloadsWidget}} for each of the data sets.
+  \code{\link{dataDownloadWidget}} for each of the data sets.
 
 \code{aboutPanel} creates the HTML code for the Help
   panel's About panel, which calls 

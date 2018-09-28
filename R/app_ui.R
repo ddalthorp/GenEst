@@ -286,7 +286,6 @@ CPMainPanel <- function(){
   )
 }
 
-
 #' @rdname GenEstUI
 #'
 #' @description \code{MPanel} creates the HTML code for the Analysis
@@ -303,11 +302,6 @@ MPanel <- function(){
     MMainPanel()
   )
 }
-
-
-
-
-
 
 #' @rdname GenEstUI
 #'
