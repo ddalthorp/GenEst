@@ -142,7 +142,6 @@ This package is designed to analyze searcher efficiency,
 
 \code{\link{runGenEst}}\cr
 
-\code{\link{aboutMainPanel}}\cr
 \code{\link{aboutPanel}}\cr
 \code{\link{analysisPanel}}\cr
 \code{\link{b}}\cr
@@ -150,15 +149,10 @@ This package is designed to analyze searcher efficiency,
 \code{\link{clearNotifications}}\cr
 \code{\link{cButtonStyle}}\cr
 \code{\link{CPdistOptions}}\cr
-\code{\link{CPEstimatesPanel}}\cr
-\code{\link{CPFiguresPanel}}\cr
 \code{\link{CPMainPanel}}\cr
 \code{\link{cpmCPCellPlot}}\cr
 \code{\link{cpmFail}}\cr
-\code{\link{CPModComparisonPanel}}\cr
-\code{\link{CPModSelectionPanel}}\cr
 \code{\link{CPPanel}}\cr
-\code{\link{CPSelectedDataPanel}}\cr
 \code{\link{CPSidebar}}\cr
 \code{\link{createReactiveValues}}\cr
 \code{\link{createvtext}}\cr
@@ -167,11 +161,8 @@ This package is designed to analyze searcher efficiency,
 \code{\link{dataTabPanel}}\cr
 \code{\link{dateCols}}\cr
 \code{\link{dateToDay}}\cr
-\code{\link{disclaimerDeploy}}\cr
 \code{\link{disclaimerUSGS}}\cr
 \code{\link{disclaimerWEST}}\cr
-\code{\link{disclaimers}}\cr
-\code{\link{disclaimersMainPanel}}\cr
 \code{\link{disclaimersPanel}}\cr
 \code{\link{dlModTabCP}}\cr
 \code{\link{dlModTabSE}}\cr
@@ -181,9 +172,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{downloadMFig}}\cr
 \code{\link{downloadSEFig}}\cr
 \code{\link{downloadTable}}\cr
-\code{\link{downloadsMainPanel}}\cr
 \code{\link{downloadsPanel}}\cr
-\code{\link{downloadsRow}}\cr
 \code{\link{DWPCols}}\cr
 \code{\link{expandModelSetCP}}\cr
 \code{\link{ftpLink}}\cr
@@ -196,19 +185,15 @@ This package is designed to analyze searcher efficiency,
 \code{\link{GenEstShinyJS}}\cr
 \code{\link{GeneralInputSidebar}}\cr
 \code{\link{GeneralInputsPanel}}\cr
-\code{\link{gFigurePanel}}\cr
 \code{\link{gMainPanel}}\cr
 \code{\link{gPanel}}\cr
-\code{\link{gSchedulePanel}}\cr
 \code{\link{gSidebar}}\cr
-\code{\link{gSummaryPanel}}\cr
 \code{\link{li}}\cr
 \code{\link{loadedDataPanel}}\cr
 \code{\link{makekFixedInput}}\cr
 \code{\link{makekFillInput}}\cr
 \code{\link{makeMenu}}\cr
 \code{\link{matchCells}}\cr
-\code{\link{MFigurePanel}}\cr
 \code{\link{MMainPanel}}\cr
 \code{\link{modelMenuHeader}}\cr
 \code{\link{modNamePaste}}\cr
@@ -227,7 +212,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{msgSSavgFail}}\cr
 \code{\link{msgSSinputFail}}\cr
 \code{\link{MSidebar}}\cr
-\code{\link{MSummaryPanel}}\cr
 \code{\link{navbar}}\cr
 \code{\link{obsCols_SE}}\cr
 \code{\link{obsCols_fta}}\cr
@@ -244,14 +228,9 @@ This package is designed to analyze searcher efficiency,
 \code{\link{prettySplitTab}}\cr
 \code{\link{readCSV}}\cr
 \code{\link{removeCols}}\cr
-\code{\link{SEEstimatesPanel}}\cr
-\code{\link{SEFiguresPanel}}\cr
 \code{\link{selectData}}\cr
 \code{\link{SEMainPanel}}\cr
-\code{\link{SEModComparisonPanel}}\cr
-\code{\link{SEModSelectionPanel}}\cr
 \code{\link{SEPanel}}\cr
-\code{\link{SESelectedDataPanel}}\cr
 \code{\link{SESidebar}}\cr
 \code{\link{setFigH}}\cr
 \code{\link{setFigW}}\cr

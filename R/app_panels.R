@@ -13,6 +13,11 @@
 #' @export
 #'
 dataTabPanel <- function(dataType){
+
+  if (!dataType %in% c("SE", "CP", "SS", "DWP", "CO")){
+    stop(paste0("input dataType (", dataType, ") not supported"))
+  }
+
   Label <- switch(dataType, "SE" = "Searcher Efficiency",
                             "CP" = "Carcass Persistence",
                             "SS" = "Search Schedule",
@@ -32,7 +37,7 @@ dataTabPanel <- function(dataType){
 #'   visualization panel used in the GenEst GUI, based on the data type 
 #'   (\code{dataType}).
 #'
-#' @param dataType Toggle control for the model type of the panel. One of 
+#' @param modType Toggle control for the model type of the panel. One of 
 #'   "SE", "CP", or "g".  
 #'
 #' @return HTML for the panel
@@ -40,42 +45,46 @@ dataTabPanel <- function(dataType){
 #' @export
 #'
 selectedDataPanel <- function(modType){
-    if (modType == "SE"){
-      tabPanel("Selected Data", br(),
-        conditionalPanel(condition = "input.obsCols_SE == null",
-          em("Select observation columns to view data")
-        ), 
-        conditionalPanel(
-          condition = "output.filename_SE != null & input.obsCols_SE != null",
-          em(textOutput("filename_SE"))
-        ), 
-        br(), 
-        dataTableOutput("selected_SE")
-      )
-    } else if (modType == "CP"){
-      tabPanel("Selected Data", br(),
-        conditionalPanel(condition = "input.ltp == null | input.fta == null",
-          em("Select observation columns to view data")
-        ), 
-        conditionalPanel(
-          condition = "output.filename_CP != null & input.ltp != null & 
-            input.fta != null",
-          em(textOutput("filename_CP"))
-        ), 
-        br(), 
-        conditionalPanel(condition = "input.ltp != null & input.fta != null",
-          dataTableOutput("selected_CP")
-        )
-      )
-    } else if (modType == "g"){
-      tabPanel("Schedule",         
-        br(), 
-        b(u(big("Search Schedule:"))),
-        br(), br(), 
-        textOutput("SStext")
-      )
-    }
 
+  if (!modType %in% c("SE", "CP", "g")){
+    stop(paste0("input modType (", modType, ") not supported"))
+  }
+
+  if (modType == "SE"){
+    tabPanel("Selected Data", br(),
+      conditionalPanel(condition = "input.obsCols_SE == null",
+        em("Select observation columns to view data")
+      ), 
+      conditionalPanel(
+        condition = "output.filename_SE != null & input.obsCols_SE != null",
+        em(textOutput("filename_SE"))
+      ), 
+      br(), 
+      dataTableOutput("selected_SE")
+    )
+  } else if (modType == "CP"){
+    tabPanel("Selected Data", br(),
+      conditionalPanel(condition = "input.ltp == null | input.fta == null",
+        em("Select observation columns to view data")
+      ), 
+      conditionalPanel(
+        condition = "output.filename_CP != null & input.ltp != null & 
+          input.fta != null",
+        em(textOutput("filename_CP"))
+      ), 
+      br(), 
+      conditionalPanel(condition = "input.ltp != null & input.fta != null",
+        dataTableOutput("selected_CP")
+      )
+    )
+  } else if (modType == "g"){
+    tabPanel("Schedule",         
+      br(), 
+      b(u(big("Search Schedule:"))),
+      br(), br(), 
+      textOutput("SStext")
+    )
+  }
 }
 
 #' @title Create a Model Output Tab Panel for the GenEst User Interface HTML
@@ -87,13 +96,21 @@ selectedDataPanel <- function(modType){
 #' @param dataType Toggle control for the model type of the panel. One of 
 #'   "SEFigures", "SEEstimates", "SEModComparison", "SEModSelection",
 #'   "CPFigures", "CPEstimates", "CPModComparison", "CPModSelection",
-#'   "gFigures", "gSummary".
+#'   "gFigures", or "gSummary".
 #'
 #' @return HTML for the panel
 #'
 #' @export
 #'
 modelOutputPanel <- function(outType){
+
+  if (!outType %in% c("SEFigures", "SEEstimates", "SEModComparison", 
+                      "SEModSelection", "CPFigures", "CPEstimates", 
+                      "CPModComparison", "CPModSelection", "MFigures", 
+                      "MSummary", "gFigures", "gSummary")){
+    stop(paste0("input outType (", outType, ") not supported"))
+  }
+
   if (outType == "SEFigures"){
     tabPanel("Figures", br(), 
       conditionalPanel(condition = "output.fig_SE == null",

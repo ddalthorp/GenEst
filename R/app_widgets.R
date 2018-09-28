@@ -14,6 +14,11 @@
 #' @export
 #'
 dataInputWidget <- function(dataType){
+
+  if (!dataType %in% c("SE", "CP", "SS", "DWP", "CO")){
+    stop(paste0("input dataType (", dataType, ") not supported"))
+  }
+
   okft <- c("text/csv", "text/comma-separated-values", ".csv")
   llab <- "Load file"
   clab <- "Clear file"
@@ -65,6 +70,11 @@ dataInputWidget <- function(dataType){
 #'
 dataDownloadWidget <- function(set){
 
+  if (!set %in% c("RP", "RPbat", "cleared", "powerTower", "PV", "trough", 
+                  "mock", "mock2")){
+    stop(paste0("input set (", set, ") not supported"))
+  }
+
   setNames <- c("RP" = "Wind---Road and pad searches, bats + birds",
                 "RPbat" = "Wind---Road and pad searches, bats",
                 "cleared" = "Wind---Cleared plots, bats + birds",
@@ -91,15 +101,24 @@ dataDownloadWidget <- function(set){
 #'
 #' @param inType Toggle control for the input type of the widget. One of 
 #'   "nsim", "CL", "sizeclassCol", "obsCols_SE", "preds_SE", "kFixed",
-#'   "ltp", "fta", "preds_CP", "dists", "kFill, "frac", "DWPCol", 
+#'   "ltp", "fta", "preds_CP", "dists", "kFill", "frac", "DWPCol", 
 #'   "dateFoundCol", "kFill_g", "gSearchInterval", "gSearchMax", 
-#'   "useSSinputs", "useSSdata".  
+#'   "useSSinputs", or "useSSdata".  
 #'
 #' @return HTML for the model input widget. 
 #'
 #' @export
 #'
 modelInputWidget <- function(inType){
+
+  if (!inType %in% c("nsim", "CL", "sizeclassCol", "obsCols_SE", "preds_SE", 
+                     "kFixed", "ltp", "fta", "preds_CP", "dists", "kFill",
+                     "frac", "DWPCol", "dateFoundCol", "kFill_g", 
+                     "gSearchInterval", "gSearchMax", "useSSinputs",
+                     "useSSdata")){
+    stop(paste0("input inType (", inType, ") not supported"))
+  }
+
   if (inType == "nsim"){
     numericInput("nsim", "Number of Iterations:", value = 1000,
       min = 1, max = 10000, step = 1
@@ -199,6 +218,11 @@ modelInputWidget <- function(inType){
 #' @export
 #'
 modelRunWidget <- function(modType){
+
+  if (!modType %in% c("SE", "CP", "M", "g")){
+    stop(paste0("input modType (", modType, ") not supported"))
+  }
+
   if (modType == "SE"){
     list(
       conditionalPanel(condition = "input.obsCols_SE == null",
@@ -308,6 +332,11 @@ modelRunWidget <- function(modType){
 #' @export
 #'
 modelOutputWidget <- function(modType){
+
+  if (!modType %in% c("SE", "CP", "M", "g")){
+    stop(paste0("input modType (", modType, ") not supported"))
+  }
+
   if (modType == "SE"){
     conditionalPanel(condition = "output.SEModDone == 'OK'", 
       b(u(big("Table & Figure Selection:"))),

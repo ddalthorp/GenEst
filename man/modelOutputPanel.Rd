@@ -10,7 +10,7 @@ modelOutputPanel(outType)
 \item{dataType}{Toggle control for the model type of the panel. One of 
 "SEFigures", "SEEstimates", "SEModComparison", "SEModSelection",
 "CPFigures", "CPEstimates", "CPModComparison", "CPModSelection",
-"gFigures", "gSummary".}
+"gFigures", or "gSummary".}
 }
 \value{
 HTML for the panel
