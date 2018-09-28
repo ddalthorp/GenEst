@@ -226,7 +226,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   if (length(intersect(split_CO, split_SS)) > 0){
     stop("CO and SS splitting variables must have distinct names")
   }
-  if ((!is.null(split_SS) || !is.null(split_time)) & is.null(data_SS)){
+  if ((!is.null(split_SS) || !is.null(split_time)) && is.null(data_SS)){
     stop("data_SS must be provided if ",
       ifelse(is.null(split_SS), "split_time ", "split_SS "), "is")
   }
@@ -261,7 +261,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   split_h <- NULL
   split_v <- NULL
   ### error-checking the split variables and interpreting inputs:
-  if (!is.null(split_SS) && is.Date(data_SS[[split_SS]])){
+  if (!is.null(split_SS) && lubridate::is.Date(data_SS[[split_SS]])){
     # split_SS is a temporal split
     split_time <- as.numeric(data_SS[[split_SS]]-data_SS$date0)
     split_SS <- NULL
@@ -351,7 +351,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     split_h[["type"]] <- "SS"
   }
   if (!is.null(split_CO)){
-    if (length(split_CO) > 2 | (length(split_CO) > 1 & !is.null(split_h))){
+    if (length(split_CO) > 2 || (length(split_CO) > 1 & !is.null(split_h))){
       stop(
         "At most two split variables are allowed in total, i.e. ",
         "length(split_CO) + length(split_SS) + length(split_time) ",
@@ -361,10 +361,10 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     if (!is.character(split_CO)){
       stop("split_CO must be a name of a selected column in data_CO")
     }
-    if (sum(split_CO %in% names(data_CO)) != length(split_CO)){
+    if (!all(split_CO %in% names(data_CO))){
       stop(split_CO[which(!(split_CO %in% names(data_CO)))], "not in data_SS")
     }
-    if (length(split_CO) == 2 | !is.null(split_h)){
+    if (length(split_CO) == 2 || !is.null(split_h)){
       split_v <- list()
       split_v[["name"]] <- ifelse(!is.null(split_h), split_CO[1], split_CO[2])
       split_v[["vals"]] <- data_CO[[split_v$name]]
@@ -415,11 +415,9 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
       }
     } else if (split_h$type %in% c("time", "SS")){
       days <- data_SS$days
-      rate <- calcRate(M, Aj, days = days, 
-                searches_carcass = searches_carcass)
+      rate <- calcRate(M, Aj, days = days, searches_carcass = searches_carcass)
       splits[["M"]] <- calcTsplit(rate, data_SS$days, split_h$vals)
-      ratex <- calcRate(M^0, Aj = Aj, days = days, 
-                 searches_carcass = searches_carcass)
+      ratex <- calcRate(M^0, Aj = Aj, days = days, searches_carcass = searches_carcass)
       splits[["X"]] <- calcTsplit(ratex, data_SS$days, split_h$vals)
       splits[["X"]][which(splits[["M"]] == 0)] <- 0
       splits[["X"]] <- rowMeans(splits[["X"]])
@@ -429,7 +427,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     if (split_h$type == "CO"){
       for (vi in 1:split_v$nlev){
         splits[["M"]][[vi]] <- array(0, dim = c(split_h$nlev, nsim))
-        splits[["X"]][[vi]] <- array(0, dim = c(split_h$nlev, nsim))
+        splits[["X"]][[vi]] <- numeric(split_h$nlev)
         for (li in 1:split_h$nlev) {
           lind <- which(
             split_h$vals == split_h$level[li] &
@@ -440,7 +438,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
           } else if (length(lind) == 1){
             splits[["M"]][[vi]][li, ] <- M[lind, ]
           }
-          splits[["X"]][li] <- length(lind)
+          splits[["X"]][[vi]][li] <- length(lind)
         }
       }
     } else if (split_h$type %in% c("SS", "time")){
@@ -449,7 +447,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
         rate <- calcRate(M = M[lind, ], Aj = Aj[lind, ], days = data_SS$days,
           searches_carcass = searches_carcass[lind,])
         splits[["M"]][[vi]] <- calcTsplit(rate, data_SS$days, split_h$vals)
-        ratex <- calcRate(M[lind, ]^0, Aj = Aj[lind, ], days = data_SS$days, 
+        ratex <- calcRate(M[lind, ]^0, Aj = Aj[lind, ], days = data_SS$days,
                    searches_carcass = searches_carcass[lind,])
         splits[["X"]][[vi]] <- calcTsplit(ratex, data_SS$days, split_h$vals)
         splits[["X"]][[vi]][which(splits[["M"]][[vi]] == 0)] <- 0
@@ -458,7 +456,7 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
     }
   }
   #protection against unintended loss of attr's
-  splits <- sticky(splits)
+  splits <- sticky::sticky(splits)
   attr(splits, "vars") <- c(split_h$name, split_v$name)
   attr(splits, "type") <- c(split_h$type, split_v$type)
   if (!is.null(split_h) && (split_h$type %in% c("time", "SS"))){
@@ -466,11 +464,14 @@ calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
   }
   if (nvar == 1){
     rownames(splits[["M"]]) <- split_h$level
+    names(splits[["X"]]) <- split_h$level
   }
   if (nvar == 2){
     names(splits[["M"]]) <- split_v$level
+    names(splits[["X"]]) <- split_v$level
     for (i in 1:length(splits[["M"]])){
       rownames(splits[["M"]][[i]]) <- split_h$level
+      names(splits[["X"]][[i]]) <- split_h$level
     }
   }
   class(splits) <- "splitFull"
@@ -553,7 +554,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
        }
      }
    }
-  sumry <- sticky(sumry)
+  sumry <- sticky::sticky(sumry)
   attr(sumry, "CL") <- CL
   attr(sumry, "vars") <- attr(splits, "vars")
   attr(sumry, "type") <- attr(splits, "type")

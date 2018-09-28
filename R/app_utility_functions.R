@@ -566,7 +566,7 @@ plotNA <- function(type = "model"){
     badText <- "Second split too fine for plotting. Consider transposing."
   }
   plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "", 
-    ylab = "", ylim = c(0, 1), xlim = c(0,1))
+    ylab = "", ylim = c(0, 1), xlim = c(0,1), col = 2)
   text(0.01, 0.9, badText, adj = 0)
 }
 

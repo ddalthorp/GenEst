@@ -26,8 +26,10 @@ MSidebar <- function(){
     b(u(big("Model Inputs:"))),
     br(), br(),
     conditionalPanel(
-      condition = "output.kFillNeed == 'yes'",
-      htmlOutput("kFillInput")
+      condition = "output.kFillNeed == 'yes' & input.modelChoices_SE1 != null",
+      p(em("To estimate M, k is required in SE model. ",
+        "Return to Search Efficiency tab.")),
+      br()
     ),
     numericInput("frac", "Fraction of Facility Surveyed:", value = 1.0, 
       min = 0.01, max = 1.0, step = 0.01
@@ -63,17 +65,13 @@ MSidebar <- function(){
       br(), 
       center(em("Select input columns to run model"))
     ),
-#    conditionalPanel(
-#      condition = "output.data_SS == null",
-#      br(),
-#      center(em("Input Search Schedule data to run model"))
-#    ),
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
          output.sizeclasses_SE == output.sizeclasses_CP & 
          output.data_SS != null & 
-         input.DWPCol != null & input.dateFoundCol != null",
+         input.DWPCol != null & input.dateFoundCol != null &
+         output.kFillNeed != 'yes'",
       br(),
       actionButton("runMod_M", "Estimate")
     ),
@@ -93,10 +91,10 @@ MSidebar <- function(){
         " ", multiple = TRUE, options = list(maxItems = 2)
       ),
       fluidRow(
-        column(width = 4,  
+        column(width = 6,
           actionButton("splitM", "Split Estimate")
         ),
-        column(width = 4,
+        column(width = 6,
           conditionalPanel(
             condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
             actionButton("transposeSplit", "Transpose")
@@ -148,7 +146,8 @@ MFigurePanel <- function(){
     conditionalPanel(
       condition = "output.fig_M == null & input.modelChoices_SE1 != null & 
          input.modelChoices_CP1 != null &
-         output.sizeclasses_SE == output.sizeclasses_CP",
+         output.sizeclasses_SE == output.sizeclasses_CP &
+         output.kFillNeed != 'yes'",
       em("Run estimate to view figure")
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",
@@ -179,7 +178,8 @@ MSummaryPanel <- function(){
     conditionalPanel(
       condition = "output.fig_M == null & input.modelChoices_SE1 != null & 
          input.modelChoices_CP1 != null &
-         output.sizeclasses_SE == output.sizeclasses_CP",
+         output.sizeclasses_SE == output.sizeclasses_CP &
+         output.kFillNeed != 'yes'",
       em("Run estimate to view summary")
     ), 
     conditionalPanel(condition = "output.MModDone == 'OK'",

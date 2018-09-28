@@ -61,8 +61,8 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
       ylim <- range(rowQuantiles(splits[[vi]],
         probs = c(alpha/2, 1 - alpha/2))/deltaT)
     } else {
-      hwid <- rep(0.45, nlevel_h) # half-width of boxes
-      xlim <- c(1, nlevel_h) + hwid[1] * c(-1, 1)
+      hwid <- rep(0.15, nlevel_h) # half-width of boxes
+      xlim <- c(1, nlevel_h) + 0.5 * c(-1, 1)
       ylim <- range(rowQuantiles(splits[[vi]],
         probs = c(alpha/2, 1 - alpha/2)))
     }
