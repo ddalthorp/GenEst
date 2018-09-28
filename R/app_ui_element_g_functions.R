@@ -28,10 +28,12 @@ gSidebar <- function(){
     b(u(big("Model Inputs:"))),
     br(), br(),
     conditionalPanel(
-      condition = "output.kFillNeed == 'yes'",
-      htmlOutput("kFillInput_g")
+      condition = "output.kFillNeed == 'yes' & input.modelChoices_SE1 != null",
+      p(em("To estimate M, k is required in SE model. ",
+        "Return to Search Efficiency tab.")),
+      br()
     ),
-    numericInput("gSearchInterval", "Generic Search Interval (days):", 
+    numericInput("gSearchInterval", "Generic Search Interval (days):",
       value = 7, min = 1, max = 400, step = 1),
     numericInput("gSearchMax", "Generic Final Search (day):",
       value = 364, min = 1, max = 1000, step = 1),
@@ -52,7 +54,8 @@ gSidebar <- function(){
     conditionalPanel(
       condition = 
         "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-         output.sizeclasses_SE == output.sizeclasses_CP",
+         output.sizeclasses_SE == output.sizeclasses_CP &
+         output.kFillNeed != 'yes'",
       br(), br(),
       actionButton("runMod_g", "Estimate")
     ),
