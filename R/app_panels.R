@@ -90,7 +90,7 @@ selectedDataPanel <- function(modType){
 #'   panel used in the GenEst GUI, based on the output type 
 #'   (\code{outType}).
 #'
-#' @param dataType Toggle control for the model type of the panel. One of 
+#' @param outType Toggle control for the model type of the panel. One of 
 #'   "SEFigures", "SEEstimates", "SEModComparison", "SEModSelection",
 #'   "CPFigures", "CPEstimates", "CPModComparison", "CPModSelection",
 #'   "gFigures", or "gSummary".
