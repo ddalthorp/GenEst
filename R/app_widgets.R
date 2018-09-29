@@ -220,7 +220,7 @@ modelInputWidget <- function(inType){
 #'
 #' @param Fun Function name (as character) used to create the widget.
 #'
-#' @param Lable Label presented to the user in the UI for the widget.
+#' @param Label Label presented to the user in the UI for the widget.
 #'
 #' @param Args List of any additional arguments to be passed to the widget 
 #'   creating function.

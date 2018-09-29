@@ -393,7 +393,7 @@ disclaimerWEST <- function(appType){
 #'
 ftpLink <- function(doc = "UserGuide"){
   if (!doc %in% c("UserGuide", "Models")){
-    stop(paste0("button Type ", buttonType, " not supported."))
+    stop(paste0("doc ", doc, " not supported."))
   }
   mainLink <- "ftp://ftpext.usgs.gov/pub/wr/or/corvallis/Dalthorp/"
   if (doc == "UserGuide"){
