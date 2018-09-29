@@ -35,7 +35,7 @@ gettingStartedContent <- function(){
          li("fitting searcher efficiency and carcass persistence models---
             click the ", code("Searcher Efficiency"), " and ", 
             code("Carcass Persistence"), " tabs, and "),
-         li("estimating total mortality and split the mortality estimate by
+         li("estimating total mortality and splitting mortality estimate by
             various subcategories (such as species or sector or season) as 
             desired---click the ", code("Mortality Estimation"), " tab")
       ),

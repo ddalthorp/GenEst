@@ -2,12 +2,12 @@
 % Please edit documentation in R/app_functions.R
 \name{runGenEst}
 \alias{runGenEst}
-\title{Launch the app}
+\title{Launch the GenEst Application}
 \usage{
 runGenEst()
 }
 \description{
 Launches a local version of the GenEst application by running
-  \code{shinyAppDir} pointed to the \code{app} subdirectory in the 
+  \code{\link[shiny]{runApp}} pointed to the \code{app} subdirectory in the 
   local \code{GenEst} package folder.
 }
