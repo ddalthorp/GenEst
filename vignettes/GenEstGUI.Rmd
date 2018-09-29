@@ -11,15 +11,23 @@ vignette: >
 
 # Overview
 
-This document describes the codebase used to create the GenEst Graphic User Interface (GUI).
-
-The Genest GUI is coded in HTML via external R packages (shiny, htmltools, shinyjs), as well as a number of internal functions to facilitate a simple, human-readable codebase underlying the app.
+This document describes the codebase used to create the GenEst Graphic User 
+Interface (GUI). The Genest GUI is coded in HTML via external R packages 
+([DT](https://cran.r-project.org/web/packages/DT),
+[htmltools](https://cran.r-project.org/web/packages/htmltools), 
+[shiny](https://cran.r-project.org/web/packages/shiny), 
+[shinyjs](https://cran.r-project.org/web/packages/shinyjs), 
+as well as a number of internal functions to facilitate a simple,
+human-readable codebase underlying the app. The goal being to allow GenEst 
+to evolve as fluidly as possible at the user interface.
 
 # User Interface
 
 ### UI Function Hierarchy
 
-The GenEst User Interface is constructed using pages, panels, tabs, and widgets. The code is parsed into a series of hierarchical functions to facilitate readability and mobility of specific UI components.
+The GenEst User Interface is constructed in HTML using pages, panels, 
+tabs, and widgets. The code is parsed into a series of hierarchical functions 
+to facilitate readability and mobility of specific UI components.
 
 * `GenEstUI(appType)`
   * `dataInputPanel()`
@@ -115,6 +123,11 @@ The GenEst User Interface is constructed using pages, panels, tabs, and widgets.
         * `disclaimerWEST(appType)`		
 		
 ### UI Widgets
+ 
+We have coded up a number of widget functions, some of which are simple
+wrappers on shiny functions that help reduce code clutter, and others of which
+are custom HTML (e.g., for model selection), but which are still nonetheless
+wrapped over shiny widgets: 
 
 * `dataInputWidget(dataType)`
 * `modelInputWidget(inType)`		
@@ -123,14 +136,28 @@ The GenEst User Interface is constructed using pages, panels, tabs, and widgets.
 * `dataDownloadsWidget(set)`
 * `modelSelectionWidget(modType)`	  
 * `kFixedWidget()`
-		
+
+A major need for widgets is having a simple condition wrapped on it, such that
+the widget is within a conditional panel, defined by some other input or 
+output variable. To facilitate coding of these widgets, we have made a function
+`widgetMaker`, which is a generalized constructor function.
+
 ### UI Panels
+
+Similarly to the input widgets, we have coded up a number of output panel 
+functions that help direct traffic in the building on the HTML document. These
+functions are generalized to the suite of possible options for panels currently 
+needed by leveraging the basic template approach with limited variation.
 
 * `dataTabPanel(dataType)`
 * `selectedDataPanel(modType)`
 * `modelOutputPanel(outType)`
 
 ### UI Content
+
+There is a fair amount of (mostly) static content, which we have contained
+wihtin functions to reduce overall code clutter. These functions primarily 
+dictate content within the "Help" tab's subtabs.
 
 * `gettingStartedContent()`
 * `aboutContent()`
@@ -143,9 +170,9 @@ The GenEst User Interface is constructed using pages, panels, tabs, and widgets.
 * `disclaimerUSGS()`
 * `disclaimerWEST(appType)`
 
-
-* `navbar()`
-
 # Execution 
 
-`runGenEst()`
+The GUI is executed locally or as a deployed app following the basic approach
+of shiny applications. For ease of implementation, we have created an overall
+function to intialize the app, `runGenEst()`, which calls both the server and
+UI codebases. 

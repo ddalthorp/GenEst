@@ -122,131 +122,180 @@ modelOutputPanel <- function(outType){
              "gFigures" = "Figures", 
              "gSummary" = "Summary")
 
-  Condition1 <- switch(outType,
-             "SEFigures" = "output.fig_SE == null",
-             "SEEstimates" = "output.modTab_SE == null", 
-             "SEModComparison" = "output.AICcTab_SE == null", 
-             "SEModSelection" = "output.modelMenu_SE == null", 
-             "CPFigures" = "output.fig_CP == null", 
-             "CPEstimates" = "output.modTab_CP == null", 
-             "CPModComparison" = "output.AICcTab_CP == null", 
-             "CPModSelection" = "output.modelMenu_CP == null",
-             "MFigures" = "input.modelChoices_SE1 == null | 
-                           input.modelChoices_CP1 == null | 
-                           output.sizeclasses_SE != output.sizeclasses_CP", 
-             "MSummary" = "input.modelChoices_SE1 == null | 
-                           input.modelChoices_CP1 == null | 
-                           output.sizeclasses_SE != output.sizeclasses_CP", 
-             "gFigures" = "output.fig_g == null", 
-             "gSummary" = "output.table_g == null")
+  Condition <- switch(outType,
+                 "SEFigures" = 
+                   c("output.fig_SE == null",
+                     "output.SEModDone == 'OK'", 
+                     "1 == 1"),
+                 "SEEstimates" = 
+                   c("output.modTab_SE == null", 
+                     "output.SEModDone == 'OK'", 
+                     "1 == 1"),
+                 "SEModComparison" =
+                   c("output.AICcTab_SE == null", 
+                     "output.SEModDone == 'OK'", 
+                     "1 == 1"),
+                 "SEModSelection" = 
+                   c("output.modelMenu_SE == null",
+                     "output.SEModDone == 'OK'", 
+                     "1 == 1"), 
+                 "CPFigures" = 
+                   c("output.fig_CP == null", 
+                     "output.CPModDone == 'OK'", 
+                     "1 == 1"),
+                 "CPEstimates" = 
+                   c("output.modTab_CP == null", 
+                     "output.CPModDone == 'OK'", 
+                     "1 == 1"),
+                 "CPModComparison" = 
+                   c("output.AICcTab_CP == null", 
+                     "output.CPModDone == 'OK'", 
+                     "1 == 1"),
+                 "CPModSelection" = 
+                   c("output.modelMenu_CP == null",
+                     "output.CPModDone == 'OK'", 
+                     "1 == 1"),
+                 "MFigures" = 
+                   c("input.modelChoices_SE1 == null | 
+                       input.modelChoices_CP1 == null | 
+                       output.sizeclasses_SE != output.sizeclasses_CP", 
+                     "output.fig_M == null & 
+                       input.modelChoices_SE1 != null & 
+                       input.modelChoices_CP1 != null &
+                       output.sizeclasses_SE == output.sizeclasses_CP",
+                     "output.MModDone == 'OK'"),
+                 "MSummary" = 
+                   c("input.modelChoices_SE1 == null | 
+                       input.modelChoices_CP1 == null | 
+                       output.sizeclasses_SE != output.sizeclasses_CP", 
+                     "output.fig_M == null & 
+                       input.modelChoices_SE1 != null & 
+                       input.modelChoices_CP1 != null &
+                       output.sizeclasses_SE == output.sizeclasses_CP",
+                     "output.MModDone == 'OK'"),
+                 "gFigures" = 
+                   c("output.fig_g == null", 
+                     "output.gModDone == 'OK'", 
+                     "1 == 1"),
+                 "gSummary" = 
+                   c("output.table_g == null",
+                     "output.gModDone == 'OK'", 
+                     "1 == 1")
+               )
 
-  Content1 <- switch(outType,
-             "SEFigures" = em("Run model to view figures"),
-             "SEEstimates" =  em("Run model to view model estimates"), 
-             "SEModComparison" = em("Run models to view model comparison"), 
-             "SEModSelection" = em("Run models to select models"), 
-             "CPFigures" = em("Run model to view figures"), 
-             "CPEstimates" = em("Run model to view model estimates"), 
-             "CPModComparison" = em("Run models to view model comparison"), 
-             "CPModSelection" = em("Run models to select models"),
-             "MFigures" = em("Select SE and CP models fit to matching size 
-                             classes to run model"), 
-             "MSummary" = em("Select SE and CP models fit to matching size 
-                             classes to run model"), 
-             "gFigures" = em("Run estimate to view figure"), 
-             "gSummary" = em("Run estimate to view summary"))
+  Content <- switch(outType,
+               "SEFigures" = 
+                 list(
+                   em("Run model to view figures"),
+                   list(
+                     textOutput("sizeclass_SE1"), br(), 
+                     plotOutput("fig_SE", inline = TRUE), br(), br(),
+                     downloadButton("dlSEfig", "Download")
+                   ),
+                   NULL
+                 ),
+               "SEEstimates" =  
+                 list(
+                   em("Run model to view model estimates"), 
+                   list(textOutput("sizeclass_SE2"), br(), 
+                     textOutput("text_SE_est"), br(),
+                     dataTableOutput("modTab_SE"), br(),
+                     downloadButton("dlSEest", "Download")
+                   ),
+                   NULL
+                 ),
+               "SEModComparison" = 
+                 list(
+                   em("Run models to view model comparison"), 
+                   list(textOutput("sizeclass_SE3"), br(), 
+                     dataTableOutput("AICcTab_SE"), br(),
+                     downloadButton("dlSEAICc", "Download")
+                   ),
+                   NULL
+                 ),
+               "SEModSelection" = 
+                 list(
+                   em("Run models to select models"), 
+                   list(htmlOutput("modelMenu_SE")),
+                   NULL
+                 ),
+               "CPFigures" = 
+                 list(
+                   em("Run model to view figures"),
+                   list(textOutput("sizeclass_CP1"), br(), 
+                     plotOutput("fig_CP", inline = TRUE), br(), br(),
+                     downloadButton("dlCPfig", "Download")
+                   ),
+                   NULL
+                 ), 
+               "CPEstimates" = 
+                 list(
+                   em("Run model to view model estimates"), 
+                   list(textOutput("sizeclass_CP2"), br(), 
+                     textOutput("text_CP_est"), br(),
+                     dataTableOutput("modTab_CP"), br(),
+                     downloadButton("dlCPest", "Download")
+                   ),
+                   NULL
+                 ),
+               "CPModComparison" = 
+                 list(
+                   em("Run models to view model comparison"),
+                   list(textOutput("sizeclass_CP3"), br(), 
+                     dataTableOutput("AICcTab_CP"), br(),
+                     downloadButton("dlCPAICc", "Download")
+                   ),
+                   NULL
+                 ), 
+               "CPModSelection" = 
+                 list(
+                   em("Run models to select models"),
+                   list(htmlOutput("modelMenu_CP")),
+                   NULL
+                 ),
+               "MFigures" = 
+                 list(
+                   em("Select SE and CP models fit to matching size 
+                         classes to run model"), 
+                   em("Run estimate to view figure"),
+                   list(plotOutput("fig_M", inline = TRUE), br(), br(),
+                      downloadButton("dlMfig", "Download")
+                   )
+                 ),
+               "MSummary" = 
+                 list(
+                   em("Select SE and CP models fit to matching size 
+                         classes to run model"), 
+                   em("Run estimate to view summary"),
+                   list(br(), dataTableOutput("table_M"), br(),
+                     downloadButton("dlMtab", "Download")
+                   )
+                 ),
+               "gFigures" = 
+                 list(
+                   em("Run estimate to view figure"),
+                   list(textOutput("sizeclass_g1"), br(), 
+                     plotOutput("fig_g", inline = TRUE), br(), br(),
+                     downloadButton("dlgfig", "Download")
+                   ),
+                   NULL
+                 ), 
+               "gSummary" = 
+                 list(
+                   em("Run estimate to view summary"),
+                   list(textOutput("sizeclass_g2"), br(), 
+                     br(), dataTableOutput("table_g"), br(),
+                    downloadButton("dlgtab", "Download")
+                   ),
+                   NULL
+                 )
+           )
 
-  Condition2 <- switch(outType,
-             "SEFigures" = "output.SEModDone == 'OK'",
-             "SEEstimates" = "output.SEModDone == 'OK'", 
-             "SEModComparison" = "output.SEModDone == 'OK'", 
-             "SEModSelection" = "output.SEModDone == 'OK'", 
-             "CPFigures" = "output.CPModDone == 'OK'", 
-             "CPEstimates" = "output.CPModDone == 'OK'", 
-             "CPModComparison" = "output.CPModDone == 'OK'", 
-             "CPModSelection" = "output.CPModDone == 'OK'",
-             "MFigures" = "output.fig_M == null & 
-                           input.modelChoices_SE1 != null & 
-                           input.modelChoices_CP1 != null &
-                           output.sizeclasses_SE == output.sizeclasses_CP", 
-             "MSummary" = "output.fig_M == null & 
-                           input.modelChoices_SE1 != null & 
-                           input.modelChoices_CP1 != null &
-                           output.sizeclasses_SE == output.sizeclasses_CP", 
-             "gFigures" = "output.gModDone == 'OK'", 
-             "gSummary" = "output.gModDone == 'OK'")
 
-  Content2 <- switch(outType,
-             "SEFigures" = list(textOutput("sizeclass_SE1"), br(), 
-                             plotOutput("fig_SE", inline = TRUE), br(), br(),
-                             downloadButton("dlSEfig", "Download")
-                           ),
-             "SEEstimates" = list(textOutput("sizeclass_SE2"), br(), 
-                               textOutput("text_SE_est"), br(),
-                               dataTableOutput("modTab_SE"), br(),
-                               downloadButton("dlSEest", "Download")
-                             ), 
-             "SEModComparison" = list(textOutput("sizeclass_SE3"), br(), 
-                                   dataTableOutput("AICcTab_SE"), br(),
-                                   downloadButton("dlSEAICc", "Download")
-                                 ), 
-             "SEModSelection" = list(htmlOutput("modelMenu_SE")), 
-             "CPFigures" = list(textOutput("sizeclass_CP1"), br(), 
-                             plotOutput("fig_CP", inline = TRUE), br(), br(),
-                             downloadButton("dlCPfig", "Download")
-                           ), 
-             "CPEstimates" = list(textOutput("sizeclass_CP2"), br(), 
-                               textOutput("text_CP_est"), br(),
-                               dataTableOutput("modTab_CP"), br(),
-                               downloadButton("dlCPest", "Download")
-                             ), 
-             "CPModComparison" = list(textOutput("sizeclass_CP3"), br(), 
-                                   dataTableOutput("AICcTab_CP"), br(),
-                                   downloadButton("dlCPAICc", "Download")
-                                 ), 
-             "CPModSelection" = list(htmlOutput("modelMenu_CP")),
-             "MFigures" = list(em("Run estimate to view figure")), 
-             "MSummary" = list(em("Run estimate to view summary")), 
-             "gFigures" = list(textOutput("sizeclass_g1"), br(), 
-                            plotOutput("fig_g", inline = TRUE), br(), br(),
-                            downloadButton("dlgfig", "Download")), 
-             "gSummary" = list(textOutput("sizeclass_g2"), br(), 
-                            br(), dataTableOutput("table_g"), br(),
-                            downloadButton("dlgtab", "Download")))
-
-  Condition3 <- switch(outType,
-             "SEFigures" = NULL,
-             "SEEstimates" = NULL, 
-             "SEModComparison" = NULL, 
-             "SEModSelection" = NULL, 
-             "CPFigures" = NULL, 
-             "CPEstimates" = NULL, 
-             "CPModComparison" = NULL, 
-             "CPModSelection" = NULL,
-             "MFigures" = "output.MModDone == 'OK'", 
-             "MSummary" = "output.MModDone == 'OK'", 
-             "gFigures" = NULL, 
-             "gSummary" = NULL)
-
-  Content3 <- switch(outType,
-             "SEFigures" = NULL,
-             "SEEstimates" = NULL, 
-             "SEModComparison" = NULL, 
-             "SEModSelection" = NULL, 
-             "CPFigures" = NULL, 
-             "CPEstimates" = NULL, 
-             "CPModComparison" = NULL, 
-             "CPModSelection" = NULL,
-             "MFigures" = list(plotOutput("fig_M", inline = TRUE), br(), br(),
-                            downloadButton("dlMfig", "Download")), 
-             "MSummary" = list(br(), dataTableOutput("table_M"), br(),
-                            downloadButton("dlMtab", "Download")), 
-             "gFigures" = NULL, 
-             "gSummary" = NULL)
   tabPanel(tName, br(), 
-    conditionalPanel(condition = Condition1, Content1),
-    conditionalPanel(condition = Condition2, Content2),
-    conditionalPanel(condition = Condition3, Content3)
+    conditionalPanel(condition = Condition[1], Content[1]),
+    conditionalPanel(condition = Condition[2], Content[2]),
+    conditionalPanel(condition = Condition[3], Content[3])
   )
 
 }

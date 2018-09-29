@@ -773,7 +773,6 @@ update_rv_run_SE <- function(rv, input){
 #' @export
 #'
 update_rv_run_SE_clear <- function(rv, input){
-
   rv$predictors_SE <- NULL
   rv$formula_p <- NULL
   rv$formula_k <- NULL

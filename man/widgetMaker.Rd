@@ -13,10 +13,10 @@ widgetMaker(Condition, Name, Fun, Label, Args)
 
 \item{Fun}{Function name (as character) used to create the widget.}
 
+\item{Label}{Label presented to the user in the UI for the widget.}
+
 \item{Args}{List of any additional arguments to be passed to the widget 
 creating function.}
-
-\item{Lable}{Label presented to the user in the UI for the widget.}
 }
 \value{
 HTML for the widget.
