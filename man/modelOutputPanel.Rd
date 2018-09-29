@@ -7,7 +7,7 @@
 modelOutputPanel(outType)
 }
 \arguments{
-\item{dataType}{Toggle control for the model type of the panel. One of 
+\item{outType}{Toggle control for the model type of the panel. One of 
 "SEFigures", "SEEstimates", "SEModComparison", "SEModSelection",
 "CPFigures", "CPEstimates", "CPModComparison", "CPModSelection",
 "gFigures", or "gSummary".}
