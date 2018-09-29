@@ -17,7 +17,6 @@ navbar <- function(){
   )
 }
 
-
 #' @title HTML tag functions
 #'
 #' @description This suite of functions are used for producing specific
