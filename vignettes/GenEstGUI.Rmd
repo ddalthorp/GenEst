@@ -9,35 +9,32 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+# Overview
 
-This document describes the codebase used to create the GenEst GUI
+This document describes the codebase used to create the GenEst Graphic User Interface (GUI).
 
-### Overview
+The Genest GUI is coded in HTML via external R packages (shiny, htmltools, shinyjs), as well as a number of internal functions to facilitate a simple, human-readable codebase underlying the app.
 
-The Graphic User Interface is coded in HTML via external R packages (shiny, htmltools, shinyjs), as well as a number of internal functions to facilitate a simple, human-readable codebase underlying the app.
+# User Interface
 
-The GenEst GUI is coded hierarchically using pages, panels, tabs, and widgets.
+### UI Function Hierarchy
 
+The GenEst User Interface is constructed using pages, panels, tabs, and widgets. The code is parsed into a series of hierarchical functions to facilitate readability and mobility of specific UI components.
 
-### GUI Function Hierarchy
-
-User Interface:
-
-* `GenEstUI(appType)` 
-  * `navbar()` (creates the title)
-  * `dataInputPanel()` 
+* `GenEstUI(appType)`
+  * `dataInputPanel()`
     * `dataInputSidebar()`
-      * ` dataInputWidget("SE")`
-      * ` dataInputWidget("CP")` 
-      * ` dataInputWidget("SS")` 
-      * ` dataInputWidget("DWP")` 
-      * ` dataInputWidget("CO")`
+      * `dataInputWidget("SE")`
+      * `dataInputWidget("CP")`
+      * `dataInputWidget("SS")`
+      * `dataInputWidget("DWP")`
+      * `dataInputWidget("CO")`
     * `loadedDataPanel()`
-      * ` dataTabPanel("SE")`
-      * ` dataTabPanel("CP")` 
-      * ` dataTabPanel("SS")` 
-      * ` dataTabPanel("DWP")` 
-      * ` dataTabPanel("CO")`
+      * `dataTabPanel("SE")`
+      * `dataTabPanel("CP")`
+      * `dataTabPanel("SS")`
+      * `dataTabPanel("DWP")`
+      * `dataTabPanel("CO")`
 	* `analysisPanel()`
     * `GeneralInputsPanel()`
       * `GeneralInputsSidebar()`
@@ -97,22 +94,58 @@ User Interface:
     * `gettingStartedPanel()`
       * `gettingStartedContent()`
     * `downloadsPanel()`
-      * ` dataDownloadsWidget("RP")`
-      * ` dataDownloadsWidget("RPbat")`
-      * ` dataDownloadsWidget("cleared")`
-      * ` dataDownloadsWidget("powerTower")`
-      * ` dataDownloadsWidget("PV")`
-      * ` dataDownloadsWidget("trough")`
-      * ` dataDownloadsWidget("mock")`
-      * ` dataDownloadsWidget("mock2")`
+      * `dataDownloadsWidget("RP")`
+      * `dataDownloadsWidget("RPbat")`
+      * `dataDownloadsWidget("cleared")`
+      * `dataDownloadsWidget("powerTower")`
+      * `dataDownloadsWidget("PV")`
+      * `dataDownloadsWidget("trough")`
+      * `dataDownloadsWidget("mock")`
+      * `dataDownloadsWidget("mock2")`
     * `aboutPanel()`
       * `aboutContent()`
-        * ` GenEstAuthors()`
-        * ` GenEstGUIauthors()`
-        * ` GenEstLicense()`
-        * ` GenEstAcknowledgements()`
-        * ` GenEstLogos()`
+        * `GenEstAuthors()`
+        * `GenEstGUIauthors()`
+        * `GenEstLicense()`
+        * `GenEstAcknowledgements()`
+        * `GenEstLogos()`
     * `disclaimersPanel(appType)`
       * `disclaimerContent(appType)`
-        * ` disclaimerUSGS()`
-        * ` disclaimerWEST(appType)`		
+        * `disclaimerUSGS()`
+        * `disclaimerWEST(appType)`		
+		
+### UI Widgets
+
+* `dataInputWidget(dataType)`
+* `modelInputWidget(inType)`		
+* `modelRunWidget(modType)`
+* `modelOutputWidget(modType)`	   
+* `dataDownloadsWidget(set)`
+* `modelSelectionWidget(modType)`	  
+* `kFixedWidget()`
+		
+### UI Panels
+
+* `dataTabPanel(dataType)`
+* `selectedDataPanel(modType)`
+* `modelOutputPanel(outType)`
+
+### UI Content
+
+* `gettingStartedContent()`
+* `aboutContent()`
+* `GenEstAuthors()`
+* `GenEstGUIAuthors()`
+* `GenEstLicense()`
+* `GenEstAcknowledgements()`
+* `GenEstLogos()`
+* `disclaimersContent(appType)`
+* `disclaimerUSGS()`
+* `disclaimerWEST(appType)`
+
+
+* `navbar()`
+
+# Execution 
+
+`runGenEst()`

@@ -81,7 +81,9 @@ or \code{"deploy"} for hosted version. Currently only differentiates the
 disclaimer text.}
 }
 \value{
-Each function returns a string of HTML code: \cr \cr 
+Each function returns a string of HTML code, either as a
+  \code{"shiny.tag.list"} object (in the case of \code{GenEstUI}) or a
+  \code{"shiny.tag"} object (in the case of the other functions). \cr \cr 
   \code{GenEstUI}: Full GenEst user interface.
 
 \code{dataInputPanel}: Data Input panel.
@@ -133,126 +135,115 @@ Each function returns a string of HTML code: \cr \cr
 }
 \description{
 This suite of functions create the HTML code underlying the
-  GenEst user interface (UI). \cr \cr 
-  \code{GenEstUI} creates the HTML code for the whole page by calling 
+  GenEst user interface (UI). See the "GenEst Graphic User Interface"
+  vignette for a more complete detailing of the codebase underlying
+  the GenEst UI. \cr \cr \code{GenEstUI}: whole application. Calls 
   \code{dataInputPanel}, \code{analysisPanel}, and \code{helpPanel}.
 
-\code{dataInputPanel} creates the HTML code for the Data Input
-  panel in the GenEst UI by calling \code{dataInputSidebar} and 
-  \code{loadedDataPanel}.
+\code{dataInputPanel}: Data Input panel. Calls 
+  \code{dataInputSidebar} and \code{loadedDataPanel}.
 
-\code{dataInputSidebar} creates the HTML code for the Data
-  Input panel's sidebar (where the data files are selected) by calling 
-  \code{\link{dataInputWidget}} for each of the data file types.
+\code{dataInputSidebar}: Data Input panel's sidebar (where the
+  data files are selected). Calls \code{\link{dataInputWidget}} for each 
+  data file type.
 
-\code{loadedDataPanel} creates the HTML code for the Data
-  Input panel's main page (where the data files are displayed) by calling 
-  \code{\link{dataTabPanel}} for each of the data file types.
+\code{loadedDataPanel}: Data Input panel's main page (where 
+  the data files are displayed). Calls \code{\link{dataTabPanel}} for each 
+  data file type.
 
-\code{analysisPanel} creates the HTML code for the Analysis
-  panel in the GenEst UI by calling \code{GeneralInputsPanel},
-  \code{SEPanel}, \code{CPPanel}, \code{MPanel}, and \code{gPanel}.
+\code{analysisPanel}: Analysis panel. Calls
+  \code{GeneralInputsPanel}, \code{SEPanel}, \code{CPPanel}, 
+  \code{MPanel}, and \code{gPanel}.
 
-\code{GeneralInputsPanel} creates the HTML code for the 
-  Analysis panel's General Inputs panel by calling 
-  \code{GeneralInputSidebar}.
+\code{GeneralInputsPanel}: Analysis panel's General Inputs 
+  panel. Calls \code{GeneralInputSidebar}.
 
-\code{GeneralInputSidebar} creates the HTML code for the 
+\code{GeneralInputSidebar}: 
   Analysis panel's General Inputs sidebar (where the Number of Iterations,
-  Confidence Level, and Size Class Column are selected) by calling 
-  \code{\link{modelInputWidget}} for each of the inputs.
+  Confidence Level, and Size Class Column are selected). Calls 
+  \code{\link{modelInputWidget}} for each input.
 
-\code{SEPanel} creates the HTML code for the Analysis
-  panel's Searcher Efficiency panel by calling 
-  \code{SESidebar} and \code{SEMainPanel}.
+\code{SEPanel}: Analysis panel's Searcher Efficiency panel.
+  Calls \code{SESidebar} and \code{SEMainPanel}.
 
-\code{SESidebar} creates the HTML code for the Analysis 
-  panel's Searcher Efficiency panel's sidebar (where the Observation 
-  Columns, Predictor Columns, and fixed-k values are input and where the 
-  Size Class, p formula, and k formula are selected for the outputs) by
-  calling \code{\link{modelInputWidget}} for each of the inputs,
-  \code{\link{modelRunWidget}} for running the model, and then 
+\code{SESidebar}: Analysis panel's Searcher Efficiency panel's
+  sidebar (where the Observation Columns, Predictor Columns, and fixed-k 
+  values are input and where the Size Class, p formula, and k formula are 
+  selected for the outputs). Calls \code{\link{modelInputWidget}} for each 
+  input, \code{\link{modelRunWidget}} for running the model button, and 
+  \code{\link{modelOutputWidget}} for output controls.
+
+\code{SEMainPanel}: Analysis panel's Searcher Efficiency 
+  panel's main panel (where the Selected Data, Model Estimates, Figures,
+  Model Comparison, and Model Selection are displayed). Calls 
+  \code{selectedDataPanel} for the selected data and then 
+   \code{modelOutputPanel} for each output.
+
+\code{CPPanel}: Analysis panel's Carcass Persistence panel. 
+  Calls \code{CPSidebar} and \code{CPMainPanel}.
+
+\code{CPSidebar}: Analysis panel's Carcass Persistence
+  panel's sidebar (where the Observation Columns, Predictor Columns, and
+  Distributions are input and where the Size Class, location formula,
+  and scale formula are selected for the outputs). Calls
+  \code{\link{modelInputWidget}} for each input, 
+  \code{\link{modelRunWidget}} for running the model button, and 
   \code{\link{modelOutputWidget}} for the output controls.
 
-\code{SEMainPanel} creates the HTML code for the Analysis 
-  panel's Searcher Efficiency panel's main panel (where the Selected Data,
-  Model Estimates, Figures, Model Comparison, and Model Selection are 
-  displayed) by calling \code{selectedDataPanel} for the selected
-  data and then \code{modelOutputPanel} for each of the outputs.
-
-\code{CPPanel} creates the HTML code for the Analysis
-  panel's Carcass Persistence panel by calling 
-  \code{CPSidebar} and \code{CPMainPanel}.
-
-\code{CPSidebar} creates the HTML code for the Analysis 
-  panel's Carcass Persistence panel's sidebar (where the Observation 
-  Columns, Predictor Columns, and Distributions are input and where the 
-  Size Class, location formula, and scale formula are selected for the 
-  outputs) by calling \code{\link{modelInputWidget}} for each of the 
-  inputs, \code{\link{modelRunWidget}} for running the model, and then 
-  \code{\link{modelOutputWidget}} for the output controls.
-
-\code{CPMainPanel} creates the HTML code for the Analysis 
-  panel's Carcass Persistence panel's main panel (where the Selected Data,
-  Model Estimates, Figures, Model Comparison, and Model Selection are 
-  displayed) by calling \code{selectedDataPanel} for the selected
-  data and then \code{modelOutputPanel} for each of the outputs.
-
-\code{MPanel} creates the HTML code for the Analysis
-  panel's Mortality Estimation panel by calling 
-  \code{MSidebar} and \code{MMainPanel}.
-
-\code{MSidebar} creates the HTML code for the Analysis 
-  panel's Mortality Estimation panel's sidebar (where the Search Schedule
-  and the assummed k (if needed) are input and where the Size Class, 
-  is selected for the outputs) by calling \code{\link{modelInputWidget}} 
-  for each of the inputs, \code{\link{modelRunWidget}} for running the 
-  model, and then \code{\link{modelOutputWidget}} for the output controls.
-
-\code{MMainPanel} creates the HTML code for the Analysis 
-  panel's Mortality Estimation panel's main panel (where the Figures, and
-  Summary are displayed) by calling \code{modelOutputPanel} for each of 
-  the outputs.
-
-\code{gPanel} creates the HTML code for the Analysis
-  panel's Detection Probability panel by calling 
-  \code{gSidebar} and \code{gMainPanel}.
-
-\code{gSidebar} creates the HTML code for the Analysis 
-  panel's Detection Probability panel's sidebar (where the Search Schedule
-  and the assummed k (if needed) are input and where the Size Class, 
-  is selected for the outputs) by calling \code{\link{modelInputWidget}} 
-  for each of the inputs, \code{\link{modelRunWidget}} for running the 
-  model, and then \code{\link{modelOutputWidget}} for the output controls.
-
-\code{gMainPanel} creates the HTML code for the Analysis 
-  panel's Detection Probability panel's main panel (where the Search 
-  Schedule, Figures, and Summary are displayed) by calling 
+\code{CPMainPanel}: Analysis panel's Carcass Persistence
+  panel's main panel (where the Selected Data, Model Estimates, Figures,
+  Model Comparison, and Model Selection are displayed). Calls
+  \code{selectedDataPanel} for the selected data and 
   \code{modelOutputPanel} for each of the outputs.
 
-\code{helpPanel} creates the HTML code for the Help panel in
-  the GenEst UI by calling \code{gettingStartedPanel},
-  \code{downloadsPanel}, \code{aboutPanel}, and \code{disclaimersPanel}.
+\code{MPanel}: Analysis panel's Mortality Estimation panel. 
+  Calls \code{MSidebar} and \code{MMainPanel}.
 
-\code{gettingStartedPanel} creates the HTML code for the Help
-  panel's Getting Started panel, which calls 
-  \code{\link{gettingStartedContent}}, the function containing the raw
-  content for the page (which is text heavy and so moved to its own 
+\code{MSidebar}: Analysis panel's Mortality Estimation panel's
+  sidebar (where the assummed k (if needed), Fraction of Facility Sampled,
+  DWP Column, and Date Found Column are input and the Size Class is
+  selected for the outputs). Calls 
+  \code{\link{modelInputWidget}} for each input,
+  \code{\link{modelRunWidget}} for running the model button, and 
+  \code{\link{modelOutputWidget}} for the output controls.
+
+\code{MMainPanel}: Analysis panel's Mortality Estimation 
+  panel's main panel (where Figures, and Summary are displayed). Calls 
+  \code{modelOutputPanel} for each output.
+
+\code{gPanel}: Analysis panel's Detection Probability panel. 
+  Calls \code{gSidebar} and \code{gMainPanel}.
+
+\code{gSidebar}: Analysis panel's Detection Probability 
+  panel's sidebar (where the Search Schedule and assummed k (if needed) are
+  input and the Size Class, is selected for the outputs). Calls 
+  \code{\link{modelInputWidget}} for each input, 
+  \code{\link{modelRunWidget}} for running the model button, and 
+  \code{\link{modelOutputWidget}} for the output controls.
+
+\code{gMainPanel}: Analysis panel's Detection Probability 
+  panel's main panel (where the Search Schedule, Figures, and Summary are 
+  displayed). Calls \code{modelOutputPanel} for each output.
+
+\code{helpPanel}: Help panel. Calls 
+  \code{gettingStartedPanel}, \code{downloadsPanel}, \code{aboutPanel}, 
+  and \code{disclaimersPanel}.
+
+\code{gettingStartedPanel}: Help panel's Getting Started 
+  panel. calls \code{\link{gettingStartedContent}}, the function containing
+  the raw content for the page (which is text heavy and so moved to its own 
   function).
 
-\code{downloadsPanel} creates the HTML code for the Help
-  panel's Downloads panel, which calls 
-  \code{\link{dataDownloadWidget}} for each of the data sets.
+\code{downloadsPanel}: Help panel's Downloads panel. Calls 
+  \code{\link{dataDownloadWidget}} for each data set.
 
-\code{aboutPanel} creates the HTML code for the Help
-  panel's About panel, which calls 
+\code{aboutPanel}: Help panel's About panel. Calls 
   \code{\link{aboutContent}}, the function containing the raw
   content for the page (which is text heavy and so moved to its own 
   function).
 
-\code{disclaimersPanel} creates the HTML code for the Help
-  panel's Disclaimers panel, which calls 
-  \code{\link{disclaimersContent}}, the function containing the raw
+\code{disclaimersPanel}: Help panel's Disclaimers panel. 
+  Calls \code{\link{disclaimersContent}}, the function containing the raw
   content for the page (which is text heavy and so moved to its own 
   function).
 }

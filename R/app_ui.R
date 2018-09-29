@@ -1,8 +1,9 @@
 #' @title Create the GenEst User Interface HTML
 #'
 #' @description This suite of functions create the HTML code underlying the
-#'   GenEst user interface (UI). \cr \cr 
-#'   \code{GenEstUI} creates the HTML code for the whole page by calling 
+#'   GenEst user interface (UI). See the "GenEst Graphic User Interface"
+#'   vignette for a more complete detailing of the codebase underlying
+#'   the GenEst UI. \cr \cr \code{GenEstUI}: whole application. Calls 
 #'   \code{dataInputPanel}, \code{analysisPanel}, and \code{helpPanel}.
 #'
 #' @details Currently there are few differences between the local and deployed
@@ -15,7 +16,9 @@
 #'   or \code{"deploy"} for hosted version. Currently only differentiates the
 #'   disclaimer text. 
 #'
-#' @return Each function returns a string of HTML code: \cr \cr 
+#' @return Each function returns a string of HTML code, either as a
+#'   \code{"shiny.tag.list"} object (in the case of \code{GenEstUI}) or a
+#'   \code{"shiny.tag"} object (in the case of the other functions). \cr \cr 
 #'   \code{GenEstUI}: Full GenEst user interface.
 #'
 #' @export
@@ -32,9 +35,8 @@ GenEstUI <- function(appType = "base"){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{dataInputPanel} creates the HTML code for the Data Input
-#'   panel in the GenEst UI by calling \code{dataInputSidebar} and 
-#'   \code{loadedDataPanel}.
+#' @description \code{dataInputPanel}: Data Input panel. Calls 
+#'   \code{dataInputSidebar} and \code{loadedDataPanel}.
 #'
 #' @return \code{dataInputPanel}: Data Input panel.
 #'
@@ -50,9 +52,9 @@ dataInputPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{dataInputSidebar} creates the HTML code for the Data
-#'   Input panel's sidebar (where the data files are selected) by calling 
-#'   \code{\link{dataInputWidget}} for each of the data file types. 
+#' @description \code{dataInputSidebar}: Data Input panel's sidebar (where the
+#'   data files are selected). Calls \code{\link{dataInputWidget}} for each 
+#'   data file type. 
 #'
 #' @return \code{dataInputSidebar}: Data Input sidebar.
 #'
@@ -74,9 +76,9 @@ dataInputSidebar <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{loadedDataPanel} creates the HTML code for the Data
-#'   Input panel's main page (where the data files are displayed) by calling 
-#'   \code{\link{dataTabPanel}} for each of the data file types. 
+#' @description \code{loadedDataPanel}: Data Input panel's main page (where 
+#'   the data files are displayed). Calls \code{\link{dataTabPanel}} for each 
+#'   data file type. 
 #'
 #' @return \code{loadedDataPanel}: Data Input data panel.
 #'
@@ -96,9 +98,9 @@ loadedDataPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{analysisPanel} creates the HTML code for the Analysis
-#'   panel in the GenEst UI by calling \code{GeneralInputsPanel},
-#'   \code{SEPanel}, \code{CPPanel}, \code{MPanel}, and \code{gPanel}.
+#' @description \code{analysisPanel}: Analysis panel. Calls
+#'   \code{GeneralInputsPanel}, \code{SEPanel}, \code{CPPanel}, 
+#'   \code{MPanel}, and \code{gPanel}.
 #'
 #' @return \code{AnalysisPanel}: Analysis panel.
 #'
@@ -118,9 +120,8 @@ analysisPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{GeneralInputsPanel} creates the HTML code for the 
-#'   Analysis panel's General Inputs panel by calling 
-#'   \code{GeneralInputSidebar}.
+#' @description \code{GeneralInputsPanel}: Analysis panel's General Inputs 
+#'   panel. Calls \code{GeneralInputSidebar}.
 #'
 #' @return \code{GeneralInputsPanel}: Analysis -> General Inputs panel.
 #'
@@ -134,10 +135,10 @@ GeneralInputsPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{GeneralInputSidebar} creates the HTML code for the 
+#' @description \code{GeneralInputSidebar}: 
 #'   Analysis panel's General Inputs sidebar (where the Number of Iterations,
-#'   Confidence Level, and Size Class Column are selected) by calling 
-#'   \code{\link{modelInputWidget}} for each of the inputs. 
+#'   Confidence Level, and Size Class Column are selected). Calls 
+#'   \code{\link{modelInputWidget}} for each input. 
 #'
 #' @return \code{GeneralInputSidebar}: Analysis -> General Inputs sidebar.
 #'
@@ -153,9 +154,8 @@ GeneralInputSidebar <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{SEPanel} creates the HTML code for the Analysis
-#'   panel's Searcher Efficiency panel by calling 
-#'   \code{SESidebar} and \code{SEMainPanel}.
+#' @description \code{SEPanel}: Analysis panel's Searcher Efficiency panel.
+#'   Calls \code{SESidebar} and \code{SEMainPanel}.
 #'
 #' @return \code{SEPanel}: Analysis -> Searcher Efficiency panel.
 #'
@@ -170,13 +170,12 @@ SEPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{SESidebar} creates the HTML code for the Analysis 
-#'   panel's Searcher Efficiency panel's sidebar (where the Observation 
-#'   Columns, Predictor Columns, and fixed-k values are input and where the 
-#'   Size Class, p formula, and k formula are selected for the outputs) by
-#'   calling \code{\link{modelInputWidget}} for each of the inputs,
-#'   \code{\link{modelRunWidget}} for running the model, and then 
-#'   \code{\link{modelOutputWidget}} for the output controls. 
+#' @description \code{SESidebar}: Analysis panel's Searcher Efficiency panel's
+#'   sidebar (where the Observation Columns, Predictor Columns, and fixed-k 
+#'   values are input and where the Size Class, p formula, and k formula are 
+#'   selected for the outputs). Calls \code{\link{modelInputWidget}} for each 
+#'   input, \code{\link{modelRunWidget}} for running the model button, and 
+#'   \code{\link{modelOutputWidget}} for output controls. 
 #'
 #' @return \code{SESidebar}: Analysis -> Searcher Efficiency sidebar.
 #'
@@ -196,11 +195,11 @@ SESidebar <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{SEMainPanel} creates the HTML code for the Analysis 
-#'   panel's Searcher Efficiency panel's main panel (where the Selected Data,
-#'   Model Estimates, Figures, Model Comparison, and Model Selection are 
-#'   displayed) by calling \code{selectedDataPanel} for the selected
-#'   data and then \code{modelOutputPanel} for each of the outputs.
+#' @description \code{SEMainPanel}: Analysis panel's Searcher Efficiency 
+#'   panel's main panel (where the Selected Data, Model Estimates, Figures,
+#'   Model Comparison, and Model Selection are displayed). Calls 
+#'   \code{selectedDataPanel} for the selected data and then 
+#'    \code{modelOutputPanel} for each output.
 #'
 #' @return \code{SEMainPanel}: Analysis -> Searcher Efficiency main panel.
 #'
@@ -220,9 +219,8 @@ SEMainPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{CPPanel} creates the HTML code for the Analysis
-#'   panel's Carcass Persistence panel by calling 
-#'   \code{CPSidebar} and \code{CPMainPanel}.
+#' @description \code{CPPanel}: Analysis panel's Carcass Persistence panel. 
+#'   Calls \code{CPSidebar} and \code{CPMainPanel}.
 #'
 #' @return \code{CPPanel}: Analysis -> Carcass Persistence panel.
 #'
@@ -237,12 +235,12 @@ CPPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{CPSidebar} creates the HTML code for the Analysis 
-#'   panel's Carcass Persistence panel's sidebar (where the Observation 
-#'   Columns, Predictor Columns, and Distributions are input and where the 
-#'   Size Class, location formula, and scale formula are selected for the 
-#'   outputs) by calling \code{\link{modelInputWidget}} for each of the 
-#'   inputs, \code{\link{modelRunWidget}} for running the model, and then 
+#' @description \code{CPSidebar}: Analysis panel's Carcass Persistence
+#'   panel's sidebar (where the Observation Columns, Predictor Columns, and
+#'   Distributions are input and where the Size Class, location formula,
+#'   and scale formula are selected for the outputs). Calls
+#'   \code{\link{modelInputWidget}} for each input, 
+#'   \code{\link{modelRunWidget}} for running the model button, and 
 #'   \code{\link{modelOutputWidget}} for the output controls. 
 #'
 #' @return \code{CPSidebar}: Analysis -> Carcass Persistence sidebar.
@@ -264,11 +262,11 @@ CPSidebar <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{CPMainPanel} creates the HTML code for the Analysis 
-#'   panel's Carcass Persistence panel's main panel (where the Selected Data,
-#'   Model Estimates, Figures, Model Comparison, and Model Selection are 
-#'   displayed) by calling \code{selectedDataPanel} for the selected
-#'   data and then \code{modelOutputPanel} for each of the outputs.
+#' @description \code{CPMainPanel}: Analysis panel's Carcass Persistence
+#'   panel's main panel (where the Selected Data, Model Estimates, Figures,
+#'   Model Comparison, and Model Selection are displayed). Calls
+#'   \code{selectedDataPanel} for the selected data and 
+#'   \code{modelOutputPanel} for each of the outputs.
 #'
 #' @return \code{CPMainPanel}: Analysis -> Carcass Persistence main panel.
 #'
@@ -288,9 +286,8 @@ CPMainPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{MPanel} creates the HTML code for the Analysis
-#'   panel's Mortality Estimation panel by calling 
-#'   \code{MSidebar} and \code{MMainPanel}.
+#' @description \code{MPanel}: Analysis panel's Mortality Estimation panel. 
+#'   Calls \code{MSidebar} and \code{MMainPanel}.
 #'
 #' @return \code{MPanel}: Analysis -> Mortality Estimation panel.
 #'
@@ -305,12 +302,13 @@ MPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{MSidebar} creates the HTML code for the Analysis 
-#'   panel's Mortality Estimation panel's sidebar (where the Search Schedule
-#'   and the assummed k (if needed) are input and where the Size Class, 
-#'   is selected for the outputs) by calling \code{\link{modelInputWidget}} 
-#'   for each of the inputs, \code{\link{modelRunWidget}} for running the 
-#'   model, and then \code{\link{modelOutputWidget}} for the output controls. 
+#' @description \code{MSidebar}: Analysis panel's Mortality Estimation panel's
+#'   sidebar (where the assummed k (if needed), Fraction of Facility Sampled,
+#'   DWP Column, and Date Found Column are input and the Size Class is
+#'   selected for the outputs). Calls 
+#'   \code{\link{modelInputWidget}} for each input,
+#'   \code{\link{modelRunWidget}} for running the model button, and 
+#'   \code{\link{modelOutputWidget}} for the output controls. 
 #'
 #' @return \code{MSidebar}: Analysis -> Mortality Estimation 
 #'   sidebar.
@@ -321,7 +319,6 @@ MSidebar <- function(){
   sidebarPanel(width = 3,
     b(u(big("Model Inputs:"))),
     br(), br(),
-    modelInputWidget("kFill"),
     modelInputWidget("frac"),
     modelInputWidget("DWPCol"),
     modelInputWidget("dateFoundCol"),
@@ -332,10 +329,9 @@ MSidebar <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{MMainPanel} creates the HTML code for the Analysis 
-#'   panel's Mortality Estimation panel's main panel (where the Figures, and
-#'   Summary are displayed) by calling \code{modelOutputPanel} for each of 
-#'   the outputs.
+#' @description \code{MMainPanel}: Analysis panel's Mortality Estimation 
+#'   panel's main panel (where Figures, and Summary are displayed). Calls 
+#'   \code{modelOutputPanel} for each output.
 #'
 #' @return \code{MMainPanel}: Analysis -> Mortality Estimation main panel.
 #'
@@ -352,9 +348,8 @@ MMainPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{gPanel} creates the HTML code for the Analysis
-#'   panel's Detection Probability panel by calling 
-#'   \code{gSidebar} and \code{gMainPanel}.
+#' @description \code{gPanel}: Analysis panel's Detection Probability panel. 
+#'   Calls \code{gSidebar} and \code{gMainPanel}.
 #'
 #' @return \code{gPanel}: Analysis -> Detection Probability panel.
 #'
@@ -369,12 +364,12 @@ gPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{gSidebar} creates the HTML code for the Analysis 
-#'   panel's Detection Probability panel's sidebar (where the Search Schedule
-#'   and the assummed k (if needed) are input and where the Size Class, 
-#'   is selected for the outputs) by calling \code{\link{modelInputWidget}} 
-#'   for each of the inputs, \code{\link{modelRunWidget}} for running the 
-#'   model, and then \code{\link{modelOutputWidget}} for the output controls. 
+#' @description \code{gSidebar}: Analysis panel's Detection Probability 
+#'   panel's sidebar (where the Search Schedule and assummed k (if needed) are
+#'   input and the Size Class, is selected for the outputs). Calls 
+#'   \code{\link{modelInputWidget}} for each input, 
+#'   \code{\link{modelRunWidget}} for running the model button, and 
+#'   \code{\link{modelOutputWidget}} for the output controls. 
 #'
 #' @return \code{gSidebar}: Analysis -> Detection Probability sidebar.
 #'
@@ -384,7 +379,6 @@ gSidebar <- function(){
   sidebarPanel(width = 3,
     b(u(big("Model Inputs:"))),
     br(), br(),
-    modelInputWidget("kFill_g"),
     modelInputWidget("gSearchInterval"),
     modelInputWidget("gSearchMax"),
     modelInputWidget("useSSinputs"),
@@ -396,10 +390,9 @@ gSidebar <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{gMainPanel} creates the HTML code for the Analysis 
-#'   panel's Detection Probability panel's main panel (where the Search 
-#'   Schedule, Figures, and Summary are displayed) by calling 
-#'   \code{modelOutputPanel} for each of the outputs.
+#' @description \code{gMainPanel}: Analysis panel's Detection Probability 
+#'   panel's main panel (where the Search Schedule, Figures, and Summary are 
+#'   displayed). Calls \code{modelOutputPanel} for each output.
 #'
 #' @return \code{gMainPanel}: Analysis -> Detection Probability main panel.
 #'
@@ -418,9 +411,9 @@ gMainPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{helpPanel} creates the HTML code for the Help panel in
-#'   the GenEst UI by calling \code{gettingStartedPanel},
-#'   \code{downloadsPanel}, \code{aboutPanel}, and \code{disclaimersPanel}.
+#' @description \code{helpPanel}: Help panel. Calls 
+#'   \code{gettingStartedPanel}, \code{downloadsPanel}, \code{aboutPanel}, 
+#'   and \code{disclaimersPanel}.
 #'
 #' @return \code{helpPanel}: Help panel.
 #'
@@ -439,10 +432,9 @@ helpPanel <- function(appType = "base"){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{gettingStartedPanel} creates the HTML code for the Help
-#'   panel's Getting Started panel, which calls 
-#'   \code{\link{gettingStartedContent}}, the function containing the raw
-#'   content for the page (which is text heavy and so moved to its own 
+#' @description \code{gettingStartedPanel}: Help panel's Getting Started 
+#'   panel. calls \code{\link{gettingStartedContent}}, the function containing
+#'   the raw content for the page (which is text heavy and so moved to its own 
 #'   function).
 #'
 #' @return \code{gettingStartedPanel}: Help -> Getting Started panel.
@@ -457,9 +449,8 @@ gettingStartedPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{downloadsPanel} creates the HTML code for the Help
-#'   panel's Downloads panel, which calls 
-#'   \code{\link{dataDownloadWidget}} for each of the data sets.
+#' @description \code{downloadsPanel}: Help panel's Downloads panel. Calls 
+#'   \code{\link{dataDownloadWidget}} for each data set.
 #'
 #' @return \code{downloadsPanel}: Help -> Downloads panel.
 #'
@@ -487,8 +478,7 @@ downloadsPanel<- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{aboutPanel} creates the HTML code for the Help
-#'   panel's About panel, which calls 
+#' @description \code{aboutPanel}: Help panel's About panel. Calls 
 #'   \code{\link{aboutContent}}, the function containing the raw
 #'   content for the page (which is text heavy and so moved to its own 
 #'   function).
@@ -505,9 +495,8 @@ aboutPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{disclaimersPanel} creates the HTML code for the Help
-#'   panel's Disclaimers panel, which calls 
-#'   \code{\link{disclaimersContent}}, the function containing the raw
+#' @description \code{disclaimersPanel}: Help panel's Disclaimers panel. 
+#'   Calls \code{\link{disclaimersContent}}, the function containing the raw
 #'   content for the page (which is text heavy and so moved to its own 
 #'   function).
 #'
