@@ -33,6 +33,10 @@ update_input_data_SE <- function(rv, session){
     selected = rv$sizeclassCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
+
+  if (rv$nsizeclasses > 1){
+    updateSelectizeInput(session, "DWPCol", selected = " ")
+  }
 }
 
 #' @title Update the inputs when SE data are cleared out

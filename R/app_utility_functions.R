@@ -570,3 +570,142 @@ plotNA <- function(type = "model"){
   text(0.01, 0.9, badText, adj = 0)
 }
 
+#' @title Create the main reactive value list for GenEst 
+#'
+#' @description Create a list of reactive values as used across the components
+#'   of the GenEst application
+#'
+#' @return a reactive values list
+#'
+#' @export
+#'
+createReactiveValues <- function(){
+  reactiveValues(
+    data_SE = NULL, data_CP = NULL, data_SS = NULL, data_DWP = NULL, 
+    data_CO = NULL,
+    filename_SE = NULL, filename_CP = NULL,
+    colNames_SE = NULL, colNames_SE_preds = NULL, colNames_SE_preds0 = NULL,
+    toRemove_SE_obs = NULL, toRemove_SE_preds = NULL,
+    colNames_SE_obs = NULL, colNames_SE_obs0 = NULL, 
+    colNames_CP = NULL, colNames_CP_preds = NULL, colNames_CP_preds0 = NULL, 
+    toRemove_CP_preds = NULL,
+    colNames_ltp = NULL, colNames_ltp0 = NULL, toRemove_ltp = NULL,   
+    colNames_fta = NULL, colNames_fta0 = NULL, toRemove_fta = NULL,
+
+    colNames_SS = NULL, colNames_SS_sel = NULL, colNames_SS_nosel = NULL, 
+    colNames_DWP = NULL,
+    colNames_CO = NULL, colNames_COdates = NULL,
+    colNames_size = NULL,
+
+    nsim = 1000, CL = 0.90,
+
+    sizeclassCol = NULL, sizeClassCol0 = NULL, toRemove_sizeClassCol = NULL,
+    sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
+    sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL, 
+    nsizeclasses = NULL,
+
+    obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL, 
+    formula_p = NULL, formula_k = NULL, kFixedChoice = NULL, kFixed = NULL, 
+    mods_SE = NULL, mods_SE_og = NULL, sizeclasses_SE = NULL, 
+    outSEpk = NULL, AICcTab_SE = NULL, modOrder_SE = NULL, modNames_SE = NULL,
+    modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
+    best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
+    modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
+    kFill = NULL, sizeclasses_k = NULL, nsizeclasses_k = NULL, 
+
+    ltp = NULL, fta = NULL, preds_CP = NULL, dists = NULL, 
+    predictors_CP = NULL, formula_l = NULL, formula_s = NULL, 
+    mods_CP = NULL, mods_CP_og = NULL, CPdls = NULL, outCPdlsfig = NULL, 
+    outCPdlstab = NULL, sizeclasses_CP = NULL, AICcTab_CP = NULL, 
+    modOrder_CP = NULL, modNames_CP = NULL, modNames_CPdist = NULL, 
+    modNames_CPl = NULL, modNames_CPs = NULL, modSet_CP = NULL, 
+    best_CP = NULL, modTab_CP = NULL, modTabPretty_CP = NULL, 
+    modTabDL_CP = NULL, figH_CP = 700, figW_CP = 800,
+
+    M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, 
+    sizeclassCol_M = NULL, DWPCol = NULL, dateFoundCol = NULL, 
+    SEmodToUse = NULL, CPmodToUse = NULL,
+    split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0, 
+    figH_M = 600, figW_M = 800,
+
+    SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "),
+    avgSI = NULL, SStemp = NULL, gSearchInterval = 7, gSearchMax = 364,
+    kFill_g = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
+    gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
+    figH_g = 400, figW_g = 800,
+
+    kCheck = NA, kCheck_g = NA, csvformat = NULL
+  )
+}
+
+#' @title Update the size classes
+#'
+#' @description Determine the options for size classes, based on a data table
+#'   and column name, returning \code{NULL} if no size class column is
+#'   provided
+#'
+#' @param data data table to draw sizes from
+#'
+#' @param sizeclassCol size class column name 
+#'
+#' @return unique size classes
+#'
+#' @export
+#'
+updateSizeclasses <- function(data, sizeclassCol){
+  if (is.null(sizeclassCol)){
+    return("all")
+  }
+  return(as.character(unique(data[ , sizeclassCol])))
+}
+
+#' @title Locate the sizeclass selected by the inputs
+#'
+#' @description Locate the selection of a size class from the size class 
+#'   column, retuning the first option from the size classes if the selection
+#'   is not available. 
+#'
+#' @param sizeclasses size class options
+#'
+#' @param choice size class chosen
+#'
+#' @return location of the size class chosen
+#'
+#' @export
+#'
+pickSizeclass <- function(sizeclasses, choice){
+
+  sizeclass <- NULL
+  if (!(choice %in% sizeclasses)){
+    choice <- sizeclasses[1]
+  }
+  sizeclass <- sizeclasses[which(sizeclasses == choice)]
+  return(sizeclass)
+}
+
+#' @title Update the name of the size class column based on available names
+#'
+#' @description Update the size class column name based on the available
+#'   options. If the existing size class column name is no longer in the
+#'   set of available names, a NULL is returned to reset the column name.
+#'
+#' @param sizeclassCol current size class column name
+#'
+#' @param colNames_size updated vector of size column names in all needed 
+#'   tables
+#'
+#' @return updated sizeclassCol
+#'
+#' @export
+#'
+updateSizeclassCol <- function(sizeclassCol, colNames_size){
+  if (!is.null(sizeclassCol)){
+    if (!(sizeclassCol %in% colNames_size)){
+      NULL
+    } else{
+      sizeclassCol
+    }
+  } else{
+    NULL
+  }
+}

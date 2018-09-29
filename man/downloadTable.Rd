@@ -10,6 +10,9 @@ downloadTable(filename, tablename, csvformat)
 \item{filename}{the name for the file writing out}
 
 \item{tablename}{the name of the table in the rv list}
+
+\item{csvformat}{format for .csv file: "" or NULL for comma-separated, 2 
+for semi-colon separated}
 }
 \value{
 a download handler function
