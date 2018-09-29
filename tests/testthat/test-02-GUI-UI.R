@@ -50,7 +50,7 @@ test_that("Standard widget functions produce HTML", {
   expect_is(dataInputWidget("CO")[[1]], "shiny.tag")
   expect_is(dataInputWidget("CO")[[2]], "shiny.tag")
   expect_is(dataInputWidget("CO")[[3]], "shiny.tag")
-  expect_error(dataInputWidget("_NOTRIGHT_"))
+  expect_error(dataInputWidget("_NOT_RIGHT_"))
   expect_is(dataDownloadWidget("mock"), "shiny.tag")
   expect_is(dataDownloadWidget("mock2"), "shiny.tag")
   expect_is(dataDownloadWidget("RP"), "shiny.tag")
@@ -59,27 +59,25 @@ test_that("Standard widget functions produce HTML", {
   expect_is(dataDownloadWidget("powerTower"), "shiny.tag")
   expect_is(dataDownloadWidget("PV"), "shiny.tag")
   expect_is(dataDownloadWidget("trough"), "shiny.tag")
-  expect_error(dataDownloadWidget("_NOTRIGHT_"))
+  expect_error(dataDownloadWidget("_NOT_RIGHT_"))
   expect_is(modelInputWidget("nsim"), "shiny.tag")
   expect_is(modelInputWidget("CL"), "shiny.tag")
   expect_is(modelInputWidget("sizeclassCol"), "shiny.tag")
   expect_is(modelInputWidget("obsCols_SE"), "shiny.tag")
   expect_is(modelInputWidget("preds_SE"), "shiny.tag")
-  expect_is(modelInputWidget("kFixed"), "shiny.tag")
+  expect_is(modelInputWidget("kFixedInput"), "shiny.tag")
   expect_is(modelInputWidget("ltp"), "shiny.tag")
   expect_is(modelInputWidget("fta"), "shiny.tag")
   expect_is(modelInputWidget("preds_CP"), "shiny.tag")
   expect_is(modelInputWidget("dists"), "shiny.tag")
-  expect_is(modelInputWidget("kFill"), "shiny.tag")
   expect_is(modelInputWidget("frac"), "shiny.tag")
   expect_is(modelInputWidget("DWPCol"), "shiny.tag")
   expect_is(modelInputWidget("dateFoundCol"), "shiny.tag")
-  expect_is(modelInputWidget("kFill_g"), "shiny.tag")
   expect_is(modelInputWidget("gSearchInterval"), "shiny.tag")
   expect_is(modelInputWidget("gSearchMax"), "shiny.tag")
   expect_is(modelInputWidget("useSSinputs"), "shiny.tag")
   expect_is(modelInputWidget("useSSdata"), "shiny.tag")
-  expect_error(modelInputWidget("_NOTRIGHT_"))
+  expect_error(modelInputWidget("_NOT_RIGHT_"))
   expect_is(modelRunWidget("SE")[[1]], "shiny.tag")
   expect_is(modelRunWidget("SE")[[2]], "shiny.tag")
   expect_is(modelRunWidget("SE")[[3]], "shiny.tag")
@@ -96,27 +94,27 @@ test_that("Standard widget functions produce HTML", {
   expect_is(modelRunWidget("CP"), "list")
   expect_is(modelRunWidget("M"), "list")
   expect_is(modelRunWidget("g"), "list")
-  expect_error(modelRunWidget("_NOTRIGHT_"))
+  expect_error(modelRunWidget("_NOT_RIGHT_"))
   expect_is(modelOutputWidget("SE"), "shiny.tag")
   expect_is(modelOutputWidget("CP"), "shiny.tag")
   expect_is(modelOutputWidget("M"), "shiny.tag")
   expect_is(modelOutputWidget("g"), "shiny.tag")
-  expect_error(modelOutputWidget("_NOTRIGHT_"))
+  expect_error(modelOutputWidget("_NOT_RIGHT_"))
 })
 
-test_that("Model Selection Menu Widget Function Produces an HTML-rendering
+test_that("Model Selection Menu Widget function produces an HTML-rendering
            shiny function", {
 
-  expect_error(modelSelectionWidget("_NOTRIGHT_"))
-  expect_error(modelSelectionWidget("_NOTRIGHT_", "SE"))
-  expect_error(modelSelectionWidget("_NOTRIGHT_", "CP"))
-  expect_error(modelSelectionWidgetHeader("_NOTRIGHT_"))
+  expect_error(modelSelectionWidget("_NOT_RIGHT_"))
+  expect_error(modelSelectionWidget("_NOT_RIGHT_", "SE"))
+  expect_error(modelSelectionWidget("_NOT_RIGHT_", "CP"))
+  expect_error(modelSelectionWidgetHeader("_NOT_RIGHT_"))
 
-  expect_error(modelSelectionWidgetRow("_NOTRIGHT_"))
-  expect_error(modelSelectionWidgetRow("_NOTRIGHT_", "SE"))
-  expect_error(modelSelectionWidgetRow("_NOTRIGHT_", "CP"))
-  expect_error(modelSelectionWidgetRow("_NOTRIGHT_", "SE", 1))
-  expect_error(modelSelectionWidgetRow("_NOTRIGHT_", "CP", 1))
+  expect_error(modelSelectionWidgetRow("_NOT_RIGHT_"))
+  expect_error(modelSelectionWidgetRow("_NOT_RIGHT_", "SE"))
+  expect_error(modelSelectionWidgetRow("_NOT_RIGHT_", "CP"))
+  expect_error(modelSelectionWidgetRow("_NOT_RIGHT_", "SE", 1))
+  expect_error(modelSelectionWidgetRow("_NOT_RIGHT_", "CP", 1))
 
   data(mock)
   modSetSize <- pkmSetSize(data = mock$SE, formula_p = p ~ 1, 
@@ -124,18 +122,26 @@ test_that("Model Selection Menu Widget Function Produces an HTML-rendering
   expect_is(modelSelectionWidget(modSetSize, "SE"), "shiny.render.function")
   expect_is(modelSelectionWidgetHeader(modSetSize), "character")
   expect_is(modelSelectionWidgetRow(modSetSize, "SE", 1), "shiny.tag")
-  expect_error(modelSelectionWidgetRow(modSetSize, "_NOTRIGHT_", 1))
+  expect_error(modelSelectionWidgetRow(modSetSize, "_NOT_RIGHT_", 1))
   expect_error(modelSelectionWidgetRow(modSetSize, "SE", 10))
-  modSetSize <- cpmSetSize(data = mock$SE, formula_l = l ~ 1, 
-                  formula_s = s ~ 1, sizeclassCol = "Size")
+  modSetSize <- cpmSetSize(data = mock$CP, formula_l = l ~ 1, 
+                  formula_s = s ~ 1, sizeclassCol = "Size",
+                  left = "LastPresentDecimalDays", 
+                  right = "FirstAbsentDecimalDays")
   expect_is(modelSelectionWidget(modSetSize, "CP"), "shiny.render.function")
 
   modSetSize <- pkmSetSize(data = mock$SE, formula_p = p ~ 1, 
                   formula_k = k ~ 1)
-  expect_error(modelSelectionWidget(modSetSize, "SE"))
-  modSetSize <- cpmSetSize(data = mock$SE, formula_l = l ~ 1, 
-                  formula_s = s ~ 1)
-  expect_error(modelSelectionWidget(modSetSize, "CP"))
+  expect_is(modelSelectionWidget(modSetSize, "SE"), "shiny.render.function")
+  expect_is(modelSelectionWidgetHeader(modSetSize), "character")
+  expect_is(modelSelectionWidgetRow(modSetSize, "SE", 1), "shiny.tag")
+  expect_error(modelSelectionWidgetRow(modSetSize, "_NOT_RIGHT_", 1))
+  expect_error(modelSelectionWidgetRow(modSetSize, "SE", 10))
+  modSetSize <- cpmSetSize(data = mock$CP, formula_l = l ~ 1, 
+                  formula_s = s ~ 1,
+                  left = "LastPresentDecimalDays", 
+                  right = "FirstAbsentDecimalDays")
+  expect_is(modelSelectionWidget(modSetSize, "CP"), "shiny.render.function")
 
   modSet <- pkmSet(data = mock$SE, formula_p = p ~ 1, formula_k = k ~ 1)
   expect_error(modelSelectionWidget(modSet, "SE"))
@@ -143,7 +149,7 @@ test_that("Model Selection Menu Widget Function Produces an HTML-rendering
   expect_error(modelSelectionWidget(mod, "SE"))
 })
 
-test_that("kFixed Widget Function Produces an HTML-rendering shiny 
+test_that("kFixed Widget function produces an HTML-rendering shiny 
            function", {
 
   expect_is(kFixedWidgetHeader("all"), "shiny.tag")
@@ -155,8 +161,37 @@ test_that("kFixed Widget Function Produces an HTML-rendering shiny
   expect_is(kFixedWidget("all"), "shiny.render.function")
   expect_is(kFixedWidget(c("s", "m")), "shiny.render.function")
   expect_error(kFixedWidget())
+})
 
+test_that("widgetMaker makes widgets",{
+  expect_is(widgetMaker("", "OK", "selectizeInput", "LABEL", 
+              list(choices = 1, selected = 1)), "shiny.tag")
+  expect_is(widgetMaker("", "OK", "numericInput", "LABEL", 
+              list(value = 1)), "shiny.tag")
+  expect_is(widgetMaker("", "OK", "htmlOutput", "LABEL", 
+              list(NULL)), "shiny.tag")
+  expect_is(widgetMaker("", "OK", "checkboxGroupInput", "LABEL", 
+              list(choices = "1", selected = "1")), "shiny.tag")
+  expect_error(widgetMaker())
+  expect_error(widgetMaker("", "OK", "_NOT_RIGHT_", "LABEL", list(NULL)))
+})
 
+test_that("Widget preTextMaker makes conditional text (list of HTML)",{
+  expect_is(preTextMaker("SE"), "list")
+  expect_is(preTextMaker("SE")[[1]], "shiny.tag")
+  expect_is(preTextMaker("CP"), "list")
+  expect_is(preTextMaker("CP")[[1]], "shiny.tag")
+  expect_is(preTextMaker("M"), "list")
+  expect_is(preTextMaker("M")[[1]], "shiny.tag")
+  expect_is(preTextMaker("g"), "list")
+  expect_is(preTextMaker("g")[[1]], "shiny.tag")
+  expect_error(preTextMaker("_NOT_RIGHT_"))
+})
+
+test_that("The widget for the split button combo produces list of HTML", {
+  expect_is(splitButtonWidget(), "list")
+  expect_equal(length(splitButtonWidget()), 2)
+  expect_is(splitButtonWidget()[[1]], "shiny.tag")
 })
 
 test_that("Panel functions produce HTML", {
@@ -165,11 +200,11 @@ test_that("Panel functions produce HTML", {
   expect_is(dataTabPanel("SS"), "shiny.tag")
   expect_is(dataTabPanel("DWP"), "shiny.tag")
   expect_is(dataTabPanel("CO"), "shiny.tag")
-  expect_error(dataTabPanel("_NOTRIGHT_"))
+  expect_error(dataTabPanel("_NOT_RIGHT_"))
   expect_is(selectedDataPanel("SE"), "shiny.tag")
   expect_is(selectedDataPanel("CP"), "shiny.tag")
   expect_is(selectedDataPanel("g"), "shiny.tag")
-  expect_error(selectedDataPanel("_NOTRIGHT_"))
+  expect_error(selectedDataPanel("_NOT_RIGHT_"))
   expect_is(modelOutputPanel("SEFigures"), "shiny.tag")
   expect_is(modelOutputPanel("SEEstimates"), "shiny.tag")
   expect_is(modelOutputPanel("SEModComparison"), "shiny.tag")
@@ -182,7 +217,7 @@ test_that("Panel functions produce HTML", {
   expect_is(modelOutputPanel("MSummary"), "shiny.tag")
   expect_is(modelOutputPanel("gFigures"), "shiny.tag")
   expect_is(modelOutputPanel("gSummary"), "shiny.tag")
-  expect_error(modelOutputPanel("_NOTRIGHT_"))
+  expect_error(modelOutputPanel("_NOT_RIGHT_"))
 })
 
 
@@ -199,14 +234,14 @@ test_that("Content functions produce content (text or HTML)", {
   expect_is(disclaimersContent(), "shiny.tag")
   expect_is(disclaimersContent("base"), "shiny.tag")
   expect_is(disclaimersContent("deploy"), "shiny.tag")
-  expect_error(disclaimersContent("_NOTRIGHT_"))
+  expect_error(disclaimersContent("_NOT_RIGHT_"))
   expect_is(disclaimerUSGS(), "character")
   expect_is(disclaimerWEST("base"), "character")
   expect_is(disclaimerWEST("deploy"), "character")
-  expect_error(disclaimerWEST("_NOTRIGHT_"))
+  expect_error(disclaimerWEST("_NOT_RIGHT_"))
 })
 
-test_that("navbar", {
+test_that("navbar generates HTML", {
   expect_is(navbar(), "shiny.tag")
 })
 
@@ -222,24 +257,29 @@ test_that("HTML tag functions", {
   expect_is(center(), "html")
 })
 
-test_that("Inline CSS function", {
+test_that("Inline CSS function creates an appropriate shiny tag", {
   expect_is(GenEstInlineCSS(), "shiny.tag")
   expect_is(GenEstInlineCSS()[["children"]][[1]], "shiny.tag")
 })
 
-test_that("JavaScript function", {
+test_that("JavaScript function creates an appropriate shiny tag", {
   expect_is(GenEstShinyJS(), "shiny.tag")
   expect_is(GenEstShinyJS()[["children"]][[1]], "shiny.tag")
 })
 
-test_that("Button style function", {
+test_that("Button style function produces a single character element", {
   expect_is(cButtonStyle("single"), "character")
+  expect_equal(length(cButtonStyle("single")), 1)
   expect_is(cButtonStyle("all"), "character")
-  expect_error(cButtonStyle("_NOTRIGHT_"))
+  expect_equal(length(cButtonStyle("all")), 1)
+  expect_error(cButtonStyle("_NOT_RIGHT_"))
 })
 
-test_that("FTP link function", {
+test_that("FTP link function produces a single character element", {
   expect_is(ftpLink("UserGuide"), "character")
+  expect_equal(length(ftpLink("UserGuide")), 1)
   expect_is(ftpLink("Models"), "character")
-  expect_error(ftpLink("_NOTRIGHT_"))
+  expect_equal(length(ftpLink("Models")), 1)
+  expect_error(ftpLink("_NOT_RIGHT_"))
 })
+

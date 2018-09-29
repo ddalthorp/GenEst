@@ -187,7 +187,7 @@ SESidebar <- function(){
     br(), br(),
     modelInputWidget("obsCols_SE"),
     modelInputWidget("preds_SE"),
-    modelInputWidget("kFixed"),
+    modelInputWidget("kFixedInput"),
     modelRunWidget("SE"),
     modelOutputWidget("SE")
   )

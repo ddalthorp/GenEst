@@ -41,6 +41,9 @@ initialOutput <- function(rv, output){
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
   output$download_mock2 <- downloadData("mock2")
+  output$kFillNeed <- renderText("no")
+  outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
+
   return(output)
 }
 
@@ -100,6 +103,7 @@ update_output_data_SE_clear <- function(rv, output){
   outputOptions(output, "filename_SE", suspendWhenHidden = FALSE)
   output$text_SE_est <- NULL
   outputOptions(output, "text_SE_est", suspendWhenHidden = FALSE)
+  outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
 
   output$fig_M <- NULL
   output$table_M <- NULL
@@ -560,6 +564,7 @@ update_output_run_SE_clear <- function(rv, output){
   outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
   outputOptions(output, "table_g", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+  outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
 
   return(output)
 }

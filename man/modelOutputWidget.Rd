@@ -2,9 +2,12 @@
 % Please edit documentation in R/app_widgets.R
 \name{modelOutputWidget}
 \alias{modelOutputWidget}
+\alias{splitButtonWidget}
 \title{Create a Model Output Widget for the GenEst User Interface HTML}
 \usage{
 modelOutputWidget(modType)
+
+splitButtonWidget()
 }
 \arguments{
 \item{modType}{Toggle control for the model type of the widget. One of 
@@ -17,4 +20,9 @@ HTML for the model run widget.
 This is a generalized function for creating a widget used in 
   the GenEst GUI to control the outputs based on the model type
   (\code{modType}).
+}
+\details{
+\code{splitButtonWidget} creates the set of buttons to handle the
+  splitting of mortality estimates (splitting, transposing the split, and
+  clearing the split).
 }

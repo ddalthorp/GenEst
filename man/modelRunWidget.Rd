@@ -2,9 +2,12 @@
 % Please edit documentation in R/app_widgets.R
 \name{modelRunWidget}
 \alias{modelRunWidget}
+\alias{preTextMaker}
 \title{Create a Model Run Widget for the GenEst User Interface HTML}
 \usage{
 modelRunWidget(modType)
+
+preTextMaker(modType)
 }
 \arguments{
 \item{modType}{Toggle control for the model type of the widget. One of 
@@ -12,10 +15,17 @@ modelRunWidget(modType)
 }
 \value{
 HTML for the model run widget.
+
+HTML for the model run widget pre-run text.
 }
 \description{
 This is a generalized function for creating a model run 
   widget used in the GenEst GUI, based on the model type (\code{modType}).
-  The widget includes the model run button and the model clear button 
-  (once the model has finished running).
+  The widget includes the model run button, the model clear button 
+  (once the model has finished running), and any text displayed prior to
+  model running being allowed.
+}
+\details{
+\code{preTextMaker} creates pre-model-run text depending on
+  the model type.
 }

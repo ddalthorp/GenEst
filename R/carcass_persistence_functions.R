@@ -983,6 +983,7 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
     out[[1]] <- cpmSet(formula_l, formula_s, data, left, right, dists, 
                   CL, quiet
                 )
+    class(out) <- c("cpmSetSize", "list")
     return(out)
   }
 
@@ -1228,6 +1229,7 @@ cpmSetSizeFailRemove <- function(cpmSetSizeToTidy){
   for (sci in names(cpmSetSizeToTidy)){
     out[[sci]] <- cpmSetFailRemove(cpmSetSizeToTidy[[sci]])
   }
+  class(out) <- c("cpmSetSize", "list")
   return(out)
 }
 

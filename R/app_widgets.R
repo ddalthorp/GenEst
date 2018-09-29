@@ -101,8 +101,8 @@ dataDownloadWidget <- function(set){
 #'
 #' @param inType Toggle control for the input type of the widget. One of 
 #'   "nsim", "CL", "sizeclassCol", "obsCols_SE", "preds_SE", "kFixed",
-#'   "ltp", "fta", "preds_CP", "dists", "kFill", "frac", "DWPCol", 
-#'   "dateFoundCol", "kFill_g", "gSearchInterval", "gSearchMax", 
+#'   "ltp", "fta", "preds_CP", "dists", "frac", "DWPCol", 
+#'   "dateFoundCol", "gSearchInterval", "gSearchMax", 
 #'   "useSSinputs", or "useSSdata".  
 #'
 #' @return HTML for the model input widget. 
@@ -112,101 +112,148 @@ dataDownloadWidget <- function(set){
 modelInputWidget <- function(inType){
 
   if (!inType %in% c("nsim", "CL", "sizeclassCol", "obsCols_SE", "preds_SE", 
-                     "kFixed", "ltp", "fta", "preds_CP", "dists", "kFill",
-                     "frac", "DWPCol", "dateFoundCol", "kFill_g", 
+                     "kFixedInput", "ltp", "fta", "preds_CP", "dists", 
+                     "frac", "DWPCol", "dateFoundCol", 
                      "gSearchInterval", "gSearchMax", "useSSinputs",
                      "useSSdata")){
     stop(paste0("input inType (", inType, ") not supported"))
   }
 
-  if (inType == "nsim"){
-    numericInput("nsim", "Number of Iterations:", value = 1000,
-      min = 1, max = 10000, step = 1
-    )
-  } else if(inType == "CL"){
-    numericInput("CL", "Confidence Level:", value = 0.90, min = 0,
-      max = 1, step = 0.001
-    )
-  } else if(inType == "sizeclassCol"){
-    selectizeInput("sizeclassCol", "Size Class Column (optional):", 
-      c("No data input yet"), multiple = TRUE, 
-      options = list(maxItems = 1)
-    )
-  } else if(inType == "obsCols_SE"){
-    selectizeInput("obsCols_SE", "Observations:", c("No data input yet"), 
-      multiple = TRUE
-    )
-  } else if(inType == "preds_SE"){
-    selectizeInput("preds_SE", "Predictor Variables:", 
-      c("No data input yet"), multiple = TRUE
-    )
-  } else if(inType == "kFixed"){
-    htmlOutput("kFixedInput")
-  } else if(inType == "ltp"){
-    selectizeInput("ltp", "Last Time Present:", c("No data input yet"), 
-      multiple = TRUE, options = list(maxItems = 1)
-    )
-  } else if(inType == "fta"){
-    selectizeInput("fta", "First Time Absent:", c("No data input yet"),
-      multiple = TRUE, options = list(maxItems = 1)
-    )
-  } else if(inType == "preds_CP"){
-    selectizeInput("preds_CP", "Predictor Variables:", 
-      c("No data input yet"), multiple = TRUE
-    )
-  } else if(inType == "dists"){
-    checkboxGroupInput("dists", label = "Distributions to Include",
-      choices = CPdistOptions(), 
-      selected = c("exponential", "weibull", "lognormal", "loglogistic"),
-      inline = TRUE
-    )
-  } else if(inType == "kFill"){
-    conditionalPanel(
-      condition = "output.kFillNeed == 'yes'",
-      htmlOutput("kFillInput")
-    )
-  } else if(inType == "frac"){
-    numericInput("frac", "Fraction of Facility Surveyed:", value = 1.0, 
-      min = 0.01, max = 1.0, step = 0.01
-    )
-  } else if(inType == "DWPCol"){
-    conditionalPanel(
-      condition = "output.DWPNeed == 'yes'",
-      selectizeInput("DWPCol", "Density Weighted Proportion:", 
-        c("No data input yet"), multiple = TRUE, options = list(maxItems = 1)
-      )
-    )
-  } else if(inType == "dateFoundCol"){
-    selectizeInput("dateFoundCol", "Date Found:", c("No data input yet"), 
-      multiple = TRUE, options = list(maxItems = 1)
-    )
-  } else if(inType == "kFill_g"){
-    conditionalPanel(
-      condition = "output.kFillNeed == 'yes'",
-      htmlOutput("kFillInput_g")
-    )
-  } else if(inType == "gSearchInterval"){
-    numericInput("gSearchInterval", "Generic Search Interval (days):", 
-      value = 7, min = 1, max = 400, step = 1)
-  } else if(inType == "gSearchMax"){
-    numericInput("gSearchMax", "Generic Final Search (day):",
-      value = 364, min = 1, max = 1000, step = 1)
-  } else if(inType == "useSSinputs"){
-    actionButton("useSSinputs", "Create Custom Generic Schedule")
-  } else if(inType == "useSSdata"){
-    conditionalPanel(    
-      condition = "output.data_SS != null",
-      actionButton("useSSdata", "Create Average Schedule from SS Data")
+  Name <- inType
+
+  Label <- switch(inType, 
+             "nsim" = "Number of Iterations:", 
+             "CL" = "Confidence Level:", 
+             "sizeclassCol" = "Size Class Column (optional):", 
+             "obsCols_SE" = "Observations:", 
+             "preds_SE" = "Predictor Variables:", 
+             "kFixedInput" = NULL, 
+             "ltp" = "Last Time Present:", 
+             "fta" = "First Time Absent:", 
+             "preds_CP" = "Predictor Variables:", 
+             "dists" = "Distributions to Include", 
+             "frac" = "Fraction of Facility Surveyed:", 
+             "DWPCol" = "Density Weighted Proportion:", 
+             "dateFoundCol" = "Date Found:", 
+             "gSearchInterval" = "Generic Search Interval (days):",
+             "gSearchMax" = "Generic Final Search (day):",
+             "useSSinputs" = "Create Custom Generic Schedule",
+             "useSSdata" = "Create Average Schedule from SS Data")
+
+  widgetFun <- switch(inType, 
+                 "nsim" = "numericInput", 
+                 "CL" = "numericInput", 
+                 "sizeclassCol" = "selectizeInput", 
+                 "obsCols_SE" = "selectizeInput", 
+                 "preds_SE" = "selectizeInput", 
+                 "kFixedInput" = "htmlOutput", 
+                 "ltp" = "selectizeInput", 
+                 "fta" = "selectizeInput", 
+                 "preds_CP" = "selectizeInput", 
+                 "dists" = "checkboxGroupInput", 
+                 "frac" = "numericInput", 
+                 "DWPCol" = "selectizeInput", 
+                 "dateFoundCol" = "selectizeInput", 
+                 "gSearchInterval" = "numericInput",
+                 "gSearchMax" = "numericInput",
+                 "useSSinputs" = "actionButton",
+                 "useSSdata" = "actionButton")
+
+  Args <- switch(inType, 
+            "nsim" = list(value = 1000, min = 1, max = 10000, step = 1), 
+            "CL" = list(value = 0.90, min = 0, max = 1, step = 0.001), 
+            "sizeclassCol" = list(c("No data input yet"), multiple = TRUE, 
+                               options = list(maxItems = 1)), 
+            "obsCols_SE" = list(c("No data input yet"), multiple = TRUE), 
+            "preds_SE" = list(c("No data input yet"), multiple = TRUE),
+            "kFixedInput" = list(NULL),
+            "ltp" = list(c("No data input yet"), multiple = TRUE,
+                      options = list(maxItems = 1)),
+            "fta" = list(c("No data input yet"), multiple = TRUE,
+                      options = list(maxItems = 1)),
+            "preds_CP" = list(c("No data input yet"), multiple = TRUE),
+            "dists" = list(choices = CPdistOptions(), 
+                        selected = unlist(CPdistOptions()), inline = TRUE),
+            "frac" = list(value = 1.0, min = 0.01, max = 1.0, step = 0.01),
+            "DWPCol" = list(c("No data input yet"), multiple = TRUE, 
+                            options = list(maxItems = 1)),
+            "dateFoundCol" = list(c("No data input yet"), multiple = TRUE, 
+                                  options = list(maxItems = 1)),
+            "gSearchInterval" = list(value = 7, min = 1, max = 400, step = 1),
+            "gSearchMax" = list(value = 364, min = 1, max = 1000, step = 1),
+            "useSSinputs" = list(NULL),
+            "useSSdata" = list(NULL))
+
+  Condition <- switch(inType, 
+                 "nsim" = NULL, 
+                 "CL" = NULL, 
+                 "sizeclassCol" = NULL, 
+                 "obsCols_SE" = NULL, 
+                 "preds_SE" = NULL, 
+                 "kFixedInput" = NULL, 
+                 "ltp" = NULL, 
+                 "fta" = NULL, 
+                 "preds_CP" = NULL, 
+                 "dists" = NULL, 
+                 "frac" = NULL, 
+                 "DWPCol" = "output.DWPNeed == 'yes'", 
+                 "dateFoundCol" = NULL, 
+                 "gSearchInterval" = NULL,
+                 "gSearchMax" = NULL,
+                 "useSSinputs" = NULL,
+                 "useSSdata" = "output.data_SS != null")
+
+  widgetMaker(Condition, Name, widgetFun, Label, Args)
+}
+
+
+#' @title Input Widget Maker
+#'
+#' @description Basic generalized function for creating an input widget based
+#'   on the condition of the widget being presented, the name of the widget, 
+#'   the function used to create it, it's label on the UI, and any additional 
+#'   arguments. 
+#'
+#' @param Condition Condition under which the widget is present to the user. 
+#'
+#' @param Name Name (id) of the widget created.
+#'
+#' @param Fun Function name (as character) used to create the widget.
+#'
+#' @param Lable Label presented to the user in the UI for the widget.
+#'
+#' @param Args List of any additional arguments to be passed to the widget 
+#'   creating function.
+#'
+#' @return HTML for the widget. 
+#'
+#' @export
+#'
+widgetMaker <- function(Condition, Name, Fun, Label, Args){
+  allArgs <- Args
+  if (Fun == "htmlOutput"){
+    allArgs[["id"]] <- Name
+  } else{
+    allArgs[["inputId"]] <- Name
+  }
+  allArgs[["label"]] <- Label
+  if(is.null(Condition) || Condition == ""){
+    do.call(what = Fun, args = allArgs)
+  } else {
+    conditionalPanel(condition = Condition, 
+      do.call(what = Fun, args = allArgs)
     )
   }
 }
+
 
 #' @title Create a Model Run Widget for the GenEst User Interface HTML
 #'
 #' @description This is a generalized function for creating a model run 
 #'   widget used in the GenEst GUI, based on the model type (\code{modType}).
-#'   The widget includes the model run button and the model clear button 
-#'   (once the model has finished running).
+#'   The widget includes the model run button, the model clear button 
+#'   (once the model has finished running), and any text displayed prior to
+#'   model running being allowed.
 #'
 #' @param modType Toggle control for the model type of the widget. One of 
 #'   "SE", "CP", "M", or "g". 
@@ -221,116 +268,122 @@ modelRunWidget <- function(modType){
     stop(paste0("input modType (", modType, ") not supported"))
   }
 
-  if (modType == "SE"){
-    list(
-      conditionalPanel(condition = "input.obsCols_SE == null",
-        br(), 
-        center(em("Select observation columns to run model"))
-      ),
-      conditionalPanel(condition = "input.obsCols_SE != null",
-        br(), 
-        actionButton("runMod_SE", "Run Model")          
-      ),
-      conditionalPanel(condition = "output.SEModDone == 'OK'", 
-        actionButton("runMod_SE_clear", "Clear Model", 
-          style = cButtonStyle()
-        ),
-        br(), br()
-      )
-    )
-  } else if (modType == "CP"){
-    list(
-      conditionalPanel(
-         condition = "input.ltp == null | input.fta == null",
-        br(), 
-        center(em("Select observation columns to run model"))
-      ),
-      conditionalPanel(
-        condition = "input.ltp != null & input.fta != null",
-        br(),
-        actionButton("runMod_CP", "Run Model")
-      ), 
-      conditionalPanel(condition = "output.CPModDone == 'OK'", 
-        actionButton("runMod_CP_clear", "Clear Model", 
-          style = cButtonStyle()
-        ),
-        br(), br()
-      )
-    )
-  } else if (modType == "M"){
-    list(
-      conditionalPanel(
-        condition = 
-          "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
-           output.sizeclasses_SE != output.sizeclasses_CP",
-        br(), 
-        center(em("Select SE and CP models fit to matching size classes to 
-          run model"))
-      ),
-      conditionalPanel(
-        condition = "output.data_SS == null",
-        br(), 
-        center(em("Input Search Schedule data to run model"))
-      ),
-      conditionalPanel(
-        condition = 
-          "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-           output.sizeclasses_SE == output.sizeclasses_CP & 
-           (input.DWPCol == null | input.dateFoundCol == null)",
-        br(), 
-        center(em("Select input columns to run model"))
-      ),
-      conditionalPanel(
-        condition = "output.kFillNeed == 'yes' & 
-                     input.modelChoices_SE1 != null",
-        br(), 
-        center(em("A value for k is required to estimate mortality. 
-                  Return to Search Efficiency tab and fix k."))
-      ),
-      conditionalPanel(
-        condition = 
-          "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-           output.sizeclasses_SE == output.sizeclasses_CP & 
-           output.data_SS != null & 
-           input.DWPCol != null & input.dateFoundCol != null &
-         output.kFillNeed != 'yes'",
-        br(),
-        actionButton("runMod_M", "Estimate")
-      )
-    )
-  } else if (modType == "g"){
-    list(
-      conditionalPanel(
-        condition = 
-          "input.modelChoices_SE1 == null | input.modelChoices_CP1 == null | 
-           output.sizeclasses_SE != output.sizeclasses_CP",
-        br(), 
-        center(em("Select SE and CP models fit to matching size
-          classes to run model"))
-      ),
-      conditionalPanel(
-        condition = "output.kFillNeed == 'yes' & 
-                     input.modelChoices_SE1 != null",
-        br(), 
-        center(em("A value for k is required to estimate detection
-                  probability. Return to Search Efficiency tab and fix k."))
-      ),
-      conditionalPanel(
-        condition = 
-          "input.modelChoices_SE1 != null & input.modelChoices_CP1 != null & 
-           output.sizeclasses_SE == output.sizeclasses_CP &
-         output.kFillNeed != 'yes'",
-        br(), br(),
-        actionButton("runMod_g", "Estimate")
-      ),
-      conditionalPanel(condition = "output.gModDone == 'OK'",
-        actionButton("runMod_g_clear", "Clear Estimate", 
-          style = cButtonStyle()
-        )
-      )
-    )
-  }
+  rName <- switch(modType,
+             "SE" = "runMod_SE",
+             "CP" = "runMod_CP",
+             "M" = "runMod_M",
+             "g" = "runMod_g")
+  rLabel <- switch(modType, 
+              "SE" = "Run Model",
+              "CP" = "Run Model",
+              "M" = "Estimate",
+              "g" = "Estimate")
+  rCondition <- switch(modType, 
+                  "SE" = "input.obsCols_SE != null",
+                  "CP" = "input.ltp != null & input.fta != null",
+                  "M" = "input.modelChoices_SE1 != null & 
+                         input.modelChoices_CP1 != null & 
+                         output.sizeclasses_SE == output.sizeclasses_CP & 
+                         output.data_SS != null & 
+                         input.DWPCol != null & input.dateFoundCol != null &
+                         output.kFillNeed != 'yes'",
+                  "g" = "input.modelChoices_SE1 != null & 
+                         input.modelChoices_CP1 != null & 
+                         output.sizeclasses_SE == output.sizeclasses_CP &
+                         output.kFillNeed != 'yes'")
+
+  cName <- switch(modType, 
+             "SE" = "runMod_SE_clear",
+             "CP" = "runMod_CP_clear",
+             "M" = "runMod_M_clear",
+             "g" = "runMod_g_clear")
+  cLabel <- switch(modType, 
+              "SE" = "Clear Model",
+              "CP" = "Clear Model",
+              "M" = "Clear Estimate",
+              "g" = "Clear Estimate")
+  cCondition <- switch(modType, 
+                  "SE" = "output.SEModDone == 'OK'",
+                  "CP" = "output.CPModDone == 'OK'",
+                  "M" = "output.MModDone == 'OK'",
+                  "g" = "output.gModDone == 'OK'")
+
+  rButton <- conditionalPanel(condition = rCondition,
+               br(), 
+               actionButton(rName, rLabel)          
+             )
+  cButton <- conditionalPanel(condition = cCondition,
+               actionButton(cName, cLabel, style = cButtonStyle()),
+               br(), br()          
+             )
+
+  preText <- preTextMaker(modType)
+  lpre <- length(preText)
+  preText[[lpre + 1]] <- rButton
+  preText[[lpre + 2]] <- cButton
+  preText
 }
+
+
+#' @rdname modelRunWidget
+#'
+#' @details \code{preTextMaker} creates pre-model-run text depending on
+#'   the model type.
+#'
+#' @return HTML for the model run widget pre-run text. 
+#'
+#' @export
+#'
+preTextMaker <- function(modType){
+
+  if (!modType %in% c("SE", "CP", "M", "g")){
+    stop(paste0("input modType (", modType, ") not supported"))
+  }
+
+  Condition <- switch(modType, 
+                 "SE" = "input.obsCols_SE == null",
+                 "CP" = "input.ltp == null | input.fta == null",
+                 "M" = c("input.modelChoices_SE1 == null |
+                         input.modelChoices_CP1 == null | 
+                         output.sizeclasses_SE != output.sizeclasses_CP",
+                         "output.data_SS == null",
+                         "input.modelChoices_SE1 != null & 
+                         input.modelChoices_CP1 != null & 
+                         output.sizeclasses_SE == output.sizeclasses_CP & 
+                         (input.DWPCol == null | input.dateFoundCol == null)",
+                         "output.kFillNeed == 'yes' & 
+                         input.modelChoices_SE1 != null"),
+                 "g" = c("input.modelChoices_SE1 == null | 
+                         input.modelChoices_CP1 == null | 
+                         output.sizeclasses_SE != output.sizeclasses_CP",
+                         "output.kFillNeed == 'yes' & 
+                         input.modelChoices_SE1 != null")
+                )
+
+  Text <- switch(modType, 
+             "SE" = "Select observation columns to run model",
+             "CP" = "Select observation columns to run model",
+             "M" = c("Select SE and CP models fit to matching size classes to 
+                      run model",
+                     "Input Search Schedule data to run model",
+                     "Select input columns to run model",
+                     "A value for k is required to estimate mortality. 
+                      Return to Search Efficiency tab and fix k."),
+             "g" = c("Select SE and CP models fit to matching size
+                     classes to run model",
+                     "A value for k is required to estimate detection
+                     probability. Return to Search Efficiency tab and fix k.")
+           )
+
+  out <- vector("list", length(Condition))
+  for (i in 1:length(Condition)){
+    out[[i]] <- conditionalPanel(condition = Condition[i], 
+                                 br(), center(em(Text[i]))) 
+  }
+  out
+}
+
+
 
 #' @title Create a Model Output Widget for the GenEst User Interface HTML
 #'
@@ -351,69 +404,98 @@ modelOutputWidget <- function(modType){
     stop(paste0("input modType (", modType, ") not supported"))
   }
 
-  if (modType == "SE"){
-    conditionalPanel(condition = "output.SEModDone == 'OK'", 
-      b(u(big("Table & Figure Selection:"))),
-      br(), br(), 
-      conditionalPanel(condition = "output.sizeclass_SEyn == 'YES'",
-        selectizeInput("outsizeclassSE", "Size Class:", " ", multiple = FALSE)
-      ),
-      selectizeInput("outSEp", "p Model:", " ", multiple = FALSE), 
-      selectizeInput("outSEk", "k Model:", " ", multiple = FALSE)
-    )
-  } else if (modType == "CP"){
-    conditionalPanel(condition = "output.CPModDone == 'OK'", 
-      b(u(big("Table & Figure Selection:"))),
-      br(), br(),
-      conditionalPanel(condition = "output.sizeclass_CPyn == 'YES'",
-        selectizeInput("outsizeclassCP", "Size Class:", " ", multiple = FALSE)
-      ),
-      selectizeInput("outCPdist", "Distribution:", " ", multiple = FALSE),
-      selectizeInput("outCPl", "Location Model:", " ", multiple = FALSE),
-      selectizeInput("outCPs", "Scale Model:", " ", multiple = FALSE)        
-    )
-  } else if (modType == "M"){
-    conditionalPanel(
-      condition = "output.MModDone == 'OK'",
-      actionButton("runMod_M_clear", "Clear Estimate", 
-        style = cButtonStyle()
-      ), br(), br(), 
-      b(u(big("Splitting Mortality:"))),
-      br(), br(), 
-      em("Max. two total splits, max. one schedule-based split"),
-      br(), br(),
-      selectizeInput("split_SS", "Search Schedule (SS) Variable:", 
-        " ", multiple = TRUE, options = list(maxItems = 1)
-      ),
-      selectizeInput("split_CO", "Carcass Observation (CO) Variable:", 
-        " ", multiple = TRUE, options = list(maxItems = 2)
-      ),
-      fluidRow(
-        column(width = 6,  
-          actionButton("splitM", "Split Estimate")
-        ),
-        column(width = 6,
-          conditionalPanel(
-            condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
-            actionButton("transposeSplit", "Transpose")
-          )
-        )
-      ),
-      conditionalPanel(condition = "output.MSplitDone == 'OK'", 
-        actionButton("splitM_clear", "Clear Split", style = cButtonStyle())
-      )
-    )
-  } else if (modType == "g"){
-    conditionalPanel(
-      condition = "output.gModDone == 'OK' & output.sizeclass_gyn == 'YES'", 
-      br(), br(), 
-      b(u(big("Table & Figure Selection:"))),
-      br(), br(),
-      selectizeInput("outsizeclassg", "Size Class:", 
-        " ", multiple = FALSE
-      )
-    )
+  Condition <- switch(modType,
+                 "SE" = "output.SEModDone == 'OK'",
+                 "CP" = "output.CPModDone == 'OK'",
+                 "M" = "output.MModDone == 'OK'",
+                 "g" = "output.gModDone == 'OK' & 
+                       output.sizeclass_gyn == 'YES'")
+
+  Header <- switch(modType,
+                 "SE" = "Table & Figure Selection:",
+                 "CP" = "Table & Figure Selection:",
+                 "M" = "Splitting Mortality:",
+                 "g" = "Table & Figure Selection:")
+
+  sCondition <- switch(modType,
+                  "SE" = c("output.sizeclass_SEyn == 'YES'", "", ""),
+                  "CP" = c("output.sizeclass_CPyn == 'YES'", rep("", 3)),
+                  "M" = c("", ""),
+                  "g" = "")
+
+  sName <- switch(modType,
+             "SE" = c("outsizeclassSE", "outSEp", "outSEk"),
+             "CP" = c("outsizeclassCP", "outCPdist", "outCPl", "outCPs"),
+             "M" = c("split_SS", "split_CO"),
+             "g" = "outsizeclassg")
+
+  sLabel <- switch(modType,
+              "SE" = c("Size Class:", "p Model:", "k Model:"),
+              "CP" = c("Size Class:", "Distribution:", "Location:", 
+                       "Scale:"),
+              "M" = c("Search Schedule (SS) Variable:",
+                      "Carcass Observation (CO) Variable:"),
+              "g" = "Size Class:")
+
+  sArgs <- switch(modType,
+              "SE" = list(list(choices = " ", multiple = FALSE),
+                          list(choices = " ", multiple = FALSE),
+                          list(choices = " ", multiple = FALSE)),
+              "CP" = list(list(choices = " ", multiple = FALSE),
+                          list(choices = " ", multiple = FALSE),
+                          list(choices = " ", multiple = FALSE),
+                          list(choices = " ", multiple = FALSE)),
+              "M" = list(list(choices = " ", multiple = TRUE, 
+                           options = list(maxItems = 1)),
+                         list(choices = " ", multiple = TRUE, 
+                           options = list(maxItems = 2))),
+              "g" = list(list(choices = " ", multiple = FALSE)))
+
+  
+  subs <- vector("list", length = length(sCondition))
+  for(i in 1:length(sCondition)){
+    subs[[i]] <- widgetMaker(sCondition[i], sName[i], "selectizeInput", 
+                   sLabel[i], sArgs[[i]]
+                 )
   }
+
+  aText <- NULL
+  splitButtons <- NULL
+  if (modType == "M"){
+    aText <- list(em("Max. two total splits, max. one schedule-based split"),
+               br(), br()
+             )
+    splitButtons <- splitButtonWidget()
+  }
+
+  conditionalPanel(condition = Condition,
+    b(u(big(Header))), br(), br(), aText, subs, splitButtons
+  )
+}
+
+#' @rdname modelOutputWidget 
+#'
+#' @details \code{splitButtonWidget} creates the set of buttons to handle the
+#'   splitting of mortality estimates (splitting, transposing the split, and
+#'   clearing the split).
+#'
+#' @export
+#'
+splitButtonWidget <- function(){
+  list(
+    fluidRow(
+      column(width = 6, actionButton("splitM", "Split Estimate")),
+      column(width = 6,
+        conditionalPanel(
+          condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
+          actionButton("transposeSplit", "Transpose")
+        )
+      )
+    ),
+    conditionalPanel(condition = "output.MSplitDone == 'OK'", 
+        actionButton("splitM_clear", "Clear Split", style = cButtonStyle())
+    )
+  )
 }
 
 
