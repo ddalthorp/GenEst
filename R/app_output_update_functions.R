@@ -41,6 +41,9 @@ initialOutput <- function(rv, output){
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
   output$download_mock2 <- downloadData("mock2")
+  output$kFillNeed <- renderText("no")
+  outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
+
   return(output)
 }
 
@@ -100,6 +103,7 @@ update_output_data_SE_clear <- function(rv, output){
   outputOptions(output, "filename_SE", suspendWhenHidden = FALSE)
   output$text_SE_est <- NULL
   outputOptions(output, "text_SE_est", suspendWhenHidden = FALSE)
+  outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
 
   output$fig_M <- NULL
   output$table_M <- NULL
@@ -369,7 +373,7 @@ update_output_sizeclassCol <- function(rv, output){
   }
 
   isolate({
-    output$kFixedInput <- makekFixedInput(rv)
+    output$kFixedInput <- kFixedWidget(rv$sizeclasses_k)
   })
 
   return(output)
@@ -443,10 +447,6 @@ update_output_run_SE <- function(rv, output){
     outputOptions(output, "SEModDone", suspendWhenHidden = FALSE)
     outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
     outputOptions(output, "DWPNeed", suspendWhenHidden = FALSE)
-    isolate({
-      output$kFillInput <- makekFillInput(rv, "M")
-      output$kFillInput_g <- makekFillInput(rv, "g")
-    })
 
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
     output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
@@ -458,7 +458,7 @@ update_output_run_SE <- function(rv, output){
     isolate({
       output$sizeclasses_SE <- prepSizeclassText(rv$sizeclasses_SE)
       outputOptions(output, "sizeclasses_SE", suspendWhenHidden = FALSE)
-      output$modelMenu_SE <- makeMenu(rv$mods_SE, rv$sizeclasses_SE, "SE")
+      output$modelMenu_SE <- modelSelectionWidget(rv$mods_SE, "SE")
     })
 
     preText <- paste0("Size class: ", rv$sizeclass_SE)
@@ -564,6 +564,7 @@ update_output_run_SE_clear <- function(rv, output){
   outputOptions(output, "fig_g", suspendWhenHidden = FALSE)
   outputOptions(output, "table_g", suspendWhenHidden = FALSE)
   outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
+  outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
 
   return(output)
 }
@@ -666,7 +667,7 @@ update_output_run_CP <- function(rv, output){
     isolate({
       output$sizeclasses_CP <- prepSizeclassText(rv$sizeclasses_CP)
       outputOptions(output, "sizeclasses_CP", suspendWhenHidden = FALSE)
-      output$modelMenu_CP <- makeMenu(rv$mods_CP, rv$sizeclasses_CP, "CP")
+      output$modelMenu_CP <- modelSelectionWidget(rv$mods_CP, "CP")
     })
 
     output$text_CP_est <- renderText(paste0(
