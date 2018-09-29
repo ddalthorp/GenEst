@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juniper L. Simonis" />
 
-<meta name="date" content="2018-09-28" />
+<meta name="date" content="2018-09-29" />
 
 <title>GenEst - Graphic User Interface</title>
 
@@ -214,25 +214,23 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">GenEst - Graphic User Interface</h1>
 <h4 class="author"><em>Juniper L. Simonis</em></h4>
-<h4 class="date"><em>2018-09-28</em></h4>
+<h4 class="date"><em>2018-09-29</em></h4>
 
 
 
-<div id="genest-generalized-fatality-estimator" class="section level1">
-<h1>GenEst: Generalized Fatality Estimator</h1>
-<p>This document describes the codebase used to create the GenEst GUI</p>
-<div id="overview" class="section level3">
-<h3>Overview</h3>
-<p>The Graphic User Interface is coded in HTML via external R packages (shiny, htmltools, shinyjs), as well as a number of internal functions to facilitate a simple, human-readable codebase underlying the app.</p>
-<p>The GenEst GUI is coded hierarchically using pages, panels, tabs, and widgets.</p>
+<div id="overview" class="section level1">
+<h1>Overview</h1>
+<p>This document describes the codebase used to create the GenEst Graphic User Interface (GUI).</p>
+<p>The Genest GUI is coded in HTML via external R packages (DT, <a href="https://cran.r-project.org/web/packages/shiny">shiny</a>, htmltools, shinyjs), as well as a number of internal functions to facilitate a simple, human-readable codebase underlying the app.</p>
 </div>
-<div id="gui-function-hierarchy" class="section level3">
-<h3>GUI Function Hierarchy</h3>
-<p>User Interface:</p>
+<div id="user-interface" class="section level1">
+<h1>User Interface</h1>
+<div id="ui-function-hierarchy" class="section level3">
+<h3>UI Function Hierarchy</h3>
+<p>The GenEst User Interface is constructed using pages, panels, tabs, and widgets. The code is parsed into a series of hierarchical functions to facilitate readability and mobility of specific UI components.</p>
 <ul>
 <li><code>GenEstUI(appType)</code>
 <ul>
-<li><code>navbar()</code> (creates the title)</li>
 <li><code>dataInputPanel()</code>
 <ul>
 <li><code>dataInputSidebar()</code>
@@ -379,6 +377,52 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 </ul></li>
 </ul>
 </div>
+<div id="ui-widgets" class="section level3">
+<h3>UI Widgets</h3>
+<p>We have coded up a number of widget functions, some of which are simple wrappers on shiny functions that help reduce code clutter, and others of which are custom HTML (e.g., for model selection), but which are still nonetheless wrapped over shiny widgets:</p>
+<ul>
+<li><code>dataInputWidget(dataType)</code></li>
+<li><code>modelInputWidget(inType)</code><br />
+</li>
+<li><code>modelRunWidget(modType)</code></li>
+<li><code>modelOutputWidget(modType)</code><br />
+</li>
+<li><code>dataDownloadsWidget(set)</code></li>
+<li><code>modelSelectionWidget(modType)</code><br />
+</li>
+<li><code>kFixedWidget()</code></li>
+</ul>
+<p>A major need for widgets is having a simple condition wrapped on it, such that the widget is within a conditional panel, defined by some other input or output variable. To facilitate coding of these widgets, we have made a function <code>widgetMaker</code>, which is a generalized constructor function.</p>
+</div>
+<div id="ui-panels" class="section level3">
+<h3>UI Panels</h3>
+<p>Similarly to the input widgets, we have coded up a number of output panel functions that help direct traffic in the building on the HTML document. These functions are generalized to the suite of possible options for panels currently needed by leveraging the basic template approach with limited variation.</p>
+<ul>
+<li><code>dataTabPanel(dataType)</code></li>
+<li><code>selectedDataPanel(modType)</code></li>
+<li><code>modelOutputPanel(outType)</code></li>
+</ul>
+</div>
+<div id="ui-content" class="section level3">
+<h3>UI Content</h3>
+<p>There is a fair amount of (mostly) static content, which we have contained wihtin functions to reduce overall code clutter. These functions primarily dictate content within the “Help” tab’s subtabs.</p>
+<ul>
+<li><code>gettingStartedContent()</code></li>
+<li><code>aboutContent()</code></li>
+<li><code>GenEstAuthors()</code></li>
+<li><code>GenEstGUIAuthors()</code></li>
+<li><code>GenEstLicense()</code></li>
+<li><code>GenEstAcknowledgements()</code></li>
+<li><code>GenEstLogos()</code></li>
+<li><code>disclaimersContent(appType)</code></li>
+<li><code>disclaimerUSGS()</code></li>
+<li><code>disclaimerWEST(appType)</code></li>
+</ul>
+</div>
+</div>
+<div id="execution" class="section level1">
+<h1>Execution</h1>
+<p>The GUI is executed locally or as a deployed app following the basic approach of shiny applications. For ease of implementation, we have created an overall function to intialize the app, <code>runGenEst()</code>, which calls both the server and UI codebases.</p>
 </div>
 
 

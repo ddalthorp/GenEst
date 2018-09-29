@@ -9,37 +9,37 @@ vignette: >
   \usepackage[utf8]{inputenc}
 ---
 
+# Overview
 
-# GenEst: Generalized Fatality Estimator    
+This document describes the codebase used to create the GenEst Graphic User 
+Interface (GUI).
 
-This document describes the codebase used to create the GenEst GUI
+The Genest GUI is coded in HTML via external R packages (DT, [shiny](https://cran.r-project.org/web/packages/shiny), htmltools, 
+shinyjs), as well as a number of internal functions to facilitate a simple,
+human-readable codebase underlying the app.
 
-### Overview
+# User Interface
 
-The Graphic User Interface is coded in HTML via external R packages (shiny, htmltools, shinyjs), as well as a number of internal functions to facilitate a simple, human-readable codebase underlying the app.
+### UI Function Hierarchy
 
-The GenEst GUI is coded hierarchically using pages, panels, tabs, and widgets.
+The GenEst User Interface is constructed using pages, panels, tabs, and 
+widgets. The code is parsed into a series of hierarchical functions to 
+facilitate readability and mobility of specific UI components.
 
-
-### GUI Function Hierarchy
-
-User Interface:
-
-* `GenEstUI(appType)` 
-  * `navbar()` (creates the title)
-  * `dataInputPanel()` 
+* `GenEstUI(appType)`
+  * `dataInputPanel()`
     * `dataInputSidebar()`
-      * ` dataInputWidget("SE")`
-      * ` dataInputWidget("CP")` 
-      * ` dataInputWidget("SS")` 
-      * ` dataInputWidget("DWP")` 
-      * ` dataInputWidget("CO")`
+      * `dataInputWidget("SE")`
+      * `dataInputWidget("CP")`
+      * `dataInputWidget("SS")`
+      * `dataInputWidget("DWP")`
+      * `dataInputWidget("CO")`
     * `loadedDataPanel()`
-      * ` dataTabPanel("SE")`
-      * ` dataTabPanel("CP")` 
-      * ` dataTabPanel("SS")` 
-      * ` dataTabPanel("DWP")` 
-      * ` dataTabPanel("CO")`
+      * `dataTabPanel("SE")`
+      * `dataTabPanel("CP")`
+      * `dataTabPanel("SS")`
+      * `dataTabPanel("DWP")`
+      * `dataTabPanel("CO")`
 	* `analysisPanel()`
     * `GeneralInputsPanel()`
       * `GeneralInputsSidebar()`
@@ -99,22 +99,77 @@ User Interface:
     * `gettingStartedPanel()`
       * `gettingStartedContent()`
     * `downloadsPanel()`
-      * ` dataDownloadsWidget("RP")`
-      * ` dataDownloadsWidget("RPbat")`
-      * ` dataDownloadsWidget("cleared")`
-      * ` dataDownloadsWidget("powerTower")`
-      * ` dataDownloadsWidget("PV")`
-      * ` dataDownloadsWidget("trough")`
-      * ` dataDownloadsWidget("mock")`
-      * ` dataDownloadsWidget("mock2")`
+      * `dataDownloadsWidget("RP")`
+      * `dataDownloadsWidget("RPbat")`
+      * `dataDownloadsWidget("cleared")`
+      * `dataDownloadsWidget("powerTower")`
+      * `dataDownloadsWidget("PV")`
+      * `dataDownloadsWidget("trough")`
+      * `dataDownloadsWidget("mock")`
+      * `dataDownloadsWidget("mock2")`
     * `aboutPanel()`
       * `aboutContent()`
-        * ` GenEstAuthors()`
-        * ` GenEstGUIauthors()`
-        * ` GenEstLicense()`
-        * ` GenEstAcknowledgements()`
-        * ` GenEstLogos()`
+        * `GenEstAuthors()`
+        * `GenEstGUIauthors()`
+        * `GenEstLicense()`
+        * `GenEstAcknowledgements()`
+        * `GenEstLogos()`
     * `disclaimersPanel(appType)`
       * `disclaimerContent(appType)`
-        * ` disclaimerUSGS()`
-        * ` disclaimerWEST(appType)`		
+        * `disclaimerUSGS()`
+        * `disclaimerWEST(appType)`		
+		
+### UI Widgets
+ 
+We have coded up a number of widget functions, some of which are simple
+wrappers on shiny functions that help reduce code clutter, and others of which
+are custom HTML (e.g., for model selection), but which are still nonetheless
+wrapped over shiny widgets: 
+
+* `dataInputWidget(dataType)`
+* `modelInputWidget(inType)`		
+* `modelRunWidget(modType)`
+* `modelOutputWidget(modType)`	   
+* `dataDownloadsWidget(set)`
+* `modelSelectionWidget(modType)`	  
+* `kFixedWidget()`
+
+A major need for widgets is having a simple condition wrapped on it, such that
+the widget is within a conditional panel, defined by some other input or 
+output variable. To facilitate coding of these widgets, we have made a function
+`widgetMaker`, which is a generalized constructor function.
+
+### UI Panels
+
+Similarly to the input widgets, we have coded up a number of output panel 
+functions that help direct traffic in the building on the HTML document. These
+functions are generalized to the suite of possible options for panels currently 
+needed by leveraging the basic template approach with limited variation.
+
+* `dataTabPanel(dataType)`
+* `selectedDataPanel(modType)`
+* `modelOutputPanel(outType)`
+
+### UI Content
+
+There is a fair amount of (mostly) static content, which we have contained
+wihtin functions to reduce overall code clutter. These functions primarily 
+dictate content within the "Help" tab's subtabs.
+
+* `gettingStartedContent()`
+* `aboutContent()`
+* `GenEstAuthors()`
+* `GenEstGUIAuthors()`
+* `GenEstLicense()`
+* `GenEstAcknowledgements()`
+* `GenEstLogos()`
+* `disclaimersContent(appType)`
+* `disclaimerUSGS()`
+* `disclaimerWEST(appType)`
+
+# Execution 
+
+The GUI is executed locally or as a deployed app following the basic approach
+of shiny applications. For ease of implementation, we have created an overall
+function to intialize the app, `runGenEst()`, which calls both the server and
+UI codebases. 
