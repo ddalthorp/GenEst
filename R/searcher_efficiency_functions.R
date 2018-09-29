@@ -774,6 +774,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     out[["all"]] <- pkmSet(formula_p = formula_p, formula_k = formula_k,
       data = data, obsCol = obsCol, kFixed = kFixed, kInit = kInit,
       CL = CL, quiet = quiet)
+    class(out) <- c("pkmSetSize", "list")
     return(out)
   }
   if ((sizeclassCol %in% colnames(data)) == FALSE){
@@ -1071,6 +1072,7 @@ pkmSetSizeFailRemove <- function(pkmSetSizeToTidy){
   for (sci in names(pkmSetSizeToTidy)){
     out[[sci]] <- pkmSetFailRemove(pkmSetSizeToTidy[[sci]])
   }
+  class(out) <- c("pkmSetSize", "list")
   return(out)
 }
 

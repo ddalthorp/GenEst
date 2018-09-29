@@ -732,7 +732,7 @@ update_rv_run_SE <- function(rv, input){
                     kFixed = rv$kFixed, kInit = 0.7, 
                     CL = rv$CL, quiet = TRUE
                   ) 
-                ) 
+                )
   rv$mods_SE_og <- rv$mods_SE
   rv$mods_SE <- pkmSetSizeFailRemove(rv$mods_SE)
   if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
