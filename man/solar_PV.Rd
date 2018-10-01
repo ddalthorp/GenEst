@@ -112,10 +112,10 @@ factor to account for incomplete search coverage).
  carcass observation file). Values represent the density-weighted proportion 
  of the searched area for each size (or the fraction of carcasses that fall 
  in the searched area).  In this example, observers walk along transects 
- separated by 150 meters, so distance sampling is applied per size class.  
- Viewshed limits, or the point beyond which an observer has a low chance to 
- observe carcasses were used to define DWP.  (Low is defined as average 
- probability to detect carcasses in the region as less than 5\%.)
+ separated by 150 meters, and search coverage is assumed to be 100%, i.e.,
+ DWP = 1 for each unit. This requires that carcasses be placed at random
+ locations in the field, even at distances from the transects that would make
+ it unlikely to observe small carcasses.
 \describe{
   \item{\code{Unit}}{unique ID for each array.  IDs match those used in the 
   \code{$CO} data frame and the column names in the \code{$SS} data.}

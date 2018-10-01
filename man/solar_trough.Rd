@@ -54,8 +54,7 @@ an area adjustment factor to account for incomplete search coverage).
    was not scheduled in that location at that time, or "SC" to indicate the
    carcass had been removed by scavengers prior to the search.}
   \item{\code{Distance}}{the distance a carcass was placed from the 
-   observer's transect. Used in determining probability to detect with 
-   distance sampling.}
+   observer's transect.}
 }
 }
 
@@ -107,12 +106,9 @@ an area adjustment factor to account for incomplete search coverage).
  \code{$DWP} is a data frame with a row for each transect and columns for 
  each carcass size class (labels must match those of the class factors in the
   carcass observation file). Values represent the density-weighted proportion
-   of the searched area for each size (or the fractionof carcasses that fall 
-   in the searched area).  In this example, observers travel along transects 
-   separated by 150 meters, so distance sampling is applied per size class.  
-   Viewshed limits, or the point beyond which an observer has a low chance to
-    observe carcasses were used to define DWP.  (Low is defined as average 
-    probability to detect carcasses in the region as less than 5\%.)
+  of the searched area for each size (or the fractionof carcasses that fall
+  in the searched area). Since the whole site was searched, DWP is uniformly
+  set equal to 1.
 \describe{
   \item{\code{Unit}}{unique ID for each transect.  IDs match those used in 
   the \code{$CO} data frame and the column names in the \code{$SS} data.}
