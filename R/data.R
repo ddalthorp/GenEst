@@ -73,16 +73,16 @@
 #'   \item{\code{Visibility}}{indicator for visibility class of the ground, with
 #'    \code{"RP"} for carcasses placed on a road or turbine pad, \code{"M"} for 
 #'    moderate visibility (e.g., plowed field; short, sparse vegetation), or 
-#'    \code{"D"} for difficult visibility.} \item{\code{Left}, 
-#'    \code{Right}}{endpoints of the interval bracketing the time the carcass 
+#'    \code{"D"} for difficult visibility.} \item{\code{LastPresent},
+#'    \code{FirstAbsent}}{endpoints of the interval bracketing the time the carcass
 #'    was scavenged or otherwise removed from the field. For example, 
-#'    \code{Left = 2.04}, \code{Right = 3.21} indicates that the carcass was 
+#'    \code{LastPresent = 2.04}, \code{FirstAbsent = 3.21} indicates that the carcass was
 #'    last observed 2.04 days after being placed in the field and was noted 
 #'    missing 3.21 days after being placed. If the precise time of carcass 
-#'    removal is known (e.g., recorded by camera), then \code{Left} and 
-#'    \code{Right} should be set equal to each other. If a carcass persists 
-#'    beyond the last day of the field trial, \code{Left} is the last time it 
-#'    was observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
+#'    removal is known (e.g., recorded by camera), then \code{LastPresent} and
+#'    \code{FirstAbsent} should be set equal to each other. If a carcass persists
+#'    beyond the last day of the field trial, \code{LastPresent} is the last time it
+#'    was observed and \code{FirstAbsent} is entered as \code{Inf} or \code{NA}.}
 #' }
 #' 
 #' @section Search Schedule (\code{SS}):
@@ -202,15 +202,15 @@
 #'   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or 
 #'   \code{"sml"} bird.} 
 #'   \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"}}
-#'   \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing the 
+#'   \item{\code{LastPresent}, \code{FirstAbsent}}{endpoints of the interval bracketing the
 #'   time the carcass was scavenged or otherwise removed from the field. For 
-#'   example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the carcass
+#'   example, \code{LastPresent = 2.04}, \code{FirstAbsent = 3.21} indicates that the carcass
 #'    was last observed 2.04 days after being placed in the field and was noted 
 #'    missing 3.21 days after being placed. If the precise time of carcass
-#'    removal is known (e.g., recorded by camera), then \code{Left} and 
-#'    \code{Right} should be set equal to each other. If a carcass persists 
-#'    beyond the last day of the field trial, \code{Left} is the last time it 
-#'    was observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
+#'    removal is known (e.g., recorded by camera), then \code{LastPresent} and
+#'    \code{FirstAbsent} should be set equal to each other. If a carcass persists
+#'    beyond the last day of the field trial, \code{LastPresent} is the last time it
+#'    was observed and \code{FirstAbsent} is entered as \code{Inf} or \code{NA}.}
 #' }
 #'
 #' @section Search Schedule (\code{SS}):
@@ -326,15 +326,15 @@
 #' \describe{
 #'   \item{\code{cpID}}{unique ID for each carcass}
 #'   \item{\code{Season}}{\code{"spring"}, \code{"summer"}, or \code{"fall"}}
-#'   \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing
+#'   \item{\code{LastPresent}, \code{FirstAbsent}}{endpoints of the interval bracketing
 #'    the time the carcass was scavenged or otherwise removed from the field.
-#'    For example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the
+#'    For example, \code{LastPresent = 2.04}, \code{FirstAbsent = 3.21} indicates that the
 #'    carcass was last observed 2.04 days after being placed in the field and
 #'    was noted missing 3.21 days after being placed. If the precise time of
-#'    carcass removal is known (e.g., recorded by camera), then \code{Left} and
-#'    \code{Right} should be set equal to each other. If a carcass persists
-#'    beyond the last day of the field trial, \code{Left} is the last time it
-#'    was observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
+#'    carcass removal is known (e.g., recorded by camera), then \code{LastPresent} and
+#'    \code{FirstAbsent} should be set equal to each other. If a carcass persists
+#'    beyond the last day of the field trial, \code{LastPresent} is the last time it
+#'    was observed and \code{FirstAbsent} is entered as \code{Inf} or \code{NA}.}
 #' }
 #' @section Search Schedule (\code{SS}):
 #'  \code{$SS} is a data frame with a row for each date a turbine at the site
@@ -440,8 +440,7 @@
 #'    was not scheduled in that location at that time, or "SC" to indicate the
 #'    carcass had been removed by scavengers prior to the search.}
 #'   \item{\code{Distance}}{the distance a carcass was placed from the 
-#'    observer's transect. Used in determining probability to detect with 
-#'    distance sampling.}
+#'    observer's transect.}
 #' }
 #' @section Carcass Persistence (\code{CP}):
 #'  \code{$CP} is a data frame with each row representing the fate of a single
@@ -452,15 +451,15 @@
 #'   \code{"fall"}}
 #'   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or 
 #'   \code{"sml"} bird}
-#'   \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing the 
+#'   \item{\code{LastPresent}, \code{FirstAbsent}}{endpoints of the interval bracketing the
 #'   time the carcass was scavenged or otherwise removed from the field. For 
-#'   example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the carcass
+#'   example, \code{LastPresent = 2.04}, \code{FirstAbsent = 3.21} indicates that the carcass
 #'   was last observed 2.04 days after being placed in the field and was noted 
 #'   missing 3.21 days after being placed. If the precise time of carcass 
-#'   removal is known (e.g., recorded by camera), then \code{Left} and 
-#'   \code{Right} should be set equal to each other. If a carcass persists 
-#'   beyond the last day of the field trial, \code{Left} is the last time it was
-#'    observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
+#'   removal is known (e.g., recorded by camera), then \code{LastPresent} and
+#'   \code{FirstAbsent} should be set equal to each other. If a carcass persists
+#'   beyond the last day of the field trial, \code{LastPresent} is the last time it was
+#'    observed and \code{FirstAbsent} is entered as \code{Inf} or \code{NA}.}
 #' }
 #'
 #' @section Search Schedule (\code{SS}):
@@ -486,12 +485,9 @@
 #'  \code{$DWP} is a data frame with a row for each transect and columns for 
 #'  each carcass size class (labels must match those of the class factors in the
 #'   carcass observation file). Values represent the density-weighted proportion
-#'    of the searched area for each size (or the fractionof carcasses that fall 
-#'    in the searched area).  In this example, observers travel along transects 
-#'    separated by 150 meters, so distance sampling is applied per size class.  
-#'    Viewshed limits, or the point beyond which an observer has a low chance to
-#'     observe carcasses were used to define DWP.  (Low is defined as average 
-#'     probability to detect carcasses in the region as less than 5\%.)
+#'   of the searched area for each size (or the fractionof carcasses that fall
+#'   in the searched area). Since the whole site was searched, DWP is uniformly
+#'   set equal to 1.
 #' \describe{
 #'   \item{\code{Unit}}{unique ID for each transect.  IDs match those used in 
 #'   the \code{$CO} data frame and the column names in the \code{$SS} data.}
@@ -593,15 +589,15 @@
 #'   \code{"fall"}}
 #'   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or
 #'    \code{"sml"} bird}
-#'   \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing
+#'   \item{\code{LastPresent}, \code{FirstAbsent}}{endpoints of the interval bracketing
 #'    the time the carcass was scavenged or otherwise removed from the field.
-#'    For example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the
+#'    For example, \code{LastPresent = 2.04}, \code{FirstAbsent = 3.21} indicates that the
 #'    carcass was last observed 2.04 days after being placed in the field and
 #'    was noted missing 3.21 days after being placed. If the precise time of
-#'    carcass removal is known (e.g., recorded by camera), then \code{Left} and
-#'    \code{Right} should be set equal to each other. If a carcass persists
-#'    beyond the last day of the field trial, \code{Left} is the last time it
-#'    was observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
+#'    carcass removal is known (e.g., recorded by camera), then \code{LastPresent} and
+#'    \code{FirstAbsent} should be set equal to each other. If a carcass persists
+#'    beyond the last day of the field trial, \code{LastPresent} is the last time it
+#'    was observed and \code{FirstAbsent} is entered as \code{Inf} or \code{NA}.}
 #' }
 #'
 #'
@@ -630,10 +626,10 @@
 #'  carcass observation file). Values represent the density-weighted proportion 
 #'  of the searched area for each size (or the fraction of carcasses that fall 
 #'  in the searched area).  In this example, observers walk along transects 
-#'  separated by 150 meters, so distance sampling is applied per size class.  
-#'  Viewshed limits, or the point beyond which an observer has a low chance to 
-#'  observe carcasses were used to define DWP.  (Low is defined as average 
-#'  probability to detect carcasses in the region as less than 5\%.)
+#'  separated by 150 meters, and search coverage is assumed to be 100%, i.e.,
+#'  DWP = 1 for each unit. This requires that carcasses be placed at random
+#'  locations in the field, even at distances from the transects that would make
+#'  it unlikely to observe small carcasses.
 #' \describe{
 #'   \item{\code{Unit}}{unique ID for each array.  IDs match those used in the 
 #'   \code{$CO} data frame and the column names in the \code{$SS} data.}
@@ -739,15 +735,15 @@
 #'   \code{"fall"}}
 #'   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or
 #'    \code{"sml"} bird}
-#'   \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing
+#'   \item{\code{LastPresent}, \code{FirstAbsent}}{endpoints of the interval bracketing
 #'    the time the carcass was scavenged or otherwise removed from the field.
-#'    For example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the
+#'    For example, \code{LastPresent = 2.04}, \code{FirstAbsent = 3.21} indicates that the
 #'    carcass was last observed 2.04 days after being placed in the field and
 #'    was noted missing 3.21 days after being placed. If the precise time of
-#'    carcass removal is known (e.g., recorded by camera), then \code{Left} and
-#'    \code{Right} should be set equal to each other. If a carcass persists
-#'    beyond the last day of the field trial, \code{Left} is the last time it
-#'    was observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
+#'    carcass removal is known (e.g., recorded by camera), then \code{LastPresent} and
+#'    \code{FirstAbsent} should be set equal to each other. If a carcass persists
+#'    beyond the last day of the field trial, \code{LastPresent} is the last time it
+#'    was observed and \code{FirstAbsent} is entered as \code{Inf} or \code{NA}.}
 #' }
 #'
 #' @section Search Schedule (\code{SS}):
@@ -771,16 +767,13 @@
 #' 
 #' @section Density Weighted Proportion (\code{DWP}):
 #'  \code{$DWP} is a data frame with a row for each arc and columns for each
-#'   carcass size class (labels must match those of the class factors in the 
-#'   carcass observation file). Values represent the density-weighted proportion
-#'    of the searched area for each size (or the fraction of carcasses that fall
-#'     in the searched area).  In this example, within the inner field (center)
+#'  carcass size class (labels must match those of the class factors in the
+#'  carcass observation file). Values represent the density-weighted proportion
+#'  of the searched area for each size (or the fraction of carcasses that fall
+#'  in the searched area).  In this example, within the inner field (center)
 #'  observers are unobstructed in ability to discover carcasses, for a DWP of 1.
 #'  In the outer heliostat field observers walk along transects separated by 50 
-#'  meters, so distance sampling is used.  Viewshed limits, or the point beyond 
-#'  which an observer has a low chance to observe carcasses were used to define 
-#'  DWP.  (Low is defined as average probability to detect carcasses in the 
-#'  region as less than 5\%.)
+#'  meters, but the entire area is surveyed, so DWP = 1.
 #' \describe{
 #'   \item{\code{Unit}}{unique ID for each arc, plus one labeled \code{center} 
 #'   for the inner heliostat field.  IDs match those used in the \code{$CO} data

@@ -3,6 +3,8 @@ function(input, output, session){
 rv <- createReactiveValues()
 output <- initialOutput(rv, output)
 msgs <- msgList()
+options(htmlwidgets.TOJSON_ARGS = list(na = 'string'))
+options(DT.options = list(pageLength = 25))
 
 observeEvent(input$clear_all, {
   rv <- update_rv_clear_all(rv, input)

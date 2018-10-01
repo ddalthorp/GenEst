@@ -155,10 +155,11 @@ CP_data <- solar_PV$CP
 head(CP_data, 3)
 ```
 
-Left and Right represent the left (start) and right (end) endpoints of the 
-interval over which a carcass went missing.  For further information about CP 
-trials and how to format results for use with GenEst, see User Manual Appendix 
-A2 and B2.
+\code{LastPresent} and \code{FirstAbsent} represent the left (start) and right
+(end) endpoints of the interval over which a carcass went missing.  For further
+information about CP trials and how to format results for use with GenEst, see
+the User Guide (link found on help menu of the GUI).
+
 
 Four classes of parameteric models may be used for carcass persistance: 
 Exponential, Weibull, Logistic, and LogNormal.  As with Searcher Efficiency we 
@@ -171,8 +172,8 @@ season by setting `l ~ season`, but scale only depends on the intercept using
 
 ```{r cp}
 CP_model <- cpm(l ~ Season, s ~ 1, data = CP_data, 
-                left = "Left", 
-                right = "Right",
+                left = "LastPresent",
+                right = "FirstAbsent",
                 dist = "weibull")
 ```
 
@@ -180,8 +181,8 @@ Next, we try a CP model set considering whether the Season covaritate for
 location is necessary, by comparing the `l ~ season, s ~ 1` to `l ~ 1, s ~ 1`.
 ```{r cp set}
   CP_weibull_set <- cpmSet(l ~ Season, s ~ 1, data = CP_data, 
-                  left = "Left", 
-                  right = "Right",
+                  left = "LastPresent",
+                  right = "FirstAbsent",
                   dist = "weibull")
 class(CP_weibull_set)
 length(CP_weibull_set)
@@ -201,8 +202,8 @@ cpmSet objects, one for each size class.
 ```{r cp Size Set}
 CP_size_model_set <- cpmSetSize(formula_l = l ~ Season, 
                            formula_s = s ~ 1, 
-                           left = "Left",
-                           right = "Right",
+                           left = "LastPresent",
+                           right = "FirstAbsent",
                            dists = c("exponential", "weibull"),
                            sizeclassCol = "Size", 
                            data = CP_data)

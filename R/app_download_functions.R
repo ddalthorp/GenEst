@@ -134,7 +134,8 @@ downloadMFig <- function(rv, split = TRUE, transpose = FALSE){
 #'
 downloadTable <- function(filename, tablename, csvformat){
   downloadHandler(filename = filename, content = function(file){
-    get(paste0("write.csv", csvformat))(tablename, file, row.names = FALSE)
+    get(paste0("write.csv", csvformat))(x = tablename, file = file,
+      row.names = FALSE)
   })
 }
 

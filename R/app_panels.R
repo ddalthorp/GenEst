@@ -109,13 +109,13 @@ modelOutputPanel <- function(outType){
   }
 
   tName <- switch(outType,
+             "SEModComparison" = "Model Comparison",
              "SEFigures" = "Figures",
              "SEEstimates" = "Estimates", 
-             "SEModComparison" = "Model Comparison", 
-             "SEModSelection" = "Model Selection", 
-             "CPFigures" = "Figures", 
+             "SEModSelection" = "Model Selection",
+             "CPModComparison" = "Model Comparison",
+             "CPFigures" = "Figures",
              "CPEstimates" = "Estimates", 
-             "CPModComparison" = "Model Comparison", 
              "CPModSelection" = "Model Selection",
              "MFigures" = "Figures", 
              "MSummary" = "Summary", 
@@ -255,8 +255,10 @@ modelOutputPanel <- function(outType){
                  ),
                "MFigures" = 
                  list(
-                   em("Select SE and CP models fit to matching size 
-                         classes to run model"), 
+                   em("Fitted SE and CP models must be selected before
+                     detection probability can be estimated. Return to the Model
+                     Selection tabs under Searcher Efficiency and Carcass
+                     Persistence."),
                    em("Run estimate to view figure"),
                    list(plotOutput("fig_M", inline = TRUE), br(), br(),
                       downloadButton("dlMfig", "Download")

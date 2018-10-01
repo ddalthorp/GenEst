@@ -72,15 +72,15 @@ factor to account for incomplete search coverage).
   \code{"fall"}}
   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or
    \code{"sml"} bird}
-  \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing
+  \item{\code{LastPresent}, \code{FirstAbsent}}{endpoints of the interval bracketing
    the time the carcass was scavenged or otherwise removed from the field.
-   For example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the
+   For example, \code{LastPresent = 2.04}, \code{FirstAbsent = 3.21} indicates that the
    carcass was last observed 2.04 days after being placed in the field and
    was noted missing 3.21 days after being placed. If the precise time of
-   carcass removal is known (e.g., recorded by camera), then \code{Left} and
-   \code{Right} should be set equal to each other. If a carcass persists
-   beyond the last day of the field trial, \code{Left} is the last time it
-   was observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
+   carcass removal is known (e.g., recorded by camera), then \code{LastPresent} and
+   \code{FirstAbsent} should be set equal to each other. If a carcass persists
+   beyond the last day of the field trial, \code{LastPresent} is the last time it
+   was observed and \code{FirstAbsent} is entered as \code{Inf} or \code{NA}.}
 }
 }
 
@@ -112,10 +112,10 @@ factor to account for incomplete search coverage).
  carcass observation file). Values represent the density-weighted proportion 
  of the searched area for each size (or the fraction of carcasses that fall 
  in the searched area).  In this example, observers walk along transects 
- separated by 150 meters, so distance sampling is applied per size class.  
- Viewshed limits, or the point beyond which an observer has a low chance to 
- observe carcasses were used to define DWP.  (Low is defined as average 
- probability to detect carcasses in the region as less than 5\%.)
+ separated by 150 meters, and search coverage is assumed to be 100%, i.e.,
+ DWP = 1 for each unit. This requires that carcasses be placed at random
+ locations in the field, even at distances from the transects that would make
+ it unlikely to observe small carcasses.
 \describe{
   \item{\code{Unit}}{unique ID for each array.  IDs match those used in the 
   \code{$CO} data frame and the column names in the \code{$SS} data.}
