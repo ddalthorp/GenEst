@@ -76,15 +76,15 @@ an area adjustment factor to account for incomplete search coverage).
   \code{"fall"}}
   \item{\code{Size}}{\code{"bat"}; or \code{"lrg"}, \code{"med"}, or
    \code{"sml"} bird}
-  \item{\code{Left}, \code{Right}}{endpoints of the interval bracketing
+  \item{\code{LastPresent}, \code{FirstAbsent}}{endpoints of the interval bracketing
    the time the carcass was scavenged or otherwise removed from the field.
-   For example, \code{Left = 2.04}, \code{Right = 3.21} indicates that the
+   For example, \code{LastPresent = 2.04}, \code{FirstAbsent = 3.21} indicates that the
    carcass was last observed 2.04 days after being placed in the field and
    was noted missing 3.21 days after being placed. If the precise time of
-   carcass removal is known (e.g., recorded by camera), then \code{Left} and
-   \code{Right} should be set equal to each other. If a carcass persists
-   beyond the last day of the field trial, \code{Left} is the last time it
-   was observed and \code{Right} is entered as \code{Inf} or \code{NA}.}
+   carcass removal is known (e.g., recorded by camera), then \code{LastPresent} and
+   \code{FirstAbsent} should be set equal to each other. If a carcass persists
+   beyond the last day of the field trial, \code{LastPresent} is the last time it
+   was observed and \code{FirstAbsent} is entered as \code{Inf} or \code{NA}.}
 }
 }
 

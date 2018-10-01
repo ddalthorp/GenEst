@@ -141,6 +141,6 @@ Carcass persistence \code{data} must be entered in a data frame with data
 }
 \examples{
   data(wind_RP)
-  cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "Left", right = "Right")
+  cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
 
 }
