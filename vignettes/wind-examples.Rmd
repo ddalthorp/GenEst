@@ -14,6 +14,10 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+```{r set-options, echo=FALSE, cache=FALSE}
+options(width = 120)
+```
+```
 
 ```{r, include=FALSE}
 library(GenEst)
@@ -111,11 +115,11 @@ head(data_CP)
 
 Exact persistence times are not known, but a carcass that was present at one
 check and absent at the next check is assumed to have been removed at some
-point in the interval. The left endpoint of the interval was entered as `Left`
-and the right endpoint as `Right`. For carcasses that had not been scavenged
-by the end of the study, `Left` is the time of the last check and `Right` 
+point in the interval. The left endpoint of the interval was entered as `LastPresent`
+and the right endpoint as `FirstAbsent`. For carcasses that had not been scavenged
+by the end of the study, `LastPresent` is the time of the last check and `FirstAbsent`
 is `Inf`. For carcasses whose removal time is known exactly (e.g., scavenging
-was recorded by camera), `Left = Right`. The `Season` column gives the season at
+was recorded by camera), `LastPresent = FirstAbsent`. The `Season` column gives the season at
 the time the carcass was placed in the field.
 
 ### Search Schedules (`SS`)
@@ -226,7 +230,7 @@ modeled as separate functions combinations.
 ```
 ```{r}
 model_CP <- cpm(l ~ Season, s ~ Season, data = data_CP, dist = "weibull",
-  left = "Left", right = "Right")
+  left = "LastPresent", right = "FirstAbsent")
 model_CP
 ```
 
@@ -290,14 +294,14 @@ SSdat <- prepSS(data_SS)
 ```
 
 Season (a SS split because it is a column in the SS file):
-```{r Season Split, fig.width = 4, fig.height = 4, fig.align = 'center'}
+```{r Season Split, fig.width = 6.5, fig.height = 5.25, fig.align = 'center'}
 M_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_SS = "Season", data_SS = SSdat, split_CO = NULL,  data_CO = data_CO)
 summary(M_season)
 plot(M_season)
 ```
 
-Month (a temporal split that as a vector of times spanning monitoring season):
+Month (a temporal split that spans the monitoring period):
 ```{r Temporal Split, fig.width = 7, fig.height = 5, fig.align = 'center'}
 M_month <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
   split_time = seq(0, max(SSdat$days), by = 28),
@@ -512,7 +516,7 @@ choose from: Weibull, lognormal, loglogistic, and exponential.
 ```{r}
 cpSet_sml <- cpmSet(
   l ~ Visibility * Season, s ~ Visibility * Season,
-  data = data_CP[data_CP$Size == "sml", ], left = "Left", right = "Right",
+  data = data_CP[data_CP$Size == "sml", ], left = "LastPresent", right = "FirstAbsent",
   dists = c( "weibull", "lognormal", "loglogistic", "exponential")
 )
 ```
@@ -569,12 +573,12 @@ select the following:
 
 ```{r}
 cp_med <- cpm(l ~ Visibility, s ~ Season,
-  data = data_CP[data_CP$Size == "med", ], left = "Left", right = "Right",
+  data = data_CP[data_CP$Size == "med", ], left = "LastPresent", right = "FirstAbsent",
   dist = "weibull")
 cp_lrg <- cpm(l ~ Visibility + Season, data = data_CP[data_CP$Size == "lrg", ],
-  left = "Left", right = "Right", dist = "exponential")
+  left = "LastPresent", right = "FirstAbsent", dist = "exponential")
 cp_bat <- cpm(l ~ Visibility + Season, s ~ 1,
-  data = data_CP[data_CP$Size == "med", ], left = "Left", right = "Right",
+  data = data_CP[data_CP$Size == "med", ], left = "LastPresent", right = "FirstAbsent",
   dist = "weibull")
 ```
 

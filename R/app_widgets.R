@@ -606,8 +606,8 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
   modSpaces <- sapply(modNames_nspaces, 
                      function(x){paste(rep(" ", x), collapse = "")}
                    )
-  modDeltaAICcs <- AICcTab[ , "Delta AICc"]
-  modLabels <- paste0(modNames, " (delta AICc: ", modDeltaAICcs, ")")
+  modDeltaAICcs <- AICcTab[ , "\u0394AICc"]
+  modLabels <- paste0(modNames, " (\u0394AICc: ", modDeltaAICcs, ")")
   names(modNames) <- modLabels
   labels_nchar <- nchar(modLabels)
   labels_maxchar <- max(labels_nchar)

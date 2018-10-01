@@ -174,8 +174,8 @@ This suite of functions create the HTML code underlying the
   \code{\link{modelOutputWidget}} for output controls.
 
 \code{SEMainPanel}: Analysis panel's Searcher Efficiency 
-  panel's main panel (where the Selected Data, Model Estimates, Figures,
-  Model Comparison, and Model Selection are displayed). Calls 
+  panel's main panel (where the Selected Data, Model Comparison, Figures,
+   Model Estimates, and Model Selection are displayed). Calls
   \code{selectedDataPanel} for the selected data and then 
    \code{modelOutputPanel} for each output.
 
@@ -191,8 +191,8 @@ This suite of functions create the HTML code underlying the
   \code{\link{modelOutputWidget}} for the output controls.
 
 \code{CPMainPanel}: Analysis panel's Carcass Persistence
-  panel's main panel (where the Selected Data, Model Estimates, Figures,
-  Model Comparison, and Model Selection are displayed). Calls
+  panel's main panel (where the Selected Data, Model Estimates, Model
+  Comparison, Figures, and Model Selection are displayed). Calls
   \code{selectedDataPanel} for the selected data and 
   \code{modelOutputPanel} for each of the outputs.
 
