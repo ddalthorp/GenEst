@@ -65,14 +65,14 @@ head(CP_data, 3)
 
 ## ----cp------------------------------------------------------------------
 CP_model <- cpm(l ~ Season, s ~ 1, data = CP_data, 
-                left = "Left", 
-                right = "Right",
+                left = "LastPresent",
+                right = "FirstAbsent",
                 dist = "weibull")
 
 ## ----cp set--------------------------------------------------------------
   CP_weibull_set <- cpmSet(l ~ Season, s ~ 1, data = CP_data, 
-                  left = "Left", 
-                  right = "Right",
+                  left = "LastPresent",
+                  right = "FirstAbsent",
                   dist = "weibull")
 class(CP_weibull_set)
 length(CP_weibull_set)
@@ -85,8 +85,8 @@ names(CP_weibull_set)
 ## ----cp Size Set---------------------------------------------------------
 CP_size_model_set <- cpmSetSize(formula_l = l ~ Season, 
                            formula_s = s ~ 1, 
-                           left = "Left",
-                           right = "Right",
+                           left = "LastPresent",
+                           right = "FirstAbsent",
                            dists = c("exponential", "weibull"),
                            sizeclassCol = "Size", 
                            data = CP_data)

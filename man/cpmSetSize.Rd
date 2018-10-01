@@ -55,7 +55,7 @@ Run a set of \code{\link{cpmSet}} model set runs based on all
 \examples{
   data(wind_RP)
   mod <- cpmSetSize(formula_l = l ~ Season, formula_s = s ~ Season,  
-           data = wind_RP$CP, left = "Left", right = "Right",
+           data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent",
            sizeclassCol = "Size"
           )
 
