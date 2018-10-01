@@ -49,25 +49,25 @@ readCSV <- function(path){
   }
   if ("data.frame" %in% attr(out1, "class")){
     if (is.null(attr(out2, "class"))){
-      return(list(data = out1, csvformat = ""))
+      return(out1)
     }
     if ("data.frame" %in% attr(out2, "class")){
       if (ncol(out2) == 1){
-        return(list(data = out1, csvformat = ""))
+        return(out1)
       }
     }
   }
   if ("data.frame" %in% attr(out2, "class")){
     if (is.null(attr(out1, "class"))){
-      return(list(data = out2, csvformat = 2))
+      return(out2)
     }
     if ("data.frame" %in% attr(out1, "class")){
       if (ncol(out1) == 1){
-        return(list(data = out2, csvformat = 2))
+        return(out2)
       }
     }
   }
-  return(list(data = out1, csvformat = ""))
+  return(out1)
 }
 
 #' @title Prepare predictors based on inputs
