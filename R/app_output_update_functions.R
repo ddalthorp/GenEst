@@ -33,6 +33,7 @@ update_output_clear_all <- function(rv, output){
 #'
 initialOutput <- function(rv, output){
   output$SStext <- renderText(rv$SStext)
+
   output$download_RP <- downloadData("RP")
   output$download_RPbat <- downloadData("RPbat")
   output$download_cleared <- downloadData("cleared")
@@ -40,6 +41,16 @@ initialOutput <- function(rv, output){
   output$download_PV <- downloadData("PV")
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
+
+  output$download_RP2 <- downloadData("RP", csvformat = 2)
+  output$download_RPbat2 <- downloadData("RPbat", csvformat = 2)
+  output$download_cleared2 <- downloadData("cleared", csvformat = 2)
+  output$download_powerTower2 <- downloadData("powerTower", csvformat = 2)
+  output$download_PV2 <- downloadData("PV", csvformat = 2)
+  output$download_trough2 <- downloadData("trough", csvformat = 2)
+  output$download_mock2 <- downloadData("mock", csvformat = 2)
+
+
   output$kFillNeed <- renderText("no")
   outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
 

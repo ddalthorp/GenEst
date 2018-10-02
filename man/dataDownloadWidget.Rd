@@ -8,7 +8,7 @@ dataDownloadWidget(set)
 }
 \arguments{
 \item{set}{Name of data set. One of "RP", "RPbat", "cleared", "powerTower",
-"PV", "trough", "mock", or "mock2"}
+"PV", "trough", "mock"}
 }
 \value{
 HTML for the data download widget

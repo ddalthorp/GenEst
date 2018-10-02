@@ -1,5 +1,6 @@
 #' @useDynLib GenEst, .registration = TRUE
 #' @importFrom cbinom rcbinom
+#' @importFrom corpus print.corpus_frame
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics axis box hist lines mtext par plot plot.new points
 #'   polygon rect text

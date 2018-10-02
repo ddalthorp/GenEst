@@ -52,7 +52,6 @@ test_that("Standard widget functions produce HTML", {
   expect_is(dataInputWidget("CO")[[3]], "shiny.tag")
   expect_error(dataInputWidget("_NOT_RIGHT_"))
   expect_is(dataDownloadWidget("mock"), "shiny.tag")
-  expect_is(dataDownloadWidget("mock2"), "shiny.tag")
   expect_is(dataDownloadWidget("RP"), "shiny.tag")
   expect_is(dataDownloadWidget("RPbat"), "shiny.tag")
   expect_is(dataDownloadWidget("cleared"), "shiny.tag")
