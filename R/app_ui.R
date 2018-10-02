@@ -469,8 +469,7 @@ downloadsPanel<- function(){
       dataDownloadWidget("powerTower"),
       dataDownloadWidget("PV"),
       dataDownloadWidget("trough"),
-      dataDownloadWidget("mock"),
-      dataDownloadWidget("mock2")
+      dataDownloadWidget("mock")
     )
   )
   )
