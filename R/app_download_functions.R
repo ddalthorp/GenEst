@@ -149,31 +149,21 @@ downloadTable <- function(filename, tablename, csvformat){
 #'
 #' @export
 #'
-downloadData <- function(set){
-
-  SE <- paste0("SE_", set, ".csv")
-  CP <- paste0("CP_", set, ".csv")
-  DWP <- paste0("DWP_", set, ".csv")
-  SS <- paste0("SS_", set, ".csv")
-  CO <- paste0("CO_", set, ".csv")
-
-  fpre <- switch(set, "mock" = "", "mock2" = "", "powerTower" = "solar_", 
-            "PV" = "solar_", "trough" = "solar_", "cleared" = "wind_", 
-            "RP" = "wind_", "RPbat" = "wind_"
-          )
+downloadData <- function(set, csvformat = NULL){
+  fpre <- switch(set, "mock" = "", "mock2" = "", "powerTower" = "solar_", "PV" = "solar_",
+    "trough" = "solar_", "cleared" = "wind_", "RP" = "wind_", "RPbat" = "wind_")
   filename <- paste0(fpre, set, ".zip")
-  foldername <- paste0("../extdata/", fpre, set, "/")
-
+  exob <- get(paste0(fpre, set))
+  pth <- tempdir()
+  writef <- get(paste0("write.csv", csvformat))
+  for (seti in names(exob)){
+    writef(exob[[seti]], file = paste0(pth, "/", seti), row.names = FALSE,
+      fileEncoding = "UTF-8")
+  }
   downloadHandler(
     filename = filename,
     content = function(file)  {
-      pth = foldername
-      cat(paste0(pth, SE), file = file.path(tempdir(), SE))
-      cat(paste0(pth, CP), file = file.path(tempdir(), CP))
-      cat(paste0(pth, DWP), file = file.path(tempdir(), DWP))
-      cat(paste0(pth, SS), file = file.path(tempdir(), SS))
-      cat(paste0(pth, CO), file = file.path(tempdir(), CO))
-      tozip <- paste0(tempdir(), "/", c(SE, CP, DWP, SS, CO))
+      tozip <- paste0(pth, "/", names(exob))
       zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
     },
     contentType = "application/zip"
