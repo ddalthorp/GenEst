@@ -40,7 +40,6 @@ initialOutput <- function(rv, output){
   output$download_PV <- downloadData("PV")
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
-  output$download_mock2 <- downloadData("mock2")
   output$kFillNeed <- renderText("no")
   outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
 
