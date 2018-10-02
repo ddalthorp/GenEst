@@ -11,7 +11,6 @@ observeEvent(input$clear_all, {
   output <- update_output_clear_all(rv, output)
   update_input_clear_all(rv, session)
 })
-
 observeEvent(input$file_SE, {
   rv <- update_rv_data_SE(rv, input)
   output <- update_output_data_SE(rv, output)

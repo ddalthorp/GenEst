@@ -47,9 +47,11 @@ gettingStartedContent <- function(){
         "." 
       ), 
       br(),
-      p("Example data sets are available under the ", code("Downloads"), 
-        " tab.")
-    )
+      p("Example data sets are available in comma-separated (.csv) files that
+        may be downloaded under the ", code("Downloads"), " tab. ")
+      ),
+      radioButtons("csvchoice", "Decimal separator:",
+        choices = list("period ( . )" = "", "comma ( , )" = 2), selected = "")
   )
 }
 
@@ -114,9 +116,7 @@ GenEstAuthors <- function(){
       ", Jeffrey Mintz ",
       a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
       ", Robert Wolpert ",
-      a("(Duke)", href = "http://www2.stat.duke.edu/~rlw/", 
-        target = "_blank"
-      ),
+      a("(Duke)", href = "http://www2.stat.duke.edu/~rlw/", target = "_blank"),
       ", Jared Studyvin ",
       a("(WEST)", href = "https://www.west-inc.com", target = "_blank"),
       ", and Franzi Korner-Nievergelt ",

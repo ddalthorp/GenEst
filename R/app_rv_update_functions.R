@@ -35,7 +35,7 @@ update_rv_clear_all <- function(rv, input){
 update_rv_data_SE <- function(rv, input){
   rv <- update_rv_data_SE_clear(rv, input)
   rv$data_SE <- readCSV(input$file_SE$datapath)
-  rv$csvformat <- ifelse(grepl(";", readLines(input$file_SE$datapath, 1)), 2, "")
+#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_SE$datapath, 1)), 2, "")
   rv$filename_SE <- input$file_SE$name
   rv$colNames_SE <- colnames(rv$data_SE)
   rv$colNames_SE_preds <- predsCols(rv$data_SE)
@@ -154,7 +154,7 @@ update_rv_data_SE_clear <- function(rv, input){
 #'
 update_rv_data_CP <- function(rv, input){
   rv <- update_rv_data_CP_clear(rv, input)
-  rv$csvformat <- ifelse(grepl(";", readLines(input$file_CP$datapath, 1)), 2, "")
+#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_CP$datapath, 1)), 2, "")
   rv$data_CP <- readCSV(input$file_CP$datapath)
   rv$filename_CP <- input$file_CP$name
   rv$colNames_CP <- colnames(rv$data_CP)
@@ -287,7 +287,7 @@ update_rv_data_CP_clear <- function(rv, input){
 #'
 update_rv_data_SS <- function(rv, input){
   rv <- update_rv_data_SS_clear(rv, input)
-  rv$csvformat <- ifelse(grepl(";", readLines(input$file_SS$datapath, 1)), 2, "")
+#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_SS$datapath, 1)), 2, "")
   rv$data_SS <- readCSV(input$file_SS$datapath)
   rv$colNames_SS <- colnames(rv$data_SS)
   return(rv)
@@ -350,7 +350,7 @@ update_rv_data_SS_clear <- function(rv, input){
 #'
 update_rv_data_DWP <- function(rv, input){
   rv <- update_rv_data_DWP_clear(rv, input)
-  rv$csvformat <- ifelse(grepl(";", readLines(input$file_DWP$datapath, 1)), 2, "")
+#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_DWP$datapath, 1)), 2, "")
   rv$data_DWP <- readCSV(input$file_DWP$datapath)
   rv$colNames_DWP <- DWPCols(rv$data_DWP)
   return(rv)
@@ -399,7 +399,7 @@ update_rv_data_DWP_clear <- function(rv, input){
 #'
 update_rv_data_CO <- function(rv, input){
   rv <- update_rv_data_CO_clear(rv, input)
-  rv$csvformat <- ifelse(grepl(";", readLines(input$file_CO$datapath, 1)), 2, "")
+#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_CO$datapath, 1)), 2, "")
   rv$data_CO <- readCSV(input$file_CO$datapath)
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
