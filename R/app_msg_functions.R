@@ -306,23 +306,13 @@ msgModFail <- function(mods, type = "SE", special = NULL){
              )
     } else if (special == "size_k"){
       msg <- "Some size classes had no successful models. Consider a fixed k."
-    } else if (special == "NA_kFixed"){
-      msg <- "Invalid value for fixed k input(s)."
     }
   }
   if (type == "g"){
-    if (special == "NA_kFill"){
-      msg <- "Invalid value for assumed k input(s)."
-    } else{
-      msg <- "Detection probability not able to be estimated"
-    }
+    msg <- "Cannot estimate detection probability"
   }
   if (type == "M"){
-    if (special == "NA_kFill"){
-      msg <- "Invalid value for assumed k input(s)."
-    } else{
-      msg <- "Mortality not able to be estimated"
-    }
+    msg <- "Cannot estimate Mortality"
   }
   if(!is.null(msg)){
     return(showNotification(msg, type = "error", duration = NULL))
