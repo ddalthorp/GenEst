@@ -146,7 +146,10 @@ downloadTable <- function(filename, tablename, csvformat){
 #' @description Handle the downloading of a data set
 #'
 #' @param set the name of the data set to download
-#'
+#' @param csvformat Format of .csv files to download. For comma field separator
+#'  and period decimal separator, use \code{csvformat = NULL} or "".
+#'  For semicolon field separator and comma decimal separator, use
+#'  \code{csvformat = 2}.
 #' @return a download handler function
 #'
 #' @export
