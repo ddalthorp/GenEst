@@ -42,13 +42,13 @@ initialOutput <- function(rv, output){
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
 
-  #output$download_RP2 <- downloadData("RP", csvformat = 2)
-  #output$download_RPbat2 <- downloadData("RPbat", csvformat = 2)
-  #output$download_cleared2 <- downloadData("cleared", csvformat = 2)
-  #output$download_powerTower2 <- downloadData("powerTower", csvformat = 2)
-  #output$download_PV2 <- downloadData("PV", csvformat = 2)
-  #output$download_trough2 <- downloadData("trough", csvformat = 2)
-  #output$download_mock2 <- downloadData("mock", csvformat = 2)
+#  output$download_RP2 <- downloadData("RP", csvformat = 2)
+#  output$download_RPbat2 <- downloadData("RPbat", csvformat = 2)
+#  output$download_cleared2 <- downloadData("cleared", csvformat = 2)
+#  output$download_powerTower2 <- downloadData("powerTower", csvformat = 2)
+#  output$download_PV2 <- downloadData("PV", csvformat = 2)
+#  output$download_trough2 <- downloadData("trough", csvformat = 2)
+#  output$download_mock2 <- downloadData("mock", csvformat = 2)
 
 
   output$kFillNeed <- renderText("no")
