@@ -88,7 +88,7 @@ dataDownloadWidget <- function(set){
   #setButtonName2 <- paste0(setButtonName, 2) # doesn't work right
   fluidRow(
     column(6, h4(setName)), 
-    column(2, downloadButton(setButtonName, ".csv ( , )"))
+    column(2, downloadButton(setButtonName, "Download"))
    # column(2, downloadButton(setButtonName2, ".csv ( ; )")) # doesn't work right
   )
 }
