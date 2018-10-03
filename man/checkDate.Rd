@@ -7,7 +7,7 @@
 checkDate(testdate)
 }
 \arguments{
-\item{x}{date(s) to check and format}
+\item{testdate}{date(s) to check and format}
 }
 \value{
 dates formatted as yyyy-mm-dd (if possible) or NULL (if some value is
