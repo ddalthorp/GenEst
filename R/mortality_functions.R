@@ -81,7 +81,9 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   if (!(dateFoundCol %in% colnames(data_CO))){
     stop("dateFoundCol not found in data_CO")
   }
-  data_CO[ , dateFoundCol] <- as.Date(yyyymmdd(data_CO[ , dateFoundCol]))
+  data_CO[ , dateFoundCol] <- checkDate(data_CO[ , dateFoundCol])
+  if (is.null(data_CO[ , dateFoundCol]))
+    stop("dates_CO not unambiguously intepretable as dates")
   # attempted auto-parsing for unitCol:
   #  find common cols in CO and DWP as the candidate unitCol
   #  if unique, then use that as unitCol

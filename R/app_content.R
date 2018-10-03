@@ -49,9 +49,7 @@ gettingStartedContent <- function(){
       br(),
       p("Example data sets are available in comma-separated (.csv) files that
         may be downloaded under the ", code("Downloads"), " tab. ")
-      ),
-      radioButtons("csvchoice", "Decimal separator:",
-        choices = list("period ( . )" = "", "comma ( , )" = 2), selected = "")
+    )
   )
 }
 
