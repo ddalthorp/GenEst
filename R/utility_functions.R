@@ -128,6 +128,44 @@ yyyymmdd <- function(x){
   return(x)
 }
 
+#' Checks whether a vector of data can be interpreted as dates
+#'
+#' @description Checks whether the dates are in a standard format and sensible.
+#'  If so, function returns the dates converted to R standard yyyy-mm-dd format;
+#'  Acceptable formats are yyyy-mm-dd, yyyy/mm/dd, mm/dd/yyyy, and dd/mm/yyyy.
+#'  If format is mm/dd/yyyy or dd/mm/yyyy, the dates must be interpretable
+#'  unambiguously. Also, dates must be later than 1900-01-01. This additional
+#'  check provides some protection against common data entry errors like
+#'  entering a year as 0217 or 1017 instead of 2017.
+#'
+#' @param x date(s) to check and format
+#'
+#' @return dates formatted as yyyy-mm-dd (if possible) or NULL (if some value is
+#'  not interpretable as a date after 1900-01-01).
+#'
+#' @examples
+#'   yyyymmdd("02/20/2018")
+#'
+#' @export
+#'
+checkDate <- function(testdate){
+  if (is.null(testdate) || anyNA(testdate) || is.numeric(testdate))
+    return(NULL)
+  dateFormats <- c("%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d", "%Y-%m-%d")
+  beginningOfTime <- as.Date("1900-01-01")
+  tmp <- as.Date(testdate, format = dateFormats[1])
+  if (!anyNA(tmp)){
+    tmp1 <- as.Date(testdate, format = dateFormats[2])
+    if (anyNA(tmp1) && !any(tmp - beginningOfTime < 0)) return(tmp)
+  }
+  for (i in 2:length(dateFormats)){
+    tmp <- as.Date(testdate, format = dateFormats[i])
+    if (!anyNA(tmp) && !any(tmp - beginningOfTime < 0)) return(tmp)
+  }
+  return(NULL)
+}
+
+
 #' @title Expected value of a continuous binomial with size = 1/g
 #'
 #' @description Calculates the expected value of a continuous binomial random

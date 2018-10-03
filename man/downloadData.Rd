@@ -7,12 +7,7 @@
 downloadData(set, csvformat = NULL)
 }
 \arguments{
-\item{set}{the name of the data set to download (character string)}
-
-\item{csvformat}{Format for .csv file to be downloaded. For comma-separated
-fields ( , ) and period ( . ) for decimal separator, \code{csvformat = ""}
-or \code{csvformat = 2}. For semicolon separated fields ( ; ) and a comma
-for decimal separator, \code{csvformat = 2}}
+\item{set}{the name of the data set to download}
 }
 \value{
 a download handler function

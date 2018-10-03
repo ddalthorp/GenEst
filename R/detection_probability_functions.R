@@ -73,8 +73,10 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
+  dates_CO <- checkDate(data_CO[ , dateFoundCol])
+  if (is.null(dates_CO)) stop("dates_CO not properly formatted as dates")
   COdat <- data_CO # format data_CO
-  COdat[ , dateFoundCol] <- dateToDay(COdat[ , dateFoundCol], t0date)
+  COdat[ , dateFoundCol] <- dateToDay(dates_CO, t0date)
   names(COdat)[names(COdat) == dateFoundCol] <- "day" # distinguish integers
   if (is.null(sizeclassCol) || is.na(sizeclassCol)){
     sizeclassCol <- "placeholder"
@@ -128,13 +130,13 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
 #               model_SE, k
 #             )
 #  } else {
-#    pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
+    pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
 #  }
-  pksim <- vector("list", length = nsizeclass)
-  for(sci in 1:nsizeclass){
-    pksim[[sci]] <- rpk(model_SE[[sci]], n = nsim, kFill = kFill[sci], 
-                       seed = seed_SE)
-  }
+#  pksim <- vector("list", length = nsizeclass)
+#  for(sci in 1:nsizeclass){
+#    pksim[[sci]] <- rpk(model_SE[[sci]], n = nsim, kFill = kFill[sci],
+#                       seed = seed_SE)
+#  }
   names(pksim) <- names(model_SE)
 
   cpsim <- lapply(model_CP, rcp, n = nsim, seed = seed_CP, type = "ppersist")
@@ -971,8 +973,8 @@ prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   # if dateCol not provided, extract search dates (if possible)
   if (is.null(dateCol)){
     for (coli in colnames(data_SS)){
-      tmp <- try(as.Date(yyyymmdd(data_SS[, coli])), silent = T)
-      if (class(tmp) != "try-error"){
+      tmp <- checkDate(data_SS[, coli])
+      if (!is.null(tmp)){
         if (!is.null(dateCol)){
           stop(
             "more than 1 date column in data_SS, and ",
@@ -980,6 +982,7 @@ prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
           )
         } else {
           dateCol <- coli
+          dates <- tmp
         }
       }
     }
@@ -988,10 +991,10 @@ prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
     }
   } else {
     if (length(dateCol) > 1 || !is.character(dateCol)){
-      stop("datesSearchedCol must be NULL or the name of a single column")
+      stop("'datesSearchedCol' must be NULL or the name of a single column")
     }
-    tmp <- try(as.Date(data_SS[, dateCol]), silent = T)
-    if (class(tmp) == "try-error"){
+    dates <- checkDate(data_SS[, dateCol])
+    if (is.null(dates)){
       stop(paste(dateCol, "is not properly formatted as dates"))
     }
   }
@@ -1014,12 +1017,15 @@ prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   if (grepl("-",paste(unitNames, collapse = ''))){
     stop("Unit names must not contain hyphens ( - )")
   }
-  dates <- as.Date(yyyymmdd(data_SS[, dateCol]))
+#  dates <- as.Date(yyyymmdd(data_SS[, dateCol]))
   date0 <- min(dates)
   ans <- list()
   ans$date0 <- date0
   ans$days <- as.numeric(difftime(dates, date0, units = "days"))
+  if (any(diff(ans$days) <= 0)) stop("search dates must be in increasing order")
+  ans[[dateCol]] <- dates
   for (i in 1:length(preds)){
+    if (preds[i] == dateCol) next
     if (is.factor(data_SS[, preds[i]])){
       ans[[preds[i]]] <- as.character(data_SS[,preds[i]])
     } else {
