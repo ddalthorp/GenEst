@@ -138,7 +138,7 @@ yyyymmdd <- function(x){
 #'  check provides some protection against common data entry errors like
 #'  entering a year as 0217 or 1017 instead of 2017.
 #'
-#' @param x date(s) to check and format
+#' @param testdate date(s) to check and format
 #'
 #' @return dates formatted as yyyy-mm-dd (if possible) or NULL (if some value is
 #'  not interpretable as a date after 1900-01-01).
@@ -224,4 +224,18 @@ rtcbinom1 <- function(n, prob){
     ind <- ind[which(tmp[ind] < prob[ind])]
   }
   tmp
+}
+
+#' @title extract AIC value from pkm object
+#'
+#' @description extract AIC value from pkm object
+#'
+#' @param x object of class \code{pkm}
+#'
+#' @return AIC and AICc of the model
+#'
+#' @export
+#'
+AIC.pkm <- function(x){
+  return(list(AIC = x$AIC, AICc = x$AICc))
 }
