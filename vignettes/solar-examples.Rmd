@@ -99,7 +99,7 @@ AICc values simultaneously for all models using \code{AIC}.  Summary plots
 can be obtained by plotting any of the individual objects or the set as well.
 
 ```{r pk set AICc}
-AIC(SE_model_set)
+aicc(SE_model_set)
 ```
 
 
@@ -127,19 +127,19 @@ choose the models with the lower AICc.
 
 Size Small:
 ```{r pk size Small}
-AIC(SE_size_model_set$small)
+aicc(SE_size_model_set$small)
 SE_models <- list(small = SE_size_model_set$med[[2]])
 ```
 
 Size Medium:
 ```{r pk size Medium}
-AIC(SE_size_model_set$med)
+aicc(SE_size_model_set$med)
 SE_models$med <- SE_size_model_set$med[[2]]
 ```
 
 Size Large:
 ```{r pk Size Large}
-AIC(SE_size_model_set$lrg)
+aicc(SE_size_model_set$lrg)
 SE_models$lrg <- SE_size_model_set$lrg[[1]]
 ```
 
@@ -190,7 +190,7 @@ names(CP_weibull_set)
 ```
 
 ```{r cp Set Table}
-  AIC(CP_weibull_set)
+  aicc(CP_weibull_set)
 
 ```
 
@@ -221,19 +221,19 @@ requires storing the corresponding `cpm` objects in a list for later use.
 
 Size Small:
 ```{r cp Size Small}
-AIC(CP_size_model_set$small)
+aicc(CP_size_model_set$small)
 CP_models <- list(small = CP_size_model_set$med[[3]])
 ```
 
 Size Medium:
 ```{r cp size Medium}
-AIC(CP_size_model_set$med)
+aicc(CP_size_model_set$med)
 CP_models$med <- CP_size_model_set$med[[4]]
 ```
 
 Size Large:
 ```{r Size Large}
-AIC(CP_size_model_set$lrg)
+aicc(CP_size_model_set$lrg)
 CP_models$lrg <- CP_size_model_set$lrg[[2]]
 ```
 
