@@ -233,6 +233,8 @@ rtcbinom1 <- function(n, prob){
 #'
 #' @param x is the model or list of models to extract AICc values from
 #'
+#' @param ... further arguments passed to or from other methods
+#'
 #' @return list of models sorted by AICc
 #'
 #' @export
