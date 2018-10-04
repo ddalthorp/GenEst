@@ -118,8 +118,8 @@ pkmParamPlot <- function(model, pk = "p", col){
   predictors <- model$predictors
   CL <- model$CL
   probs <- c(0, (1 - CL) / 2, 0.25, 0.5, 0.75, 1 - (1 - CL) / 2, 1)
-  pks <- rpk(n = 1000, model = model, seed = 1)
-  pks_full <- rpk(n = 1000, model = model, seed = 1)
+  pks <- rpk(n = 1000, model = model)
+  pks_full <- rpk(n = 1000, model = model)
 
   if (pk == "p"){
     maxy <- 1
@@ -195,7 +195,7 @@ pkmSECellPlot <- function(model, specificCell, col, axis_y = TRUE,
   whichSpecificCell <- which(cellNames == specificCell)
   p <- cellwise[whichSpecificCell, "p_median"]
   k <- cellwise[whichSpecificCell, "k_median"]
-  pks <- rpk(n = 1000, model = model, seed = 1)
+  pks <- rpk(n = 1000, model = model)
   ps <- pks[[whichSpecificCell]][ , "p"]
   ks <- pks[[whichSpecificCell]][ , "k"]
   searchTab <- matrix(1:nobs, nrow = length(ps), ncol = nobs, byrow = TRUE)
@@ -410,14 +410,20 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
   predictors_spec <- model_spec$predictors
   predictors_ref <- model_ref$predictors
 
-  kIncluded <- !any(grepl("k not estimated", specificModel))
-  if (kIncluded){
-    pks_spec <- rpk(n = 1000, model = model_spec)
-    pks_ref <- rpk(n = 1000, model = model_ref)
-  } else{
-    pks_spec <- rpk(n = 1000, model = model_spec, kFill = 1)
-    pks_ref <- rpk(n = 1000, model = model_ref, kFill = 1)
+  if (any(grepl("k not estimated", specificModel))){
+    return(1)
   }
+  pks_spec <- rpk(n = 1000, model = model_spec)
+  pks_ref <- rpk(n = 1000, model = model_ref)
+
+#  kIncluded <- !any(grepl("k not estimated", specificModel))
+#  if (kIncluded){
+#    pks_spec <- rpk(n = 1000, model = model_spec)
+#    pks_ref <- rpk(n = 1000, model = model_ref)
+#  } else{
+#    pks_spec <- rpk(n = 1000, model = model_spec)
+#    pks_ref <- rpk(n = 1000, model = model_ref)
+#  }
   cellMatch_spec <- matchCells(model_spec, modelSet)
   cellMatch_ref <- matchCells(model_ref, modelSet)
 
@@ -646,14 +652,20 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   carcUnavail <- apply(apply(observations, 2, is.na), 2, sum)
   carcAvail <- ncarc - carcUnavail
 
-  kIncluded <- !any(grepl("k not estimated", specificModel))
-  if (kIncluded){
-    pks_spec <- rpk(n = 1000, model = model_spec)
-    pks_ref <- rpk(n = 1000, model = model_ref)
-  } else{
-    pks_spec <- rpk(n = 1000, model = model_spec, kFill = 1)
-    pks_ref <- rpk(n = 1000, model = model_ref, kFill = 1)
+  if (any(grepl("k not estimated", specificModel))){
+    return(1)
   }
+  pks_spec <- rpk(n = 1000, model = model_spec)
+  pks_ref <- rpk(n = 1000, model = model_ref)
+
+#  kIncluded <- !any(grepl("k not estimated", specificModel))
+#  if (kIncluded){
+#    pks_spec <- rpk(n = 1000, model = model_spec)
+#    pks_ref <- rpk(n = 1000, model = model_ref)
+#  } else{
+#    pks_spec <- rpk(n = 1000, model = model_spec, kFill = 1)
+#    pks_ref <- rpk(n = 1000, model = model_ref, kFill = 1)
+#  }
   cellMatch_spec <- matchCells(model_spec, modelSet)
   cellMatch_ref <- matchCells(model_ref, modelSet)
 

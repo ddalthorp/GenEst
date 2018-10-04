@@ -220,8 +220,9 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   # simplified and vectorized calculations of
   #1. number of times each carcass was missed in searches, and
   #2. which search carcasses were found on (0 if not found)
-  misses <- rowCounts(obsData, value = 0, na.rm =T)
-  foundOn <- rowMaxs(obsData * rowCumsums(1 * !is.na(obsData)), na.rm = T)
+  misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
+  foundOn <- matrixStats::rowMaxs(
+    obsData * matrixStats::rowCumsums(1 * !is.na(obsData)), na.rm = T)
   if (any(misses >= foundOn & foundOn > 0)){
     stop("Searches continue after carcass discovery? Check data.")
   }
@@ -781,9 +782,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     stop("sizeclassCol not in data set.")
   }
 
-  sizeclassData <- as.character(data[ , sizeclassCol])
-  sizeclasses <- unique(sizeclassData)
-  nsizeclasses <- length(sizeclasses)
+  sizeclasses <- unique(as.character(data[ , sizeclassCol]))
 
   if (all(is.na(kFixed))){
     kFixed <- NULL
@@ -793,7 +792,7 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     if (length(kFixed) == 1 && is.null(names(kFixed))){
     # if exactly one kFixed is provided and no name is given,
     # all sizes take on the same kFixed value
-      kFixed <- rep(kFixed, nsizeclasses) 
+      kFixed <- rep(kFixed, length(sizeclasses))
       names(kFixed) <- sizeclasses
       if (quiet == FALSE){
         message(
@@ -879,7 +878,7 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE, app = FALSE){
 
   output <- data.frame(formulas_p, formulas_k, AICc, deltaAICc)
   output <- output[AICcOrder, ]
-  colnames(output) <- c("p Formula", "k Formula", "AICc", "Delta AICc")
+  colnames(output) <- c("p Formula", "k Formula", "AICc", "\u0394AICc")
   whichAICcNA <- which(is.na(output$AICc))
   whichAICcMax <- which(output$AICc == 1e7)
   if (length(whichAICcNA) > 0 & quiet == FALSE){
@@ -890,6 +889,7 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE, app = FALSE){
     message("Models that failed during fit were removed from output.")
     output <- output[-whichAICcMax, ]
   }
+  class(output) <- c("corpus_frame", "data.frame")
   return(output)  # pkmSetAICcTab
 }
 #' @title Simulate parameters from a fitted pk model
@@ -901,11 +901,8 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE, app = FALSE){
 #' @param model A \code{\link{pkm}} object (which is returned from 
 #'   \code{pkm()})
 #'
-#' @param seed optional input to set the seed of the RNG
 #'
-#' @param kFill what value to fill k with if k was not estimated
-#'
-#' @return list of two matrices of \code{n} simulated \code{p} and \code{k} 
+#' @return list of two matrices of \code{n} simulated \code{p} and \code{k}
 #'   for cells defined by the \code{model} object. 
 #'
 #' @examples
@@ -915,35 +912,16 @@ pkmSetAICcTab <- function(pkmset, quiet = FALSE, app = FALSE){
 #'
 #' @export
 #'
-rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
-
+rpk <- function(n, model){
   if (!"pkm" %in% class(model)) stop("model not of class pkm")
   if (anyNA(model$varbeta) || sum(diag(model$varbeta) < 0) > 0){
     stop("Variance in pkm not well-defined. Cannot simulate.")
   }
-  if (!model$pOnly && !is.null(kFill) && !is.na(kFill)){
-    warning("Model includes k. Ignoring kFill.")
-  }
   if (model$pOnly){
-    if (is.null(kFill) || is.na(kFill)){
-      stop("k not included in 'model' and kFill not provided. ",
-        "Cannot simulate pk.")
-    }
-    if (!is.numeric(kFill[1])){
-      stop("kFill must be numeric")
-    }
-    if (kFill[1] < 0 || kFill[1] > 1){
-      stop("kFill must be in [0, 1]")
-    }
-    if (length(kFill) > 1){
-      warning("length(kFill) > 1 and only the first element will be used")
-    }
-    kFill <- kFill[1]
-    betahat_k <- NULL
+   stop("k not included in 'model'. Cannot simulate pk.")
   } else {
     nbeta_k <- model$nbeta_k
-    which_beta_k <- (model$nbeta_p + 1):(model$nbeta_p + nbeta_k)
-    kFill <- model$kFixed
+    which_beta_k <- (model$nbeta_p + 1):(model$nbeta_p + model$nbeta_k)
     cellMM_k <- model$cellMM_k
     betahat_k <- model$betahat_k
   }
@@ -956,22 +934,19 @@ rpk <- function(n = 1, model, kFill = NULL, seed = NULL){
   varbeta <- model$varbeta
   method <-  "svd"
 
-  if (length(seed) > 0 && !is.na(seed[1])){
-    set.seed(as.numeric(seed[1]))
-  }
-  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method =  method)
+  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta,
+     method =  method)
   sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
   colnames(sim_p) <- cellNames
 
-  if (length(kFill) == 0 || is.na(kFill)){
+  if (length(model$kFixed) == 0 || is.na(model$kFixed)){
     sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
   } else {
-    sim_k <- matrix(kFill, ncol = ncell, nrow = n)
+    sim_k <- matrix(model$kFixed, ncol = ncell, nrow = n)
   }
   colnames(sim_k) <- cellNames
 
-  output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], 
-                   k = sim_k[, x]))
+  output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
   names(output) <- cellNames
 
   return(output)

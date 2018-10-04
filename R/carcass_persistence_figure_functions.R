@@ -30,7 +30,7 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
   whichSpecificCell <- which(cellNames == specificCell)
   a <- cellwise[whichSpecificCell, "pda_median"]
   b <- cellwise[whichSpecificCell, "pdb_median"]
-  abs <- rcp(n = 1000, model = model, seed = 1, type = "ppersist")
+  abs <- rcp(n = 1000, model = model, type = "ppersist")
   as <- abs[[whichSpecificCell]][ , "pda"]
   bs <- abs[[whichSpecificCell]][ , "pdb"]
 
@@ -84,7 +84,7 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
 #' @examples
 #'   data(wind_RP)
 #'   mod <- cpm(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "Left", right = "Right"
+#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
 #'           )
 #'  plot(mod)
 #'
@@ -173,7 +173,7 @@ plot.cpm <- function(x, col = "black", ...){
 #' @examples
 #'   data(wind_RP)
 #'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "Left", right = "Right"
+#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
 #'           )
 #'  plot(mod)
 #'

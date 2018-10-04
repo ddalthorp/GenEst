@@ -22,8 +22,6 @@
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
 #'
-#' @param kFill value to fill in for missing k when not existing in the model
-#'
 #' @param unitCol Column name for the unit indicator (optional)
 #'
 #' @param datesSearchedCol Column name for the date searched data
@@ -72,7 +70,7 @@
 #' @export 
 #'
 estM <- function(data_CO, data_SS, data_DWP, frac = 1,
-                 dateFoundCol = "DateFound", model_SE, model_CP, kFill = NULL,
+                 dateFoundCol = "DateFound", model_SE, model_CP,
                  unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL,
                  DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  seed_M = NULL, nsim = 1000, max_intervals = 8){
@@ -81,7 +79,9 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   if (!(dateFoundCol %in% colnames(data_CO))){
     stop("dateFoundCol not found in data_CO")
   }
-  data_CO[ , dateFoundCol] <- as.Date(yyyymmdd(data_CO[ , dateFoundCol]))
+  data_CO[ , dateFoundCol] <- checkDate(data_CO[ , dateFoundCol])
+  if (is.null(data_CO[ , dateFoundCol]))
+    stop("dates_CO not unambiguously intepretable as dates")
   # attempted auto-parsing for unitCol:
   #  find common cols in CO and DWP as the candidate unitCol
   #  if unique, then use that as unitCol
@@ -124,7 +124,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 
   est <- estg(data_CO = data_CO, data_SS = data_SS, 
            dateFoundCol = dateFoundCol, model_SE = model_SE, 
-           model_CP = model_CP, kFill = kFill, unitCol = unitCol,
+           model_CP = model_CP, unitCol = unitCol,
            datesSearchedCol = datesSearchedCol, sizeclassCol = sizeclassCol,
            seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g,
            nsim = nsim, max_intervals = max_intervals
