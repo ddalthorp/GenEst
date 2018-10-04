@@ -33,7 +33,7 @@ names(SE_model_set)
 class(SE_model_set[[1]])
 
 ## ----pk set AICc---------------------------------------------------------
-AIC(SE_model_set)
+aicc(SE_model_set)
 
 ## ----pk size set---------------------------------------------------------
 SE_size_model_set <- pkmSetSize(p ~ Season, 
@@ -48,15 +48,15 @@ names(SE_size_model_set$small) # Each model set contains one model in this case.
 
 
 ## ----pk size Small-------------------------------------------------------
-AIC(SE_size_model_set$small)
+aicc(SE_size_model_set$small)
 SE_models <- list(small = SE_size_model_set$med[[2]])
 
 ## ----pk size Medium------------------------------------------------------
-AIC(SE_size_model_set$med)
+aicc(SE_size_model_set$med)
 SE_models$med <- SE_size_model_set$med[[2]]
 
 ## ----pk Size Large-------------------------------------------------------
-AIC(SE_size_model_set$lrg)
+aicc(SE_size_model_set$lrg)
 SE_models$lrg <- SE_size_model_set$lrg[[1]]
 
 ## ----cp data-------------------------------------------------------------
@@ -79,7 +79,7 @@ length(CP_weibull_set)
 names(CP_weibull_set)
 
 ## ----cp Set Table--------------------------------------------------------
-  AIC(CP_weibull_set)
+  aicc(CP_weibull_set)
 
 
 ## ----cp Size Set---------------------------------------------------------
@@ -98,15 +98,15 @@ length(CP_size_model_set$small)
 names(CP_size_model_set$small)
 
 ## ----cp Size Small-------------------------------------------------------
-AIC(CP_size_model_set$small)
+aicc(CP_size_model_set$small)
 CP_models <- list(small = CP_size_model_set$med[[3]])
 
 ## ----cp size Medium------------------------------------------------------
-AIC(CP_size_model_set$med)
+aicc(CP_size_model_set$med)
 CP_models$med <- CP_size_model_set$med[[4]]
 
 ## ----Size Large----------------------------------------------------------
-AIC(CP_size_model_set$lrg)
+aicc(CP_size_model_set$lrg)
 CP_models$lrg <- CP_size_model_set$lrg[[2]]
 
 ## ----Load CO SS and DWP--------------------------------------------------

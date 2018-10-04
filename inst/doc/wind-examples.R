@@ -129,7 +129,7 @@ pkSet_sml <- pkmSet(p ~ Visibility * Season, k ~ Visibility * Season,
 names(pkSet_sml)
 
 ## ------------------------------------------------------------------------
-AIC(pkSet_sml)
+aicc(pkSet_sml)
 
 ## ---- eval = F, fig.show = "hold", fig.width = 7, fig.height = 7---------
 #  plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ 1")
@@ -168,7 +168,7 @@ cpSet_sml <- cpmSet(
 )
 
 ## ------------------------------------------------------------------------
-AIC(cpSet_sml)
+aicc(cpSet_sml)
 
 ## ------------------------------------------------------------------------
 cp_smlCandidates <- names(cpSet_sml)[c(24, 19, 14, 9, 25, 17, 20, 22, 15, 44)]

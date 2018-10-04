@@ -58,7 +58,7 @@ names(pkmModSet)
 #  plot(pkmModSet, specificModel = "p ~ Visibility + HabitatType; k ~ 1")
 
 ## ------------------------------------------------------------------------
-AIC(pkmModSet)
+aicc(pkmModSet)
 
 ## ------------------------------------------------------------------------
 pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType,
@@ -114,7 +114,7 @@ cpmModSet <- cpmSet(formula_l = l ~ Visibility*Season,
 names(cpmModSet)
 
 ## ------------------------------------------------------------------------
-AIC(cpmModSet)
+aicc(cpmModSet)
 
 ## ---- fig.show = "hold", fig.width = 7, fig.height = 7, fig.align = 'center'----
 plot(cpmModSet,
