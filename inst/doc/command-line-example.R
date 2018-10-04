@@ -174,7 +174,7 @@ DWPcolnames <- names(pkmModSize)
 eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP,
         frac = 1, model_SE = pkmModSize, model_CP = cpmModSize,
         seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-        kFill = NULL, unitCol = "Unit", dateFoundCol = "DateFound",
+        unitCol = "Unit", dateFoundCol = "DateFound",
         datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 1000)
 
 ## ---- fig.show = "hold", fig.width = 6, fig.height = 6, fig.align = 'center'----
