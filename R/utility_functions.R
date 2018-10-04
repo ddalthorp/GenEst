@@ -226,16 +226,18 @@ rtcbinom1 <- function(n, prob){
   tmp
 }
 
-#' @title extract AIC value from pkm object
+#' @title Generic S3 function for summarizing AICc
 #'
-#' @description extract AIC value from pkm object
+#' @description Extract AICc values from \code{pkm}, \code{pkmSet},
+#'  \code{pkmSetSize}, \code{cpm}, \code{cpmSet}, and \code{cpmSetSize}
 #'
-#' @param x object of class \code{pkm}
+#' @param x is the model or list of models to extract AICc values from
 #'
-#' @return AIC and AICc of the model
+#' @param ... further arguments passed to or from other methods
+#'
+#' @return list of models sorted by AICc
 #'
 #' @export
-#'
-AIC.pkm <- function(x){
-  return(list(AIC = x$AIC, AICc = x$AICc))
+aicc <- function(x, ... ){
+  UseMethod("aicc", x)
 }

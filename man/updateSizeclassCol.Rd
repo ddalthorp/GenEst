@@ -9,7 +9,7 @@ updateSizeclassCol(sizeclassCol, colNames_size)
 \arguments{
 \item{sizeclassCol}{current size class column name}
 
-\item{colNames_size}{updated vector of size column names in all needed
+\item{colNames_size}{updated vector of size column names in all needed 
 tables}
 }
 \value{

@@ -14,7 +14,7 @@ dataDownloadWidget(set)
 HTML for the data download widget
 }
 \description{
-This is a generalized function for creating a data download
-  widget (fluid row with name and button) used in the GenEst GUI, based on
+This is a generalized function for creating a data download 
+  widget (fluid row with name and button) used in the GenEst GUI, based on 
   the data set (\code{set}).
 }
