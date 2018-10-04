@@ -451,8 +451,6 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
   if (!is.vector(days) || !is.numeric(days))
     stop(" 'days' must be a numeric vector")
   if (!("pkm" %in% class(model_SE))) stop("Invalid pk model")
-  if (any(unlist(lapply(pkmuse, function(x) x$pOnly))))
-    stop("SE model does not include k. Cannot estimate g")
   vbhat <- diag(model_SE$varbeta)
   if (anyNA(vbhat) || sum(vbhat < 0) > 0)
     stop("Cannot estimate variance for model_SE. Aborting estimation.")
