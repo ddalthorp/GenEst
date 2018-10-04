@@ -376,7 +376,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$predictors <- preds
     output$predictors_l <- preds_l
     output$predictors_s <- preds_s
-    output$AIC <- AIC(cpmod)
+    output$AIC <- stats::AIC(cpmod)
     k <- ifelse(is.null(dim(cpmod$var)), 1, dim(cpmod$var)[1])
     n <- dim(cpmod$y)[1]
     output$AICc <- output$AIC + (2*k*(k + 1))/(n - k - 1)
@@ -447,8 +447,8 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       nparam <- length(betahat) - 1
     }
     AIC <- 2 * nparam - 2 * llik
-    AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
-    AICc <- round(AIC + AICcOffset, 2)
+    AICc <- AIC + (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
+    AICc <- round(AICc, 2)
     AIC <- round(AIC, 2)
 
     betahat_l <- betahat[1:nbeta_l]
@@ -1022,11 +1022,11 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
 #'   data(wind_RP)
 #'   mod <- cpmSet(formula_l = l ~ Season * Visibility, formula_s = s ~ Season,
 #'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
-#'  AIC(mod)
+#'  aicc(mod)
 #'
 #' @export 
 #'
-AIC.cpmSet <- function(x, quiet = FALSE, app = FALSE, ...){
+aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
   cpmset <- x
   nmod <- length(cpmset)
   formulas <- names(cpmset)
@@ -1093,16 +1093,16 @@ AIC.cpmSet <- function(x, quiet = FALSE, app = FALSE, ...){
 #' @return AICc table
 #'
 #' @examples
-#'  cpmods <- cpmSetSize(formula_l = l ~ Visibility, data = wind_RP$data_CP,
+#'  cpmods <- cpmSetSize(formula_l = l ~ Visibility, data = wind_RP$CP,
 #'    left = "LastPresent", right = "FirstAbsent", sizeclassCol = "Size")
-#'  AIC(cpmods)
+#'  aicc(cpmods)
 #'
 #' @export
 #'
-AIC.cpmSetSize <- function(x, ... ){
+aicc.cpmSetSize <- function(x, ... ){
   return(lapply(x, FUN = function(x){
     class(x) <- c("cpmSet", "list")
-    AIC(x)
+    aicc(x)
   }))
 }
 
@@ -1118,11 +1118,11 @@ AIC.cpmSetSize <- function(x, ... ){
 #'   data(wind_RP)
 #'   mod <- cpm(formula_l = l ~ Season, formula_s = s ~ Season,
 #'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
-#'  AIC(mod)
+#'  aicc(mod)
 #'
 #' @export
 #'
-AIC.cpm <- function(x, ...){
+aicc.cpm <- function(x, ...){
   c(AIC = x$AIC, AICc = x$AICc)
 }
 #' @title Calculate the probability of persistence to detection 

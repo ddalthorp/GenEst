@@ -24,7 +24,7 @@
 #' @importFrom shinyjs inlineCSS reset useShinyjs 
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
-#'   reformulate rnorm runif terms update.formula weighted.mean  
+#'   reformulate rnorm runif terms update.formula weighted.mean
 #' @importFrom sticky sticky
 #' @importFrom survival dsurvreg psurvreg strata Surv survfit survreg
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv

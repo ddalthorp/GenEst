@@ -709,3 +709,17 @@ updateSizeclassCol <- function(sizeclassCol, colNames_size){
     NULL
   }
 }
+
+#' @title Generic S3 function for summarizing AICc
+#'
+#' @description Extract AICc values from \code{pkm}, \code{pkmSet},
+#'  \code{pkmSetSize}, \code{cpm}, \code{cpmSet}, and \code{cpmSetSize}
+#'
+#' @param x is the model or list of models to extract AICc values from
+#'
+#' @return list of models sorted by AICc
+#'
+#' @export
+aicc <- function(x, ... ){
+  UseMethod("aicc", x)
+}

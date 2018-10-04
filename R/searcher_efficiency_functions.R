@@ -835,11 +835,11 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' @examples
 #'   data(wind_RP)
 #'   mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, data = wind_RP$SE)
-#'  AIC(mod)
+#'  aicc(mod)
 #'
 #' @export 
 #'
-AIC.pkmSet <- function(x, quiet = FALSE, app = FALSE, ...){
+aicc.pkmSet <- function(x, ... , quiet = FALSE, app = FALSE){
   pkmset <- x
   nmod <- length(pkmset)
   formulas <- names(pkmset)
@@ -901,7 +901,7 @@ AIC.pkmSet <- function(x, quiet = FALSE, app = FALSE, ...){
 #'
 #' @export
 #'
-AIC.pkm <- function(x,...){
+aicc.pkm <- function(x,...){
   return(c(AIC = x$AIC, AICc = x$AICc))
 }
 
@@ -918,14 +918,14 @@ AIC.pkm <- function(x,...){
 #' @examples
 #'   data(wind_RP)
 #'   mod <- pkmSet(formula_p = p ~ Season, formula_k = k ~ Season, data = wind_RP$SE)
-#'  AIC(mod)
+#'  aicc(mod)
 #'
 #' @export
 #'
-AIC.pkmSetSize <- function(x, ... ){
-  return(lapply(x, FUN = function(x){
-    class(x) <- c("pkmSet", "list")
-    AIC(x)
+aicc.pkmSetSize <- function(x, ... ){
+  return(lapply(x, FUN = function(y){
+    class(y) <- c("pkmSet", "list")
+    aicc(y)
   }))
 }
 
