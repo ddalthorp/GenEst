@@ -133,8 +133,11 @@ downloadMFig <- function(rv, split = TRUE, transpose = FALSE){
 #' @export
 #'
 downloadTable <- function(filename, tablename, csvformat){
+  if (Sys.info()['sysname'] == "Windows"){
+    colnames(tablename) <- gsub("\u0394", "delta", colnames(tablename))
+  }
   downloadHandler(filename = filename, content = function(file){
-    get(paste0("write.csv", csvformat))(tablename, file, row.names = FALSE)
+    get(paste0("write.csv", csvformat))(x = tablename, file = file)
   })
 }
 
@@ -143,40 +146,32 @@ downloadTable <- function(filename, tablename, csvformat){
 #' @description Handle the downloading of a data set
 #'
 #' @param set the name of the data set to download
-#'
+#' @param csvformat Format of .csv files to download. For comma field separator
+#'  and period decimal separator, use \code{csvformat = NULL} or "".
+#'  For semicolon field separator and comma decimal separator, use
+#'  \code{csvformat = 2}.
 #' @return a download handler function
 #'
 #' @export
 #'
-downloadData <- function(set){
-
-  SE <- paste0("SE_", set, ".csv")
-  CP <- paste0("CP_", set, ".csv")
-  DWP <- paste0("DWP_", set, ".csv")
-  SS <- paste0("SS_", set, ".csv")
-  CO <- paste0("CO_", set, ".csv")
-
-  fpre <- switch(set, "mock" = "", "mock2" = "", "powerTower" = "solar_", 
-            "PV" = "solar_", "trough" = "solar_", "cleared" = "wind_", 
-            "RP" = "wind_", "RPbat" = "wind_"
-          )
+downloadData <- function(set, csvformat = NULL){
+  fpre <- switch(set, "mock" = "", "powerTower" = "solar_", "PV" = "solar_",
+    "trough" = "solar_", "cleared" = "wind_", "RP" = "wind_", "RPbat" = "wind_")
   filename <- paste0(fpre, set, ".zip")
-  foldername <- paste0("../extdata/", fpre, set, "/")
-
+  exob <- get(paste0(fpre, set))
+  pth <- tempdir()
+  writef <- get(paste0("write.csv", csvformat))
+  for (seti in names(exob)){
+    writef(exob[[seti]], file = paste0(pth, "/", seti, "_", set, ".csv"),
+      row.names = FALSE)
+  }
   downloadHandler(
     filename = filename,
     content = function(file)  {
-      pth = foldername
-      cat(paste0(pth, SE), file = file.path(tempdir(), SE))
-      cat(paste0(pth, CP), file = file.path(tempdir(), CP))
-      cat(paste0(pth, DWP), file = file.path(tempdir(), DWP))
-      cat(paste0(pth, SS), file = file.path(tempdir(), SS))
-      cat(paste0(pth, CO), file = file.path(tempdir(), CO))
-      tozip <- paste0(tempdir(), "/", c(SE, CP, DWP, SS, CO))
+      tozip <- paste0(pth, "/", names(exob), "_", set, ".csv")
       zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
     },
     contentType = "application/zip"
   )
 }
-
 

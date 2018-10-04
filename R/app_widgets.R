@@ -62,7 +62,7 @@ dataInputWidget <- function(dataType){
 #'   the data set (\code{set}).
 #'
 #' @param set Name of data set. One of "RP", "RPbat", "cleared", "powerTower",
-#'   "PV", "trough", "mock", or "mock2"
+#'   "PV", "trough", "mock"
 #'
 #' @return HTML for the data download widget
 #'
@@ -71,7 +71,7 @@ dataInputWidget <- function(dataType){
 dataDownloadWidget <- function(set){
 
   if (!set %in% c("RP", "RPbat", "cleared", "powerTower", "PV", "trough", 
-                  "mock", "mock2")){
+                  "mock")){
     stop(paste0("input set (", set, ") not supported"))
   }
 
@@ -81,15 +81,15 @@ dataDownloadWidget <- function(set){
                 "powerTower" = "Solar---Power tower",
                 "PV" = "Solar---Photovoltaic (PV)",
                 "trough" = "Solar---Trough",
-                "mock" = "Mock data",
-                "mock2" = "Mock data with European-style csvs")
+                "mock" = "Mock data")
 
   setName <- setNames[set]
   setButtonName <- paste0("download_", set)
-
+#  setButtonName2 <- paste0(setButtonName, 2) # dpesn't work
   fluidRow(
     column(6, h4(setName)), 
-    column(1, downloadButton(setButtonName, "Download"))
+    column(2, downloadButton(setButtonName, "Download"))
+#    column(2, downloadButton(setButtonName2, ".csv ( ; )")) # doesn't work
   )
 }
 
@@ -606,8 +606,8 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
   modSpaces <- sapply(modNames_nspaces, 
                      function(x){paste(rep(" ", x), collapse = "")}
                    )
-  modDeltaAICcs <- AICcTab[ , "Delta AICc"]
-  modLabels <- paste0(modNames, " (delta AICc: ", modDeltaAICcs, ")")
+  modDeltaAICcs <- AICcTab[ , "\u0394AICc"]
+  modLabels <- paste0(modNames, " (\u0394AICc: ", modDeltaAICcs, ")")
   names(modNames) <- modLabels
   labels_nchar <- nchar(modLabels)
   labels_maxchar <- max(labels_nchar)

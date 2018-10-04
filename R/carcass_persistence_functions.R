@@ -130,7 +130,7 @@
 #'
 #' @examples
 #'   data(wind_RP)
-#'   cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "Left", right = "Right")
+#'   cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
 #'
 #' @export
 #'
@@ -672,8 +672,8 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
 #'
 #' @examples
 #'   data(wind_RP)
-#'   mod <- cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "Left", 
-#'            right = "Right"
+#'   mod <- cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "LastPresent",
+#'            right = "FirstAbsent"
 #'          )
 #'   rcp(n = 10, model = mod, type = "survreg")
 #'   rcp(n = 10, model = mod, type = "ppersist")
@@ -798,7 +798,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #' @examples
 #'   data(wind_RP)
 #'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "Left", right = "Right"
+#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
 #'           )
 #'
 #' @export
@@ -966,7 +966,7 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL,
 #' @examples
 #'   data(wind_RP)
 #'   mod <- cpmSetSize(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "Left", right = "Right",
+#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent",
 #'            sizeclassCol = "Size"
 #'           )
 #'
@@ -1021,7 +1021,7 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
 #' @examples
 #'   data(wind_RP)
 #'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "Left", right = "Right"
+#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
 #'           )
 #'  cpmSetAICcTab(mod)
 #'
@@ -1068,7 +1068,7 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE, app = FALSE){
   output <- data.frame(dists, formulas_l, formulas_s, AICc, deltaAICc)
   output <- output[AICcOrder, ]
   colnames(output) <- c("Distribution", "Location Formula", "Scale Formula", 
-                        "AICc", "Delta AICc"
+                        "AICc", "\u0394AICc"
                        )
   whichAICcNA <- which(is.na(output$AICc))
   whichAICcMax <- which(output$AICc == 1e7)
@@ -1080,6 +1080,7 @@ cpmSetAICcTab <- function(cpmset, quiet = FALSE, app = FALSE){
     message("Models that failed during fit were removed from output.")
     output <- output[-whichAICcMax, ]
   }
+  class(output) <- c("corpus_frame", "data.frame")
   return(output)
 }
 

@@ -51,7 +51,7 @@ model_SE
 
 ## ------------------------------------------------------------------------
 model_CP <- cpm(l ~ Season, s ~ Season, data = data_CP, dist = "weibull",
-  left = "Left", right = "Right")
+  left = "LastPresent", right = "FirstAbsent")
 model_CP
 
 ## ---- eval = FALSE-------------------------------------------------------
@@ -163,7 +163,7 @@ pkMods <- list(
 ## ------------------------------------------------------------------------
 cpSet_sml <- cpmSet(
   l ~ Visibility * Season, s ~ Visibility * Season,
-  data = data_CP[data_CP$Size == "sml", ], left = "Left", right = "Right",
+  data = data_CP[data_CP$Size == "sml", ], left = "LastPresent", right = "FirstAbsent",
   dists = c( "weibull", "lognormal", "loglogistic", "exponential")
 )
 
@@ -182,12 +182,12 @@ cp_sml <- cpSet_sml[[cp_smlCandidates[1]]]
 
 ## ------------------------------------------------------------------------
 cp_med <- cpm(l ~ Visibility, s ~ Season,
-  data = data_CP[data_CP$Size == "med", ], left = "Left", right = "Right",
+  data = data_CP[data_CP$Size == "med", ], left = "LastPresent", right = "FirstAbsent",
   dist = "weibull")
 cp_lrg <- cpm(l ~ Visibility + Season, data = data_CP[data_CP$Size == "lrg", ],
-  left = "Left", right = "Right", dist = "exponential")
+  left = "LastPresent", right = "FirstAbsent", dist = "exponential")
 cp_bat <- cpm(l ~ Visibility + Season, s ~ 1,
-  data = data_CP[data_CP$Size == "med", ], left = "Left", right = "Right",
+  data = data_CP[data_CP$Size == "med", ], left = "LastPresent", right = "FirstAbsent",
   dist = "weibull")
 
 ## ------------------------------------------------------------------------

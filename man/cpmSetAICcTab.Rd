@@ -24,7 +24,7 @@ Generates model comparison tables based on AICc values for
 \examples{
   data(wind_RP)
   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
-           data = wind_RP$CP, left = "Left", right = "Right"
+           data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
           )
  cpmSetAICcTab(mod)
 

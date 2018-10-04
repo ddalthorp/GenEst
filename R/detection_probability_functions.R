@@ -120,7 +120,23 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   if (length(unlist(SSpreds)) > 0 && !all(unlist(SSpreds) %in% names(SSdat))){
     stop("Model predictor missing from both CO and SS data.")
   }
+
   pksim <- lapply(model_SE, function(x) rpk(nsim, x))
+
+ # if (!is.null(kFill)) {
+#    k <- as.list(kFill)
+#    pksim <- mapply(function(x, y) rpk(nsim, x, seed_SE, kFill = y),
+#               model_SE, k
+#             )
+#  } else {
+#    pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
+#  }
+#  pksim <- vector("list", length = nsizeclass)
+#  for(sci in 1:nsizeclass){
+#    pksim[[sci]] <- rpk(model_SE[[sci]], n = nsim, kFill = kFill[sci],
+#                       seed = seed_SE)
+#  }
+
   names(pksim) <- names(model_SE)
 
   cpsim <- lapply(model_CP, rcp, n = nsim, seed = seed_CP, type = "ppersist")

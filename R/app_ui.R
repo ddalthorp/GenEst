@@ -196,8 +196,8 @@ SESidebar <- function(){
 #' @rdname GenEstUI
 #'
 #' @description \code{SEMainPanel}: Analysis panel's Searcher Efficiency 
-#'   panel's main panel (where the Selected Data, Model Estimates, Figures,
-#'   Model Comparison, and Model Selection are displayed). Calls 
+#'   panel's main panel (where the Selected Data, Model Comparison, Figures,
+#'    Model Estimates, and Model Selection are displayed). Calls
 #'   \code{selectedDataPanel} for the selected data and then 
 #'    \code{modelOutputPanel} for each output.
 #'
@@ -209,9 +209,9 @@ SEMainPanel <- function(){
   mainPanel(
     tabsetPanel(id = "analyses_SE",
       selectedDataPanel("SE"),
+      modelOutputPanel("SEModComparison"),
       modelOutputPanel("SEFigures"),
       modelOutputPanel("SEEstimates"),
-      modelOutputPanel("SEModComparison"),
       modelOutputPanel("SEModSelection")
     )
   )
@@ -263,8 +263,8 @@ CPSidebar <- function(){
 #' @rdname GenEstUI
 #'
 #' @description \code{CPMainPanel}: Analysis panel's Carcass Persistence
-#'   panel's main panel (where the Selected Data, Model Estimates, Figures,
-#'   Model Comparison, and Model Selection are displayed). Calls
+#'   panel's main panel (where the Selected Data, Model Estimates, Model
+#'   Comparison, Figures, and Model Selection are displayed). Calls
 #'   \code{selectedDataPanel} for the selected data and 
 #'   \code{modelOutputPanel} for each of the outputs.
 #'
@@ -276,9 +276,9 @@ CPMainPanel <- function(){
   mainPanel(
     tabsetPanel(id = "analyses_CP",
       selectedDataPanel("CP"),
+      modelOutputPanel("CPModComparison"),
       modelOutputPanel("CPFigures"),
       modelOutputPanel("CPEstimates"),
-      modelOutputPanel("CPModComparison"),
       modelOutputPanel("CPModSelection")
     )
   )
@@ -469,8 +469,7 @@ downloadsPanel<- function(){
       dataDownloadWidget("powerTower"),
       dataDownloadWidget("PV"),
       dataDownloadWidget("trough"),
-      dataDownloadWidget("mock"),
-      dataDownloadWidget("mock2")
+      dataDownloadWidget("mock")
     )
   )
   )

@@ -49,25 +49,25 @@ readCSV <- function(path){
   }
   if ("data.frame" %in% attr(out1, "class")){
     if (is.null(attr(out2, "class"))){
-      return(list(data = out1, csvformat = ""))
+      return(out1)
     }
     if ("data.frame" %in% attr(out2, "class")){
       if (ncol(out2) == 1){
-        return(list(data = out1, csvformat = ""))
+        return(out1)
       }
     }
   }
   if ("data.frame" %in% attr(out2, "class")){
     if (is.null(attr(out1, "class"))){
-      return(list(data = out2, csvformat = 2))
+      return(out2)
     }
     if ("data.frame" %in% attr(out1, "class")){
       if (ncol(out1) == 1){
-        return(list(data = out2, csvformat = 2))
+        return(out2)
       }
     }
   }
-  return(list(data = out1, csvformat = ""))
+  return(out1)
 }
 
 #' @title Prepare predictors based on inputs
@@ -634,7 +634,7 @@ createReactiveValues <- function(){
     gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
     figH_g = 400, figW_g = 800,
 
-    kCheck = NA, kCheck_g = NA, csvformat = NULL
+    kCheck = NA, kCheck_g = NA, csvformat = ""
   )
 }
 

@@ -33,6 +33,7 @@ update_output_clear_all <- function(rv, output){
 #'
 initialOutput <- function(rv, output){
   output$SStext <- renderText(rv$SStext)
+
   output$download_RP <- downloadData("RP")
   output$download_RPbat <- downloadData("RPbat")
   output$download_cleared <- downloadData("cleared")
@@ -40,7 +41,16 @@ initialOutput <- function(rv, output){
   output$download_PV <- downloadData("PV")
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
-  output$download_mock2 <- downloadData("mock2")
+
+#  output$download_RP2 <- downloadData("RP", csvformat = 2)
+#  output$download_RPbat2 <- downloadData("RPbat", csvformat = 2)
+#  output$download_cleared2 <- downloadData("cleared", csvformat = 2)
+#  output$download_powerTower2 <- downloadData("powerTower", csvformat = 2)
+#  output$download_PV2 <- downloadData("PV", csvformat = 2)
+#  output$download_trough2 <- downloadData("trough", csvformat = 2)
+#  output$download_mock2 <- downloadData("mock", csvformat = 2)
+
+
   output$kFillNeed <- renderText("no")
   outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
 
@@ -61,7 +71,7 @@ initialOutput <- function(rv, output){
 #'
 update_output_data_SE <- function(rv, output){
   output <- update_output_data_SE_clear(rv, output)
-  output$data_SE <- renderDataTable(datatable(rv$data_SE))
+  output$data_SE <- renderDataTable(datatable(rv$data_SE), server = FALSE)
   output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
   outputOptions(output, "filename_SE", suspendWhenHidden = FALSE)
   return(output)
@@ -139,7 +149,7 @@ update_output_data_SE_clear <- function(rv, output){
 #'
 update_output_data_CP <- function(rv, output){
   output <- update_output_data_CP_clear(rv, output)
-  output$data_CP <- renderDataTable(datatable(rv$data_CP))
+  output$data_CP <- renderDataTable(datatable(rv$data_CP), server = FALSE)
   output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
   outputOptions(output, "filename_CP", suspendWhenHidden = FALSE)
   return(output)
@@ -218,7 +228,7 @@ update_output_data_CP_clear <- function(rv, output){
 #'
 update_output_data_SS <- function(rv, output){
   output <- update_output_data_SS_clear(rv, output)
-  output$data_SS <- renderDataTable(datatable(rv$data_SS))
+  output$data_SS <- renderDataTable(datatable(rv$data_SS), server = F)
   outputOptions(output, "data_SS", suspendWhenHidden = FALSE)
   return(output)
 }
@@ -274,7 +284,7 @@ update_output_data_SS_clear <- function(rv, output){
 #'
 update_output_data_DWP <- function(rv, output){
   output <- update_output_data_DWP_clear(rv, output)
-  output$data_DWP <- renderDataTable(datatable(rv$data_DWP))
+  output$data_DWP <- renderDataTable(datatable(rv$data_DWP), server = FALSE)
   outputOptions(output, "data_DWP", suspendWhenHidden = FALSE)
   return(output)
 }
@@ -317,7 +327,7 @@ update_output_data_DWP_clear <- function(rv, output){
 #'
 update_output_data_CO <- function(rv, output){
   output <- update_output_data_CO_clear(rv, output)
-  output$data_CO <- renderDataTable(datatable(rv$data_CO))
+  output$data_CO <- renderDataTable(datatable(rv$data_CO), server = FALSE)
   outputOptions(output, "data_CO", suspendWhenHidden = FALSE)
   return(output)
 }
@@ -363,13 +373,13 @@ update_output_sizeclassCol <- function(rv, output){
   if (!is.null(rv$obsCols_SE)){
     selectedCols <- c(rv$obsCols_SE, rv$sizeclassCol, rv$preds_SE)
     selectedData <- selectData(rv$data_SE, selectedCols)
-    output$selected_SE <- renderDataTable(datatable(selectedData))
+    output$selected_SE <- renderDataTable(datatable(selectedData), server = FALSE)
   }
   if (!is.null(c(rv$ltp, rv$fta))){
     obsColsSelected <- c(rv$ltp, rv$fta)
     selectedCols <- c(obsColsSelected, rv$sizeclassCol, rv$preds_CP)
     selectedData <- selectData(rv$data_CP, selectedCols)
-    output$selected_CP <- renderDataTable(datatable(selectedData))
+    output$selected_CP <- renderDataTable(datatable(selectedData), server = FALSE)
   }
 
   isolate({
@@ -395,7 +405,7 @@ update_output_cols_SE <- function(rv, output){
   selectedCols <- c(rv$obsCols_SE, rv$sizeclassCol, rv$preds_SE)
   if (!is.null(rv$data_SE)){
     selectedData <- selectData(rv$data_SE, selectedCols)
-    output$selected_SE <- renderDataTable(datatable(selectedData))
+    output$selected_SE <- renderDataTable(datatable(selectedData), server = FALSE)
   }
   return(output)
 }
@@ -415,7 +425,7 @@ update_output_cols_SE <- function(rv, output){
 update_output_cols_CP <- function(rv, output){
   selectedCols <- c(rv$ltp, rv$fta, rv$sizeclassCol, rv$preds_CP)
   selectedData <- selectData(rv$data_CP, selectedCols)
-  output$selected_CP <- renderDataTable(datatable(selectedData))
+  output$selected_CP <- renderDataTable(datatable(selectedData), server = FALSE)
   return(output)
 }
 
@@ -448,7 +458,7 @@ update_output_run_SE <- function(rv, output){
     outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
     outputOptions(output, "DWPNeed", suspendWhenHidden = FALSE)
 
-    output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
+    output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
     output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
     output$fig_SE <- renderPlot({ 
                        plot(rv$modSet_SE, specificModel = rv$best_SE, 
@@ -583,7 +593,7 @@ update_output_run_SE_clear <- function(rv, output){
 #'
 update_output_outsc_SE <- function(rv, output){
   if (length(rv$mods_SE) > 0){
-    output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})    
+    output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
     output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
     output$fig_SE <- renderPlot({ 
                        plot(rv$modSet_SE, specificModel = rv$best_SE, 
@@ -650,7 +660,7 @@ update_output_outpk_SE <- function(rv, output){
 #'
 update_output_run_CP <- function(rv, output){
 
-  output$text_CP_est <- NULL#
+  output$text_CP_est <- NULL
 
   if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
 
@@ -788,7 +798,8 @@ update_output_run_CP_clear <- function(rv, output){
 #'
 update_output_outsc_CP <- function(rv, output){
   if (length(rv$mods_CP) > 0){
-    output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
+    output$modTab_CP <- renderDataTable(datatable(rv$modTabPretty_CP),
+      server = FALSE)
     output$fig_CP <- renderPlot({ 
                        plot(rv$modSet_CP, specificModel = rv$best_CP, 
                          app = TRUE)
@@ -826,7 +837,8 @@ update_output_outsc_CP <- function(rv, output){
 #'
 update_output_outdls_CP <- function(rv, output){
   if (length(rv$mods_CP) > 0){
-    output$modTab_CP <- renderDataTable(rv$modTabPretty_CP)
+    output$modTab_CP <- renderDataTable(datatable(rv$modTabPretty_CP),
+      server = FALSE)
     output$fig_CP <- renderPlot({ 
                      tryCatch(
                        plot(rv$modSet_CP, specificModel = rv$outCPdlsfig, 

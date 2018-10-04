@@ -106,7 +106,6 @@ facilitate readability and mobility of specific UI components.
       * `dataDownloadsWidget("PV")`
       * `dataDownloadsWidget("trough")`
       * `dataDownloadsWidget("mock")`
-      * `dataDownloadsWidget("mock2")`
     * `aboutPanel()`
       * `aboutContent()`
         * `GenEstAuthors()`
