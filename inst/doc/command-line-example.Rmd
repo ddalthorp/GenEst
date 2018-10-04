@@ -165,7 +165,7 @@ plot(pkmModSet, specificModel = "p ~ Visibility + HabitatType; k ~ 1")
 The resulting model outputs can be compared in an AICc table
 
 ```{r}
-pkmSetAICcTab(pkmModSet)
+AIC(pkmModSet)
 ```
 
 
@@ -299,7 +299,7 @@ names(cpmModSet)
 The resulting model outputs can be compared in an AICc table
 
 ```{r}
-cpmSetAICcTab(cpmModSet)
+AIC(cpmModSet)
 ```
 
 The `plot` function is defined for the `cpmSet` class, and by default,
