@@ -798,8 +798,7 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
 #' @examples
 #'   data(wind_RP)
 #'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
-#'           )
+#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
 #'
 #' @export
 #'
@@ -1012,6 +1011,8 @@ cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL,
 #' @param x Set of carcass persistence models fit to the same
 #'   observations
 #'
+#' @param ... further arguments passed to or from other methods
+#'
 #' @param quiet Logical indicating if messages should be printed
 #'
 #' @param app Logical indicating if the table should have the app model names
@@ -1090,6 +1091,8 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
 #'
 #' @param x List of sets of CP models fit to the same observations
 #'
+#' @param ... further arguments passed to or from other methods
+#'
 #' @return AICc table
 #'
 #' @examples
@@ -1111,6 +1114,8 @@ aicc.cpmSetSize <- function(x, ... ){
 #' @description S3 function for generating AIC for \code{\link{cpm}} objects
 #'
 #' @param x Carcass persistence model (\code{cpm} objects)
+#'
+#' @param ... further arguments passed to or from other methods
 #'
 #' @return AIC, AICc vector
 #'

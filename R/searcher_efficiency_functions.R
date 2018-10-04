@@ -826,6 +826,8 @@ pkmSetSize <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
 #' @param x Set of searcher efficiency models fit to the same
 #'   observations
 #' 
+#' @param ... further arguments passed to or from other methods
+#'
 #' @param quiet Logical indicating if messages should be printed
 #' 
 #' @param app Logical indicating if the table should have the app model names
@@ -897,6 +899,8 @@ aicc.pkmSet <- function(x, ... , quiet = FALSE, app = FALSE){
 #'
 #' @param x object of class \code{pkm}
 #'
+#' @param ... further arguments passed to or from other methods
+#'
 #' @return AIC and AICc of the model
 #'
 #' @export
@@ -912,6 +916,8 @@ aicc.pkm <- function(x,...){
 #'
 #' @param x List of set of searcher efficiency models fit to the same
 #'   observations
+#'
+#' @param ... further arguments passed to or from other methods
 #'
 #' @return AICc table
 #'
