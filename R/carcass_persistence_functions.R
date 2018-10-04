@@ -1100,9 +1100,9 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
 #' @export
 #'
 aicc.cpmSetSize <- function(x, ... ){
-  return(lapply(x, FUN = function(x){
-    class(x) <- c("cpmSet", "list")
-    aicc(x)
+  return(lapply(x, FUN = function(y){
+    class(y) <- c("cpmSet", "list")
+    aicc(y)
   }))
 }
 

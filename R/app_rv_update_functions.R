@@ -735,7 +735,7 @@ update_rv_run_SE <- function(rv, input){
     rv$sizeclasses_SE <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
     rv$sizeclass_SE <- rv$sizeclass
-    rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], TRUE, TRUE)
+    rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, app = TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
     rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
     rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
@@ -842,7 +842,7 @@ update_rv_outsc_SE <- function(rv, input){
   if (length(rv$mods_SE) > 0){
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
     rv$sizeclass_SE <- rv$sizeclass
-    rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], TRUE, TRUE)
+    rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, app = TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
     rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
     rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
@@ -929,7 +929,7 @@ update_rv_run_CP <- function(rv, input){
     rv$sizeclasses_CP <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
     rv$sizeclass_CP <- rv$sizeclass
-    rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], TRUE, TRUE)
+    rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE, app = TRUE)
     rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "",
                                            rv$AICcTab_CP[ , "Scale Formula"]
                                          )
@@ -1073,7 +1073,7 @@ update_rv_outsc_CP <- function(rv, input){
   if (length(rv$mods_CP) > 0){
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
     rv$sizeclass_CP <- rv$sizeclass
-    rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], TRUE, TRUE)
+    rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE, app = TRUE)
     rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
     rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass_CP]])[rv$modOrder_CP]
     rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)
