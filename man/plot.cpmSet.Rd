@@ -26,8 +26,7 @@ Produce a set of figures for a set of CP models, as fit by
 \examples{
   data(wind_RP)
   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
-           data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
-          )
+           data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
  plot(mod)
 
 }

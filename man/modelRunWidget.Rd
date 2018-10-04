@@ -10,7 +10,7 @@ modelRunWidget(modType)
 preTextMaker(modType)
 }
 \arguments{
-\item{modType}{Toggle control for the model type of the widget. One of
+\item{modType}{Toggle control for the model type of the widget. One of 
 "SE", "CP", "M", or "g".}
 }
 \value{
@@ -19,9 +19,9 @@ HTML for the model run widget.
 HTML for the model run widget pre-run text.
 }
 \description{
-This is a generalized function for creating a model run
+This is a generalized function for creating a model run 
   widget used in the GenEst GUI, based on the model type (\code{modType}).
-  The widget includes the model run button, the model clear button
+  The widget includes the model run button, the model clear button 
   (once the model has finished running), and any text displayed prior to
   model running being allowed.
 }

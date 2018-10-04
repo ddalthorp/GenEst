@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_msg_functions.R
 \name{msgSSinputFail}
 \alias{msgSSinputFail}
-\title{Create the warning message for when the SS based on inputs doesn't
+\title{Create the warning message for when the SS based on inputs doesn't 
   work}
 \usage{
 msgSSinputFail(msgs, rv, clear = TRUE)
@@ -18,6 +18,6 @@ msgSSinputFail(msgs, rv, clear = TRUE)
 an average SS fail warning
 }
 \description{
-Produces a notification for when an input-based search
+Produces a notification for when an input-based search 
   schedule can't be created
 }

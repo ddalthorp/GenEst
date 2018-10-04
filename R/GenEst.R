@@ -24,7 +24,7 @@
 #' @importFrom shinyjs inlineCSS reset useShinyjs 
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
-#'   reformulate rnorm runif terms update.formula weighted.mean  
+#'   reformulate rnorm runif terms update.formula weighted.mean
 #' @importFrom sticky sticky
 #' @importFrom survival dsurvreg psurvreg strata Surv survfit survreg
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
@@ -52,7 +52,7 @@
 #' \code{\link{pkm}}\cr
 #' \code{\link[=plot.pkm]{plot}} S3 function for \code{pkm} object\cr
 #' \code{\link{pkmSet}}\cr
-#' \code{\link{pkmSetAICcTab}}\cr
+#' \code{\link{AIC}}\cr
 #' \code{\link[=plot.pkmSet]{plot}} S3 function for \code{pkm.Set} object\cr
 #' \code{\link{pkmSetSize}}\cr
 #' \code{\link{rpk}}\cr
@@ -61,7 +61,7 @@
 #' \code{\link{cpm}}\cr
 #' \code{\link[=plot.cpm]{plot}} S3 function for \code{cpm} object\cr
 #' \code{\link{cpmSet}}\cr
-#' \code{\link{cpmSetAICcTab}}\cr
+#' \code{\link{AIC}}\cr
 #' \code{\link[=plot.cpmSet]{plot}} S3 function for \code{pkmSet} object\cr
 #' \code{\link{cpmSetSize}}\cr
 #' \code{\link{rcp}}\cr

@@ -589,10 +589,10 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
     stop("sci out of range")
   }
   if (modType == "SE"){
-    AICcTab <- pkmSetAICcTab(mods[[sci]], quiet = TRUE)
+    AICcTab <- aicc(mods[[sci]], quiet = TRUE)
   }
   if (modType == "CP"){
-    AICcTab <- cpmSetAICcTab(mods[[sci]], quiet = TRUE)
+    AICcTab <- aicc(mods[[sci]], quiet = TRUE)
   }
   modOrder <- as.numeric(row.names(AICcTab))
   modNames <- names(mods[[sci]])[modOrder]

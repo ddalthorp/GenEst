@@ -415,11 +415,11 @@ AICc provides a rough but useful guide for model selection, but should in no way
 be relied upon as definitive. Its utility is in identifying relatively poor
 models and in narrowing the choice of plausible models to a manageable number.
 
-The `pkmSetAICcTab` function lists the fitted models in order of
+The `AIC` function lists the fitted models in order of
 ${\small \Delta}$AICc.
 
 ```{r}
-pkmSetAICcTab(pkSet_sml)
+aicc(pkSet_sml)
 ```
 When AICc differences exceed 6 or 7, preference should normally be given to the
 models with the lower scores. Models with differences of less than 3 or 4 are
@@ -522,7 +522,7 @@ cpSet_sml <- cpmSet(
 ```
 The list of models is long:
 ```{r}
-cpmSetAICcTab(cpSet_sml)
+aicc(cpSet_sml)
 ```
 It is not uncommon to see the fits for the exponential distribution at the
 bottom of the AIC list. The exponential distribution has only one parameter and
@@ -533,7 +533,7 @@ not met, the exponential provides an inferior fit.
 
 To compare among a set of cp models with plausible AICs, use `plot(cpSet, ...)`
 with desired models specified by name. It can be seen from the AICc table
-(`cpmSetAICcTab(cpSet_sml)`) that the top 10 models according to AICc are:
+(`aicc(cpSet_sml)`) that the top 10 models according to AICc are:
 
 ```{r}
 cp_smlCandidates <- names(cpSet_sml)[c(24, 19, 14, 9, 25, 17, 20, 22, 15, 44)]
