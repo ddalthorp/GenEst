@@ -30,7 +30,7 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
   whichSpecificCell <- which(cellNames == specificCell)
   a <- cellwise[whichSpecificCell, "pda_median"]
   b <- cellwise[whichSpecificCell, "pdb_median"]
-  abs <- rcp(n = 1000, model = model, seed = 1, type = "ppersist")
+  abs <- rcp(n = 1000, model = model, type = "ppersist")
   as <- abs[[whichSpecificCell]][ , "pda"]
   bs <- abs[[whichSpecificCell]][ , "pdb"]
 

@@ -1,4 +1,3 @@
-
 #' @title Update the reactive value list when everything is cleared out
 #'
 #' @description Update the rv list when everything is cleared
@@ -83,39 +82,39 @@ update_rv_data_SE_clear <- function(rv, input){
   rv$predictors_SE <- NULL
   rv$formula_p <- NULL
   rv$formula_k <- NULL
-  rv$kFixedChoice <- NULL 
-  rv$kFixed <- NULL 
-  rv$mods_SE <- NULL 
-  rv$mods_SE_og <- NULL 
-  rv$sizeclasses_SE <- NULL 
-  rv$outSEpk <- NULL 
-  rv$AICcTab_SE <- NULL 
-  rv$modOrder_SE <- NULL 
+  rv$kFixedChoice <- NULL
+  rv$kFixed <- NULL
+  rv$mods_SE <- NULL
+  rv$mods_SE_og <- NULL
+  rv$sizeclasses_SE <- NULL
+  rv$outSEpk <- NULL
+  rv$AICcTab_SE <- NULL
+  rv$modOrder_SE <- NULL
   rv$modNames_SE <- NULL
-  rv$modNames_SEp <- NULL 
-  rv$modNames_SEk <- NULL 
+  rv$modNames_SEp <- NULL
+  rv$modNames_SEk <- NULL
   rv$modSet_SE <- NULL
-  rv$best_SE <- NULL 
-  rv$modTab_SE <- NULL 
+  rv$best_SE <- NULL
+  rv$modTab_SE <- NULL
   rv$modTabPretty_SE <- NULL
-  rv$modTabDL_SE <- NULL 
-  rv$figH_SE <- 800 
+  rv$modTabDL_SE <- NULL
+  rv$figH_SE <- 800
   rv$figW_SE <- 800
-  rv$kFill <- NULL 
+  rv$kFill <- NULL
 
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$SEmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$SEmodToUse <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
 
-  rv$SS <- seq(0, 364, 7) 
+  rv$SS <- seq(0, 364, 7)
   rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
   rv$avgSI <- NULL
@@ -124,12 +123,12 @@ update_rv_data_SE_clear <- function(rv, input){
   rv$colNames_SS_sel <- NULL
   rv$colNames_SS_nosel <- NULL
 
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
+  rv$kFill_g <- NULL
+  rv$sizeclasses_g <- NULL
   rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$SEmodToUse_g <- NULL 
-  rv$figH_g <- 400 
+  rv$gGeneric <- NULL
+  rv$SEmodToUse_g <- NULL
+  rv$figH_g <- 400
   rv$figW_g <- 800
 
   rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
@@ -212,47 +211,47 @@ update_rv_data_CP_clear <- function(rv, input){
   rv$fta <- NULL
   rv$preds_CP <- NULL
 
-  rv$dists <- NULL  
+  rv$dists <- NULL
   rv$predictors_CP <- NULL
   rv$formula_l <- NULL
   rv$formula_s <- NULL
 
-  rv$mods_CP <- NULL 
-  rv$mods_CP_og <- NULL 
-  rv$sizeclasses_CP <- NULL 
+  rv$mods_CP <- NULL
+  rv$mods_CP_og <- NULL
+  rv$sizeclasses_CP <- NULL
 
-  rv$AICcTab_CP <- NULL 
-  rv$modOrder_CP <- NULL 
+  rv$AICcTab_CP <- NULL
+  rv$modOrder_CP <- NULL
   rv$modNames_CP <- NULL
-  rv$modNames_CPl <- NULL 
-  rv$modNames_CPs <- NULL 
-  rv$modNames_CPdist <- NULL 
+  rv$modNames_CPl <- NULL
+  rv$modNames_CPs <- NULL
+  rv$modNames_CPdist <- NULL
   rv$modSet_CP <- NULL
-  rv$best_CP <- NULL 
+  rv$best_CP <- NULL
 
-  rv$modTab_CP <- NULL 
+  rv$modTab_CP <- NULL
   rv$modTabPretty_CP <- NULL
-  rv$modTabDL_CP <- NULL 
-  rv$figH_CP <- 800 
+  rv$modTabDL_CP <- NULL
+  rv$figH_CP <- 800
   rv$figW_CP <- 800
 
   rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
   rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
 
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$CPmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$CPmodToUse <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
 
-  rv$SS <- seq(0, 364, 7) 
+  rv$SS <- seq(0, 364, 7)
   rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
   rv$avgSI <- NULL
@@ -261,12 +260,12 @@ update_rv_data_CP_clear <- function(rv, input){
   rv$colNames_SS_sel <- NULL
   rv$colNames_SS_nosel <- NULL
 
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
+  rv$kFill_g <- NULL
+  rv$sizeclasses_g <- NULL
   rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$CPmodToUse_g <- NULL 
-  rv$figH_g <- 400 
+  rv$gGeneric <- NULL
+  rv$CPmodToUse_g <- NULL
+  rv$figH_g <- 400
   rv$figW_g <- 800
 
   return(rv)
@@ -308,7 +307,7 @@ update_rv_data_SS <- function(rv, input){
 update_rv_data_SS_clear <- function(rv, input){
   rv$data_SS <- NULL
   rv$colNames_SS <- NULL
-  rv$SS <- seq(0, 364, 7) 
+  rv$SS <- seq(0, 364, 7)
   rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
   rv$avgSI <- NULL
@@ -316,22 +315,22 @@ update_rv_data_SS_clear <- function(rv, input){
   rv$gSearchMax <- 364
   rv$colNames_SS_sel <- NULL
   rv$colNames_SS_nosel <- NULL
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
+  rv$kFill_g <- NULL
+  rv$sizeclasses_g <- NULL
   rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$SEmodToUse_g <- NULL 
-  rv$figH_g <- 400 
+  rv$gGeneric <- NULL
+  rv$SEmodToUse_g <- NULL
+  rv$figH_g <- 400
   rv$figW_g <- 800
   return(rv)
 }
@@ -371,15 +370,15 @@ update_rv_data_DWP <- function(rv, input){
 update_rv_data_DWP_clear <- function(rv, input){
   rv$data_DWP <- NULL
   rv$colNames_DWP <- NULL
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
   return(rv)
 }
@@ -434,16 +433,16 @@ update_rv_data_CO_clear <- function(rv, input){
                                 rv$preds_CP)
   rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
 
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$SEmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$SEmodToUse <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
   return(rv)
 }
@@ -465,10 +464,10 @@ update_rv_sizeclassCol <- function(rv, input){
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
-  rv$fta <- input$fta 
+  rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
   rv$toRemove_SE_preds <- c(rv$obsCols_SE, rv$sizeclassCol)
-  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0, 
+  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0,
                             rv$toRemove_SE_preds)
   rv$toRemove_SE_obs <- c(rv$preds_SE, rv$sizeclassCol)
   rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs0, rv$toRemove_SE_obs)
@@ -477,7 +476,7 @@ update_rv_sizeclassCol <- function(rv, input){
   rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeclassCol)
   rv$colNames_fta <- removeCols(rv$colNames_fta0, rv$toRemove_fta)
   rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeclassCol)
-  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0, 
+  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0,
                             rv$toRemove_CP_preds)
 
   scCol <- input$sizeclassCol
@@ -488,7 +487,7 @@ update_rv_sizeclassCol <- function(rv, input){
 
   if (rv$nsizeclasses > 1 & is.null(rv$DWPCol)){
     rv$DWPCol <- sizeclasses[1]
-  } 
+  }
   if (rv$nsizeclasses == 0){
     rv$sizeclasses_k <- ""
     rv$nsizeclasses_k <- 1
@@ -498,7 +497,7 @@ update_rv_sizeclassCol <- function(rv, input){
   return(rv)
 }
 
-#' @title Update the reactive value list when an SE observation column is 
+#' @title Update the reactive value list when an SE observation column is
 #'   selected
 #'
 #' @description Update the rv list when an SE observation column is selected
@@ -516,10 +515,10 @@ update_rv_cols_SE_obs <- function(rv, input){
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
-  rv$fta <- input$fta 
+  rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
   rv$toRemove_SE_preds <- c(rv$obsCols_SE, rv$sizeclassCol)
-  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0, 
+  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0,
                             rv$toRemove_SE_preds)
   rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
@@ -527,7 +526,7 @@ update_rv_cols_SE_obs <- function(rv, input){
   return(rv)
 }
 
-#' @title Update the reactive value list when an SE predictor column is 
+#' @title Update the reactive value list when an SE predictor column is
 #'   selected
 #'
 #' @description Update the rv list when an SE predictor column is selected
@@ -545,7 +544,7 @@ update_rv_cols_SE_preds <- function(rv, input){
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
-  rv$fta <- input$fta 
+  rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
   rv$toRemove_SE_obs <- c(rv$preds_SE, rv$sizeclassCol)
   rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs0, rv$toRemove_SE_obs)
@@ -556,10 +555,10 @@ update_rv_cols_SE_preds <- function(rv, input){
   return(rv)
 }
 
-#' @title Update the reactive value list when a CP Last Time Present column is 
+#' @title Update the reactive value list when a CP Last Time Present column is
 #'   selected
 #'
-#' @description Update the rv list when a CP Last Time Present column is 
+#' @description Update the rv list when a CP Last Time Present column is
 #'   selected
 #'
 #' @param rv reactive values list
@@ -575,12 +574,12 @@ update_rv_cols_ltp <- function(rv, input){
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
-  rv$fta <- input$fta 
+  rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
   rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeclassCol)
   rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeclassCol)
   rv$colNames_fta <- removeCols(rv$colNames_fta0, rv$toRemove_fta)
-  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0, 
+  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0,
                             rv$toRemove_CP_preds)
   rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
@@ -589,10 +588,10 @@ update_rv_cols_ltp <- function(rv, input){
   return(rv)
 }
 
-#' @title Update the reactive value list when a CP First Time Absent column is 
+#' @title Update the reactive value list when a CP First Time Absent column is
 #'   selected
 #'
-#' @description Update the rv list when a CP First Time Absent column is 
+#' @description Update the rv list when a CP First Time Absent column is
 #'   selected
 #'
 #' @param rv reactive values list
@@ -608,12 +607,12 @@ update_rv_cols_fta <- function(rv, input){
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
-  rv$fta <- input$fta 
+  rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
   rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeclassCol)
-  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeclassCol) 
+  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeclassCol)
   rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
-  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0, 
+  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0,
                             rv$toRemove_CP_preds)
   rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
@@ -622,7 +621,7 @@ update_rv_cols_fta <- function(rv, input){
   return(rv)
 }
 
-#' @title Update the reactive value list when a CP predictor column is 
+#' @title Update the reactive value list when a CP predictor column is
 #'   selected
 #'
 #' @description Update the rv list when a CP predictor column is selected
@@ -640,7 +639,7 @@ update_rv_cols_CP_preds <- function(rv, input){
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
-  rv$fta <- input$fta 
+  rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
   rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeclassCol)
   rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
@@ -667,19 +666,19 @@ update_rv_cols_CP_preds <- function(rv, input){
 #'
 update_rv_run_SE <- function(rv, input){
 
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$SEmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$SEmodToUse <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
 
-  rv$SS <- seq(0, 364, 7) 
+  rv$SS <- seq(0, 364, 7)
   rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
   rv$avgSI <- NULL
@@ -688,12 +687,12 @@ update_rv_run_SE <- function(rv, input){
   rv$colNames_SS_sel <- NULL
   rv$colNames_SS_nosel <- NULL
 
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
+  rv$kFill_g <- NULL
+  rv$sizeclasses_g <- NULL
   rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$SEmodToUse_g <- NULL 
-  rv$figH_g <- 400 
+  rv$gGeneric <- NULL
+  rv$SEmodToUse_g <- NULL
+  rv$figH_g <- 400
   rv$figW_g <- 800
 
   for (sci in 1:rv$nsizeclasses_k){
@@ -716,17 +715,17 @@ update_rv_run_SE <- function(rv, input){
   rv$preds_SE <- input$preds_SE
   rv$predictors_SE <- prepPredictors(rv$preds_SE)
   rv$formula_p <- formula(paste0("p~", rv$predictors_SE))
-  rv$formula_k <- formula(paste0("k~", rv$predictors_SE)) 
+  rv$formula_k <- formula(paste0("k~", rv$predictors_SE))
 
   rv$CL <- input$CL
   rv$sizeclassCol <- input$sizeclassCol
   rv$mods_SE <- suppressWarnings(
                   pkmSetSize(formula_p = rv$formula_p,
-                    formula_k = rv$formula_k, data = rv$data_SE, 
+                    formula_k = rv$formula_k, data = rv$data_SE,
                     obsCol = rv$obsCols_SE, sizeclassCol = rv$sizeclassCol,
-                    kFixed = rv$kFixed, kInit = 0.7, 
+                    kFixed = rv$kFixed, kInit = 0.7,
                     CL = rv$CL, quiet = TRUE
-                  ) 
+                  )
                 )
   rv$mods_SE_og <- rv$mods_SE
   rv$mods_SE <- pkmSetSizeFailRemove(rv$mods_SE)
@@ -772,37 +771,37 @@ update_rv_run_SE_clear <- function(rv, input){
   rv$formula_p <- NULL
   rv$formula_k <- NULL
 
-  rv$mods_SE <- NULL 
-  rv$mods_SE_og <- NULL 
-  rv$sizeclasses_SE <- NULL 
-  rv$outSEpk <- NULL 
-  rv$AICcTab_SE <- NULL 
-  rv$modOrder_SE <- NULL 
+  rv$mods_SE <- NULL
+  rv$mods_SE_og <- NULL
+  rv$sizeclasses_SE <- NULL
+  rv$outSEpk <- NULL
+  rv$AICcTab_SE <- NULL
+  rv$modOrder_SE <- NULL
   rv$modNames_SE <- NULL
-  rv$modNames_SEp <- NULL 
-  rv$modNames_SEk <- NULL 
+  rv$modNames_SEp <- NULL
+  rv$modNames_SEk <- NULL
   rv$modSet_SE <- NULL
-  rv$best_SE <- NULL 
-  rv$modTab_SE <- NULL 
+  rv$best_SE <- NULL
+  rv$modTab_SE <- NULL
   rv$modTabPretty_SE <- NULL
-  rv$modTabDL_SE <- NULL 
-  rv$figH_SE <- 800 
+  rv$modTabDL_SE <- NULL
+  rv$figH_SE <- 800
   rv$figW_SE <- 800
-  rv$kFill <- NULL 
+  rv$kFill <- NULL
 
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$SEmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$SEmodToUse <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
 
-  rv$SS <- seq(0, 364, 7) 
+  rv$SS <- seq(0, 364, 7)
   rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
   rv$avgSI <- NULL
@@ -811,12 +810,12 @@ update_rv_run_SE_clear <- function(rv, input){
   rv$colNames_SS_sel <- NULL
   rv$colNames_SS_nosel <- NULL
 
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
+  rv$kFill_g <- NULL
+  rv$sizeclasses_g <- NULL
   rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$SEmodToUse_g <- NULL 
-  rv$figH_g <- 400 
+  rv$gGeneric <- NULL
+  rv$SEmodToUse_g <- NULL
+  rv$figH_g <- 400
   rv$figW_g <- 800
 
   rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
@@ -907,17 +906,17 @@ update_rv_run_CP <- function(rv, input){
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
-  rv$dists <- input$dists  
+  rv$dists <- input$dists
   rv$nsim <- input$nsim
   rv$CL <- input$CL
   rv$sizeclassCol <- input$sizeclassCol
   rv$predictors_CP <- prepPredictors(rv$preds_CP)
   rv$formula_l <- formula(paste("l~", rv$predictors_CP, sep = ""))
-  rv$formula_s <- formula(paste("s~", rv$predictors_CP, sep = "")) 
+  rv$formula_s <- formula(paste("s~", rv$predictors_CP, sep = ""))
 
   rv$mods_CP <- suppressWarnings(
                   cpmSetSize(formula_l = rv$formula_l,
-                    formula_s = rv$formula_s, data = rv$data_CP, 
+                    formula_s = rv$formula_s, data = rv$data_CP,
                     left = rv$ltp, right = rv$fta, dists = rv$dists,
                     sizeclassCol = rv$sizeclassCol, CL = rv$CL, quiet = TRUE
                   )
@@ -931,7 +930,7 @@ update_rv_run_CP <- function(rv, input){
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
     rv$sizeclass_CP <- rv$sizeclass
     rv$AICcTab_CP <- cpmSetAICcTab(rv$mods_CP[[rv$sizeclass_CP]], TRUE, TRUE)
-    rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "", 
+    rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "",
                                            rv$AICcTab_CP[ , "Scale Formula"]
                                          )
     rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
@@ -952,19 +951,19 @@ update_rv_run_CP <- function(rv, input){
     rv$figW_CP <- setFigW(rv$modSet_CP)
   }
 
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$SEmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$SEmodToUse <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
 
-  rv$SS <- seq(0, 364, 7) 
+  rv$SS <- seq(0, 364, 7)
   rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
   rv$avgSI <- NULL
@@ -973,12 +972,12 @@ update_rv_run_CP <- function(rv, input){
   rv$colNames_SS_sel <- NULL
   rv$colNames_SS_nosel <- NULL
 
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
+  rv$kFill_g <- NULL
+  rv$sizeclasses_g <- NULL
   rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$SEmodToUse_g <- NULL 
-  rv$figH_g <- 400 
+  rv$gGeneric <- NULL
+  rv$SEmodToUse_g <- NULL
+  rv$figH_g <- 400
   rv$figW_g <- 800
 
   return(rv)
@@ -997,44 +996,44 @@ update_rv_run_CP <- function(rv, input){
 #' @export
 #'
 update_rv_run_CP_clear <- function(rv, input){
-  rv$dists <- NULL  
+  rv$dists <- NULL
   rv$predictors_CP <- NULL
   rv$formula_l <- NULL
   rv$formula_s <- NULL
 
-  rv$mods_CP <- NULL 
-  rv$mods_CP_og <- NULL 
-  rv$sizeclasses_CP <- NULL 
+  rv$mods_CP <- NULL
+  rv$mods_CP_og <- NULL
+  rv$sizeclasses_CP <- NULL
 
-  rv$AICcTab_CP <- NULL 
-  rv$modOrder_CP <- NULL 
+  rv$AICcTab_CP <- NULL
+  rv$modOrder_CP <- NULL
   rv$modNames_CP <- NULL
-  rv$modNames_CPl <- NULL 
-  rv$modNames_CPs <- NULL 
-  rv$modNames_CPdist <- NULL 
+  rv$modNames_CPl <- NULL
+  rv$modNames_CPs <- NULL
+  rv$modNames_CPdist <- NULL
   rv$modSet_CP <- NULL
-  rv$best_CP <- NULL 
+  rv$best_CP <- NULL
 
-  rv$modTab_CP <- NULL 
+  rv$modTab_CP <- NULL
   rv$modTabPretty_CP <- NULL
-  rv$modTabDL_CP <- NULL 
-  rv$figH_CP <- 800 
+  rv$modTabDL_CP <- NULL
+  rv$figH_CP <- 800
   rv$figW_CP <- 800
 
 
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$SEmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$SEmodToUse <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
 
-  rv$SS <- seq(0, 364, 7) 
+  rv$SS <- seq(0, 364, 7)
   rv$SStemp <- NULL
   rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
   rv$avgSI <- NULL
@@ -1043,12 +1042,12 @@ update_rv_run_CP_clear <- function(rv, input){
   rv$colNames_SS_sel <- NULL
   rv$colNames_SS_nosel <- NULL
 
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
+  rv$kFill_g <- NULL
+  rv$sizeclasses_g <- NULL
   rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$SEmodToUse_g <- NULL 
-  rv$figH_g <- 400 
+  rv$gGeneric <- NULL
+  rv$SEmodToUse_g <- NULL
+  rv$figH_g <- 400
   rv$figW_g <- 800
 
   rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
@@ -1095,10 +1094,10 @@ update_rv_outsc_CP <- function(rv, input){
   return(rv)
 }
 
-#' @title Update the CP reactive values when a distribution or l or s model 
+#' @title Update the CP reactive values when a distribution or l or s model
 #'   is chosen
 #'
-#' @description Update the CP reactive values when a distribution or l or s 
+#' @description Update the CP reactive values when a distribution or l or s
 #'   model is chosen
 #'
 #' @param rv the reactive values list
@@ -1117,7 +1116,7 @@ update_rv_outdls_CP <- function(rv, input){
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
 
     if (rv$outCPdlstab %in% names(rv$modSet_CP)){
-      rv$modTab_CP <- 
+      rv$modTab_CP <-
 
     rv$modTab_CP <- list(ls = rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_ls,
                      desc = rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_desc
@@ -1249,13 +1248,13 @@ update_rv_run_g <- function(rv, input){
     }
     rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
 
-    rv$gGeneric[[sci]] <- #tryCatch(
+    rv$gGeneric[[sci]] <- tryCatch(
                             estgGeneric(nsim = rv$nsim, days = rv$SS,
                               model_SE = rv$mods_SE[[sci]][[rv$SEmodToUse_g]],
-                              model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]],
-                              kFill = rv$kFill_g[sci]
-                           # ), 
-                           # error = function(x){NULL}
+                              model_CP = rv$mods_CP[[sci]][[rv$CPmodToUse_g]]
+
+                            ),
+                            error = function(x){NULL}
                           )
   }
   names(rv$gGeneric) <- rv$sizeclasses_g
@@ -1276,12 +1275,12 @@ update_rv_run_g <- function(rv, input){
 #' @export
 #'
 update_rv_run_g_clear <- function(rv, input){
-  rv$kFill_g <- NULL 
-  rv$sizeclasses_g <- NULL 
+  rv$kFill_g <- NULL
+  rv$sizeclasses_g <- NULL
   rv$nsizeclasses_g <- NULL
-  rv$gGeneric <- NULL 
-  rv$SEmodToUse_g <- NULL 
-  rv$figH_g <- 400 
+  rv$gGeneric <- NULL
+  rv$SEmodToUse_g <- NULL
+  rv$figH_g <- 400
   rv$figW_g <- 800
 
   return(rv)
@@ -1376,11 +1375,11 @@ update_rv_run_M <- function(rv, input){
   names(rv$CPmodToUse) <- rv$sizeclasses
 
   rv$models_SE <- tryCatch(
-                    trimSetSize(rv$mods_SE, rv$SEmodToUse), 
+                    trimSetSize(rv$mods_SE, rv$SEmodToUse),
                     error = function(x){NULL}
                   )
   rv$models_CP <- tryCatch(
-                    trimSetSize(rv$mods_CP, rv$CPmodToUse), 
+                    trimSetSize(rv$mods_CP, rv$CPmodToUse),
                     error = function(x){NULL}
                   )
 
@@ -1392,8 +1391,8 @@ update_rv_run_M <- function(rv, input){
   if (rv$nsizeclasses > 1){
     rv$DWPCol <- NULL
     rv$sizeclassCol_M <- rv$sizeclassCol
-  } else{
-    rv$DWPCol <- input$DWPCol  
+  } else {
+    rv$DWPCol <- input$DWPCol
     rv$sizeclassCol_M <- NULL
     rv$models_SE <- rv$models_SE[[1]]
     rv$models_CP <- rv$models_CP[[1]]
@@ -1402,10 +1401,10 @@ update_rv_run_M <- function(rv, input){
 
   rv$M <- tryCatch(
             estM(data_CO = rv$data_CO, data_SS = rv$data_SS, rv$data_DWP,
-              frac = rv$frac, model_SE = rv$models_SE, 
-              model_CP = rv$models_CP, kFill = rv$kFill, 
+              frac = rv$frac, model_SE = rv$models_SE,
+              model_CP = rv$models_CP,
               dateFoundCol = rv$dateFoundCol, DWPCol = rv$DWPCol,
-              sizeclassCol = rv$sizeclassCol_M, nsim = rv$nsim, 
+              sizeclassCol = rv$sizeclassCol_M, nsim = rv$nsim,
               max_intervals = 8
             ), error = function(x){NULL}
           )
@@ -1417,9 +1416,9 @@ update_rv_run_M <- function(rv, input){
                      data_SS = rv$data_SS, data_CO = rv$data_CO
                    ), error = function(x){NULL}, warning = function(x){NULL}
                  )
-    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)  
+    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)
     rv$colNames_SS_sel <- colnames(rv$data_SS) %in% rv$data_CO[ , rv$unitCol]
-    rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]  
+    rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]
   }
 
   return(rv)
@@ -1438,16 +1437,16 @@ update_rv_run_M <- function(rv, input){
 #' @export
 #'
 update_rv_run_M_clear <- function(rv, input){
-  rv$M <- NULL 
-  rv$Msplit <- NULL 
-  rv$unitCol <- NULL 
-  rv$sizeclassCol_M <- NULL 
-  rv$SEmodToUse <- NULL 
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$M <- NULL
+  rv$Msplit <- NULL
+  rv$unitCol <- NULL
+  rv$sizeclassCol_M <- NULL
+  rv$SEmodToUse <- NULL
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
   return(rv)
 }
@@ -1502,11 +1501,11 @@ update_rv_split_M <- function(rv, input){
 #' @export
 #'
 update_rv_split_M_clear <- function(rv, input){
-  rv$split_CO <- NULL 
-  rv$split_SS <- NULL 
-  rv$nsplit_CO <- 0 
-  rv$nsplit_SS <- 0 
-  rv$figH_M <- 600 
+  rv$split_CO <- NULL
+  rv$split_SS <- NULL
+  rv$nsplit_CO <- 0
+  rv$nsplit_SS <- 0
+  rv$figH_M <- 600
   rv$figW_M <- 800
   rv$Msplit <- NULL
 
@@ -1517,9 +1516,9 @@ update_rv_split_M_clear <- function(rv, input){
                      data_SS = rv$data_SS, data_CO = rv$data_CO
                    ), error = function(x){NULL}, warning = function(x){NULL}
                  )
-    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)  
+    rv$unitCol <- intersect(rv$colNames_CO, rv$colNames_DWP)
     rv$colNames_SS_sel <- colnames(rv$data_SS) %in% rv$data_CO[ , rv$unitCol]
-    rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]  
+    rv$colNames_SS_nosel <- rv$colNames_SS[rv$colNames_SS_sel == FALSE]
   }
 
   return(rv)
@@ -1538,6 +1537,6 @@ update_rv_split_M_clear <- function(rv, input){
 update_rv_transpose_split <- function(rv){
   if (rv$nsplit_CO + rv$nsplit_SS == 2){
     rv$Msplit <- transposeSplits(rv$Msplit)
-  } 
+  }
   return(rv)
 }
