@@ -15,9 +15,6 @@
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
 #'
-#' @param kFill value(s) to fill in for missing k when not existing in the
-#'   model(s)
-#'
 #' @param unitCol Column name for the unit indicator
 #'
 #' @param datesSearchedCol Column name for the date searched data. Optional.
@@ -65,7 +62,7 @@
 #' @export
 #'
 estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
-                 model_SE, model_CP, kFill = NULL, unitCol = NULL, 
+                 model_SE, model_CP, unitCol = NULL,
                  datesSearchedCol = NULL, sizeclassCol = NULL,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  nsim = 1000, max_intervals = 8){
@@ -83,7 +80,6 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     COdat[ , sizeclassCol] <- "value"
     model_SE <- list("value" = model_SE)
     model_CP <- list("value" = model_CP)
-    if (!is.null(kFill)) names(kFill) <- "value"
   } else {
     if (!(sizeclassCol %in% colnames(COdat))){
       stop("size class column not in carcass data.")
@@ -124,19 +120,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   if (length(unlist(SSpreds)) > 0 && !all(unlist(SSpreds) %in% names(SSdat))){
     stop("Model predictor missing from both CO and SS data.")
   }
- # if (!is.null(kFill)) {
-#    k <- as.list(kFill)
-#    pksim <- mapply(function(x, y) rpk(nsim, x, seed_SE, kFill = y),
-#               model_SE, k
-#             )
-#  } else {
-    pksim <- lapply(model_SE, function(x) rpk(nsim, x, seed_SE))
-#  }
-#  pksim <- vector("list", length = nsizeclass)
-#  for(sci in 1:nsizeclass){
-#    pksim[[sci]] <- rpk(model_SE[[sci]], n = nsim, kFill = kFill[sci],
-#                       seed = seed_SE)
-#  }
+  pksim <- lapply(model_SE, function(x) rpk(nsim, x))
   names(pksim) <- names(model_SE)
 
   cpsim <- lapply(model_CP, rcp, n = nsim, seed = seed_CP, type = "ppersist")
@@ -441,9 +425,6 @@ SEsi_right <- function(nsi, pk){
 #'
 #' @param seed_CP seed for random draws of the CP model
 #'
-#' @param kFill value to use for k if \code{model_SE} does not include an
-#'  estimated k.
-#'
 #' @return \code{gGeneric} object that is a list of [1] a list of g estimates,
 #'    with one element in the list corresponding to each of the cells from the
 #'    cross-model combination and [2] a table of predictors and cell names 
@@ -459,14 +440,13 @@ SEsi_right <- function(nsi, pk){
 #'                 right = "FirstAbsentDecimalDays"
 #'               )
 #'   avgSS <- averageSS(mock$SS)
-#'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
-#'                     seed_SE = 1, seed_CP = 1, kFill = NULL
-#'                   )
+#'   ghatsGeneric <- estgGeneric(days = avgSS, model_SE = model_SE,
+#'    model_CP = model_CP)
 #'
 #' @export
 #'
-estgGeneric <- function(nsim = 1000, days, model_SE, model_CP, seed_SE = NULL,
-                         seed_CP = NULL, kFill = NULL){
+estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
+  seed_CP = NULL){
 
   if (!is.vector(days) || !is.numeric(days))
     stop(" 'days' must be a numeric vector")
@@ -479,10 +459,9 @@ estgGeneric <- function(nsim = 1000, days, model_SE, model_CP, seed_SE = NULL,
   data_SE <- model_SE$data
   data_CP <- model_CP$data
   preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
-
-  sim_SE <- rpk(n = nsim, model = model_SE, seed = seed_SE, kFill = kFill)
-  sim_CP <- rcp(n = nsim, model = model_CP, seed = seed_CP,
-    type = "ppersist")
+  set.seed(seed_SE)
+  sim_SE <- rpk(n = nsim, model = model_SE)
+  sim_CP <- rcp(n = nsim, model = model_CP, type = "ppersist", seed = seed_CP)
   dist <- tolower(model_CP$dist)
 
   ncell <- nrow(preds)
@@ -666,14 +645,6 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @param seed_CP seed for random draws of the CP model
 #'
-#' @param kFill values to fill in for missing k when the selected SE model 
-#'   does not include an estimated k. If all of the selected models include 
-#'   estimated k's, set \code{kFill = NULL}. Models that do not include 
-#'   estimated k's require named kFill values in a vector with names matching 
-#'   the names of size classes, e.g., \code{kFill = c(lrg = 0.7, sml = 0.4)},
-#'   or, if only one model requires a \code{kFill} value, 
-#'   \code{kFill = c(lrg = 0.7)}.
-#'
 #' @return list of g estimates, with one element in the list corresponding
 #'    to each of the cells from the cross-model combination
 #'
@@ -709,10 +680,10 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @export
 #'
-estgGenericSize <- function(nsim = 1000, days, modelSetSize_SE,
-                            modelSetSize_CP, modelSizeSelections_SE, 
-                            modelSizeSelections_CP, seed_SE = NULL, 
-                            seed_CP = NULL, kFill = NULL){
+estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
+    modelSizeSelections_SE, modelSizeSelections_CP,
+    nsim = 1000, seed_SE = NULL, seed_CP = NULL){
+
   if (!("pkmSetSize" %in% class(modelSetSize_SE))){
     stop("modelSetSize_SE must be a pkmSetSize object")
   }
@@ -727,34 +698,23 @@ estgGenericSize <- function(nsim = 1000, days, modelSetSize_SE,
   }
   sizeclasses <- unique(c(sizeclasses_SE, sizeclasses_CP))
   nsizeclass <- length(sizeclasses)
-  # check whether kFill is necessary: if so, error; if not, warning.
-  kfill0 <- rep(NA, nsizeclass)
-  names(kfill0) <- sizeclasses
+  # check whether k is included in every model. If not, error.
   for (sci in 1:nsizeclass){
-    sc <- sizeclasses[sci]
-    if (modelSetSize_SE[[sc]][[modelSizeSelections_SE[sc]]]$pOnly){
-      if (! (sc %in% names(kFill))){
-        stop("kFill required for SE model for size = ", sc)
-      } else {
-        if (!is.numeric(kFill[sc])) {
-          stop("kFill for SE model for size = ", sc, " must be numeric")
-        }
-        if (kFill[sc] < 0 || kFill[sc] > 1){
-          stop("kFill for SE model for size = ", sc, " must be in [0, 1]")
-        }
-      }
-      kfill0[sc] <- kFill[sc]
+    if (modelSetSize_SE[[sci]][[modelSizeSelections_SE[sci]]]$pOnly){
+     stop("k required for SE model for size = ", sci)
     }
   }
   ghats <- list()
   for (sci in sizeclasses){
+    if (any(unlist(lapply(modelSetSize_SE[[sci]], function(x) x$pOnly))))
+      stop("No k included in SE model. Cannot estimate g")
     model_SEsci <- modelSizeSelections_SE[[sci]]
     model_SE <- modelSetSize_SE[[sci]][[model_SEsci]]
     model_CPsci <- modelSizeSelections_CP[[sci]]
     model_CP <- modelSetSize_CP[[sci]][[model_CPsci]]
     ghats[[sci]] <- estgGeneric(nsim = nsim, days = days,
       model_SE = model_SE, model_CP = model_CP,
-      seed_SE = seed_SE, seed_CP = seed_CP, kFill[sci]) ###
+      seed_SE = seed_SE, seed_CP = seed_CP)
   }
 
   class(ghats) <- c("gGenericSize", "list")
@@ -822,14 +782,12 @@ averageSS <- function(data_SS, datesSearchedCol = NULL){
 #'               )
 #'   avgSS <- averageSS(mock$SS)
 #'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
-#'                     seed_SE = 1, seed_CP = 1, kFill = NULL
-#'                   )
+#'                     seed_SE = 1, seed_CP = 1)
 #'   summary(ghatsGeneric)
 #'
 #' @export
 #'
 summary.gGeneric <- function(object, ..., CL = 0.90){
-
   ghats <- object$ghat
   preds <- object$predictors
   cells <- names(ghats)
