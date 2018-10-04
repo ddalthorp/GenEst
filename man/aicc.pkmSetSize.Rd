@@ -9,6 +9,8 @@
 \arguments{
 \item{x}{List of set of searcher efficiency models fit to the same
 observations}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \value{
 AICc table

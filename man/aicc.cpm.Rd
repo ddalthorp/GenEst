@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{Carcass persistence model (\code{cpm} objects)}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \value{
 AIC, AICc vector

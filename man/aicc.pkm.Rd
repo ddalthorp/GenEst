@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{x}{object of class \code{pkm}}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \value{
 AIC and AICc of the model

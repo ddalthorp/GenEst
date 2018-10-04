@@ -49,7 +49,6 @@ Run a set of \code{\link{cpm}} models based on all possible
 \examples{
   data(wind_RP)
   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
-           data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
-          )
+           data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
 
 }

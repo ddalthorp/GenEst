@@ -10,6 +10,8 @@
 \item{x}{Set of searcher efficiency models fit to the same
 observations}
 
+\item{...}{further arguments passed to or from other methods}
+
 \item{quiet}{Logical indicating if messages should be printed}
 
 \item{app}{Logical indicating if the table should have the app model names}
