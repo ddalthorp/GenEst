@@ -8,6 +8,8 @@ aicc(x, ...)
 }
 \arguments{
 \item{x}{is the model or list of models to extract AICc values from}
+
+\item{...}{further arguments passed to or from other methods}
 }
 \value{
 list of models sorted by AICc
