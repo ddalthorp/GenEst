@@ -7,14 +7,14 @@
 dataInputWidget(dataType)
 }
 \arguments{
-\item{dataType}{Toggle control for the model type of the widget. One of 
+\item{dataType}{Toggle control for the model type of the widget. One of
 "SE", "CP", "SS", "DWP", or "CO".}
 }
 \value{
 HTML for the data input widget.
 }
 \description{
-This is a generalized function for creating a data input 
+This is a generalized function for creating a data input
   widget used in the GenEst GUI, based on the data type (\code{dataType}).
   Included within the widget is a conditional panel that allows removal of
   the specific data file (and clearing of all downstream models) once

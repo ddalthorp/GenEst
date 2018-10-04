@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_rv_update_functions.R
 \name{update_rv_cols_SE_obs}
 \alias{update_rv_cols_SE_obs}
-\title{Update the reactive value list when an SE observation column is 
+\title{Update the reactive value list when an SE observation column is
   selected}
 \usage{
 update_rv_cols_SE_obs(rv, input)

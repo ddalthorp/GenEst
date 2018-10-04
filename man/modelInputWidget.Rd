@@ -7,16 +7,16 @@
 modelInputWidget(inType)
 }
 \arguments{
-\item{inType}{Toggle control for the input type of the widget. One of 
+\item{inType}{Toggle control for the input type of the widget. One of
 "nsim", "CL", "sizeclassCol", "obsCols_SE", "preds_SE", "kFixed",
-"ltp", "fta", "preds_CP", "dists", "frac", "DWPCol", 
-"dateFoundCol", "gSearchInterval", "gSearchMax", 
+"ltp", "fta", "preds_CP", "dists", "frac", "DWPCol",
+"dateFoundCol", "gSearchInterval", "gSearchMax",
 "useSSinputs", or "useSSdata".}
 }
 \value{
 HTML for the model input widget.
 }
 \description{
-This is a generalized function for creating a model input 
+This is a generalized function for creating a model input
   widget used in the GenEst GUI, based on the input type (\code{inType}).
 }

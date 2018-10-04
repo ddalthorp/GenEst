@@ -10,14 +10,14 @@ modelOutputWidget(modType)
 splitButtonWidget()
 }
 \arguments{
-\item{modType}{Toggle control for the model type of the widget. One of 
+\item{modType}{Toggle control for the model type of the widget. One of
 "SE", "CP", "M", or "g".}
 }
 \value{
 HTML for the model run widget.
 }
 \description{
-This is a generalized function for creating a widget used in 
+This is a generalized function for creating a widget used in
   the GenEst GUI to control the outputs based on the model type
   (\code{modType}).
 }
