@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_msg_functions.R
 \name{msgModPartialFail}
 \alias{msgModPartialFail}
-\title{Create the warning message text for when only some models are fit
+\title{Create the warning message text for when only some models are fit 
   successfully}
 \usage{
 msgModPartialFail(mods, type = "SE")

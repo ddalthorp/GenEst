@@ -23,7 +23,7 @@ modelSelectionWidgetRow(mods, modType, sci)
 Rendered HTML model selection menu widget.
 }
 \description{
-Produce a Size-Class-based model selection widget based
+Produce a Size-Class-based model selection widget based 
   on the model inputs.
 }
 \details{

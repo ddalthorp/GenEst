@@ -15,7 +15,7 @@ pickSizeclass(sizeclasses, choice)
 location of the size class chosen
 }
 \description{
-Locate the selection of a size class from the size class
+Locate the selection of a size class from the size class 
   column, retuning the first option from the size classes if the selection
   is not available.
 }
