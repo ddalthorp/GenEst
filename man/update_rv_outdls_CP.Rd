@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_rv_update_functions.R
 \name{update_rv_outdls_CP}
 \alias{update_rv_outdls_CP}
-\title{Update the CP reactive values when a distribution or l or s model 
+\title{Update the CP reactive values when a distribution or l or s model
   is chosen}
 \usage{
 update_rv_outdls_CP(rv, input)
@@ -16,6 +16,6 @@ update_rv_outdls_CP(rv, input)
 an updated reactive values list
 }
 \description{
-Update the CP reactive values when a distribution or l or s 
+Update the CP reactive values when a distribution or l or s
   model is chosen
 }

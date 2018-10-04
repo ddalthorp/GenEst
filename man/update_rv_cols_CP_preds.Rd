@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_rv_update_functions.R
 \name{update_rv_cols_CP_preds}
 \alias{update_rv_cols_CP_preds}
-\title{Update the reactive value list when a CP predictor column is 
+\title{Update the reactive value list when a CP predictor column is
   selected}
 \usage{
 update_rv_cols_CP_preds(rv, input)

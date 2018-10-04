@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_rv_update_functions.R
 \name{update_rv_cols_ltp}
 \alias{update_rv_cols_ltp}
-\title{Update the reactive value list when a CP Last Time Present column is 
+\title{Update the reactive value list when a CP Last Time Present column is
   selected}
 \usage{
 update_rv_cols_ltp(rv, input)
@@ -16,6 +16,6 @@ update_rv_cols_ltp(rv, input)
 an updated reactive values list
 }
 \description{
-Update the rv list when a CP Last Time Present column is 
+Update the rv list when a CP Last Time Present column is
   selected
 }

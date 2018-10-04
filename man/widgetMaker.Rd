@@ -15,7 +15,7 @@ widgetMaker(Condition, Name, Fun, Label, Args)
 
 \item{Label}{Label presented to the user in the UI for the widget.}
 
-\item{Args}{List of any additional arguments to be passed to the widget 
+\item{Args}{List of any additional arguments to be passed to the widget
 creating function.}
 }
 \value{
@@ -23,7 +23,7 @@ HTML for the widget.
 }
 \description{
 Basic generalized function for creating an input widget based
-  on the condition of the widget being presented, the name of the widget, 
-  the function used to create it, it's label on the UI, and any additional 
+  on the condition of the widget being presented, the name of the widget,
+  the function used to create it, it's label on the UI, and any additional
   arguments.
 }

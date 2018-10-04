@@ -29,9 +29,7 @@ Plot method for a single generic \code{ghat} estimation
                 right = "FirstAbsentDecimalDays"
               )
   avgSS <- averageSS(mock$SS)
-  ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
-                    seed_SE = 1, seed_CP = 1, kFill = NULL
-                  )
+  ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP)
   plot(ghatsGeneric)
 
 }

@@ -15,6 +15,6 @@ selectData(data, cols)
 selected data
 }
 \description{
-Convenience function for selecting specific columns from a 
+Convenience function for selecting specific columns from a
   data table
 }
