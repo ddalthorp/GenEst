@@ -4,13 +4,11 @@
 \alias{estgGenericSize}
 \title{Estimate generic detection probability for multiple size classes}
 \usage{
-estgGenericSize(nsim = 1000, days, modelSetSize_SE, modelSetSize_CP,
-  modelSizeSelections_SE, modelSizeSelections_CP, seed_SE = NULL,
-  seed_CP = NULL, kFill = NULL)
+estgGenericSize(days, modelSetSize_SE, modelSetSize_CP,
+  modelSizeSelections_SE, modelSizeSelections_CP, nsim = 1000,
+  seed_SE = NULL, seed_CP = NULL)
 }
 \arguments{
-\item{nsim}{the number of simulation draws}
-
 \item{days}{Search schedule data as a vector of days searched}
 
 \item{modelSetSize_SE}{Searcher Efficiency model set for multiple sizes}
@@ -29,17 +27,11 @@ must be in \code{names(modelSizeSelections_SE)[["lrg"]]}.}
 
 \item{modelSizeSelections_CP}{vector of CP models to use, one for each size}
 
+\item{nsim}{the number of simulation draws}
+
 \item{seed_SE}{seed for random draws of the SE model}
 
 \item{seed_CP}{seed for random draws of the CP model}
-
-\item{kFill}{values to fill in for missing k when the selected SE model 
-does not include an estimated k. If all of the selected models include 
-estimated k's, set \code{kFill = NULL}. Models that do not include 
-estimated k's require named kFill values in a vector with names matching 
-the names of size classes, e.g., \code{kFill = c(lrg = 0.7, sml = 0.4)},
-or, if only one model requires a \code{kFill} value, 
-\code{kFill = c(lrg = 0.7)}.}
 }
 \value{
 list of g estimates, with one element in the list corresponding

@@ -5,9 +5,9 @@
 \title{Estimate all carcass-level detection rates and arrival intervals}
 \usage{
 estg(data_CO, data_SS, dateFoundCol = "DateFound", model_SE, model_CP,
-  kFill = NULL, unitCol = NULL, datesSearchedCol = NULL,
-  sizeclassCol = NULL, seed_SE = NULL, seed_CP = NULL,
-  seed_g = NULL, nsim = 1000, max_intervals = 8)
+  unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL,
+  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, nsim = 1000,
+  max_intervals = 8)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}
@@ -21,9 +21,6 @@ multiple size classes)}
 
 \item{model_CP}{Carcass Persistence model (or list of models if there are
 multiple size classes)}
-
-\item{kFill}{value(s) to fill in for missing k when not existing in the
-model(s)}
 
 \item{unitCol}{Column name for the unit indicator}
 

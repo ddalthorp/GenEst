@@ -32,8 +32,7 @@ methods for \code{summary} applied to a \code{gGeneric} list
               )
   avgSS <- averageSS(mock$SS)
   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
-                    seed_SE = 1, seed_CP = 1, kFill = NULL
-                  )
+                    seed_SE = 1, seed_CP = 1)
   summary(ghatsGeneric)
 
 }

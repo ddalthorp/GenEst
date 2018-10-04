@@ -13,6 +13,6 @@ msgFracNote(fracNote)
 a message regarding the input issue
 }
 \description{
-Produces a notification for improper input for fraction 
+Produces a notification for improper input for fraction
   facility surveyed
 }

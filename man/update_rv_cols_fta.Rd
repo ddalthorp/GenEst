@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_rv_update_functions.R
 \name{update_rv_cols_fta}
 \alias{update_rv_cols_fta}
-\title{Update the reactive value list when a CP First Time Absent column is 
+\title{Update the reactive value list when a CP First Time Absent column is
   selected}
 \usage{
 update_rv_cols_fta(rv, input)
@@ -16,6 +16,6 @@ update_rv_cols_fta(rv, input)
 an updated reactive values list
 }
 \description{
-Update the rv list when a CP First Time Absent column is 
+Update the rv list when a CP First Time Absent column is
   selected
 }

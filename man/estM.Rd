@@ -5,10 +5,10 @@
 \title{Estimate mortality}
 \usage{
 estM(data_CO, data_SS, data_DWP, frac = 1, dateFoundCol = "DateFound",
-  model_SE, model_CP, kFill = NULL, unitCol = NULL,
-  datesSearchedCol = NULL, sizeclassCol = NULL, DWPCol = NULL,
-  seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-  nsim = 1000, max_intervals = 8)
+  model_SE, model_CP, unitCol = NULL, datesSearchedCol = NULL,
+  sizeclassCol = NULL, DWPCol = NULL, seed_SE = NULL,
+  seed_CP = NULL, seed_g = NULL, seed_M = NULL, nsim = 1000,
+  max_intervals = 8)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}
@@ -27,8 +27,6 @@ multiple size classes)}
 
 \item{model_CP}{Carcass Persistence model (or list of models if there are
 multiple size classes)}
-
-\item{kFill}{value to fill in for missing k when not existing in the model}
 
 \item{unitCol}{Column name for the unit indicator (optional)}
 
