@@ -2,16 +2,16 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{pkmSetSizeFailRemove}
 \alias{pkmSetSizeFailRemove}
-\title{Remove failed pkm models from a \code{\link{pkmSetSize}} object}
+\title{Remove failed pkm models from a \code{pkmSetSize} object}
 \usage{
 pkmSetSizeFailRemove(pkmSetSizeToTidy)
 }
 \arguments{
-\item{pkmSetSizeToTidy}{A list of \code{\link{pkmSetSize}} objects to tidy}
+\item{pkmSetSizeToTidy}{A list of \code{pkmSetSize} objects to tidy}
 }
 \value{
-A list of \code{\link{pkmSet}} objects with failed models removed
+A list of \code{pkmSet} objects with failed models removed
 }
 \description{
-Remove failed models from a \code{\link{pkmSetSize}} object
+Remove failed models from a \code{\link[=pkm]{pkmSetSize}} object
 }

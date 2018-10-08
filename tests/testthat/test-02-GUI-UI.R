@@ -61,17 +61,17 @@ test_that("Standard widget functions produce HTML", {
   expect_error(dataDownloadWidget("_NOT_RIGHT_"))
   expect_is(modelInputWidget("nsim"), "shiny.tag")
   expect_is(modelInputWidget("CL"), "shiny.tag")
-  expect_is(modelInputWidget("sizeclassCol"), "shiny.tag")
+  expect_is(modelInputWidget("sizeCol"), "shiny.tag")
   expect_is(modelInputWidget("obsCols_SE"), "shiny.tag")
   expect_is(modelInputWidget("preds_SE"), "shiny.tag")
   expect_is(modelInputWidget("kFixedInput"), "shiny.tag")
   expect_is(modelInputWidget("ltp"), "shiny.tag")
   expect_is(modelInputWidget("fta"), "shiny.tag")
   expect_is(modelInputWidget("preds_CP"), "shiny.tag")
-  expect_is(modelInputWidget("dists"), "shiny.tag")
+  expect_is(modelInputWidget("dist"), "shiny.tag")
   expect_is(modelInputWidget("frac"), "shiny.tag")
   expect_is(modelInputWidget("DWPCol"), "shiny.tag")
-  expect_is(modelInputWidget("dateFoundCol"), "shiny.tag")
+  expect_is(modelInputWidget("COdate"), "shiny.tag")
   expect_is(modelInputWidget("gSearchInterval"), "shiny.tag")
   expect_is(modelInputWidget("gSearchMax"), "shiny.tag")
   expect_is(modelInputWidget("useSSinputs"), "shiny.tag")
@@ -116,30 +116,30 @@ test_that("Model Selection Menu Widget function produces an HTML-rendering
   expect_error(modelSelectionWidgetRow("_NOT_RIGHT_", "CP", 1))
 
   data(mock)
-  modSetSize <- pkmSetSize(data = mock$SE, formula_p = p ~ 1, 
-                  formula_k = k ~ 1, sizeclassCol = "Size")
+  modSetSize <- pkmSize(data = mock$SE, formula_p = p ~ 1,
+                  formula_k = k ~ 1, sizeCol = "Size", allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "SE"), "shiny.render.function")
   expect_is(modelSelectionWidgetHeader(modSetSize), "character")
   expect_is(modelSelectionWidgetRow(modSetSize, "SE", 1), "shiny.tag")
   expect_error(modelSelectionWidgetRow(modSetSize, "_NOT_RIGHT_", 1))
   expect_error(modelSelectionWidgetRow(modSetSize, "SE", 10))
-  modSetSize <- cpmSetSize(data = mock$CP, formula_l = l ~ 1, 
-                  formula_s = s ~ 1, sizeclassCol = "Size",
+  modSetSize <- cpmSize(data = mock$CP, formula_l = l ~ 1,
+                  formula_s = s ~ 1, sizeCol = "Size",
                   left = "LastPresentDecimalDays", 
-                  right = "FirstAbsentDecimalDays")
+                  right = "FirstAbsentDecimalDays", allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "CP"), "shiny.render.function")
 
-  modSetSize <- pkmSetSize(data = mock$SE, formula_p = p ~ 1, 
-                  formula_k = k ~ 1)
+  modSetSize <- pkmSize(data = mock$SE, formula_p = p ~ 1,
+                  formula_k = k ~ 1, allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "SE"), "shiny.render.function")
   expect_is(modelSelectionWidgetHeader(modSetSize), "character")
   expect_is(modelSelectionWidgetRow(modSetSize, "SE", 1), "shiny.tag")
   expect_error(modelSelectionWidgetRow(modSetSize, "_NOT_RIGHT_", 1))
   expect_error(modelSelectionWidgetRow(modSetSize, "SE", 10))
-  modSetSize <- cpmSetSize(data = mock$CP, formula_l = l ~ 1, 
+  modSetSize <- cpmSize(data = mock$CP, formula_l = l ~ 1,
                   formula_s = s ~ 1,
                   left = "LastPresentDecimalDays", 
-                  right = "FirstAbsentDecimalDays")
+                  right = "FirstAbsentDecimalDays", allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "CP"), "shiny.render.function")
 
   modSet <- pkmSet(data = mock$SE, formula_p = p ~ 1, formula_k = k ~ 1)

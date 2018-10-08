@@ -4,12 +4,12 @@
 \alias{updateSizeclasses}
 \title{Update the size classes}
 \usage{
-updateSizeclasses(data, sizeclassCol)
+updateSizeclasses(data, sizeCol)
 }
 \arguments{
 \item{data}{data table to draw sizes from}
 
-\item{sizeclassCol}{size class column name}
+\item{sizeCol}{size class column name}
 }
 \value{
 unique size classes

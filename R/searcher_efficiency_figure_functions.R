@@ -179,7 +179,7 @@ pkmSECellPlot <- function(model, specificCell, col, axis_y = TRUE,
                           axis_x = TRUE){
 
   CL <- model$CL
-  cellwise <- model$cellwiseTable
+  cellwise <- model$cell_pk
   cellNames <- model$cells[ , "CellNames"]
 
   whichCarcs <- which(model$carcCell == specificCell)
@@ -627,8 +627,8 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   model_spec <- modelSet[[specificModel]]
   model_ref <- refMod(modelSet)
 
-  cellwise_spec <- model_spec$cellwiseTable
-  cellwise_ref <- model_ref$cellwiseTable
+  cellwise_spec <- model_spec$cell_pk
+  cellwise_ref <- model_ref$cell_pk
   cellNames_spec <- model_spec$cells[ , "CellNames"]
   cellNames_ref <- model_ref$cells[ , "CellNames"]
 

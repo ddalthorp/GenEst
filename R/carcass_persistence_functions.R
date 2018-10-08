@@ -1,4 +1,4 @@
-#' @title Fit a single carcass persistence model
+#' @title Fit cp carcass persistence models
 #' 
 #' @description Carcass persistence is modeled as survival function where the 
 #'   one or both parameter(s) can depend on any number of covariates. Format 
@@ -15,14 +15,12 @@
 #'   depend on covariates such as ground cover, season, species, etc., and a 
 #'   separate model format (\code{formula_l} and \code{formula_s}) may be 
 #'   entered for each. The models are entered as they would be in the familiar 
-#'   \code{lm} or \code{glm} functions in R. For example, \code{l} might 
-#'   vary with \code{visibility}, \code{season}, and \code{site}, while 
-#'   \code{s} varies only with \code{visibility}. A user might then enter 
-#'   \code{l ~ visibility + season + site} for \code{formula_l} and 
-#'   \code{s ~ visibility} for \code{formula_s}. Other R conventions for 
-#'   defining formulas may also be used, with \code{covar1:covar2} for the 
-#'   interaction between covariates 1 and 2 and \code{covar1 * covar2} as 
-#'   short-hand for \code{covar1 + covar2 + covar1:covar2}.
+#'   \code{lm} or \code{glm} functions in R. For example, \code{l} might vary
+#'   with \code{A}, \code{B}, and \code{C}, while \code{k} varies only with
+#'  \code{A}. A user might then enter \code{p ~ A + B + C} for \code{formula_p}
+#'   and \code{k ~ A} for \code{formula_k}. Other R conventions for defining
+#'   formulas may also be used, with \code{A:B} for the interaction between
+#'   covariates A and B and \code{A * B} as short-hand for \code{A + B + A:B}.
 #'
 #' Carcass persistence \code{data} must be entered in a data frame with data 
 #'   in each row giving the fate of a single carcass in the trials. There
@@ -42,7 +40,7 @@
 #'   a symbolic description of the model to be fitted. Details of model 
 #'   specification are given under "Details".
 #'
-#' @param data Dataframe with results from carcass persistence trials and any
+#' @param data Data frame with results from carcass persistence trials and any
 #'   covariates included in \code{formula_l} or {formula_s} (required).
 #'
 #' @param left Name of columns in \code{data} where the time of last present
@@ -54,17 +52,55 @@
 #' @param dist Distribution name ("exponential", "weibull", "loglogistic", or 
 #'   "lognormal")
 #'
+#' @param allCombos logical. If \code{allCombos = FALSE}, then the single model
+#'  expressed by \code{formula_p} and \code{formula_k} is fit using a call to
+#'  \code{pkm0}. If \code{allCombos = TRUE}, a full set of \code{\link{pkm}}
+#'  submodels derived from combinations of the given covariates for \code{p}
+#'  and \code{k} is fit. For example, submodels of \code{formula_p = p ~ A * B}
+#'  would be \code{p ~ A * B}, \code{p ~ A + B}, \code{p ~ A}, \code{p ~ B},
+#'  and \code{p ~ 1}. Models for each pairing of a \code{p} submodel with a
+#' \code{k} submodel are fit via \code{pkmSet}, which fits each model
+#'  combination using successive calls to \code{pkm0}, which fits a
+#'  single model.
+#'
+#' @param sizeCol character string. The name of the column in \code{data} that
+#'  gives the size class of the carcasses in the field trials. If
+#'  \code{sizeCol = NULL}, then models are not segregated by size. If a
+#'  \code{sizeCol} is provided, then separate models are fit for the \code{data}
+#'  subsetted by \code{sizeCol}.
+#'
 #' @param CL confidence level
 #'
 #' @param quiet Logical indicator of whether or not to print messsages
 #'
-#' @return \code{cpm} returns an object of class "\code{cpm}", which is a list
-#'   whose components characterize the fit of the model. Due to the large 
-#'   number and complexity of components, only a subset of them is printed 
-#'   automatically; the rest can be viewed/accessed directly via the \code{$}
-#'   operator if desired.
+#' @return an object of an object of class \code{cpm}, \code{cpmSet},
+#'  \code{cpmSize}, or \code{cpmSetSize}.
+#' \describe{
+#'  \item{\code{cpm0()}}{returns a \code{cpm} object, which is a description
+#'    of a single, fitted pk model. Due to the large number and complexity of
+#'    components of a\code{cpm} model, only a subset of them is printed
+#'    automatically; the rest can be viewed/accessed via the \code{$} operator
+#'    if desired. These are described in detail in the '\code{cpm} Components'
+#'    section.}
+#'  \item{\code{cpmSet()}}{returns a list of \code{cpm} objects, one for each
+#'    of the submodels, as described with parameter \code{allCombos = TRUE}.}
+#'  \item{\code{cpmSize()}}{returns a list of \code{cpmSet} objects (one for
+#'    each 'size') if \code{allCombos = T}, or a list of \code{cpm} objects (one
+#'    for each 'size') if \code{allCombos = T}}
+#'  \item{\code{cpm}}{returns a \code{cpm}, \code{cpmSet}, \code{cpmSize}, or
+#'    \code{cpmSetSize} object:
+#'     \itemize{
+#'        \item \code{cpm} object if \code{allCombos = FALSE, sizeCol = NULL}
+#'        \item \code{cpmSet} object if \code{allCombos = TRUE, sizeCol = NULL}
+#'        \item \code{cpmSize} object if \code{allCombos = FALSE, sizeCol != NULL}
+#'        \item \code{cpmSetSize} object if \code{allCombos = TRUE, sizeCol != NULL}
+#'     }
+#'  }
+#' }
 #'
-#' The following components are displayed automatically:
+#' @section \code{cpm} Components:
+#'
+#' The following components of a \code{cpm} object are displayed automatically:
 #'
 #' \describe{
 #'  \item{\code{call}}{the function call to fit the model}
@@ -77,15 +113,15 @@
 #'    to find the maximum likelihood estimates of \code{p} and \code{k}. A
 #'    value of \code{0} indicates that the model was fit successfully. For
 #'    help in deciphering other values, see \code{\link{optim}}.}
-#'  \item{\code{cellwiseTable_ls}}{summary statistics for estimated cellwise
+#'  \item{\code{cell_ls}}{summary statistics for estimated cellwise
 #'    \code{l} and \code{s}, including the medians and upper & lower bounds
 #'    on CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
-#'  \item{\code{cellwiseTable_ab}}{summary statistics for estimated cellwise 
+#'  \item{\code{cell_ab}}{summary statistics for estimated cellwise
 #'    \code{pda} and \code{pdb}, including the medians and upper & lower 
 #'    bounds on CIs for each parameter, indexed by cell (or combination of
 #'    covariate levels).}
-#'  \item{\code{cellwiseTable_desc}}{Descriptive statistics for estimated
+#'  \item{\code{cell_desc}}{Descriptive statistics for estimated
 #'    cellwise median persistence time and rI for search intervals of 1, 3, 7
 #'    14, and 28 days, where rI is the probability of that carcass that arrives
 #'    at a uniform random time in within a search interval of I days persists
@@ -111,7 +147,7 @@
 #'   \item{\code{levels_s}}{all levels of each covariate of \code{s}}
 #'   \item{\code{nbeta_l}}{number of parameters fit for \code{l}}
 #'   \item{\code{nbeta_s}}{number of parameters fit for \code{s}}
-#'   \item{\code{cells}}{cell structure of the pk-model, i.e., combinations of
+#'   \item{\code{cells}}{cell structure of the cp-model, i.e., combinations of
 #'     all levels for each covariate of \code{p} and \code{k}. For example, if
 #'     \code{covar1} has levels \code{"a"}, \code{"b"}, and \code{"c"}, and
 #'     \code{covar2} has levels \code{"X"} and \code{"Y"}, then the cells 
@@ -127,15 +163,58 @@
 #'    value for the fitted model}
 #'  \item{\code{CL}}{the input \code{CL}}
 #'}
+#' @section Advanced:
+#'  \code{cpmSize} may also be used to fit a single model for each size class if
+#'  \code{allCombos = FALSE}. To do so, \code{formula_l}, \code{formula_s}, and
+#'  \code{dist} be named lists with names matching the sizes listed in
+#'  \code{unique(data[, sizeCol])}. The return value is then a list of
+#'  \code{cpm} objects, one for each size.
 #'
 #' @examples
-#'   data(wind_RP)
-#'   cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
+#'  head(data(wind_RP))
+#'  mod1 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+#'  class(mod1)
+#'  mod2 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+#'    allCombos = TRUE)
+#'  class(mod2)
+#'  names(mod2)
+#'  class(mod2[[1]])
+#'  mod3 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+#'    allCombos = TRUE, sizeCol = "Size")
+#'  class(mod3)
+#'  names(mod3)
+#'  class(mod3[[1]])
+#'  class(mod3[[1]][[1]])
 #'
 #' @export
 #'
-cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
-                right = NULL, dist = "weibull", CL = 0.90, quiet = FALSE){
+cpm <- function(formula_l, formula_s = NULL, data, left, right,
+    dist = "weibull", allCombos = FALSE, sizeCol = NULL,
+    CL = 0.90, quiet = FALSE){
+
+  if (is.null(allCombos) || is.na(allCombos) || !is.logical(allCombos)){
+    stop("allCombos must be TRUE or FALSE")
+  }
+  if (is.null(sizeCol) || is.na(sizeCol)){
+    if (!allCombos){ # single model
+      out <- cpm0(formula_l = formula_l, formula_s = formula_s, data = data,
+        left = left, right = right, dist = dist, CL = CL, quiet = quiet)
+    } else { # allCombos of l and s subformulas
+      out <- cpmSet(formula_l = formula_l, formula_s = formula_s, data = data,
+        left = left, right = right, dist = dist, CL = CL, quiet = quiet)
+    }
+  } else { # specified formula for l and s, split by size class
+    out <- cpmSize(formula_l = formula_l, formula_s = formula_s, data = data,
+      left = left, right = right, dist = dist, sizeCol = sizeCol,
+      allCombos = allCombos, CL = CL, quiet = quiet)
+   }
+  return(out)
+}
+#' @rdname cpm
+#' @export
+#'
+cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
+    right = NULL, dist = "weibull", CL = 0.90, quiet = FALSE){
   dist <- tolower(dist)
   # initial error-checking
   if (length(left) == 0){
@@ -167,7 +246,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       message("Exponential distribution does not have a scale parameter. ",
               "formula_s ignored.")
     }
-    formula_s <- formula(s ~ 1)
+    formula_s <- formula(s ~ 1) # ??
   }
   formulaRHS_l <- formula(delete.response(terms(formula_l)))
   preds_l <- all.vars(formulaRHS_l)
@@ -323,13 +402,23 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     }
 
     probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
+    if (length(preds) > 0){
+      carcCells <- data[, preds[1]]
+      if (length(preds) > 1){
+        for (pri in 2:length(preds)){
+          carcCells <- paste(carcCells, data[, preds[pri]], sep = '.')
+        }
+      }
+    }
+    cell_n <- as.numeric(table(carcCells)[cellNames])
     cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
     cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
     colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
     cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
     cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
     colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
-    cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
+    cellTable_ls <- data.frame(cell = cellNames, n = cell_n,
+      cellTable_l, cellTable_s)
     if (dist == "exponential"){
       cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
       colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
@@ -354,16 +443,8 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       cellTable_b <- round(exp(cellTable_l), 3)
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
     }
-    cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
-    if (length(preds) > 0){
-      carcCells <- data[, preds[1]]
-      if (length(preds) > 1){
-        for (pri in 2:length(preds)){
-          carcCells <- paste(carcCells, data[, preds[pri]], sep = '.')
-        }
-      }
-    }
-
+    cellTable_ab <- data.frame(cell = cellNames, n = cell_n,
+      cellTable_a, cellTable_b)
     if (dist == "exponential"){
       nbeta_s <- 0
     }
@@ -371,7 +452,11 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$call <- match.call()
     output$data <- data
     output$formula_l <- formula_l
-    output$formula_s <- formula_s
+    if (dist != "exponential"){
+      output$formula_s <- formula_s
+    } else {
+      output$formula_s <- NULL
+    }
     output$distribution <- dist
     output$predictors <- preds
     output$predictors_l <- preds_l
@@ -379,7 +464,7 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$AIC <- stats::AIC(cpmod)
     k <- ifelse(is.null(dim(cpmod$var)), 1, dim(cpmod$var)[1])
     n <- dim(cpmod$y)[1]
-    output$AICc <- output$AIC + (2*k*(k + 1))/(n - k - 1)
+    output$AICc <- round(output$AIC + (2*k*(k + 1))/(n - k - 1), 2)
     output$convergence <- 0 # cpmod previously error-checked
     output$varbeta <- varbeta
     output$cellMM_l <- cellMM_l
@@ -392,8 +477,8 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$levels_s <- levels_s
     output$cells <- cells
     output$ncell <- ncell
-    output$cellwiseTable_ls <- cellTable_ls
-    output$cellwiseTable_ab <- cellTable_ab
+    output$cell_ls <- cellTable_ls
+    output$cell_ab <- cellTable_ab
     output$CL <- CL
     output$observations <- data[ , c(left, right)]
     output$carcCells <- carcCells
@@ -538,8 +623,8 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$levels_s <- levels_s
     output$cells <- cells
     output$ncell <- ncell
-    output$cellwiseTable_ls <- cellTable_ls
-    output$cellwiseTable_ab <- cellTable_ab
+    output$cell_ls <- cellTable_ls
+    output$cell_ab <- cellTable_ab
     output$CL <- CL
     output$observations <- data[ , c(left, right)]
     output$carcCells <- carcCells
@@ -552,22 +637,22 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   t1 <- c(1, 3, 7, 14, 28)
   tf <- t1
   cell_desc <- matrix(nrow = ncell, ncol = 2 + length(Ir))
-  colnames(cell_desc) <- c("cell", "median", paste0("r", Ir))
-  pda <- output$cellwiseTable_ab[ , "pda_median"]
-  pdb <- output$cellwiseTable_ab[ , "pdb_median"]
+  colnames(cell_desc) <- c("cell", "medianCP", paste0("r", Ir))
+  pda <- output$cell_ab[ , "pda_median"]
+  pdb <- output$cell_ab[ , "pdb_median"]
   cell_desc[ , 2 + 1:length(Ir)] <- t(ppersist(pda = pda, pdb = pdb,
     dist = dist, t_arrive0 = t0, t_arrive1 = t1, t_search = tf))
   if (dist == "weibull"){
-    cell_desc[ , "median"] <- pdb * log(2)^(1/pda)
+    cell_desc[ , "medianCP"] <- pdb * log(2)^(1/pda)
   } else if (dist == "lognormal"){
-    cell_desc[ , "median"] <- exp(pdb)
+    cell_desc[ , "medianCP"] <- exp(pdb)
   } else if (dist == "loglogistic"){
-    cell_desc[ , "median"] <- pdb
+    cell_desc[ , "medianCP"] <- pdb
   } else if (dist == "exponential"){
-    cell_desc[ , "median"] <- log(2) * pdb
+    cell_desc[ , "medianCP"] <- log(2) * pdb
   }
-  output$cellwiseTable_desc <- data.frame(cell_desc)
-  output$cellwiseTable_desc[ , "cell"] <- cellNames
+  output$cell_desc <- data.frame(cell_desc)
+  output$cell_desc[ , "cell"] <- cellNames
 
   class(output) <- c("cpm", "list")
   attr(output, "hidden") <- c("data", "predictors_l", "predictors_s",
@@ -575,6 +660,219 @@ cpm <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     "varbeta", "levels_l", "levels_s", "carcCells", "AIC", "cells", "ncell",
     "observations", "loglik")
   return(output)
+}
+
+#' @rdname cpm
+#' @export
+cpmSet <- function(formula_l, formula_s = NULL, data, left, right,
+    dist = c("exponential", "weibull", "lognormal", "loglogistic"),
+    CL = 0.90, quiet = FALSE){
+
+  if (length(formula_s) == 0){
+    formula_s <- formula(s ~ 1)
+  }
+
+  terms_l <- attr(terms(formula_l), "term.labels")
+  terms_s <- attr(terms(formula_s), "term.labels")
+  nterms_l <- length(terms_l)
+  nterms_s <- length(terms_s)
+  nformula_l <- 2^(nterms_l)
+  nformula_s <- 2^(nterms_s)
+
+  dropComplex_l <- rep(1:nterms_l, choose(nterms_l, 1:nterms_l))
+  dropWhich_l <- numeric(0)
+  if (nterms_l > 0){
+    for (termi in 1:nterms_l){
+      specificDrop <- seq(1, choose(nterms_l, (1:nterms_l)[termi]))
+      dropWhich_l <- c(dropWhich_l, specificDrop)
+    }
+  }
+  optionFormula_l <- vector("list", nformula_l)
+  optionFormula_l[[1]] <- formula_l
+  keepFormula_l <- rep(TRUE, nformula_l)
+  if (nformula_l > 1){
+    for (formi in 2:nformula_l){
+      termDropComplex <- combn(terms_l, dropComplex_l[formi - 1])
+      termDropSpec <- termDropComplex[ , dropWhich_l[formi - 1]]
+      termDrop <- paste(termDropSpec, collapse = " - ")
+      formulaUpdate <- paste(format(~.), "-", termDrop)
+      updatedFormula <- update.formula(formula_l, formulaUpdate)
+      optionFormula_l[[formi]] <- updatedFormula
+      keepFormula_l[formi] <- checkComponents(updatedFormula)
+    }
+    nkeepFormula_l <- sum(keepFormula_l)
+    whichKeepFormula_l <- which(keepFormula_l == TRUE)
+    keptFormula_l <- vector("list", nkeepFormula_l)
+    for (kepti in 1:nkeepFormula_l){
+      keptFormula_l[[kepti]] <- optionFormula_l[[whichKeepFormula_l[kepti]]]
+    }
+  }else{
+    keptFormula_l <- optionFormula_l
+  }
+
+  dropComplex_s <- rep(1:nterms_s, choose(nterms_s, 1:nterms_s))
+  dropWhich_s <- numeric(0)
+  if (nterms_s > 0){
+    for (termi in 1:nterms_s){
+      specificDrop <- seq(1, choose(nterms_s, (1:nterms_s)[termi]))
+      dropWhich_s <- c(dropWhich_s, specificDrop)
+    }
+  }
+  optionFormula_s <- vector("list", nformula_s)
+  optionFormula_s[[1]] <- formula_s
+  keepFormula_s <- rep(TRUE, nformula_s)
+  if (nformula_s > 1){
+    for (formi in 2:nformula_s){
+      termDropComplex <- combn(terms_s, dropComplex_s[formi - 1])
+      termDropSpec <- termDropComplex[ , dropWhich_s[formi - 1]]
+      termDrop <- paste(termDropSpec, collapse = " - ")
+      formulaUpdate <- paste(format(~.), "-", termDrop)
+      updatedFormula <- update.formula(formula_s, formulaUpdate)
+      optionFormula_s[[formi]] <- updatedFormula
+      keepFormula_s[formi] <- checkComponents(updatedFormula)
+    }
+    nkeepFormula_s <- sum(keepFormula_s)
+    whichKeepFormula_s <- which(keepFormula_s == TRUE)
+    keptFormula_s <- vector("list", nkeepFormula_s)
+    for (kepti in 1:nkeepFormula_s){
+      keptFormula_s[[kepti]] <- optionFormula_s[[whichKeepFormula_s[kepti]]]
+    }
+  }else{
+    keptFormula_s <- optionFormula_s
+  }
+
+  expandedKeptFormulae <- expand.grid(keptFormula_l, keptFormula_s, dist)
+  keptFormula_l <- expandedKeptFormulae[ , 1]
+  keptFormula_s <- expandedKeptFormulae[ , 2]
+  dist <- as.character(expandedKeptFormulae[ , 3])
+  nmod <- nrow(expandedKeptFormulae)
+  preoutput <- vector("list", nmod)
+  for (modi in 1:nmod){
+    formi_l <- keptFormula_l[modi][[1]]
+    formi_s <- keptFormula_s[modi][[1]]
+    disti <- dist[modi]
+    if (disti == "exponential"){
+      formi_s <- NULL
+    }
+    cpm_i <- tryCatch(
+      cpm0(formi_l, formi_s, data = data, left = left, right = right,
+        dist = disti, CL = CL, quiet = quiet),
+      error = function(x) {
+        paste("Failed model fit: ", geterrmessage(), sep = "")
+      }
+    )
+    name_d <- disti
+    name_l <- paste(format(formi_l), collapse = "")
+    name_l <- gsub("    ", "", name_l)
+    name_s <- paste(format(formi_s), collapse = "")
+    name_s <- gsub("    ", "", name_s)
+    modName <- paste("dist: ", name_d, "; ", name_l, "; ", name_s, sep = "")
+
+    preoutput[[modi]] <- cpm_i
+    names(preoutput)[modi] <- modName
+  }
+  uniqueMods <- unique(names(preoutput))
+  nuniqueMods <- length(uniqueMods)
+  output <- vector("list", nuniqueMods)
+  names(output) <- uniqueMods
+  for (modi in 1:nuniqueMods){
+    output[[modi]] <- preoutput[[uniqueMods[modi][1]]]
+  }
+  class(output) <- c("cpmSet", "list")
+  return(output)
+}
+#' @rdname cpm
+#' @export
+cpmSize <- function(formula_l, formula_s = NULL, data, left, right,
+  dist = c("exponential", "weibull", "lognormal", "loglogistic"),
+  sizeCol = NULL, allCombos = FALSE, CL = 0.90, quiet = FALSE){
+
+  if (length(sizeCol) == 0 || anyNA(sizeCol)){
+    out <- list()
+    if (!allCombos){
+      if (length(dist) > 1){
+        stop("Ambiguous cpm call: length(dist) > 1)")
+      }
+      out[["all"]] <- cpm0(formula_l = formula_l, formula_s = formula_s,
+        data = data, left = left, right = right, dist = dist,
+        CL = CL, quiet = quiet)
+    } else {
+      out[["all"]] <- cpmSet(formula_l = formula_l, formula_s = formula_s,
+        data = data, left = left, right = right, dist = dist,
+        CL = CL, quiet = quiet)
+    }
+    class(out) <- c(ifelse(allCombos, "cpmSetSize", "cpmSize"), "list")
+    return(out)
+  }
+
+  if (!(sizeCol %in% colnames(data))){
+    stop("sizeCol not in data set.")
+  }
+
+
+  sizeclasses <- unique(as.character(data[ , sizeCol]))
+  if (!allCombos){
+    if ("list" %in% c(class(formula_l), class(formula_s), class(dist))){
+      if (!("list" %in% intersect(intersect(class(formula_l), class(formula_s)), class(dist)))){
+        stop("formula_l, formula_s, and dist must be parallel lists, or ",
+             "formula_l and formula_s must be 'scalars'")
+      } else {
+      # parallel lists of formulas and distributions
+      # fit one model for each size class
+      # then fit the specific models for each formula and corresponding size
+        if (!setequal(names(formula_l), names(formula_s)) ||
+            !setequal(names(formula_l), sizeclasses) ||
+            !setequal(names(formula_l), names(dist))){
+          stop("l and s formula names and list of distributions names ",
+              "must match size classes")
+        }
+        out <- list()
+        for (szi in sizeclasses){
+          out[[szi]] <- cpm0(
+            formula_l = formula_l[[szi]], formula_s = formula_s[[szi]],
+            dist = dist[[szi]],
+            data = data[data[ , sizeCol] == szi, ], left = left, right = right,
+            CL = CL, quiet = quiet
+          )
+        }
+        class(out) <- c("cpmSize", "list")
+        return(out)
+      }
+    } else { # just one formula and one distribution shared by all sizes
+      if (is.null(dist)){
+        dist <- "weibull"
+      } else if (length(dist) > 1){
+        stop("If allCombos == FALSE, then dist must be NULL or a single value ",
+             "if there is only one formula_l, or dist must be a list if ",
+             "formula_l is."
+        )
+      } else {
+        out <- list()
+        for (szi in sizeclasses){
+          out[[szi]] <- cpm0(formula_l = formula_l, formula_s = formula_s,
+            dist = dist, data = data[data[ , sizeCol] == szi, ],
+            left = left, right = right, CL = CL, quiet = quiet)
+        }
+        class(out) <- c("cpmSize", "list")
+        return(out)
+      }
+    }
+  } else {
+    if ("list" %in% c(class(formula_l), class(formula_s), class(dist))){
+      stop(
+        "If allCombos == TRUE, then formula_l and formula_s must be 'scalars'"
+      )
+    }
+    out <- list()
+    for (sci in sizeclasses){
+      out[[sci]] <- cpmSet(formula_l = formula_l, formula_s = formula_s,
+        data = data[data[, sizeCol] == sci, ], left = left, right = right,
+        dist = dist, CL = CL, quiet = quiet
+      )
+    }
+    class(out) <- c("cpmSetSize", "list")
+    return(out)
+  }
 }
 
 #' @title Print a \code{\link{cpm}} model object
@@ -664,9 +962,7 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
 #' @param type The type of parameters requested. \code{"survreg"} or 
 #'   \code{"ppersist"}
 #'
-#' @param seed optional input to set the seed of the RNG
-#'
-#' @return list of two matrices of \code{n} simulated \code{l} and \code{s} 
+#' @return list of two matrices of \code{n} simulated \code{l} and \code{s}
 #'   (if \code{type = "survreg"}) or \code{a} and \code{b} (if \code{type = 
 #'   "ppersist"})for cells defined by the \code{model} object. 
 #'
@@ -680,7 +976,7 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
 #'
 #' @export
 #'
-rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
+rcp <- function(n, model, type = "survreg"){
 
   if (!"cpm" %in% class(model)){
     stop("model not of class cpm.")
@@ -707,9 +1003,6 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
   }
   method <-  "svd"
 
-  if (length(seed) > 0){
-    set.seed(seed)
-  }
   sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
 
   sim_l <- as.matrix(sim_beta[ , 1:nbeta_l] %*% t(cellMM_l))
@@ -757,252 +1050,6 @@ rcp <- function(n = 1, model, seed = NULL, type = "survreg"){
   return(output)
 }
 
-
-#' @title Run a set of cpm models based on predictor inputs
-#'
-#' @description Run a set of \code{\link{cpm}} models based on all possible 
-#'   models, given the predictor inputs. \code{cpmSet}'s inputs generally
-#'   follow \code{\link{cpm}}, with all simpler models being run for all 
-#'   included distributions and returned as a list of model objects
-#'
-#' @param formula_l Formula for location; an object of class 
-#'  "\code{\link{formula}}" (or one that can be coerced to that class):
-#'  a symbolic description of the model to be fitted. Details of model 
-#'  specification are given under 'Details'.
-#'
-#' @param formula_s Formula for scale; an object of class 
-#'   "\code{\link{formula}}" (or one that can be coerced to that class):
-#'   a symbolic description of the model to be fitted. Details of model 
-#'   specification are given under 'Details'.
-#'
-#' @param data Dataframe with results from carcass persistence trials and any
-#'   covariates included in \code{formula_l} or {formula_s} (required).
-#'
-#' @param left Name of columns in \code{data} where the time of last present
-#'   observation is stored.
-#'
-#' @param right Name of columns in \code{data} where the time of first absent
-#'   observation is stored.
-#'
-#' @param dists Names of the distributions (from "exponential", "weibull", 
-#'   "loglogistic", and "lognormal") that are to be included
-#'
-#' @param CL confidence level
-#'
-#' @param quiet Logical indicator of whether or not to print messsages
-#'
-#' @return \code{cpmSet} returns a class-\code{cpmSet} list of objects, each
-#'   of class "\code{cpm}", which each then a list whose components 
-#'   characterize the fit of the specific model.
-#'
-#' @examples
-#'   data(wind_RP)
-#'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
-#'
-#' @export
-#'
-cpmSet <- function(formula_l, formula_s = NULL, data, left = NULL, 
-                   right = NULL, dists = c("exponential", "weibull",
-                   "lognormal", "loglogistic"), CL = 0.90, quiet = FALSE){
-
-  if (length(formula_s) == 0){
-    formula_s <- formula(s ~ 1)
-  }
-
-  terms_l <- attr(terms(formula_l), "term.labels")
-  terms_s <- attr(terms(formula_s), "term.labels")
-  nterms_l <- length(terms_l)
-  nterms_s <- length(terms_s)
-  nformula_l <- 2^(nterms_l)
-  nformula_s <- 2^(nterms_s)
-
-  dropComplex_l <- rep(1:nterms_l, choose(nterms_l, 1:nterms_l))
-  dropWhich_l <- numeric(0)
-  if (nterms_l > 0){
-    for (termi in 1:nterms_l){
-      specificDrop <- seq(1, choose(nterms_l, (1:nterms_l)[termi]))
-      dropWhich_l <- c(dropWhich_l, specificDrop)
-    }
-  }
-  optionFormula_l <- vector("list", nformula_l)
-  optionFormula_l[[1]] <- formula_l
-  keepFormula_l <- rep(TRUE, nformula_l)
-  if (nformula_l > 1){
-    for (formi in 2:nformula_l){
-      termDropComplex <- combn(terms_l, dropComplex_l[formi - 1])
-      termDropSpec <- termDropComplex[ , dropWhich_l[formi - 1]]
-      termDrop <- paste(termDropSpec, collapse = " - ")
-      formulaUpdate <- paste(format(~.), "-", termDrop)
-      updatedFormula <- update.formula(formula_l, formulaUpdate)
-      optionFormula_l[[formi]] <- updatedFormula
-      keepFormula_l[formi] <- checkComponents(updatedFormula)
-    }
-    nkeepFormula_l <- sum(keepFormula_l)
-    whichKeepFormula_l <- which(keepFormula_l == TRUE)
-    keptFormula_l <- vector("list", nkeepFormula_l)
-    for (kepti in 1:nkeepFormula_l){
-      keptFormula_l[[kepti]] <- optionFormula_l[[whichKeepFormula_l[kepti]]]
-    }
-  }else{
-    keptFormula_l <- optionFormula_l
-  }
-  
-  dropComplex_s <- rep(1:nterms_s, choose(nterms_s, 1:nterms_s))
-  dropWhich_s <- numeric(0)
-  if (nterms_s > 0){
-    for (termi in 1:nterms_s){
-      specificDrop <- seq(1, choose(nterms_s, (1:nterms_s)[termi]))
-      dropWhich_s <- c(dropWhich_s, specificDrop)
-    }
-  }
-  optionFormula_s <- vector("list", nformula_s)
-  optionFormula_s[[1]] <- formula_s
-  keepFormula_s <- rep(TRUE, nformula_s)
-  if (nformula_s > 1){
-    for (formi in 2:nformula_s){
-      termDropComplex <- combn(terms_s, dropComplex_s[formi - 1])
-      termDropSpec <- termDropComplex[ , dropWhich_s[formi - 1]]
-      termDrop <- paste(termDropSpec, collapse = " - ")
-      formulaUpdate <- paste(format(~.), "-", termDrop)
-      updatedFormula <- update.formula(formula_s, formulaUpdate)
-      optionFormula_s[[formi]] <- updatedFormula
-      keepFormula_s[formi] <- checkComponents(updatedFormula)
-    }
-    nkeepFormula_s <- sum(keepFormula_s)
-    whichKeepFormula_s <- which(keepFormula_s == TRUE)
-    keptFormula_s <- vector("list", nkeepFormula_s)
-    for (kepti in 1:nkeepFormula_s){
-      keptFormula_s[[kepti]] <- optionFormula_s[[whichKeepFormula_s[kepti]]]
-    }
-  }else{
-    keptFormula_s <- optionFormula_s
-  }
-
-  expandedKeptFormulae <- expand.grid(keptFormula_l, keptFormula_s, dists)
-  keptFormula_l <- expandedKeptFormulae[ , 1]
-  keptFormula_s <- expandedKeptFormulae[ , 2]
-  dists <- as.character(expandedKeptFormulae[ , 3])
-  nmod <- nrow(expandedKeptFormulae) 
-  preoutput <- vector("list", nmod)
-  for (modi in 1:nmod){
-    formi_l <- keptFormula_l[modi][[1]]
-    formi_s <- keptFormula_s[modi][[1]]
-    disti <- dists[modi]
-    if (disti == "exponential"){
-      formi_s <- NULL
-    }
-    cpm_i <- tryCatch(
-               cpm(formi_l, formi_s, data, left, right, disti, CL, quiet), 
-               error = function(x) {
-                 paste("Failed model fit: ", geterrmessage(), sep = "")
-               }
-             )
-    name_d <- disti
-    name_l <- paste(format(formi_l), collapse = "")
-    name_l <- gsub("    ", "", name_l)
-    name_s <- paste(format(formi_s), collapse = "")
-    name_s <- gsub("    ", "", name_s)
-    modName <- paste("dist: ", name_d, "; ", name_l, "; ", name_s, sep = "")
-
-    preoutput[[modi]] <- cpm_i
-    names(preoutput)[modi] <- modName
-  }
-  uniqueMods <- unique(names(preoutput))
-  nuniqueMods <- length(uniqueMods)
-  output <- vector("list", nuniqueMods)
-  names(output) <- uniqueMods
-  for (modi in 1:nuniqueMods){
-    output[[modi]] <- preoutput[[uniqueMods[modi][1]]]
-  }
-  class(output) <- c("cpmSet", "list")
-  return(output)
-}
-
-#' @title Fit all possible carcass persistence models across all size classes
-#'
-#' @description Run a set of \code{\link{cpmSet}} model set runs based on all 
-#'   possible models for a suite of size classes. \code{cpmSetSize}'s inputs
-#'   generally follow \code{\link{cpmSet}} and \code{\link{cpm}} but with an 
-#'   additional size column input and calculation of the set of cpm models for 
-#'   each of the size classes.
-#'
-#' @param formula_l Formula for location; an object of class 
-#'  "\code{\link{formula}}" (or one that can be coerced to that class):
-#'  a symbolic description of the model to be fitted. Details of model 
-#'  specification are given under 'Details'.
-#'
-#' @param formula_s Formula for scale; an object of class 
-#'   "\code{\link{formula}}" (or one that can be coerced to that class):
-#'   a symbolic description of the model to be fitted. Details of model 
-#'   specification are given under 'Details'.
-#'
-#' @param data Dataframe with results from carcass persistence trials and any
-#'   covariates included in \code{formula_l} or {formula_s} (required).
-#'
-#' @param left Name of columns in \code{data} where the time of last present
-#'   observation is stored.
-#'
-#' @param right Name of columns in \code{data} where the time of first absent
-#'   observation is stored.
-#'
-#' @param dists Names of the distributions (from "exponential", "weibull", 
-#'   "loglogistic", and "lognormal") that are to be included
-#'
-#' @param CL confidence level
-#'
-#' @param quiet Logical indicator of whether or not to print messsages
-#'
-#' @param sizeclassCol Name of colum in \code{data} where the size classes
-#'  are recorded
-#'
-#' @return \code{cpmSetSize} returns a class-\code{cpmSetSize} list of 
-#'   objects, each of which is a class-\code{cpmSet} list of \code{cpm}" 
-#'   outputs (each corresponding to the fit of a specific model
-#'   within the set of \code{cpm} models fit for the given size class), that
-#'   is of length equal to the total number of size classes
-#'
-#' @examples
-#'   data(wind_RP)
-#'   mod <- cpmSetSize(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent",
-#'            sizeclassCol = "Size"
-#'           )
-#'
-#' @export 
-#'
-cpmSetSize <- function(formula_l, formula_s = NULL, data, left = NULL, 
-                       right = NULL, dists = c("exponential", "weibull", 
-                       "lognormal", "loglogistic"), sizeclassCol = NULL, 
-                       CL = 0.90, quiet = FALSE){
-
-  if (length(sizeclassCol) == 0){
-    out <- vector("list", length = 1)
-    names(out) <- "all"
-    out[[1]] <- cpmSet(formula_l, formula_s, data, left, right, dists, 
-                  CL, quiet
-                )
-    class(out) <- c("cpmSetSize", "list")
-    return(out)
-  }
-
-  sizeclassData <- as.character(data[ , sizeclassCol])
-  sizeclasses <- unique(sizeclassData)
-  nsizeclasses <- length(sizeclasses)
-
-  out <- vector("list", nsizeclasses)
-  names(out) <- sizeclasses
-  for (sci in 1:nsizeclasses){
-    sizeclassMatch <- which(sizeclassData == sizeclasses[sci])
-    data_i <- data[sizeclassMatch, ]
-    out[[sci]] <- cpmSet(formula_l, formula_s, data_i, left, right, dists, 
-                    CL, quiet
-                  ) 
-  }
-  class(out) <- c("cpmSetSize", "list")
-  return(out)
-}
-
 #' @title Create the AICc tables for a set of carcass persistence models
 #' 
 #' @description S3 function to generate model comparison tables based on AICc
@@ -1031,7 +1078,7 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
   cpmset <- x
   nmod <- length(cpmset)
   formulas <- names(cpmset)
-  dists <- rep(NA, nmod)
+  dist <- rep(NA, nmod)
   formulas_l <- rep(NA, nmod)
   formulas_s <- rep(NA, nmod)
   AICc <- rep(NA, nmod)
@@ -1039,7 +1086,7 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
 
   if (nmod == 1){
     splitFormulas <- strsplit(formulas, "; ")[[1]]
-    dists <- strsplit(splitFormulas[1], "dist: ")[[1]][2]
+    dist <- strsplit(splitFormulas[1], "dist: ")[[1]][2]
     formulas_l <- splitFormulas[2] 
     formulas_s <- splitFormulas[3]
     AICc <- tryCatch(cpmset[[1]]$AICc, error = function(x) {1e7})
@@ -1048,7 +1095,7 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
   }else{
     for (modi in 1:nmod){
       splitFormulas_i <- strsplit(formulas[modi], "; ")[[1]]
-      dists[modi] <- strsplit(splitFormulas_i, "dist: ")[[1]][2]
+      dist[modi] <- strsplit(splitFormulas_i, "dist: ")[[1]][2]
       formulas_l[modi] <- splitFormulas_i[2] 
       formulas_s[modi] <- splitFormulas_i[3]
       AICc[modi] <- tryCatch(cpmset[[modi]]$AICc, error = function(x) {1e7})
@@ -1065,7 +1112,7 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
     formulas_l <- gsub("~ 1", "~ constant", formulas_l)
     formulas_s <- gsub("~ 1", "~ constant", formulas_s)
   }
-  output <- data.frame(dists, formulas_l, formulas_s, AICc, deltaAICc)
+  output <- data.frame(dist, formulas_l, formulas_s, AICc, deltaAICc)
   output <- output[AICcOrder, ]
   colnames(output) <- c("Distribution", "Location Formula", "Scale Formula", 
                         "AICc", "\u0394AICc"
@@ -1087,7 +1134,7 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
 #' @title Create the AICc tables for a list of sets of searcher efficiency models
 #'
 #' @description S3 function to generate model comparison tables for lists of
-#'  of sets of CP models of class \code{\link{pkmSetSize}}
+#'  of sets of CP models of class \code{\link[=cpm]{cpmSetSize}}
 #'
 #' @param x List of sets of CP models fit to the same observations
 #'
@@ -1096,8 +1143,9 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
 #' @return AICc table
 #'
 #' @examples
-#'  cpmods <- cpmSetSize(formula_l = l ~ Visibility, data = wind_RP$CP,
-#'    left = "LastPresent", right = "FirstAbsent", sizeclassCol = "Size")
+#'  cpmods <- cpm(formula_l = l ~ Visibility, data = wind_RP$CP,
+#'    left = "LastPresent", right = "FirstAbsent", sizeCol = "Size",
+#'    allCombos = TRUE)
 #'  aicc(cpmods)
 #'
 #' @export
@@ -1127,10 +1175,23 @@ aicc.cpmSetSize <- function(x, ... ){
 #'
 #' @export
 #'
-aicc.cpm <- function(x, ...){
-  c(AIC = x$AIC, AICc = x$AICc)
+aicc.cpm <- function(x,...){
+  if (x$distribution == "exponential"){
+    formula_s = NULL
+  } else {
+    formula_s = deparse(x$formula_s)
+  }
+  return(
+    data.frame(cbind(
+      "formula_l" = deparse(x$formula_l),
+      "formula_s" = formula_s,
+      "dist" = x$distribution,
+      "AICc" = x$AICc
+    ))
+  )
 }
-#' @title Calculate the probability of persistence to detection 
+
+#' @title Calculate the probability of persistence to detection
 #' 
 #' @description Given a set of CP parameters (of \code{"ppersist"} type), 
 #'   calculate the probability of persistence to detection for a carcass.
@@ -1231,10 +1292,10 @@ cpmSetFail <- function(cpmSetToCheck){
 
 #' @title Check if all of the cpm models fail
 #'
-#' @description Run a check on each model within a \code{\link{cpmSetSize}}
+#' @description Run a check on each model within a \code{\link[=cpm]{cpmSetSize}}
 #'   object to determine if they all failed or not
 #'
-#' @param cpmSetSizeToCheck A \code{\link{cpmSetSize}} object to test
+#' @param cpmSetSizeToCheck A \code{cpmSetSize} object to test
 #'
 #' @return A list of vectors of logical values indicating if each of the 
 #'   models failed
@@ -1261,11 +1322,11 @@ cpmSetFailRemove <- function(cpmSetToTidy){
   return(out)
 }
 
-#' @title Remove failed cpm models from a \code{\link{cpmSetSize}} object
+#' @title Remove failed cpm models from a \code{cpmSetSize} object
 #'
-#' @description Remove failed models from a \code{\link{cpmSetSize}} object
+#' @description Remove failed models from a \code{\link[=cpm]{cpmSetSize}} object
 #'
-#' @param cpmSetSizeToTidy A list of \code{\link{cpmSetSize}} objects to tidy
+#' @param cpmSetSizeToTidy A list of \code{cpmSetSize} objects to tidy
 #'
 #' @return A list of \code{\link{cpmSet}} objects with failed models removed
 #'
@@ -1280,3 +1341,10 @@ cpmSetSizeFailRemove <- function(cpmSetSizeToTidy){
   return(out)
 }
 
+#' @export
+aicc.cpmSize <- function(x, ... ){
+  return(lapply(x, FUN = function(y){
+    class(y) <- c("cpm", "list")
+    aicc(y)
+  }))
+}

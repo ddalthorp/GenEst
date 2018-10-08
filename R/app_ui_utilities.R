@@ -138,7 +138,7 @@ GenEstInlineCSS <- function(...){
          "#file_CO_clear" = "margin-bottom: 20px",
          "#nsim" = "margin-bottom: 15px",
          "#CL" = "margin-bottom: 15px",
-         "#sizeclassCol" = "margin-bottom: 15px",
+         "#sizeCol" = "margin-bottom: 15px",
          "#obsCols_SE" = "margin-bottom: 15px",
          "#preds_SE" = "margin-bottom: 15px",
          "#ltp" = "margin-bottom: 15px",

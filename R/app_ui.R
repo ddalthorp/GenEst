@@ -148,7 +148,7 @@ GeneralInputSidebar <- function(){
   sidebarPanel(width = 3,
     modelInputWidget("nsim"),
     modelInputWidget("CL"),
-    modelInputWidget("sizeclassCol")
+    modelInputWidget("sizeCol")
   )
 }
 
@@ -254,7 +254,7 @@ CPSidebar <- function(){
     modelInputWidget("ltp"),
     modelInputWidget("fta"),
     modelInputWidget("preds_CP"),
-    modelInputWidget("dists"),
+    modelInputWidget("dist"),
     modelRunWidget("CP"),
     modelOutputWidget("CP")
   )
@@ -321,7 +321,7 @@ MSidebar <- function(){
     br(), br(),
     modelInputWidget("frac"),
     modelInputWidget("DWPCol"),
-    modelInputWidget("dateFoundCol"),
+    modelInputWidget("COdate"),
     modelRunWidget("M"),
     modelOutputWidget("M")
   )

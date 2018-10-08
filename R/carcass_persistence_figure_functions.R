@@ -20,7 +20,7 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
 
   dist <- model$dist
   CL <- model$CL
-  cellwise <- model$cellwiseTable_ab
+  cellwise <- model$cell_ab
   cellNames <- model$cells[ , "CellNames"]
 
   whichCarcs <- which(model$carcCell == specificCell)
@@ -41,7 +41,8 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
   pts <- pred_x[2:length(pred_x)]
   pta0 <- rep(0, length(pts)) 
   pta1 <- rep(0.000001, length(pts))
-  CP <- ppersist(as, bs, dist, pta0, pta1, pts)
+  CP <- ppersist(pda = as, pdb = bs, dist = dist,
+    t_arrive0 = pta0, t_arrive1 = pta1, t_search = pts)
   pred_y <- apply(CP, 1, median)
   pred_yl <- apply(CP, 1, quantile, probs = (1 - CL) / 2)
   pred_yu <- apply(CP, 1, quantile, probs = 1 - (1 - CL) / 2)
@@ -301,7 +302,7 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
   model_spec <- modelSet[[specificModel]]
   dist <- model_spec$dist
   CL <- model_spec$CL
-  cellwise_spec <- model_spec$cellwiseTable
+  cellwise_spec <- model_spec$cell_pk
   cellNames_spec <- model_spec$cells[ , "CellNames"]
   cells_set <- modelSetCells(modelSet)
   cellNames_set <- cells_set[ , "CellNames"]
@@ -369,7 +370,7 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
   for (modsToPloti in 1:nmodsToPlot){
     model_i <- modelSet[[modsToPlot[modsToPloti]]]
     dist_i <- model_i$dist
-    cellwise_i <- model_i$cellwiseTable_ab
+    cellwise_i <- model_i$cell_ab
     cellNames_i <- cellwise_i[ , "cell"]
     cellMatch_i <- matchCells(model_i, modelSet)
     reducedCell_i <- cellMatch_i[cellNames_set == specificCell]
@@ -380,7 +381,8 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
     pts <- pred_x[2:length(pred_x)]
     pta0 <- rep(0, length(pts)) 
     pta1 <- rep(0.000001, length(pts))
-    pred_y <- t(ppersist(a, b, dist_i, pta0, pta1, pts))
+    pred_y <- t(ppersist(pda = a, pdb = b, dist = dist_i,
+      t_arrive0 = pta0, t_arrive1 = pta1, t_search = pts))
 
     col_i <- cols[dist_i]
     lwd <- 2

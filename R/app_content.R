@@ -375,6 +375,7 @@ disclaimerWEST <- function(appType){
                  to operate with any other programs), even if such holder or 
                  other party has been advised of the possibility of such 
                  damages.")
+  out
 }
 
 #' @title Create a Link to the FTP-Housed Document of Interest

@@ -102,32 +102,6 @@ dateToDay <- function(date, ref = NULL){
   return(day)
 }
 
-#' Converts the standard Excel date format (m/d/YYYY) to YYYY-mm-dd
-#'
-#' @description only transforms m/d/Y dates, returns untransformed dates that
-#'   were already YYYY-mm-dd
-#'
-#' @param x date(s) to convert
-#'
-#' @return converted dates
-#'
-#' @examples
-#'   yyyymmdd("02/20/2018") 
-#'
-#' @export 
-#'
-yyyymmdd <- function(x){
- 
-  slashCheck <- all(grepl("\\/", x))
-  numerals <- strsplit(as.character(x), "/")[[1]]
-  numeralsCheck <- nchar(numerals[1]) %in% 1:2 & nchar(numerals[2]) %in% 1:2 & 
-                     nchar(numerals[3]) == 4  
-  if (slashCheck & numeralsCheck ){
-    x <- as.Date(as.character(x), format = "%m/%d/%Y")
-  }
-  return(x)
-}
-
 #' Checks whether a vector of data can be interpreted as dates
 #'
 #' @description Checks whether the dates are in a standard format and sensible.
@@ -144,25 +118,19 @@ yyyymmdd <- function(x){
 #'  not interpretable as a date after 1900-01-01).
 #'
 #' @examples
-#'   yyyymmdd("02/20/2018")
+#'  checkDate("02/20/2018")
+#'  checkDate("10/08/2018")
 #'
 #' @export
 #'
 checkDate <- function(testdate){
   if (is.null(testdate) || anyNA(testdate) || is.numeric(testdate))
     return(NULL)
-  dateFormats <- c("%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d", "%Y-%m-%d")
   beginningOfTime <- as.Date("1900-01-01")
-  tmp <- as.Date(testdate, format = dateFormats[1])
-  if (!anyNA(tmp)){
-    tmp1 <- as.Date(testdate, format = dateFormats[2])
-    if (anyNA(tmp1) && !any(tmp - beginningOfTime < 0)) return(tmp)
-  }
-  for (i in 2:length(dateFormats)){
-    tmp <- as.Date(testdate, format = dateFormats[i])
-    if (!anyNA(tmp) && !any(tmp - beginningOfTime < 0)) return(tmp)
-  }
-  return(NULL)
+  tmp <- try(as.Date(testdate), silent = TRUE)
+  if (class(tmp) == "try-error") return (NULL)
+  if (anyNA(tmp) || any(tmp < beginningOfTime)) return (NULL)
+  return(tmp)
 }
 
 
@@ -184,48 +152,6 @@ Ecbinom <- function(prob){
   interp(prob)
 }
 
-#' @title Expected value of a truncated continuous binomial with size = 1/g 
-#'  and truncated below at g.
-#'
-#' @description Calculates the expected value of a truncated continuous
-#'  binomial. Uses internal-only data
-#'
-#' @param prob Vector of probabilities
-#'
-#' @return mean
-#'
-#' @export
-#'
-Etcbinom <- function(prob){
-  X <- EtcbinomXY$X
-  Y <- EtcbinomXY$Y
-  interp <- approxfun(x = X, y = Y)
-  interp(prob)
-}
-
-#' @title Random draw from a continuous binomial random variable with
-#'  size = 1/g and truncated at g
-#'
-#' @description Random draw from a continuous binomial random variable with
-#'  size = 1/g and truncated at g = prob
-#'
-#' @param n number of random draws
-#' @param prob Vector of probabilities
-#'
-#' @return mean
-#'
-#' @export
-#'
-rtcbinom1 <- function(n, prob){
-  tmp <- rcbinom(n, 1/prob, prob)
-  ind <- which(tmp < prob)
-  while (length(ind) > 0) {
-    tmp[ind] <- rcbinom(length(ind), 1/prob[ind], prob[ind])
-    ind <- ind[which(tmp[ind] < prob[ind])]
-  }
-  tmp
-}
-
 #' @title Generic S3 function for summarizing AICc
 #'
 #' @description Extract AICc values from \code{pkm}, \code{pkmSet},
@@ -240,4 +166,51 @@ rtcbinom1 <- function(n, prob){
 #' @export
 aicc <- function(x, ... ){
   UseMethod("aicc", x)
+}
+
+
+#' @title Generic S3 function for printing corpus_frame
+#'
+#' @param x data frame to print
+#'
+#' @param ... other arguments
+#'
+#' @return prints data frame
+#'
+#' @export
+print.corpus_frame <- function(x, ...){
+  corpus::print.corpus_frame(x, rows = 80)
+}
+
+disclaimers <- function(){
+  out <- list(USGS = paste0(
+      "This software has been approved for release by the U.S. Geological ",
+      "Survey (USGS). Although the software has been subjected to rigorous ",
+      "review, the USGS reserves the right to update the software as needed ",
+      "pursuant to further analysis and review. No warranty, expressed or ",
+      "implied, is made by the USGS or the U.S. Government as to the ",
+      "functionality of the software and related material nor shall the fact of ",
+      "release constitute any such warranty. Furthermore, the software is ",
+     "released on condition that neither the USGS nor the U.S. Government ",
+     "shall be held liable for any damages resulting from its authorized or ",
+     "unauthorized use."),
+    WEST = paste0(
+     "This program is an 'AS IS' without warranty of any kind, ",
+     "either expressed or implied, including but not limited to, ",
+     "the implied warranties of merchantability and fitness for a ",
+     "particular purpose. The entire risk as to the quality and ",
+     "performance of the program is with you. Should the program ",
+     "prove defective, you assume all cost of all necessary ",
+     "servicing, repair or correction. If this program is modified ",
+     "and/or redistributed, Western EcoSystems Technology, Inc. is ",
+     "not liable for any damages, including any general, special, ",
+     "incidental or consequential damages arising out of the use or ",
+     "inability to use this program (including but not limited to ",
+     "loss of data or data being rendered inaccurate or losses ",
+     "sustained by you or third parties or a failure of the program ",
+     "to operate with any other programs), even if such holder or ",
+     "other party has been advised of the possibility of such ",
+     "damages.")
+    )
+  out
 }

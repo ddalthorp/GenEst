@@ -2,10 +2,24 @@
 % Please edit documentation in R/carcass_persistence_functions.R
 \name{cpm}
 \alias{cpm}
-\title{Fit a single carcass persistence model}
+\alias{cpm0}
+\alias{cpmSet}
+\alias{cpmSize}
+\title{Fit cp carcass persistence models}
 \usage{
-cpm(formula_l, formula_s = NULL, data = NULL, left = NULL,
+cpm(formula_l, formula_s = NULL, data, left, right, dist = "weibull",
+  allCombos = FALSE, sizeCol = NULL, CL = 0.9, quiet = FALSE)
+
+cpm0(formula_l, formula_s = NULL, data = NULL, left = NULL,
   right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE)
+
+cpmSet(formula_l, formula_s = NULL, data, left, right,
+  dist = c("exponential", "weibull", "lognormal", "loglogistic"),
+  CL = 0.9, quiet = FALSE)
+
+cpmSize(formula_l, formula_s = NULL, data, left, right,
+  dist = c("exponential", "weibull", "lognormal", "loglogistic"),
+  sizeCol = NULL, allCombos = FALSE, CL = 0.9, quiet = FALSE)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 
@@ -18,7 +32,7 @@ specification are given under "Details".}
 a symbolic description of the model to be fitted. Details of model 
 specification are given under "Details".}
 
-\item{data}{Dataframe with results from carcass persistence trials and any
+\item{data}{Data frame with results from carcass persistence trials and any
 covariates included in \code{formula_l} or {formula_s} (required).}
 
 \item{left}{Name of columns in \code{data} where the time of last present
@@ -30,18 +44,89 @@ observation is stored.}
 \item{dist}{Distribution name ("exponential", "weibull", "loglogistic", or 
 "lognormal")}
 
+\item{allCombos}{logical. If \code{allCombos = FALSE}, then the single model
+ expressed by \code{formula_p} and \code{formula_k} is fit using a call to
+ \code{pkm0}. If \code{allCombos = TRUE}, a full set of \code{\link{pkm}}
+ submodels derived from combinations of the given covariates for \code{p}
+ and \code{k} is fit. For example, submodels of \code{formula_p = p ~ A * B}
+ would be \code{p ~ A * B}, \code{p ~ A + B}, \code{p ~ A}, \code{p ~ B},
+ and \code{p ~ 1}. Models for each pairing of a \code{p} submodel with a
+\code{k} submodel are fit via \code{pkmSet}, which fits each model
+ combination using successive calls to \code{pkm0}, which fits a
+ single model.}
+
+\item{sizeCol}{character string. The name of the column in \code{data} that
+gives the size class of the carcasses in the field trials. If
+\code{sizeCol = NULL}, then models are not segregated by size. If a
+\code{sizeCol} is provided, then separate models are fit for the \code{data}
+subsetted by \code{sizeCol}.}
+
 \item{CL}{confidence level}
 
 \item{quiet}{Logical indicator of whether or not to print messsages}
 }
 \value{
-\code{cpm} returns an object of class "\code{cpm}", which is a list
-  whose components characterize the fit of the model. Due to the large 
-  number and complexity of components, only a subset of them is printed 
-  automatically; the rest can be viewed/accessed directly via the \code{$}
-  operator if desired.
+an object of an object of class \code{cpm}, \code{cpmSet},
+ \code{cpmSize}, or \code{cpmSetSize}.
+\describe{
+ \item{\code{cpm0()}}{returns a \code{cpm} object, which is a description
+   of a single, fitted pk model. Due to the large number and complexity of
+   components of a\code{cpm} model, only a subset of them is printed
+   automatically; the rest can be viewed/accessed via the \code{$} operator
+   if desired. These are described in detail in the '\code{cpm} Components'
+   section.}
+ \item{\code{cpmSet()}}{returns a list of \code{cpm} objects, one for each
+   of the submodels, as described with parameter \code{allCombos = TRUE}.}
+ \item{\code{cpmSize()}}{returns a list of \code{cpmSet} objects (one for
+   each 'size') if \code{allCombos = T}, or a list of \code{cpm} objects (one
+   for each 'size') if \code{allCombos = T}}
+ \item{\code{cpm}}{returns a \code{cpm}, \code{cpmSet}, \code{cpmSize}, or
+   \code{cpmSetSize} object:
+    \itemize{
+       \item \code{cpm} object if \code{allCombos = FALSE, sizeCol = NULL}
+       \item \code{cpmSet} object if \code{allCombos = TRUE, sizeCol = NULL}
+       \item \code{cpmSize} object if \code{allCombos = FALSE, sizeCol != NULL}
+       \item \code{cpmSetSize} object if \code{allCombos = TRUE, sizeCol != NULL}
+    }
+ }
+}
+}
+\description{
+Carcass persistence is modeled as survival function where the 
+  one or both parameter(s) can depend on any number of covariates. Format 
+  and usage parallel that of common \code{R} functions such as \code{lm}, 
+  \code{glm}, and \code{gam}. However, the input data (\code{data}) are 
+  structured differently to accommodate the survival model approach (see 
+  "Details"), and model formulas may be entered for both \code{l} 
+  ("location") and \code{s} ("scale").
+}
+\details{
+The probability of a carcass persisting to a particular time is 
+  dictated by the specific distribution chosen and its underlying location
+  (l) and  scale (s) parameters (for all models except the exponential,  
+  which only has a location parameter). Both \code{l} and \code{s} may 
+  depend on covariates such as ground cover, season, species, etc., and a 
+  separate model format (\code{formula_l} and \code{formula_s}) may be 
+  entered for each. The models are entered as they would be in the familiar 
+  \code{lm} or \code{glm} functions in R. For example, \code{l} might vary
+  with \code{A}, \code{B}, and \code{C}, while \code{k} varies only with
+ \code{A}. A user might then enter \code{p ~ A + B + C} for \code{formula_p}
+  and \code{k ~ A} for \code{formula_k}. Other R conventions for defining
+  formulas may also be used, with \code{A:B} for the interaction between
+  covariates A and B and \code{A * B} as short-hand for \code{A + B + A:B}.
 
-The following components are displayed automatically:
+Carcass persistence \code{data} must be entered in a data frame with data 
+  in each row giving the fate of a single carcass in the trials. There
+  must be a column for each of the last time the carcass was observed 
+  present and the first time the carcass was observed absent (or NA if the
+  carcass was always present). Additional columns with values for
+  categorical covariates (e.g., visibility = E, M, or D) may also be 
+  included.
+}
+\section{\code{cpm} Components}{
+
+
+The following components of a \code{cpm} object are displayed automatically:
 
 \describe{
  \item{\code{call}}{the function call to fit the model}
@@ -54,15 +139,15 @@ The following components are displayed automatically:
    to find the maximum likelihood estimates of \code{p} and \code{k}. A
    value of \code{0} indicates that the model was fit successfully. For
    help in deciphering other values, see \code{\link{optim}}.}
- \item{\code{cellwiseTable_ls}}{summary statistics for estimated cellwise
+ \item{\code{cell_ls}}{summary statistics for estimated cellwise
    \code{l} and \code{s}, including the medians and upper & lower bounds
    on CIs for each parameter, indexed by cell (or combination of
    covariate levels).}
- \item{\code{cellwiseTable_ab}}{summary statistics for estimated cellwise 
+ \item{\code{cell_ab}}{summary statistics for estimated cellwise
    \code{pda} and \code{pdb}, including the medians and upper & lower 
    bounds on CIs for each parameter, indexed by cell (or combination of
    covariate levels).}
- \item{\code{cellwiseTable_desc}}{Descriptive statistics for estimated
+ \item{\code{cell_desc}}{Descriptive statistics for estimated
    cellwise median persistence time and rI for search intervals of 1, 3, 7
    14, and 28 days, where rI is the probability of that carcass that arrives
    at a uniform random time in within a search interval of I days persists
@@ -88,7 +173,7 @@ via the \code{$} operator:
   \item{\code{levels_s}}{all levels of each covariate of \code{s}}
   \item{\code{nbeta_l}}{number of parameters fit for \code{l}}
   \item{\code{nbeta_s}}{number of parameters fit for \code{s}}
-  \item{\code{cells}}{cell structure of the pk-model, i.e., combinations of
+  \item{\code{cells}}{cell structure of the cp-model, i.e., combinations of
     all levels for each covariate of \code{p} and \code{k}. For example, if
     \code{covar1} has levels \code{"a"}, \code{"b"}, and \code{"c"}, and
     \code{covar2} has levels \code{"X"} and \code{"Y"}, then the cells 
@@ -105,42 +190,30 @@ via the \code{$} operator:
  \item{\code{CL}}{the input \code{CL}}
 }
 }
-\description{
-Carcass persistence is modeled as survival function where the 
-  one or both parameter(s) can depend on any number of covariates. Format 
-  and usage parallel that of common \code{R} functions such as \code{lm}, 
-  \code{glm}, and \code{gam}. However, the input data (\code{data}) are 
-  structured differently to accommodate the survival model approach (see 
-  "Details"), and model formulas may be entered for both \code{l} 
-  ("location") and \code{s} ("scale").
-}
-\details{
-The probability of a carcass persisting to a particular time is 
-  dictated by the specific distribution chosen and its underlying location
-  (l) and  scale (s) parameters (for all models except the exponential,  
-  which only has a location parameter). Both \code{l} and \code{s} may 
-  depend on covariates such as ground cover, season, species, etc., and a 
-  separate model format (\code{formula_l} and \code{formula_s}) may be 
-  entered for each. The models are entered as they would be in the familiar 
-  \code{lm} or \code{glm} functions in R. For example, \code{l} might 
-  vary with \code{visibility}, \code{season}, and \code{site}, while 
-  \code{s} varies only with \code{visibility}. A user might then enter 
-  \code{l ~ visibility + season + site} for \code{formula_l} and 
-  \code{s ~ visibility} for \code{formula_s}. Other R conventions for 
-  defining formulas may also be used, with \code{covar1:covar2} for the 
-  interaction between covariates 1 and 2 and \code{covar1 * covar2} as 
-  short-hand for \code{covar1 + covar2 + covar1:covar2}.
 
-Carcass persistence \code{data} must be entered in a data frame with data 
-  in each row giving the fate of a single carcass in the trials. There
-  must be a column for each of the last time the carcass was observed 
-  present and the first time the carcass was observed absent (or NA if the
-  carcass was always present). Additional columns with values for
-  categorical covariates (e.g., visibility = E, M, or D) may also be 
-  included.
+\section{Advanced}{
+
+ \code{cpmSize} may also be used to fit a single model for each size class if
+ \code{allCombos = FALSE}. To do so, \code{formula_l}, \code{formula_s}, and
+ \code{dist} be named lists with names matching the sizes listed in
+ \code{unique(data[, sizeCol])}. The return value is then a list of
+ \code{cpm} objects, one for each size.
 }
+
 \examples{
-  data(wind_RP)
-  cpm(formula_l = l ~ 1, data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
+ head(data(wind_RP))
+ mod1 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+ class(mod1)
+ mod2 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+   allCombos = TRUE)
+ class(mod2)
+ names(mod2)
+ class(mod2[[1]])
+ mod3 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+   allCombos = TRUE, sizeCol = "Size")
+ class(mod3)
+ names(mod3)
+ class(mod3[[1]])
+ class(mod3[[1]][[1]])
 
 }

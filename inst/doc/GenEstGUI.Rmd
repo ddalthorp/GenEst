@@ -45,7 +45,7 @@ facilitate readability and mobility of specific UI components.
       * `GeneralInputsSidebar()`
         * `modelInputWidget("nsim")`
         * `modelInputWidget("CL")`
-        * `modelInputWidget("sizeclassCol")`		
+        * `modelInputWidget("sizeCol")`
     * `SEPanel()`
       * `SESidebar()`
         * `modelInputWidget("obsCols_SE")`
@@ -64,7 +64,7 @@ facilitate readability and mobility of specific UI components.
         * `modelInputWidget("ltp")`
         * `modelInputWidget("fta")`
         * `modelInputWidget("preds_CP")`
-        * `modelInputWidget("dists")`
+        * `modelInputWidget("dist")`
         * `modelRunWidget("CP")`
         * `modelOutputWidget("CP")`
       * `CPMainPanel()`
@@ -78,7 +78,7 @@ facilitate readability and mobility of specific UI components.
         * `modelInputWidget("kFill")`
         * `modelInputWidget("frac")`
         * `modelInputWidget("DWPCol")`
-        * `modelInputWidget("dateFoundCol")`
+        * `modelInputWidget("COdate")`
         * `modelRunWidget("M")`
         * `modelOutputWidget("M")`
       * `MMainPanel()`	  

@@ -48,10 +48,12 @@ pkm(formula_p = p ~ Visibility, kFixed = 0.7, data = data_SE,
   obsCol = c("Search1", "Search2", "Search3", "Search4"))
 
 ## ------------------------------------------------------------------------
-pkmModSet <- pkmSet(formula_p = p ~ Visibility*HabitatType,
+pkmModSet <- pkm(formula_p = p ~ Visibility*HabitatType,
                formula_k = k ~ HabitatType, data = data_SE,
-               obsCol = c("Search1", "Search2", "Search3", "Search4")
+               obsCol = c("Search1", "Search2", "Search3", "Search4"),
+               allCombos = TRUE
              )
+class(pkmModSet)
 names(pkmModSet)
 
 ## ---- eval = F, fig.show = "hold", fig.width = 7, fig.height = 7, fig.align = 'center'----
@@ -61,11 +63,11 @@ names(pkmModSet)
 aicc(pkmModSet)
 
 ## ------------------------------------------------------------------------
-pkmModSetSize <- pkmSetSize(formula_p = p ~ Visibility*HabitatType,
+pkmModSetSize <- pkm(formula_p = p ~ Visibility*HabitatType,
                    formula_k = k ~ HabitatType, data = data_SE,
                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
-                   sizeclassCol = "Size"
-                 )
+                   sizeCol = "Size", allCombos = TRUE)
+class(pkmModSetSize)
 
 ## ------------------------------------------------------------------------
 names(pkmModSetSize)
@@ -93,24 +95,25 @@ rcp(n = 10, cpModel)
 rcp(n = 10, cpModel, type = "ppersist")
 
 ## ------------------------------------------------------------------------
-cpm(formula_l = l ~ Visibility*GroundCover, formula_s = s ~ 1, data = data_CP,
+cpm(formula_l = l ~ Visibility * GroundCover, formula_s = s ~ 1, data = data_CP,
   left = "LastPresentDecimalDays", right = "FirstAbsentDecimalDays",
   dist = "weibull"
 )
 
 ## ------------------------------------------------------------------------
-cpModExp <- cpm(formula_l = l ~ Visibility*GroundCover, data = data_CP,
+cpModExp <- cpm(formula_l = l ~ Visibility * GroundCover, data = data_CP,
               left = "LastPresentDecimalDays",
               right = "FirstAbsentDecimalDays", dist = "exponential"
             )
 
 ## ------------------------------------------------------------------------
-cpmModSet <- cpmSet(formula_l = l ~ Visibility*Season,
+cpmModSet <- cpm(formula_l = l ~ Visibility * Season,
                formula_s = s ~ Visibility, data = data_CP,
                left = "LastPresentDecimalDays",
                right = "FirstAbsentDecimalDays",
-               dist = c("exponential", "lognormal")
+               dist = c("exponential", "lognormal"), allCombos = TRUE
              )
+class(cpmModSet)
 names(cpmModSet)
 
 ## ------------------------------------------------------------------------
@@ -122,17 +125,18 @@ plot(cpmModSet,
 )
 
 ## ------------------------------------------------------------------------
-cpmModSetSize <- cpmSetSize(formula_l = l ~ Visibility*Season,
+cpmModSetSize <- cpm(formula_l = l ~ Visibility * Season,
                    formula_s = s ~ Visibility, data = data_CP,
                    left = "LastPresentDecimalDays",
                    right = "FirstAbsentDecimalDays",
                    dist = c("exponential", "lognormal"),
-                   sizeclassCol = "Size"
-                 )
+                   sizeCol = "Size", allCombos = TRUE)
+class(cpmModSetSize)
 
 ## ------------------------------------------------------------------------
 names(cpmModSetSize)
 names(cpmModSetSize[[1]])
+class(cpmModSetSize[[1]])
 
 ## ------------------------------------------------------------------------
 pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
@@ -174,29 +178,29 @@ DWPcolnames <- names(pkmModSize)
 eM <- estM(data_CO = data_CO, data_SS = data_SS, data_DWP = data_DWP,
         frac = 1, model_SE = pkmModSize, model_CP = cpmModSize,
         seed_SE = NULL, seed_CP = NULL, seed_g = NULL, seed_M = NULL,
-        unitCol = "Unit", dateFoundCol = "DateFound",
-        datesSearchedCol = "DateSearched", sizeclassCol = "Size", nsim = 1000)
+        unitCol = "Unit", COdate = "DateFound",
+        SSdate = "DateSearched", sizeCol = "Size", nsim = 1000)
 
 ## ---- fig.show = "hold", fig.width = 6, fig.height = 6, fig.align = 'center'----
 summary(eM)
 plot(eM)
 
 ## ---- fig.show = "hold", fig.width = 4, fig.height = 6, fig.align = 'center'----
-M_season <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
+M_season <- calcSplits(M = eM, split_SS = "Construction",
                  split_CO = NULL, data_SS = data_SS, data_CO = data_CO
              )
 summary(M_season)
 plot(M_season)
 
 ## ---- fig.show = "hold", fig.width = 4, fig.height = 6, fig.align = 'center'----
-M_class <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = NULL,
+M_class <- calcSplits(M = eM, split_SS = NULL,
              split_CO = "Split", data_SS = data_SS, data_CO = data_CO
            )
 summary(M_class)
 plot(M_class)
 
 ## ---- fig.show = "hold", fig.width = 4, fig.height = 8, fig.align = 'center'----
-M_SbyC <- calcSplits(M = eM$Mhat, Aj = eM$Aj, split_SS = "Construction",
+M_SbyC <- calcSplits(M = eM, split_SS = "Construction",
             split_CO = "Split", data_SS = data_SS, data_CO = data_CO
           )
 summary(M_SbyC)

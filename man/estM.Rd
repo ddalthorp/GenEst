@@ -4,11 +4,10 @@
 \alias{estM}
 \title{Estimate mortality}
 \usage{
-estM(data_CO, data_SS, data_DWP, frac = 1, dateFoundCol = "DateFound",
-  model_SE, model_CP, unitCol = NULL, datesSearchedCol = NULL,
-  sizeclassCol = NULL, DWPCol = NULL, seed_SE = NULL,
-  seed_CP = NULL, seed_g = NULL, seed_M = NULL, nsim = 1000,
-  max_intervals = 8)
+estM(data_CO, data_SS, data_DWP, frac = 1, COdate = "DateFound",
+  model_SE, model_CP, unitCol = NULL, SSdate = NULL, sizeCol = NULL,
+  DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
+  seed_M = NULL, nsim = 1000, max_intervals = 8)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}
@@ -20,7 +19,7 @@ proportion table}
 
 \item{frac}{fraction of facility (by units or by area) surveyed}
 
-\item{dateFoundCol}{Column name for the date found data}
+\item{COdate}{Column name for the date found data}
 
 \item{model_SE}{Searcher Efficiency model (or list of models if there are
 multiple size classes)}
@@ -30,9 +29,9 @@ multiple size classes)}
 
 \item{unitCol}{Column name for the unit indicator (optional)}
 
-\item{datesSearchedCol}{Column name for the date searched data}
+\item{SSdate}{Column name for the date searched data}
 
-\item{sizeclassCol}{Name of colum in \code{data_CO} where the size classes
+\item{sizeCol}{Name of colum in \code{data_CO} where the size classes
 are recorded. Optional. If none provided, it is assumed there is no
 distinctions among size classes.}
 
@@ -75,8 +74,8 @@ Given given fitted Searcher Efficiency and Carcass
              )
  eM <- estM(nsim = 1000, data_CO = mock$CO, data_SS = mock$SS, 
          data_DWP = mock$DWP, frac = 1, model_SE = model_SE, 
-         model_CP = model_CP, dateFoundCol = "DateFound", 
-         DWPCol = "S", sizeclassCol = NULL
+         model_CP = model_CP, COdate = "DateFound",
+         DWPCol = "S", sizeCol = NULL
        )
  }
 
