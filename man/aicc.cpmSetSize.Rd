@@ -16,7 +16,7 @@ AICc table
 }
 \description{
 S3 function to generate model comparison tables for lists of
- of sets of CP models of class \code{\link{cpmSetSize}}
+ of sets of CP models of class \code{\link[=cpm]{cpmSetSize}}
 }
 \examples{
  cpmods <- cpm(formula_l = l ~ Visibility, data = wind_RP$CP,
