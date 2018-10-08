@@ -142,8 +142,7 @@ test_that("Model Selection Menu Widget function produces an HTML-rendering
                   right = "FirstAbsentDecimalDays", allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "CP"), "shiny.render.function")
 
-  modSet <- pkmSet(data = mock$SE, formula_p = p ~ 1, formula_k = k ~ 1,
-              allCombos = TRUE)
+  modSet <- pkmSet(data = mock$SE, formula_p = p ~ 1, formula_k = k ~ 1)
   expect_error(modelSelectionWidget(modSet, "SE"))
   mod <- pkm(data = mock$SE, formula_p = p ~ 1, formula_k = k ~ 1)
   expect_error(modelSelectionWidget(mod, "SE"))
