@@ -28,7 +28,7 @@ methods for \code{summary} applied to a \code{gGenericSize}
   pkmModsSize <- pkm(formula_p = p ~ HabitatType,
                    formula_k = k ~ HabitatType, data = mock$SE,
                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
-                   sizeCol = "Size")
+                   sizeCol = "Size", allCombos = TRUE)
   cpmModsSize <- cpm(formula_l = l ~ Visibility,
                    formula_s = s ~ Visibility, data = mock$CP,
                    left = "LastPresentDecimalDays",
