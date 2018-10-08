@@ -41,10 +41,10 @@ The general steps in the analysis are:
 Data required for a full analysis include results of searcher efficiency trials,
 results of carcass persistence trials, search schedules for all units searched,
 the search coverage within each unit, and results of periodic carcass surveys.
-More information about the kinds of data required can be found in Appendix A.
-Example data sets are located in folders in `...GenEst\inst\extdata\`. For
-convenience, data required in this tutorial are available in R as packaged lists,
-which can readily be loaded as described below.
+More information about the kinds of data required can be found in the User Guide.
+For convenience, data required in this tutorial are available in R as packaged
+lists, which can readily be loaded as described below. Alternatively, the data
+may be downloaded into zipped .csv files from the GUI.
 
 To perform the analyses illustrated in the tutorial, begin by starting R and
 loading GenEst from the command line: `library(GenEst)`
@@ -124,7 +124,7 @@ the time the carcass was placed in the field.
 
 ### Search Schedules (`SS`)
 Carcass searches were conducted on roads and pads within a 120 m radius from 
-all `r length(unique(data_SS$SearchDate))` turbines at a fictitious wind power
+all `r dim(data_DWP)[1]` turbines at a fictitious wind power
 facility. Monitoring began on `r daterange[1]` and continued through
 `r daterange[2]`. Searches spanned `r length(unique(data_SS$Season))` seasons:
 `r seasons`. Search intervals varied by turbine and by time of year, ranging 
@@ -152,15 +152,16 @@ eventually to 0. Searches were conducted on roads and pads within a 120 m
 radius from all 100 turbines to provide sufficient data with which to model the
 change in density with distance and from this, accurately calculate the fraction
 of all carcasses that are expected to land on road and pad surrounding each
-turbine (density-weighted proportion or DWP). The exact configuration of the
+turbine (density-weighted proportion or DWP). The configuration of the
 roads and pads differs among turbines, hence the DWP must be calculated for each
 turbine. DWPs for bats at each turbine are stored in `data_DWP`, which is a data
-frame with a column for turbine name (values must match column names in
-`data_SS`); a column of DWP labeled `bat`. In other studies where, for example,
+frame with a column for turbine name (note that turbine names also must be
+included among column names in `data_SS`, which gives the search schedule at
+each turbine) and a column of DWP labeled `bat`. In other studies where, for example,
 mortality of birds might be of interest, `DWP` would be expected vary with
 carcass size or species (e.g., the spatial distributions of bats and large birds
-around a turbine would like differ from one another). In that case, each carcass
-size class (`large`, `medium`, `small`, `bat`) would have its own column.
+around a turbine would likely differ from one another). In that case, each
+carcass size class (`large`, `medium`, `small`, `bat`) would have its own column.
 
 ```{r}
 head(data_DWP)
@@ -170,7 +171,7 @@ head(data_DWP)
 Information about each (non-trial) carcass observed during searches is stored in
 `CO_data` which is a data frame with at least 4 columns: carcass ID, the turbine
 (or unit) at which it was found, the date it was found and its distance from the
-turbine center. In `CO_data` we also have turbine type, species, and species
+turbine center. In `data_CO` we also have turbine type, species, and species
 group variables by which we will later summarize mortality estimates.
 ```{r}
 head(data_CO)
@@ -178,12 +179,16 @@ head(data_CO)
 
 ### Estimating Searcher Efficiency and Carcass Persistence Parameters
 Searcher efficiency and carcass persistence parameters are estimated by fitting
-models using functions `pkm` and `cpm` which are patterned after familar R
-functions such as `lm` and `glm`. In this relatively simple example, our SE and
-CP field trials were conducted for one carcass size (bat) on one type of terrain
-(roads and pads) in three seasons (spring, summer, fall). The only potential
-predictor variable we have is `Season`, which is entered as a column in both
-`data_SE` and `data_CP`.
+models using functions `pkm` and `cpm` (carcass persistence model) which are
+patterned after familar R functions such as `lm` and `glm`. The "pk" in `pkm`
+refers to GenEst's model of searcher efficiency which includes two parameters:
+`p`, which is the initial searcher efficiency for carcasses on the first search
+after they have arrived, and `k`, which is a parameter governing the decrease
+in searcher efficiency in later searches. In this relatively simple example,
+our SE and CP field trials were conducted for one carcass size (bat) on one
+type of terrain (roads and pads) in three seasons (spring, summer, fall). The
+only potential predictor variable we have is `Season`, which is entered as a
+column in both `data_SE` and `data_CP`.
 
 Searcher efficiency is the probability of detection of a carcass that is present
 in the searched area at the time of search. Searcher efficiency typically
@@ -191,24 +196,23 @@ decreases with carcass age because older carcasses tend to become harder to find
 as they accumulate dust or debris, fall deeper into vegetation, get blown
 against objects or into holes, decay, or get partially scavenged. In addition,
 carcasses missed in one search tend to be more likely to be missed in subsequent
-searches because the easy-to-find carcasses are preferentially removed in the
-first searches after carcass arrival, leaving mostly the harder-to-find
-carcasses available in subsequences searches. GenEst accounts for a non-constant
-searcher efficiency using two parameters, `p` (searcher efficiency on the first
-search after carcass arrivals) and `k` (proportional change in searcher
-efficiency with each successive search). The `k` parameter can be estimated from
-field trials if carcasses that are not discovered in the first search after
-arrival are left in the field for possible discovery in later searches.
+searches because the relatively easy-to-find carcasses are preferentially
+removed in the first searches after carcass arrival, leaving mostly the
+harder-to-find carcasses available in subsequences searches. GenEst accounts
+for a non-constant searcher efficiency using two parameters, `p` (searcher
+efficiency on the first search after carcass arrivals) and `k` (proportional
+change in searcher efficiency with each successive search). The `k` parameter
+can be estimated from field trials if carcasses that are not discovered in the
+first search after arrival are left in the field for possible discovery in
+later searches.
 
 `p` and `k` may both depend on covariates such as season, visibility class, or
 carcass size, and GenEst allows for them to be modeled as functions of different
 covariate combinations.
 
-```{r, eval = FALSE}
-?pkm
-```
 ```{r}
 model_SE <- pkm(p ~ Season, k ~ 1, data = data_SE)
+class(model_SE)
 model_SE
 ```
 
@@ -218,31 +222,47 @@ that begin with and "s" or "S" and end with a number contain search results data
 explicitly listing the names of the search data columns in a vector of character
 strings in the `obsCol` argument.
 
-The probability of a carcass persisting a given length of time with being
+The probability of a carcass persisting a given length of time without being
 removed by scavengers (or other factors) is modeled as a Weibull, lognormal,
 loglogistic, or exponential distribution. Like the `p` and `k` parameters for
 searcher efficiency, the location and scale parameters (Therneau 2015) of the
 persistence distribution may depend on covariates. GenEst allows for them to be
-modeled as separate functions combinations.
+modeled as separate functions of predictor combinations.
 
-```{r, eval = FALSE}
-?cpm
-```
 ```{r}
 model_CP <- cpm(l ~ Season, s ~ Season, data = data_CP, dist = "weibull",
   left = "LastPresent", right = "FirstAbsent")
+class(model_CP)
 model_CP
 ```
+The model summary shows descriptive statistics for the cellwise estimates of
+the `l` and `s` parameters. The `location` and `scale` parameterization is
+common in survival analysis, but the `pda` and `pdb` parameterization (Dalthorp
+and Huso, 2014) is also shown. These parameterizations are convenient to work
+with in statistical calculations but are not as convenient for giving users
+quick insight into the distributions, so a third set of summary statistics
+about the fitted distributions is also given. Namely, the median persistence
+time and the `r` statistic, which is the probability that a carcass persists
+until the first search after arrival (assuming uniformly distributed arrival
+times within the interval). Clearly, `r` depends on the length of the search
+interval, and the table shows `r` for intervals of 1, 3, 7, 14, and 28 days. A
+rough, back-of-the-envelope calculation for the probability of observing a
+carcass that arrives at a site during the monitored period would be
+`DWP * r * p * f`, which is `DWP` = fraction of carcasses that arrive in the
+area searched at a unit, `r` = fraction of carcasses that persist until a
+search, `p` = fraction of carcasses found on the first search after arrival
+(given that they persisted), and `f` = fraction of carcasses that arrive at
+the units searched.
 
-In other scenarios we might consider other predictors like visibility of the
-ground searched or search team. We might also be interested in carcasses of
-different sizes (e.g., large, medium, and small birds instead of or in addition
-to bats). We are not restricted to using the same predictors of both SE and CP.
-The modeling complexity increases with each additional predictor, but, in
-theory, any number of predictors can be used. The only rule is that sufficient
-numbers of trial carcasses must be placed in each cell combination of factor
-levels among the selected predictors. For example, if we were to place 15
-carcasses for each cell for predictors that include season (spring, summer,
+In other scenarios we might consider other predictors, like the visibility of
+the ground searched or the search team. We might also be interested in carcasses
+of different sizes (e.g., large, medium, and small birds instead of or in
+addition to bats). We are not restricted to using the same predictors of both SE
+and CP. The modeling complexity increases with each additional predictor, but,
+in theory, any number of predictors can be used. The only rule is that
+sufficient numbers of trial carcasses must be placed in each cell combination
+of factor levels among the selected predictors. For example, if we were to place
+15 carcasses for each cell for predictors that include season (spring, summer,
 fall, winter), size (S, M, L, B), visibility (RP, M, D), search team (dogs,
 humans), and turbine type (small, medium, large), we'd need
 15 x 4 x 4 x 3 x 2 x 2 = 2880 carcasses. Typically, the number of predictors is
@@ -252,59 +272,49 @@ limited to a few key variables.
 Each carcass's contribution to the total mortality in each search interval is
 estimated using the `estM` function.
 
-```{r, eval = FALSE}
-?estM
-```
 ```{r, fig.width = 7, fig.height = 5, fig.align = 'center'}
 Mhat <- estM(nsim = 1000, data_CO = data_CO, data_SS = data_SS,
   data_DWP = data_DWP, model_SE = model_SE, model_CP = model_CP,
-  unitCol = "Turbine", dateFoundCol = "DateFound")
+  unitCol = "Turbine", COdate = "DateFound")
 
 summary(Mhat)
 plot(Mhat)
 ```
 
 Mortality estimates may be partitioned or split into desired categories, such as
-species, season, or unit. Splits may be performed according to characteristics
-of the carcasses or where they were found (e.g., species, turbine or other
-variable found in `data_CO`) or when they were found (e.g., season or other
-variable associated with search schedule and found in ``data_SS``, or a vector of
-specific times).
+species, season, or turbine type. Splits may be performed according to
+characteristics of the carcasses or where they were found (e.g., species,
+turbine or other variable found in `data_CO`) or when they were found (e.g.,
+season or other variable associated with search schedule and found in `data_SS`,
+or a vector of specific times).
 
-
-```{r, eval = FALSE}
-?calcSplits
-```
-
-Species (a CO split because it is a column in the CO file):
+Mortality by `Species` (a CO split because it is a column in the CO file):
 ```{r, fig.width = 5, fig.height = 5, fig.align = 'center'}
-M_species <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
-  data_CO = data_CO)
+M_species <- calcSplits(M = Mhat, split_CO = "Species", data_CO = data_CO)
 summary(M_species)
 plot(M_species)
 ```
 
 Mortality estimates may also be split by temporal variables that are represented
-as columns in ``data_SS`` or as numeric vectors spanning the monitoring
+as columns in `data_SS` or as numeric vectors spanning the monitoring
 season (from day 0 to length of monitoring season). If several temporal splits
-are to be calculated, creating a specially formatted ``prepSS`` object for the
+are to be calculated, creating a specially formatted `prepSS` object for the
 search schedule can streamline the calculations.
 ```{r}
 SSdat <- prepSS(data_SS)
 ```
 
-Season (a SS split because it is a column in the SS file):
+Mortality by `Season` (an SS split because it is a column in the SS file):
 ```{r Season Split, fig.width = 6.5, fig.height = 5.25, fig.align = 'center'}
-M_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_SS = "Season", data_SS = SSdat, split_CO = NULL,  data_CO = data_CO)
+M_season <- calcSplits(M = Mhat, split_SS = "Season", data_SS = SSdat,
+  split_CO = NULL,  data_CO = data_CO)
 summary(M_season)
 plot(M_season)
 ```
 
-Month (a temporal split that spans the monitoring period):
+Mortality by month (a temporal split that spans the monitoring period):
 ```{r Temporal Split, fig.width = 7, fig.height = 5, fig.align = 'center'}
-M_month <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_time = seq(0, max(SSdat$days), by = 28),
+M_month <- calcSplits(M = Mhat, split_time = seq(0, max(SSdat$days), by = 28),
   data_SS = SSdat, data_CO = data_CO)
 summary(M_month)
 plot(M_month)
@@ -314,7 +324,7 @@ Temporal splits that divide the monitoring season into separate time intervals
 (`rate = FALSE`, which is the default arg in `calcSplits`) or the number per
 unit time (`rate = TRUE`).
 ```{r Time unit Split, fig.width = 7, fig.height = 5, fig.align = 'center'}
-M_various_times <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+M_various_times <- calcSplits(M = Mhat,
   split_time = c(seq(0, 90, by = 15), 120, 150, seq(155, 200, by = 5)),
   data_SS = SSdat, data_CO = data_CO)
 plot(M_various_times)
@@ -327,7 +337,7 @@ splitting covariates may be used in one call to `calcSplits` and at most one
 temporal split may be used (whether it is an SS split or a vector of times).
 
 ```{r Species and Season, fig.width = 4, fig.height = 6, fig.align = 'center'}
-M_species_by_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+M_species_by_season <- calcSplits(M = Mhat,
   split_CO = "Species", data_CO = data_CO,
   split_SS = "Season", data_SS = SSdat)
 plot(M_species_by_season)
@@ -367,10 +377,10 @@ data_DWP <- wind_cleared$DWP
 data_CO <- wind_cleared$CO
 ```
 ### Searcher Efficiency and Carcass Persistence Trials
-In searcher efficiency and carcass persistence trials, 15 carcasses trial
+In searcher efficiency and carcass persistence trials, 15 trial
 carcasses were placed in each combination of visibility class (`D`, `M`, `RP`),
-season (`spring`, `summer`, `fall`), and size class (`lrg`, `med`, `sml`,
-`bat`). Data formats are like those of example 1:
+season (`spring`, `summer`, `fall`), and size class (`lrg`, `med`, `sml`, `bat`).
+Data formats are like those of example 1:
 ```{r}
 head(data_SE)
 head(data_CP)
@@ -379,62 +389,77 @@ head(data_CP)
 ### Searcher Efficiency Modeling
 With 36 combinations of covariate levels (3 visibilities x 3 seasons x 4 sizes)
 and two parameters (`p` and `k`), the number of possible models to consider for
-searcher efficiency is unwieldy using the simple `pkm` function, which fits only
-one model at a time. 
+searcher efficiency is unwieldy using simple calls to `pkm`, but `pkm` has
+powerful model building and model selection capabilities that can be accessed
+via the arg list: `allCombos` and `sizeCol`, which are discussed below.
 
-`pkmSet` is a wrapper function for `pkm` that fits a set of submodels of the
-given covariate combination, including the full model, the null model, and
+When `allCombos = TRUE`, `pkm` fits the set of submodels of the given covariate
+combinations, including the full model, the null model, and
 everything in between. For example, if the parameter models are
-`p ~ Visibility * Season` and `k ~ Visibility`, `pkmSet` would fit all
-combinations of possible `p` models (`p ~ Visibility * Season`,
-`p ~ Visibility + Season`, `p ~ Visibility`, `p ~ Season`, and `p ~ 1`) with
+`p ~ Visibility * Season` and `k ~ Visibility`, `pkm` with `allCombos = TRUE`
+would fit all combinations of possible `p` models (`p ~ Visibility * Season`,
+`p ~ Visibility + Season`, `p ~ Visibility`, `p ~ Season`, and `p ~ 1`) and
 possible `k` models (`k ~ Visibility` and `k ~ 1`), or 10 models in all.
 
-```{r, eval = FALSE}
-?pkm
-?pkmSet
-```
-`cpmSet` does not distinguish between carcass size classes and should be used
-with caution when analyzing data sets with multiple size classes. For example,
-to model searcher efficiency for small birds, `pkmSet` can be called with `data`
-subsetted to include only the small carcasses:
+Carcasses in different size classes would be expected to have different searcher
+efficiency and carcass persistence parameters and would even be likely to be
+affected by covariates in different ways. When analyzing data with carcasses in
+different size classes, it is recommended that separate CP and SE models be fit
+for size classes separately. This can be accomplished using the `sizeCol`
+argument in `pkm` and `cpm`, where `sizeCol` gives the name of the column that
+gives the carcass size classes in `data_SE`.
 
 ```{r}
-SEsml <- data_SE[data_SE$Size == "sml", ]
-pkSet_sml <- pkmSet(p ~ Visibility * Season, k ~ Visibility * Season,
-  data = SEsml)
-names(pkSet_sml)
+pkModels <- pkm(p ~ Visibility * Season, k ~ Visibility * Season, data = data_SE,
+  allCombos = TRUE, sizeCol = "Size")
+class(pkModels)
+names(pkModels)
 ```
-One model must be selected from the long list of models fit. GenEst provides
-several tools for guiding the selection. First, the models can be listed by
-AICc, which gives a score for the quality of the model for the given data.
-Complicated models that use many parameters may fit the data more closely than
-a simpler model but are penalized because of their complexity and relative
-instability. The scores have meaning only in comparison with other models'.
-AICc provides a rough but useful guide for model selection, but should in no way
-be relied upon as definitive. Its utility is in identifying relatively poor
-models and in narrowing the choice of plausible models to a manageable number.
+When `allCombos = TRUE` and `sizeCol` is defined, `pkm` returns a list of sets
+of models for each size class. The sets of models for each size class include
+the full spectrum of models that can be constructed using simple combinations
+of the covariates.
+```{r}
+names(pkModels[["sml"]])
+class(pkModels[["sml"]])
+```
 
-The `AIC` function lists the fitted models in order of
-${\small \Delta}$AICc.
+To estimate mortality, one model for each size class must be selected from the
+long list of models fit. GenEst provides several tools for guiding the selection.
+First, the models can be listed by AICc, which gives a score for the quality of
+the model for the given data. Complicated models that use many parameters may
+fit the data more closely than a simpler model but are penalized because of
+their complexity and relative instability. The scores have meaning only in
+comparison with other models'. AICc provides a rough but useful guide for model
+selection, but should in no way be relied upon as definitive. Its utility is in
+identifying relatively poor models and in narrowing the choice of plausible
+models to a manageable number.
+
+The `aicc` function lists the fitted models in order of ${\small \Delta}$AICc
+for each size class (if applicable). For this discussion, we will focus on
+`sml` only, but for a full analysis, all size classes would need to be similarly
+analyzed.
 
 ```{r}
-aicc(pkSet_sml)
+aicc(pkModels[["sml"]])
 ```
-When AICc differences exceed 6 or 7, preference should normally be given to the
-models with the lower scores. Models with differences of less than 3 or 4 are
-generally considered indistinguishable by this measure. Choices among such
-models should be based on other criteria.
+Preference should normally be given to models with ${\small \Delta}$AICc less
+than 6 or 7. Models with differences of less than 3 or 4 are generally
+considered indistinguishable by this measure. Choices among such models should
+be based on other criteria.
 
 Diagnostic plots can be used to identify potential problems with model fits and
 to help distinguish between models with similar AICc scores. The `plot` function
-is defined for the `pkmSet` class, and by default, creates a new plot window on
-command for each sub-model. To plot a specific single model from the full set,
+is defined for `pkm` (one model) and `pkmSet` (set of models for a given size
+class) objects. For example, `plot(pkModels[["sml"]][[1]])` would produce the
+single figure for the first model for the `sml` size class.
+`plot(pkModels[["sml"]])` would create plots for each model fit for the `sml`
+size class. To plot a specific single model from the full set,
 use the `specificModel` argument. For example, diagnostic plots for the model
 with the lowest AICc score are shown below:
 
-```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
-plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ 1")
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+plot(pkModels[["sml"]], specificModel = "p ~ Visibility; k ~ 1")
 ```
 
 The top row shows box plots of estimated `p` and `k` parameters for all cells
@@ -452,29 +477,26 @@ characteristics.
 In the figure, the estimates of `p` from the selected model are markedly less
 variable than the estimates from the full model, while the locations of the
 boxes are very similar for the two models. Thus, this selected model (the one
-with the lowest AICc) is a clear improvement over the full cell model for
+with the lowest AICc) appears to be an improvement over the full cell model for
 estimating `p`.
 
-However, the boxplots for `k` indicate a problem with the fit. In particular,
-in most of the cells, the boxes extend from 0 to 1, which suggests that the
-selected model is unable to estimate `k` for the given cell. Selecting a simpler
-model for `k` often remedies this problem.
+The ${\small \Delta}$AICc for the full model is 12.52, which indicates a serious
+deficiency in comparison to the model with the best fit,
+`"p ~ Visibility; k ~ 1"`. The boxplots for `k` highlight one particular problem
+with the fit of the reference model. In some of the cells, the boxes extend from
+0 to 1, which suggests that the reference model is unable to estimate `k` for
+the given cell. Selecting a simpler model for `k` often remedies this problem.
+If all models display this 0-1 phenomenon, a fixed `k` of 1 is appropriate if
+a smaller proportion of carcasses was found on the first search occasion than on
+later searches.
 
-In this example, the second best model in terms of AICc
-(`p ~ Visibility; k ~ 1`, with ${\small \Delta}$AICc = 1.596) is able to succesfully
-estimate `k` while still providing a good fit for `p`.
+By comparison, the model with the highest ${\small \Delta}$AICc (=
+`{r max(aicc(pkModels[["sml"]]))}` routinely estimates `p` and `k` either well
+above or well below the reference model but has fairly tight error bars--bad
+estimates but quite confident about them!
 
-```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
-plot(pkSet_sml, specificModel = "p ~ Visibility; k ~ 1")
-```
-
-By comparison, the model with the highest ${\small \Delta}$AICc (= 41.5) has \
-routinely estimates `p` and `k` either well above or well below the full cell
-model but has fairly tight error bars--bad estimates but quite confident about
-them!
-
-```{r, eval = F, fig.show = "hold", fig.width = 7, fig.height = 7}
-plot(pkSet_sml, specificModel = "p ~ Season; k ~ Season")
+```{r, fig.show = "hold", fig.width = 7, fig.height = 7}
+plot(pkModels[["sml"]], specificModel = "p ~ Season; k ~ Visibility * Season")
 ```
 
 A similar model selection exercise gives the same form of model
@@ -483,24 +505,12 @@ be collated into a list for later analysis of detection probabilities and
 mortality rates.
 
 ```{r}
-pk_med <- pkm(p ~ Visibility, k ~ 1, data = data_SE[data_SE$Size == "med", ])
-pk_lrg <- pkm(p ~ Visibility, k ~ 1, data = data_SE[data_SE$Size == "lrg", ])
-pk_bat <- pkm(p ~ Visibility, k ~ 1, data = data_SE[data_SE$Size == "bat", ])
-
 pkMods <- list(
-  sml = pkSet_sml[["p ~ Visibility; k ~ 1"]],
-  med = pk_med,
-  lrg = pk_lrg,
-  bat = pk_bat
+  sml = pkModels[["sml"]][["p ~ Visibility; k ~ 1"]],
+  med = pkModels[["med"]][["p ~ Visibility; k ~ 1"]],
+  lrg = pkModels[["lrg"]][["p ~ Visibility; k ~ 1"]],
+  bat = pkModels[["bat"]][["p ~ Visibility; k ~ 1"]]
 )
-```
-
-GenEst also has a wrapper function for `pkModSet` so that different size classes
-can be considered in bulk at one time. Read more about it:
-
-```{r, eval = F}
-? pkmSetSize
-vignette("command-line-example", package = "GenEst")
 ```
 
 ### Carcass Persistence Modeling
@@ -509,20 +519,18 @@ efficiency except that in addition to selecting covariates for two different
 parameters (location = `l` and scale = `s`), there are four model forms to
 choose from: Weibull, lognormal, loglogistic, and exponential. 
 
-```{r, eval = F}
-? cpm
-? cpmSet
-```
 ```{r}
-cpSet_sml <- cpmSet(
+cpModels <- cpm(
   l ~ Visibility * Season, s ~ Visibility * Season,
-  data = data_CP[data_CP$Size == "sml", ], left = "LastPresent", right = "FirstAbsent",
-  dists = c( "weibull", "lognormal", "loglogistic", "exponential")
+  data = data_CP, left = "LastPresent", right = "FirstAbsent",
+  dist = c( "weibull", "lognormal", "loglogistic", "exponential"),
+  allCombos = TRUE, sizeCol = "Size"
 )
 ```
 The list of models is long:
 ```{r}
-aicc(cpSet_sml)
+lapply(aicc(cpModels), nrow)
+aicc(cpModels[["sml"]])
 ```
 It is not uncommon to see the fits for the exponential distribution at the
 bottom of the AIC list. The exponential distribution has only one parameter and
@@ -531,12 +539,15 @@ two-parameters. An implicit assumption of the exponential model is that the
 scavenging rate is constant, regardless of carcass age. When that assumption is
 not met, the exponential provides an inferior fit. 
 
-To compare among a set of cp models with plausible AICs, use `plot(cpSet, ...)`
-with desired models specified by name. It can be seen from the AICc table
-(`aicc(cpSet_sml)`) that the top 10 models according to AICc are:
+To compare among a set of cp models with plausible AICs, use, for example,
+`plot(cpModels[["sml"]])` to browse through all the models or
+`plot(cpModels[["sml"]][["p ~ Visibility; k ~ 1"]])` to view a single model
+specified by name. It can be seen from the AICc table
+(`aicc(cpModels[["sml"]])`) that the top 10 models according to AICc are:
 
 ```{r}
-cp_smlCandidates <- names(cpSet_sml)[c(24, 19, 14, 9, 25, 17, 20, 22, 15, 44)]
+cp_smlCandidates <-
+    names(cpModels[["sml"]])[c(25, 24, 15, 19, 20, 10, 14, 22, 74, 21)]
 cp_smlCandidates
 ```
 
@@ -565,21 +576,16 @@ not a strong predictor of carcass persistence, while `Visibility` is.
 
 Selecting the top AICc model for use in mortality estimation:
 ```{r}
-cp_sml <- cpSet_sml[[cp_smlCandidates[1]]]
+cp_sml <- cpModels[["sml"]][[cp_smlCandidates[1]]]
 ```
 
 Following a similar model selection process for the other size classes, we
 select the following:
 
 ```{r}
-cp_med <- cpm(l ~ Visibility, s ~ Season,
-  data = data_CP[data_CP$Size == "med", ], left = "LastPresent", right = "FirstAbsent",
-  dist = "weibull")
-cp_lrg <- cpm(l ~ Visibility + Season, data = data_CP[data_CP$Size == "lrg", ],
-  left = "LastPresent", right = "FirstAbsent", dist = "exponential")
-cp_bat <- cpm(l ~ Visibility + Season, s ~ 1,
-  data = data_CP[data_CP$Size == "med", ], left = "LastPresent", right = "FirstAbsent",
-  dist = "weibull")
+cp_med <- cpModels[["med"]][["dist: weibull; l ~ Visibility; s ~ Season"]]
+cp_lrg <- cpModels[["lrg"]][["dist: exponential; l ~ Visibility + Season; NULL"]]
+cp_bat <- cpModels[["bat"]][["dist: weibull; l ~ Visibility + Season; s ~ 1"]]
 ```
 
 NOTE: For large carcasses, the exponential distribution was at the top of the AICc
@@ -604,9 +610,9 @@ estimated using the `estM` function. The function call is largely similar that
 used in the simple scenario discussed in example 1. However, there are some
 important differences. First, `model_SE` and `model_CP` are lists of models, one
 element for each size class. In addition, the name of the size class variable is
-provided as `sizeclassCol = "Size"`. Finally, the `frac` argument represents the
+provided as `sizeCol = "Size"`. Finally, the `frac` argument represents the
 sampling fraction or the fraction of carcasses expected to fall at the units
-that were searched. In this example, 23 out of 100 turbines were searched, so
+that were searched. In this example, 23 out of 100 turbines were searched, and
 `frac` is set equal to 0.23 under the assumption that the mortality rates at the
 unsearched turbines did not differ substantially from the rates at the searched
 turbines.
@@ -614,14 +620,15 @@ turbines.
 ```{r Mhat plot, fig.height = 4, fig.width = 7, fig.align = 'center'}
 Mhat <- estM(nsim = 1000, data_CO = data_CO, data_SS = data_SS, frac = 0.23,
   data_DWP = data_DWP, model_SE = pkMods, model_CP = cpMods,
-  sizeclassCol = "Size", unitCol = "Turbine", dateFoundCol = "DateFound")
+  sizeCol = "Size", unitCol = "Turbine", COdate = "DateFound")
 
 summary(Mhat)
 plot(Mhat)
 ```
 
 This estimate is for the total number of fatalities among all size classes
-combined, from hummingbirds and bats to eagles. Fortunately, mortality estimates
+combined, from hummingbirds and bats to eagles and may be too vague to be very
+useful. Fortunately, mortality estimates
 may be partitioned or split into desired categories, such as species, size, or
 season. Splits may be performed according to characteristics
 of the carcasses or where they were found (e.g., species, turbine or other
@@ -638,8 +645,8 @@ Although species groups may extend across different size classes (e.g.,
 `passerines` could include sparrows and ravens), splits according to species
 group can easily be accomplished:
 
-```{r Species Group Plot, , fig.height = 5, fig.width = 5, fig.align = 'center'}
-M_speciesGroup <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+```{r Species Group Plot, fig.height = 5, fig.width = 5, fig.align = 'center'}
+M_speciesGroup <- calcSplits(M = Mhat,
   split_CO = "SpeciesGroup",  data_CO = data_CO)
 summary(M_speciesGroup)
 plot(M_speciesGroup)
@@ -647,7 +654,7 @@ plot(M_speciesGroup)
 
 Split by species and season:
 ```{r Split Species and Season, fig.height = 12, fig.width = 4, fig.align = 'center'}
-M_speciesseason <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+M_speciesseason <- calcSplits(M = Mhat,
   split_CO = "Species",  data_CO = data_CO, split_SS = "Season", data_SS = data_SS)
 summary(M_speciesseason)
 plot(M_speciesseason)
@@ -660,11 +667,3 @@ for better interpretability:
 ```{r Transposed Species Season, fig.height = 7, fig.width = 7, fig.align = 'center'}
 plot(transposeSplits(M_speciesseason))
 ```
-
-Split by size and distance from turbine:
-```{r, fig.width = 4, fig.height = 6, fig.align = 'center'}
-M_distance <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_CO = c("Distance", "Size"),  data_CO = data_CO)
-plot(M_distance)
-```
-
