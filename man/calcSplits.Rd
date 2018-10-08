@@ -8,10 +8,10 @@ calcSplits(M, split_CO = NULL, data_CO = NULL, split_SS = NULL,
   data_SS = NULL, split_time = NULL, ...)
 }
 \arguments{
-\item{M}{Numeric array (ncarc x nsim) of estimated mortalities, such as
-those returned by the function \code{\link{estM}}.}
+\item{M}{\code{\link{estM}} object, containing numeric array (ncarc x nsim) of estimated
+mortalities and other pieces}
 
-\item{split_CO}{Character vector of names of splitting covariates to be 
+\item{split_CO}{Character vector of names of splitting covariates to be
 found in the \code{data_CO} data frame. No more than two \code{split_CO} 
 variables are allowed. Use \code{split_CO = NULL} if no CO splits are 
 desired.}
@@ -41,10 +41,6 @@ Times must be numeric, strictly increasing, and span the monitoring period
 is not NULL, \code{data_SS} is required.}
 
 \item{...}{arguments to be passed down}
-
-\item{Aj}{Integer array (ncarc x nsim) of simulated arrival intervals for
-each observed carcass. Typically, the \code{Aj}
-array will be the \code{$Aj} return value of function \code{\link{estM}}.}
 }
 \value{
 An object of class \code{splitFull} is returned. If one splitting

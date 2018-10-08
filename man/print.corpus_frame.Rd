@@ -4,10 +4,12 @@
 \alias{print.corpus_frame}
 \title{Generic S3 function for printing corpus_frame}
 \usage{
-\method{print}{corpus_frame}(x, rows = 80)
+\method{print}{corpus_frame}(x, ...)
 }
 \arguments{
-\item{x}{}
+\item{x}{data frame to print}
+
+\item{...}{other arguments}
 }
 \value{
 prints data frame

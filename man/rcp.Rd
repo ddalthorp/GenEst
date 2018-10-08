@@ -14,11 +14,9 @@ rcp(n, model, type = "survreg")
 
 \item{type}{The type of parameters requested. \code{"survreg"} or 
 \code{"ppersist"}}
-
-\item{seed}{optional input to set the seed of the RNG}
 }
 \value{
-list of two matrices of \code{n} simulated \code{l} and \code{s} 
+list of two matrices of \code{n} simulated \code{l} and \code{s}
   (if \code{type = "survreg"}) or \code{a} and \code{b} (if \code{type = 
   "ppersist"})for cells defined by the \code{model} object.
 }

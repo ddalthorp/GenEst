@@ -7,7 +7,7 @@
 \title{Fit cp carcass persistence models}
 \usage{
 cpm(formula_l, formula_s = NULL, data, left, right, dist = "weibull",
-  allCombos = FALSE, sizeCol = NULL, CL = 0.9, quiet = FALSE, ...)
+  allCombos = FALSE, sizeCol = NULL, CL = 0.9, quiet = FALSE)
 
 cpm0(formula_l, formula_s = NULL, data = NULL, left = NULL,
   right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE, ...)
