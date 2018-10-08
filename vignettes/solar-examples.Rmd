@@ -204,7 +204,7 @@ CP_size_model_set <- cpm(formula_l = l ~ Season,
                            right = "FirstAbsent",
                            dist = c("exponential", "weibull"),
                            sizeCol = "Size",
-                           data = data_CP, allCombos = T)
+                           data = data_CP, allCombos = TRUE)
 class(CP_size_model_set)
 names(CP_size_model_set)
 class(CP_size_model_set$small)
@@ -362,7 +362,7 @@ M_week <- calcSplits(M = Mest,
   data_SS = SSdat,
   data_CO = data_CO
 )
-plot(x = M_week, rate = T)
+plot(x = M_week, rate = TRUE)
 
 ```
 
@@ -377,7 +377,7 @@ M_unit <- calcSplits(M = Mest,
   data_CO = data_CO,
   data_SS = data_SS
 )
-plot(M_unit, rate = F)
+plot(M_unit, rate = FALSE)
 ```
 There are 300 units in this example, each one gets a boxplot when we plot the 
 splitFull.   For those arrays which have at least one observation, we can create
@@ -407,7 +407,7 @@ M_unit_and_species <- calcSplits(M = Mest,
   data_CO = data_CO,
   data_SS = data_SS
 )
-plot(M_unit_and_species, rate = F)
+plot(M_unit_and_species, rate = FALSE)
 
 ```
 
