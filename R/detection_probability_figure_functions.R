@@ -13,12 +13,10 @@
 #' @examples 
 #'   data(mock)
 #'   model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
-#'                 data = mock$SE
-#'               )
+#'                 data = mock$SE)
 #'   model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
 #'                 data = mock$CP, left = "LastPresentDecimalDays", 
-#'                 right = "FirstAbsentDecimalDays"
-#'               )
+#'                 right = "FirstAbsentDecimalDays")
 #'   avgSS <- averageSS(mock$SS)
 #'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP)
 #'   plot(ghatsGeneric)
@@ -117,18 +115,16 @@ plot.gGeneric <- function(x, CL = 0.90, ...){
 #'
 #' @examples
 #'   data(mock)
-#'   pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+#'   pkmModsSize <- pkm(formula_p = p ~ HabitatType,
 #'                    formula_k = k ~ HabitatType, data = mock$SE,
 #'                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
-#'                    sizeclassCol = "Size"
-#'                  )
-#'   cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+#'                    sizeCol = "Size", allCombos = TRUE)
+#'   cpmModsSize <- cpm(formula_l = l ~ Visibility,
 #'                    formula_s = s ~ Visibility, data = mock$CP,
 #'                    left = "LastPresentDecimalDays",
 #'                    right = "FirstAbsentDecimalDays",
 #'                    dist = c("exponential", "lognormal"),
-#'                    sizeclassCol = "Size"
-#'                    )
+#'                    sizeCol = "Size", allCombos = T)
 #'   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
 #'              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
 #'             )
