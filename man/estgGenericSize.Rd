@@ -54,18 +54,17 @@ The g estimated by \code{estgGenericSize} is a generic aggregate detection
 }
 \examples{
   data(mock)
-  pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+  pkmModsSize <- pkm(formula_p = p ~ HabitatType,
                    formula_k = k ~ HabitatType, data = mock$SE,
                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
-                   sizeclassCol = "Size"
-                 )
-  cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+                   sizeCol = "Size")
+  cpmModsSize <- cpm(formula_l = l ~ Visibility,
                    formula_s = s ~ Visibility, data = mock$CP,
                    left = "LastPresentDecimalDays",
                    right = "FirstAbsentDecimalDays",
                    dist = c("exponential", "lognormal"),
-                   sizeclassCol = "Size"
-                   )
+                   sizeCol = "Size", allCombos = T)
+
   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
             )
