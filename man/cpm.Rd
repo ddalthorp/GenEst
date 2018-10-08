@@ -4,17 +4,22 @@
 \alias{cpm}
 \alias{cpm0}
 \alias{cpmSet}
+\alias{cpmSize}
 \title{Fit cp carcass persistence models}
 \usage{
 cpm(formula_l, formula_s = NULL, data, left, right, dist = "weibull",
   allCombos = FALSE, sizeCol = NULL, CL = 0.9, quiet = FALSE)
 
 cpm0(formula_l, formula_s = NULL, data = NULL, left = NULL,
-  right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE, ...)
+  right = NULL, dist = "weibull", CL = 0.9, quiet = FALSE)
 
 cpmSet(formula_l, formula_s = NULL, data, left, right,
   dist = c("exponential", "weibull", "lognormal", "loglogistic"),
   CL = 0.9, quiet = FALSE)
+
+cpmSize(formula_l, formula_s = NULL, data, left, right,
+  dist = c("exponential", "weibull", "lognormal", "loglogistic"),
+  sizeCol = NULL, allCombos = FALSE, CL = 0.9, quiet = FALSE)
 }
 \arguments{
 \item{formula_l}{Formula for location; an object of class 
