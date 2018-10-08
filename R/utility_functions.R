@@ -127,7 +127,11 @@ checkDate <- function(testdate){
   if (is.null(testdate) || anyNA(testdate) || is.numeric(testdate))
     return(NULL)
   beginningOfTime <- as.Date("1900-01-01")
-  tmp <- try(as.Date(testdate), silent = TRUE)
+  formats <- list("%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d", "%Y-%m-%d")
+  tmp1 <- try(as.Date(testdate, tryFormats  = formats[1]), silent = TRUE)
+  if (class(tmp1) == "try-error" || anyNA(tmp)){ # then not format[1]
+    tmp2 <- try(as.Date(testdate, tryFormats  = formats[1]), silent = TRUE)
+  }
   if (class(tmp) == "try-error") return (NULL)
   if (anyNA(tmp) || any(tmp < beginningOfTime)) return (NULL)
   return(tmp)
@@ -192,7 +196,7 @@ disclaimers <- function(){
     "nor shall the fact of release constitute any such warranty. The software ",
     "is provided on the condition that neither the USGS nor the U.S. Government ",
     "shall be held liable for any damages resulting from the authorized or ",
-    "unauthorized use of the software."
+    "unauthorized use of the software."),
 #      "This software has been approved for release by the U.S. Geological ",
 #      "Survey (USGS). Although the software has been subjected to rigorous ",
 #      "review, the USGS reserves the right to update the software as needed ",
