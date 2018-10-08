@@ -22,12 +22,10 @@ Plot method for a single generic \code{ghat} estimation
 \examples{
   data(mock)
   model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
-                data = mock$SE
-              )
+                data = mock$SE)
   model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
                 data = mock$CP, left = "LastPresentDecimalDays", 
-                right = "FirstAbsentDecimalDays"
-              )
+                right = "FirstAbsentDecimalDays")
   avgSS <- averageSS(mock$SS)
   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP)
   plot(ghatsGeneric)

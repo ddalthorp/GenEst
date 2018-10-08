@@ -23,6 +23,7 @@ Checks whether the dates are in a standard format and sensible.
  entering a year as 0217 or 1017 instead of 2017.
 }
 \examples{
-  yyyymmdd("02/20/2018")
+ checkDate("02/20/2018")
+ checkDate("10/08/2018")
 
 }

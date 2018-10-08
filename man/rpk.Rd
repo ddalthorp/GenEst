@@ -13,8 +13,8 @@ rpk(n, model)
 \code{pkm()})}
 }
 \value{
-list of two matrices of \code{n} simulated \code{p} and \code{k}
-  for cells defined by the \code{model} object.
+list of pairs of matrices of \code{n} simulated \code{p} and
+ \code{k} for cells defined by the \code{model} object.
 }
 \description{
 Simulate parameters from a \code{\link{pkm}} model object

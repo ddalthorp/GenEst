@@ -2,149 +2,210 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{pkm}
 \alias{pkm}
-\title{Fit a single searcher efficiency model.}
+\alias{pkm0}
+\alias{pkmSet}
+\alias{pkmSize}
+\title{Fit pk searcher efficiency models.}
 \usage{
 pkm(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
+  allCombos = FALSE, sizeCol = NULL, CL = 0.9, kInit = 0.7,
+  quiet = FALSE, ...)
+
+pkm0(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
   kInit = 0.7, CL = 0.9, quiet = FALSE, ...)
+
+pkmSet(formula_p, formula_k = NULL, data, obsCol = NULL,
+  kFixed = NULL, kInit = 0.7, CL = 0.9, quiet = FALSE)
+
+pkmSize(formula_p, formula_k = NULL, data, kFixed = NULL,
+  obsCol = NULL, sizeCol = NULL, allCombos = FALSE, kInit = 0.7,
+  CL = 0.9, quiet = FALSE)
 }
 \arguments{
-\item{formula_p}{Formula for p; an object of class "\code{\link{formula}}"
-(or one that can be coerced to that class): a symbolic description of 
-the model to be fitted. Details of model specification are given under 
+\item{formula_p}{Formula for p; an object of class \code{\link{formula}}
+(or one that can be coerced to that class): a symbolic description of
+the model to be fitted. Details of model specification are given under
 "Details".}
 
-\item{formula_k}{Formula for k; an object of class "\code{\link{formula}}"
+\item{formula_k}{Formula for k; an object of class \code{\link{formula}}
 (or one that can be coerced to that class): a symbolic description of the
-model to be fitted. Details of model specification are given under 
+model to be fitted. Details of model specification are given under
 "Details".}
 
-\item{data}{Dataframe with results from searcher efficiency trials and any
+\item{data}{Data frame with results from searcher efficiency trials and any
 covariates included in \code{formula_p} or {formula_k} (required).}
 
-\item{obsCol}{Vector of names of columns in \code{data} where results 
-for each search occasion are stored (optional). If no \code{obsCol} are 
-provided, \code{pkm} uses as \code{obsCol} all columns with names that 
-begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
-"s2", "s3", etc. This option is included as a convenience for the user, 
-but care must be taken that other data are not stored in columns with 
-names matching that pattern. Alternatively, \code{obsCol} may be 
-entered as a vector of names, like \code{c("s1", "s2", "s3")}, 
-\code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch", 
-"lastSearch")}.}
+\item{obsCol}{Vector of names of columns in \code{data} where results
+ for each search occasion are stored (optional). If \code{obsCol} is not
+ provided, \code{pkm} uses as \code{obsCol} all columns with names that
+ begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
+ "s2", "s3", etc. This option is included as a convenience for the user,
+ but care must be taken that other data are not stored in columns with
+ names matching that pattern. Alternatively, \code{obsCol} may be
+ entered as a vector of names, like \code{c("s1", "s2", "s3")},
+ \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch",
+ "lastSearch")}. The columns must be in chronological order, that is, it is
+assumed that the first column is for the first search after carcass arrival,
+the second column is for the second search, etc.}
 
 \item{kFixed}{Parameter for user-specified \code{k} value (optional). If a
 value is provided, \code{formula_k} is ignored and the model is fit under
 the assumption that the \code{k} parameter is fixed and known to be
 \code{kFixed}.}
 
-\item{kInit}{Initial value used for numerical optimization of \code{k}.}
+\item{CL}{numeric value in (0, 1). confidence level}
 
-\item{CL}{confidence level}
+\item{kInit}{numeric value in (0, 1). Initial value used for numerical
+ optimization of \code{k}. Default is \code{kInit = 0.7}. It is rarely
+(if ever) necessary to use an alternative initial value.}
 
 \item{quiet}{Logical indicator of whether or not to print messsages}
 
 \item{...}{additional arguments passed to subfunctions}
 }
 \value{
-\code{pkm} returns an object of class "\code{pkm}", which is a list
-  whose components characterize the fit of the model. Due to the large
-  number and complexity of components, only a subset of them is printed 
-  automatically; the rest can be viewed/accessed directly via the \code{$}
- operator if desired.
+an object of an object of class \code{pkm}, \code{pkmSet},
+ \code{pkmSize}, or \code{pkmSetSize}.
+\describe{
+ \item{\code{pkm0()}}{returns a \code{pkm} object, which is a description
+   of a single, fitted pk model. Due to the large number and complexity of
+   components of a\code{pkm} model, only a subset of them is printed
+   automatically; the rest can be viewed/accessed via the \code{$} operator
+   if desired. These are described in detail in the '\code{pkm} Components'
+   section.}
+ \item{\code{pkmSet()}}{returns a list of \code{pkm} objects, one for each
+   of the submodels, as described with parameter \code{allCombos = TRUE}.}
+ \item{\code{pkmSize()}}{returns a list of \code{pkmSet} objects (one for
+   each 'size') if \code{allCombos = T}, or a list of \code{pkm} objects (one
+   for each 'size') if \code{allCombos = T}}
+ \item{\code{pkm}}{returns a \code{pkm}, \code{pkmSet}, \code{pkmSize}, or
+   \code{pkmSetSize} object:
+    \itemize{
+       \item \code{pkm} object if \code{allCombos = FALSE, sizeCol = NULL}
+       \item \code{pkmSet} object if \code{allCombos = TRUE, sizeCol = NULL}
+       \item \code{pkmSize} object if \code{allCombos = FALSE, sizeCol != NULL}
+       \item \code{pkmSetSize} object if \code{allCombos = TRUE, sizeCol != NULL}
+    }
+ }
+}
+}
+\description{
+Searcher efficiency is modeled as a function of the number of
+ times a carcass has been missed in previous searches and any number of
+ covariates. Format and usage parallel that of common \code{R} functions
+ \code{lm}, \code{glm}, and \code{gam}. However, the input data
+ (\code{data}) is structured differently to accommodate the
+ multiple-search searcher efficiency trials (see Details), and model
+ formulas may be entered for both \code{p} (akin to an intercept) and
+ \code{k} (akin to a slope).
+}
+\details{
+The probability of finding a carcass that is present at the time of
+  search is \code{p} on the first search after carcass arrival and is
+  assumed to decrease by a factor of \code{k} each time the carcass is
+  missed in searches. Both \code{p} and \code{k} may depend on covariates
+  such as ground cover, season, species, etc., and a separate model format
+  (\code{formula_p} and \code{formula_k}) may be entered for each. The
+  models are entered as they would be in the familiar \code{lm} or
+  \code{glm} functions in R. For example, \code{p} might vary with
+  \code{A}, \code{B}, and \code{C}, while \code{k} varies
+  only with \code{A}. A user might then enter \code{p ~ A + B + C}
+  for \code{formula_p} and \code{k ~ A} for
+  \code{formula_k}. Other R conventions for defining formulas may also be
+  used, with \code{A:B} for the interaction between covariates
+  A and B and \code{A * B} as short-hand for \code{A + B + A:B}.
 
-The following components are displayed automatically:
+  Search trial \code{data} must be entered in a data frame with data in
+  each row giving the fate of a single carcass in the field trials. There
+  must be a column for each search occassion, with 0, 1, or NA depending on
+  whether the carcass was missed, found, or not available (typically
+  because it was found and removed on a previous search, had been earlier
+  removed by  scavengers, or was not searched for) on the given search
+  occasion. Additional columns with values for categorical covariates
+  (e.g., visibility = E, M, or D) may also be included.
+}
+\section{\code{pkm} Components}{
+
+
+The following components of a \code{pkm} object are displayed automatically:
 
 \describe{
  \item{\code{call}}{the function call to fit the model}
-  \item{\code{formula_p}}{the model formula for the \code{p} parameter}
+ \item{\code{formula_p}}{the model formula for the \code{p} parameter}
   \item{\code{formula_k}}{the model formula for the \code{k} parameter}
  \item{\code{predictors}}{list of covariates of \code{p} and/or \code{k}}
- \item{\code{cellwiseTable}}{summary statistics for estimated cellwise 
-   \code{p} and \code{k}, including the medians and upper & lower bounds
-   on CIs for each parameter, indexed by cell (or combination of
-   covariate levels).}
  \item{\code{AICc}}{the AIC value as corrected for small sample size}
  \item{\code{convergence}}{convergence status of the numerical optimization
-   to find the maximum likelihood estimates of \code{p} and \code{k}. A 
-   value of \code{0} indicates that the model was fit successfully. For 
+  to find the maximum likelihood estimates of \code{p} and \code{k}. A
+   value of \code{0} indicates that the model was fit successfully. For
    help in deciphering other values, see \code{\link{optim}}.}
+ \item{\code{cell_pk}}{summary statistics for estimated cellwise estimates
+   of \code{p} and \code{k}, including the number of carcasses in each cell,
+   medians and upper & lower bounds on CIs for each parameter, indexed by
+   cell (or combination of covariate levels).}
 }
 
 The following components are not printed automatically but can be accessed
 via the \code{$} operator:
 \describe{
- \item{\code{data}}{the data used to fit the model}
-  \item{\code{betahat_p}}{parameter estimates for the terms in the 
-    regression model for for \code{p} (logit scale)}
-  \item{\code{betahat_k}}{parameter estimates for the terms in the 
-    regression model for for \code{k} (logit scale). If \code{k} is fixed 
-    and known, \code{betahat_k} is not calculated.}
+  \item{\code{data}}{the data used to fit the model}
+  \item{\code{data0}}{\code{$data} with NA rows removed}
+  \item{\code{betahat_p, betahat_k}}{parameter estimates for the terms in the
+   regression model for for \code{p} and \code{k} (logit scale). If \code{k}
+   is fixed or not provided, then \code{betahat_k} is not calculated.}
   \item{\code{varbeta}}{the variance-covariance matrix of the estimators
-    for \code{c(betahat_p, betahat_k}.}
-  \item{\code{cellMM_p}}{a cellwise model (design) matrix for covariate 
-    structure of \code{p_formula}}
-  \item{\code{cellMM_k}}{a cellwise model(design) matrix for covariate 
-    structure of \code{k_formula}}
-  \item{\code{levels_p}}{all levels of each covariate of \code{p}}
-  \item{\code{levels_k}}{all levels of each covariate of \code{k}}
+    for \code{c(betahat_p, betahat_k)}.}
+ \item{\code{cellMM_p, cellMM_k}}{cellwise model (design) matrices for
+   covariate structures of \code{p_formula} and \code{k_formula}}
+  \item{\code{levels_p, levels_k}}{all levels of each covariate of \code{p}
+    and \code{k}}
   \item{\code{nbeta_p, nbeta_k}}{number of parameters to fit the \code{p}
     and \code{k} models}
   \item{\code{cells}}{cell structure of the pk-model, i.e., combinations of
     all levels for each covariate of \code{p} and \code{k}. For example, if
     \code{covar1} has levels \code{"a"}, \code{"b"}, and \code{"c"}, and
-    \code{covar2} has levels \code{"X"} and \code{"Y"}, then the cells 
-    would consist of \code{a.X}, \code{a.Y}, \code{b.X}, \code{b.Y}, 
+    \code{covar2} has levels \code{"X"} and \code{"Y"}, then the cells
+    would consist of \code{a.X}, \code{a.Y}, \code{b.X}, \code{b.Y},
     \code{c.X}, and \code{c.Y}.}
   \item{\code{ncell}}{total number of cells}
- \item{\code{predictors_k}}{list of covariates of \code{p}}
- \item{\code{predictors_p}}{list of covariates of \code{k}}
+ \item{\code{predictors_k, predictors_p}}{covariates of \code{p} and \code{k}}
  \item{\code{observations}}{observations used to fit the model}
  \item{\code{kFixed}}{the input \code{kFixed}}
- \item{\code{AIC}}{the 
+ \item{\code{AIC}}{the
    \href{https://en.wikipedia.org/wiki/Akaike_information_criterion}{AIC}
    value for the fitted model}
  \item{\code{carcCells}}{the cell to which each carcass belongs}
  \item{\code{CL}}{the input \code{CL}}
+ \item{\code{loglik}}{the log-liklihood for the maximum likelihood estimate}
+ \item{\code{pOnly}}{a logical value telling whether \code{k} is included in
+   the model. \code{pOnly = TRUE} if and only if \code{length(obsCol) == 1)}
+   and \code{kFixed = NULL}}.
 }
 }
-\description{
-Searcher efficiency is modeled as a function of the number of
-  times a  carcass has been missed in previous searches and any number of 
-  such as covariates. Format and usage parallel that of common \code{R} 
-  functions \code{lm}, \code{glm}, and \code{gam}. However, the input data 
-  (\code{data}) is structured differently to accommodate the 
-  multiple-search searcher efficiency trials (see 'Details'), and model 
-  formulas may be entered for both \code{p} (akin to an intercept) and  
-  \code{k} (akin to aslope).
-}
-\details{
-The probability of finding a carcass that is present at the time of 
-  search is \code{p} on the first search after carcass arrival and is 
-  assumed todecrease by a factor of \code{k} each time the carcass is  
-  missed insearches. Both \code{p} and \code{k} may depend on covariates 
-  such as ground cover, season, species, etc., and a separate model format 
-  (\code{formula_p} and \code{formula_k}) may be entered for each. The 
-  models are entered as they would be in the familiar \code{lm} or 
-  \code{glm} functions in R. For example, \code{p} might vary with
-  \code{visibility}, \code{season}, and \code{site}, while \code{k} varies
-  only with \code{visibility}. A user might then enter \code{p ~ visibility
-  + season + site} for \code{formula_p} and \code{k ~ visibility} for 
-  \code{formula_k}. Other R conventions for defining formulas may also be 
-  used, with \code{covar1:covar2} for the interaction between covariates 
-  1 and 2 and \code{covar1 * covar2} as short-hand for \code{covar1 +
-  covar2 + covar1:covar2}.
 
-Search trial \code{data} must be entered in a data frame with data in 
-  each row giving the fate of a single carcass in the field trials. There
-  must be a column for each search occassion, with 0, 1, or NA depending on
-  whether the carcass was missed, found, or not available (typically 
-  because it was found and removed on a previous search, had been earlier
-  removed by  scavengers, or was not searched for) on the given search  
-  occasion. Additional columns with values for categorical covariates  
-  (e.g., visibility = E, M, or D) may also be included.
+\section{Advanced}{
+
+ \code{pkmSize} may also be used to fit a single model for each size class if
+ \code{allCombos = FALSE}. To do so, \code{formula_p} and \code{formula_k}
+ must be a named list of formulas with names matching the sizes listed in
+ \code{unique(data[, sizeCol])}. The return value is then a list of
+ \code{pkm} objects, one for each size.
 }
+
 \examples{
-  data(wind_RP)
-  pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+ head(data(wind_RP))
+ mod1 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+ class(mod1)
+ mod2 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+   allCombos = TRUE)
+ class(mod2)
+ names(mod2)
+ class(mod2[[1]])
+ mod3 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+   allCombos = TRUE, sizeCol = "Size")
+ class(mod3)
+ names(mod3)
+ class(mod3[[1]])
+ class(mod3[[1]][[1]])
 
 }

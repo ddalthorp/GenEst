@@ -4,7 +4,7 @@
 \alias{rcp}
 \title{Simulate parameters from a fitted cp model}
 \usage{
-rcp(n = 1, model, seed = NULL, type = "survreg")
+rcp(n, model, type = "survreg")
 }
 \arguments{
 \item{n}{the number of simulation draws}
@@ -12,10 +12,10 @@ rcp(n = 1, model, seed = NULL, type = "survreg")
 \item{model}{A \code{cpm} object (which is returned from 
 \code{\link{cpm}})}
 
-\item{seed}{optional input to set the seed of the RNG}
-
 \item{type}{The type of parameters requested. \code{"survreg"} or 
 \code{"ppersist"}}
+
+\item{seed}{optional input to set the seed of the RNG}
 }
 \value{
 list of two matrices of \code{n} simulated \code{l} and \code{s} 

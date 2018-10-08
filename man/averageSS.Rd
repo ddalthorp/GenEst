@@ -4,7 +4,7 @@
 \alias{averageSS}
 \title{Tabulate an average search schedule from a multi-unit SS data table}
 \usage{
-averageSS(data_SS, datesSearchedCol = NULL)
+averageSS(data_SS, SSdate = NULL)
 }
 \arguments{
 \item{data_SS}{a multi-unit SS data table, for which the average interval 
@@ -14,8 +14,8 @@ each unit indicating whether the unit was searched on the given date).
 Other columns are optional, but optional columns should not all contain
 at least on value that is not a 1 or 0.}
 
-\item{datesSearchedCol}{Column name for the date searched data (optional).
-if no \code{datesSearchedCol} is provided, \code{data_SS} will be parsed
+\item{SSdate}{Column name for the date searched data (optional).
+if no \code{SSdate} is provided, \code{data_SS} will be parsed
 to extract the dates automatically. If there is more than one column with
 dates, then an error will be thrown and the user will be required to
 provide the name of the desired dates column.}
