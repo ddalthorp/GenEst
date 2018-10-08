@@ -87,7 +87,7 @@ CP_size_model_set <- cpm(formula_l = l ~ Season,
                            right = "FirstAbsent",
                            dist = c("exponential", "weibull"),
                            sizeCol = "Size",
-                           data = data_CP, allCombos = T)
+                           data = data_CP, allCombos = TRUE)
 class(CP_size_model_set)
 names(CP_size_model_set)
 class(CP_size_model_set$small)
