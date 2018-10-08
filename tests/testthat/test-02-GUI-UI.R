@@ -117,7 +117,7 @@ test_that("Model Selection Menu Widget function produces an HTML-rendering
 
   data(mock)
   modSetSize <- pkmSize(data = mock$SE, formula_p = p ~ 1,
-                  formula_k = k ~ 1, sizeCol = "Size")
+                  formula_k = k ~ 1, sizeCol = "Size", allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "SE"), "shiny.render.function")
   expect_is(modelSelectionWidgetHeader(modSetSize), "character")
   expect_is(modelSelectionWidgetRow(modSetSize, "SE", 1), "shiny.tag")
@@ -130,7 +130,7 @@ test_that("Model Selection Menu Widget function produces an HTML-rendering
   expect_is(modelSelectionWidget(modSetSize, "CP"), "shiny.render.function")
 
   modSetSize <- pkmSize(data = mock$SE, formula_p = p ~ 1,
-                  formula_k = k ~ 1)
+                  formula_k = k ~ 1, allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "SE"), "shiny.render.function")
   expect_is(modelSelectionWidgetHeader(modSetSize), "character")
   expect_is(modelSelectionWidgetRow(modSetSize, "SE", 1), "shiny.tag")
