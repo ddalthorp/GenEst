@@ -29,7 +29,7 @@ This package is designed to analyze searcher efficiency,
   \item{\code{\link{estM}}}{estimate mortality given \code{pkm}, \code{cpm}
    and data}
   \item{\code{\link{calcSplits}}}{split mortality estimates by subcategories}
-  \item{\code{plot}}{S3 function for \code{\link[=pkm.plot]{pkm}},
+  \item{\code{plot}}{S3 function for \code{\link[=plot.pkm]{pkm}},
    \code{\link[=plot.pkmSet]{pkmSet}}, \code{\link[=plot.cpm]{cpm}},
    \code{\link[=plot.cpmSet]{cpmSet}}, \code{\link[=plot.estM]{estM}},
    \code{\link[=plot.splitFull]{splitFull}},
@@ -42,9 +42,9 @@ This package is designed to analyze searcher efficiency,
    \code{\link[=summary.gGeneric]{gGeneric}},
    \code{\link[=summary.gGenericSize]{gGenericSize}} objects}
   \item{\code{\link{aicc}}}{S3 function for extracting models' AICc values
-   from \code{\link{pkm}}, \code{\link{pkmSet}}, \code{\link{pkmSize}},
-   \code{\link{pkmSetSize}}, \code{\link{cpm}}, \code{\link{cpmSet}},
-   \code{\link{cpmSize}}, and  \code{\link{cpmSetSize}} objects}
+   from \code{\link{pkm}}, \code{\link[=pkm]{pkmSet}}, \code{\link[=pkm]{pkmSize}},
+   \code{\link[=pkm]{pkmSetSize}}, \code{\link{cpm}}, \code{\link[=cpm]{cpmSet}},
+   \code{\link[=cpm]{cpmSize}}, and  \code{\link[=cpm]{cpmSetSize}} objects}
   \item{\code{\link{estgGeneric}}, \code{\link{estgGenericSize}}}{estimate
    detection probability (g) for given searcher efficiency and carcass
    persistence model}
@@ -55,7 +55,7 @@ This package is designed to analyze searcher efficiency,
 \section{Potentially useful calculation functions}{
 
 \code{\link{rpk}}, \code{\link{rcp}}\cr
-\code{\link{estg}}, \code{\link{calg}}\cr
+\code{\link{estg}}, \code{\link{calcg}}\cr
 \code{\link{ppersist}}, \code{\link{SEsi}}\cr
 \code{\link{alogit}}, \code{\link{logit}}\cr
 \code{\link{Ecbinom}}\cr
@@ -93,8 +93,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{analysisPanel}}\cr
 \code{\link{b}}\cr
 \code{\link{big}}\cr
-\code{\link{calcRateC}}\cr
-\code{\link{calcTsplitC}}\cr
 \code{\link{cButtonStyle}}\cr
 \code{\link{center}}\cr
 \code{\link{checkComponents}}\cr
@@ -136,7 +134,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{downloadsPanel}}\cr
 \code{\link{downloadTable}}\cr
 \code{\link{DWPCols}}\cr
-\code{\link{EcbinomXY}}\cr
 \code{\link{expandModelSetCP}}\cr
 \code{\link{ftpLink}}\cr
 \code{\link{GeneralInputSidebar}}\cr
