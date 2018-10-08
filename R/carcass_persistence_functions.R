@@ -214,7 +214,7 @@ cpm <- function(formula_l, formula_s = NULL, data, left, right,
 #' @export
 #'
 cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
-    right = NULL, dist = "weibull", CL = 0.90, quiet = FALSE, ...){
+    right = NULL, dist = "weibull", CL = 0.90, quiet = FALSE){
   dist <- tolower(dist)
   # initial error-checking
   if (length(left) == 0){
@@ -781,8 +781,8 @@ cpmSet <- function(formula_l, formula_s = NULL, data, left, right,
   class(output) <- c("cpmSet", "list")
   return(output)
 }
-# @rdname cpm
-# @export
+#' @rdname cpm
+#' @export
 cpmSize <- function(formula_l, formula_s = NULL, data, left, right,
   dist = c("exponential", "weibull", "lognormal", "loglogistic"),
   sizeCol = NULL, allCombos = FALSE, CL = 0.90, quiet = FALSE){
