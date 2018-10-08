@@ -4,18 +4,14 @@
 \alias{calcSplits}
 \title{Estimate the number of fatalities by up to two splitting covariates}
 \usage{
-calcSplits(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
-  split_SS = NULL, data_SS = NULL, split_time = NULL, ...)
+calcSplits(M, split_CO = NULL, data_CO = NULL, split_SS = NULL,
+  data_SS = NULL, split_time = NULL, ...)
 }
 \arguments{
-\item{M}{Numeric array (ncarc x nsim) of estimated mortalities, such as
-those returned by the function \code{\link{estM}}.}
+\item{M}{\code{\link{estM}} object, containing numeric array (ncarc x nsim) of estimated
+mortalities and other pieces}
 
-\item{Aj}{Integer array (ncarc x nsim) of simulated arrival intervals for
-each observed carcass. Typically, the \code{Aj}
-array will be the \code{$Aj} return value of function \code{\link{estM}}.}
-
-\item{split_CO}{Character vector of names of splitting covariates to be 
+\item{split_CO}{Character vector of names of splitting covariates to be
 found in the \code{data_CO} data frame. No more than two \code{split_CO} 
 variables are allowed. Use \code{split_CO = NULL} if no CO splits are 
 desired.}
@@ -116,9 +112,9 @@ Arrival intervals (\code{Aj}) are given as integers, j, that
   Mhat <- estM(nsim = 1000, data_CO = wind_RPbat$CO, 
     data_SS = wind_RPbat$SS, data_DWP = wind_RPbat$DWP, 
     model_SE = model_SE, model_CP = model_CP,
-    unitCol = "Turbine", dateFoundCol = "DateFound")
+    unitCol = "Turbine", COdate = "DateFound")
 
-  M_spp <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
+  M_spp <- calcSplits(M = Mhat, split_CO = "Species",
     data_CO = wind_RPbat$CO)
   summary(M_spp)
   plot(M_spp)

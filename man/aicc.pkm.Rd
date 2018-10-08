@@ -2,7 +2,7 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{aicc.pkm}
 \alias{aicc.pkm}
-\title{extract AIC value from pkm object}
+\title{extract AICc value from pkm object}
 \usage{
 \method{aicc}{pkm}(x, ...)
 }
@@ -12,8 +12,8 @@
 \item{...}{further arguments passed to or from other methods}
 }
 \value{
-AIC and AICc of the model
+Data frame with the formulas for p and k and the AICc of the model
 }
 \description{
-extract AIC value from pkm object
+extract AICc value from pkm object
 }

@@ -306,6 +306,8 @@ msgModFail <- function(mods, type = "SE", special = NULL){
              )
     } else if (special == "size_k"){
       msg <- "Some size classes had no successful models. Consider a fixed k."
+    } else if (special == "NA_kFixed"){
+      msg <- "kFixed check box selected but no value entered."
     }
   }
   if (type == "g"){

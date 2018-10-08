@@ -43,9 +43,9 @@ update_rv_data_SE <- function(rv, input){
   rv$colNames_SE_obs0 <- obsCols_SE(rv$data_SE)
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
-  rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs, rv$sizeclassCol)
-  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds, rv$sizeclassCol)
+  rv$sizeCol <- updatesizeCol(input$sizeCol, rv$colNames_size)
+  rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs, rv$sizeCol)
+  rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds, rv$sizeCol)
   return(rv)
 }
 
@@ -71,7 +71,7 @@ update_rv_data_SE_clear <- function(rv, input){
   rv$colNames_SE_obs0 <- NULL
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+  rv$sizeCol <- updatesizeCol(input$sizeCol, rv$colNames_size)
   rv$colNames_SE_obs <- NULL
   rv$colNames_SE_preds <- NULL
   rv$toRemove_SE_obs <- NULL
@@ -105,7 +105,7 @@ update_rv_data_SE_clear <- function(rv, input){
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$SEmodToUse <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
@@ -131,9 +131,9 @@ update_rv_data_SE_clear <- function(rv, input){
   rv$figH_g <- 400
   rv$figW_g <- 800
 
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   return(rv)
 }
@@ -165,10 +165,10 @@ update_rv_data_CP <- function(rv, input){
   rv$colNames_ltp0 <- obsCols_ltp(rv$data_CP)
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
-  rv$colNames_CP_fta <- removeCols(rv$colNames_fta, rv$sizeclassCol)
-  rv$colNames_CP_ltp <- removeCols(rv$colNames_ltp, rv$sizeclassCol)
-  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds, rv$sizeclassCol)
+  rv$sizeCol <- updatesizeCol(input$sizeCol, rv$colNames_size)
+  rv$colNames_CP_fta <- removeCols(rv$colNames_fta, rv$sizeCol)
+  rv$colNames_CP_ltp <- removeCols(rv$colNames_ltp, rv$sizeCol)
+  rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds, rv$sizeCol)
   return(rv)
 }
 
@@ -197,7 +197,7 @@ update_rv_data_CP_clear <- function(rv, input){
   rv$colNames_ltp0 <- NULL
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+  rv$sizeCol <- updatesizeCol(input$sizeCol, rv$colNames_size)
 
   rv$colNames_fta <- NULL
   rv$colNames_ltp <- NULL
@@ -211,7 +211,7 @@ update_rv_data_CP_clear <- function(rv, input){
   rv$fta <- NULL
   rv$preds_CP <- NULL
 
-  rv$dists <- NULL
+  rv$dist <- NULL
   rv$predictors_CP <- NULL
   rv$formula_l <- NULL
   rv$formula_s <- NULL
@@ -235,14 +235,14 @@ update_rv_data_CP_clear <- function(rv, input){
   rv$figH_CP <- 800
   rv$figW_CP <- 800
 
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$CPmodToUse <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
@@ -318,7 +318,7 @@ update_rv_data_SS_clear <- function(rv, input){
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
   rv$nsplit_CO <- 0
@@ -373,7 +373,7 @@ update_rv_data_DWP_clear <- function(rv, input){
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
   rv$nsplit_CO <- 0
@@ -405,7 +405,7 @@ update_rv_data_CO <- function(rv, input){
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
 
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
+  rv$sizeCol <- updatesizeCol(input$sizeCol, rv$colNames_size)
   return(rv)
 }
 
@@ -428,15 +428,15 @@ update_rv_data_CO_clear <- function(rv, input){
   rv$colNames_size <- updateColNames_size(rv)
   rv$colNames_size0 <- updateColNames_size(rv)
 
-  rv$sizeclassCol <- updateSizeclassCol(input$sizeclassCol, rv$colNames_size)
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$sizeCol <- updatesizeCol(input$sizeCol, rv$colNames_size)
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$SEmodToUse <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
@@ -459,27 +459,27 @@ update_rv_data_CO_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_sizeclassCol <- function(rv, input){
-  rv$sizeclassCol <- input$sizeclassCol
+update_rv_sizeCol <- function(rv, input){
+  rv$sizeCol <- input$sizeCol
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
-  rv$toRemove_SE_preds <- c(rv$obsCols_SE, rv$sizeclassCol)
+  rv$toRemove_SE_preds <- c(rv$obsCols_SE, rv$sizeCol)
   rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0,
                             rv$toRemove_SE_preds)
-  rv$toRemove_SE_obs <- c(rv$preds_SE, rv$sizeclassCol)
+  rv$toRemove_SE_obs <- c(rv$preds_SE, rv$sizeCol)
   rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs0, rv$toRemove_SE_obs)
-  rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeclassCol)
+  rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeCol)
   rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
-  rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeclassCol)
+  rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeCol)
   rv$colNames_fta <- removeCols(rv$colNames_fta0, rv$toRemove_fta)
-  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeclassCol)
+  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeCol)
   rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0,
                             rv$toRemove_CP_preds)
 
-  scCol <- input$sizeclassCol
+  scCol <- input$sizeCol
   sizeclasses <- unique(c(rv$data_SE[ , scCol], rv$data_CP[ , scCol]))
   rv$nsizeclasses <- length(sizeclasses)
   rv$sizeclasses_k <- sizeclasses
@@ -511,18 +511,18 @@ update_rv_sizeclassCol <- function(rv, input){
 #' @export
 #'
 update_rv_cols_SE_obs <- function(rv, input){
-  rv$sizeclassCol <- input$sizeclassCol
+  rv$sizeCol <- input$sizeCol
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
-  rv$toRemove_SE_preds <- c(rv$obsCols_SE, rv$sizeclassCol)
+  rv$toRemove_SE_preds <- c(rv$obsCols_SE, rv$sizeCol)
   rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0,
                             rv$toRemove_SE_preds)
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
   return(rv)
 }
 
@@ -540,17 +540,17 @@ update_rv_cols_SE_obs <- function(rv, input){
 #' @export
 #'
 update_rv_cols_SE_preds <- function(rv, input){
-  rv$sizeclassCol <- input$sizeclassCol
+  rv$sizeCol <- input$sizeCol
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
-  rv$toRemove_SE_obs <- c(rv$preds_SE, rv$sizeclassCol)
+  rv$toRemove_SE_obs <- c(rv$preds_SE, rv$sizeCol)
   rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs0, rv$toRemove_SE_obs)
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   return(rv)
 }
@@ -570,20 +570,20 @@ update_rv_cols_SE_preds <- function(rv, input){
 #' @export
 #'
 update_rv_cols_ltp <- function(rv, input){
-  rv$sizeclassCol <- input$sizeclassCol
+  rv$sizeCol <- input$sizeCol
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
-  rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeclassCol)
-  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeclassCol)
+  rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeCol)
+  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeCol)
   rv$colNames_fta <- removeCols(rv$colNames_fta0, rv$toRemove_fta)
   rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0,
                             rv$toRemove_CP_preds)
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   return(rv)
 }
@@ -603,20 +603,20 @@ update_rv_cols_ltp <- function(rv, input){
 #' @export
 #'
 update_rv_cols_fta <- function(rv, input){
-  rv$sizeclassCol <- input$sizeclassCol
+  rv$sizeCol <- input$sizeCol
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
-  rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeclassCol)
-  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeclassCol)
+  rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeCol)
+  rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeCol)
   rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
   rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0,
                             rv$toRemove_CP_preds)
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   return(rv)
 }
@@ -635,19 +635,19 @@ update_rv_cols_fta <- function(rv, input){
 #' @export
 #'
 update_rv_cols_CP_preds <- function(rv, input){
-  rv$sizeclassCol <- input$sizeclassCol
+  rv$sizeCol <- input$sizeCol
   rv$obsCols_SE <- input$obsCols_SE
   rv$preds_SE <- input$preds_SE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
-  rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeclassCol)
+  rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeCol)
   rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
-  rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeclassCol)
+  rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeCol)
   rv$colNames_fta <- removeCols(rv$colNames_fta0, rv$toRemove_fta)
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   return(rv)
 }
@@ -669,7 +669,7 @@ update_rv_run_SE <- function(rv, input){
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$SEmodToUse <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
@@ -704,7 +704,7 @@ update_rv_run_SE <- function(rv, input){
   names(rv$kFixedChoice) <- rv$sizeclasses_k
   rv$kFixed <- setkFix(rv$kFixedChoice, rv$kFixed)
 
-  if (any(is.na(rv$kFixed[rv$kFixedChoice]))){
+  if (any(is.na(as.numeric(rv$kFixed[rv$kFixedChoice]) == 1))){
     return(rv)
   }
   if (any(rv$kFixed[rv$kFixedChoice] < 0 | rv$kFixed[rv$kFixedChoice] > 1)){
@@ -718,20 +718,19 @@ update_rv_run_SE <- function(rv, input){
   rv$formula_k <- formula(paste0("k~", rv$predictors_SE))
 
   rv$CL <- input$CL
-  rv$sizeclassCol <- input$sizeclassCol
+  rv$sizeCol <- input$sizeCol
   rv$mods_SE <- suppressWarnings(
-                  pkmSetSize(formula_p = rv$formula_p,
+                  pkmSize(formula_p = rv$formula_p,
                     formula_k = rv$formula_k, data = rv$data_SE,
-                    obsCol = rv$obsCols_SE, sizeclassCol = rv$sizeclassCol,
+                    obsCol = rv$obsCols_SE, sizeCol = rv$sizeCol,
                     kFixed = rv$kFixed, kInit = 0.7,
-                    CL = rv$CL, quiet = TRUE
-                  )
+                    CL = rv$CL, quiet = TRUE, allCombos = TRUE)
                 )
   rv$mods_SE_og <- rv$mods_SE
   rv$mods_SE <- pkmSetSizeFailRemove(rv$mods_SE)
   if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
       !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
-    rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeclassCol)
+    rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeCol)
     rv$sizeclasses_SE <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
     rv$sizeclass_SE <- rv$sizeclass
@@ -742,7 +741,7 @@ update_rv_run_SE <- function(rv, input){
     rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass_SE]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
-    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cellwiseTable
+    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cell_pk
     rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
     rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE)
@@ -792,7 +791,7 @@ update_rv_run_SE_clear <- function(rv, input){
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$SEmodToUse <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
@@ -818,9 +817,9 @@ update_rv_run_SE_clear <- function(rv, input){
   rv$figH_g <- 400
   rv$figW_g <- 800
 
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   return(rv)
 }
@@ -849,7 +848,7 @@ update_rv_outsc_SE <- function(rv, input){
     rv$modNames_SEk <- modNameSplit(rv$modNames_SE, 2)
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass_SE]]
     rv$best_SE <- (names(rv$modSet_SE)[rv$modOrder_SE])[1]
-    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cellwiseTable
+    rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cell_pk
     rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
     rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
     rv$figH_SE <- setFigH(rv$modSet_SE)
@@ -876,7 +875,7 @@ update_rv_outpk_SE <- function(rv, input){
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
 
     if (rv$outSEpk %in% names(rv$modSet_SE)){
-      rv$modTab_SE <- rv$modSet_SE[[rv$outSEpk]]$cellwiseTable
+      rv$modTab_SE <- rv$modSet_SE[[rv$outSEpk]]$cell_pk
       rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
       rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
     } else {
@@ -906,26 +905,27 @@ update_rv_run_CP <- function(rv, input){
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
-  rv$dists <- input$dists
+  rv$dist <- input$dist
   rv$nsim <- input$nsim
   rv$CL <- input$CL
-  rv$sizeclassCol <- input$sizeclassCol
+  rv$sizeCol <- input$sizeCol
   rv$predictors_CP <- prepPredictors(rv$preds_CP)
   rv$formula_l <- formula(paste("l~", rv$predictors_CP, sep = ""))
   rv$formula_s <- formula(paste("s~", rv$predictors_CP, sep = ""))
 
   rv$mods_CP <- suppressWarnings(
-                  cpmSetSize(formula_l = rv$formula_l,
+                  cpmSize(formula_l = rv$formula_l,
                     formula_s = rv$formula_s, data = rv$data_CP,
-                    left = rv$ltp, right = rv$fta, dists = rv$dists,
-                    sizeclassCol = rv$sizeclassCol, CL = rv$CL, quiet = TRUE
+                    left = rv$ltp, right = rv$fta, dist = rv$dist,
+                    sizeCol = rv$sizeCol, CL = rv$CL, quiet = TRUE,
+                    allCombos = TRUE
                   )
                 )
   rv$mods_CP_og <- rv$mods_CP
   rv$mods_CP <- cpmSetSizeFailRemove(rv$mods_CP)
 
   if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
-    rv$sizeclasses <- updateSizeclasses(rv$data_CP, rv$sizeclassCol)
+    rv$sizeclasses <- updateSizeclasses(rv$data_CP, rv$sizeCol)
     rv$sizeclasses_CP <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
     rv$sizeclass_CP <- rv$sizeclass
@@ -941,8 +941,8 @@ update_rv_run_CP <- function(rv, input){
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
     rv$modTab_CP <- list(
-         ls = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_ls,
-         desc = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_desc
+         ls = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cell_ls,
+         desc = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cell_desc
                      )
     rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
     rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
@@ -954,7 +954,7 @@ update_rv_run_CP <- function(rv, input){
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$SEmodToUse <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
@@ -996,7 +996,7 @@ update_rv_run_CP <- function(rv, input){
 #' @export
 #'
 update_rv_run_CP_clear <- function(rv, input){
-  rv$dists <- NULL
+  rv$dist <- NULL
   rv$predictors_CP <- NULL
   rv$formula_l <- NULL
   rv$formula_s <- NULL
@@ -1024,7 +1024,7 @@ update_rv_run_CP_clear <- function(rv, input){
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$SEmodToUse <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
@@ -1050,9 +1050,9 @@ update_rv_run_CP_clear <- function(rv, input){
   rv$figH_g <- 400
   rv$figW_g <- 800
 
-  rv$toRemove_sizeclassCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+  rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                 rv$preds_CP)
-  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeclassCol)
+  rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
 
   return(rv)
 }
@@ -1082,8 +1082,8 @@ update_rv_outsc_CP <- function(rv, input){
     rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
     rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
     rv$modTab_CP <- list(
-         ls = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_ls,
-         desc = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cellwiseTable_desc
+         ls = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cell_ls,
+         desc = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cell_desc
                      )
     rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
     rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
@@ -1118,8 +1118,8 @@ update_rv_outdls_CP <- function(rv, input){
     if (rv$outCPdlstab %in% names(rv$modSet_CP)){
       rv$modTab_CP <-
 
-    rv$modTab_CP <- list(ls = rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_ls,
-                     desc = rv$modSet_CP[[rv$outCPdlstab]]$cellwiseTable_desc
+    rv$modTab_CP <- list(ls = rv$modSet_CP[[rv$outCPdlstab]]$cell_ls,
+                     desc = rv$modSet_CP[[rv$outCPdlstab]]$cell_desc
                      )
       rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
       rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
@@ -1348,7 +1348,7 @@ update_rv_run_M <- function(rv, input){
       rv$sizeclasses <- "all"
      }
   }
-  rv$dateFoundCol <- input$dateFoundCol
+  rv$COdate <- input$COdate
   rv$nsim <- input$nsim
   rv$frac <- input$frac
   if (rv$frac < 0.01 | rv$frac > 1){
@@ -1390,10 +1390,10 @@ update_rv_run_M <- function(rv, input){
 
   if (rv$nsizeclasses > 1){
     rv$DWPCol <- NULL
-    rv$sizeclassCol_M <- rv$sizeclassCol
+    rv$sizeCol_M <- rv$sizeCol
   } else {
     rv$DWPCol <- input$DWPCol
-    rv$sizeclassCol_M <- NULL
+    rv$sizeCol_M <- NULL
     rv$models_SE <- rv$models_SE[[1]]
     rv$models_CP <- rv$models_CP[[1]]
   }
@@ -1403,15 +1403,15 @@ update_rv_run_M <- function(rv, input){
             estM(data_CO = rv$data_CO, data_SS = rv$data_SS, rv$data_DWP,
               frac = rv$frac, model_SE = rv$models_SE,
               model_CP = rv$models_CP,
-              dateFoundCol = rv$dateFoundCol, DWPCol = rv$DWPCol,
-              sizeclassCol = rv$sizeclassCol_M, nsim = rv$nsim,
+              COdate = rv$COdate, DWPCol = rv$DWPCol,
+              sizeCol = rv$sizeCol_M, nsim = rv$nsim,
               max_intervals = 8
             ), error = function(x){NULL}
           )
 
   if (!is.null(rv$M)){
     rv$Msplit <- tryCatch(
-                   calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
+                   calcSplits(M = rv$M,
                      split_SS = NULL, split_CO = NULL,
                      data_SS = rv$data_SS, data_CO = rv$data_CO
                    ), error = function(x){NULL}, warning = function(x){NULL}
@@ -1440,7 +1440,7 @@ update_rv_run_M_clear <- function(rv, input){
   rv$M <- NULL
   rv$Msplit <- NULL
   rv$unitCol <- NULL
-  rv$sizeclassCol_M <- NULL
+  rv$sizeCol_M <- NULL
   rv$SEmodToUse <- NULL
   rv$split_CO <- NULL
   rv$split_SS <- NULL
@@ -1471,10 +1471,10 @@ update_rv_split_M <- function(rv, input){
   rv$split_SS <- input$split_SS
   rv$nsplit_CO <- length(rv$split_CO)
   rv$nsplit_SS <- length(rv$split_SS)
-  rv$dateFoundCol <- input$dateFoundCol
+  rv$COdate <- input$COdate
 
   rv$Msplit <- tryCatch(
-                 calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
+                 calcSplits(M = rv$M,
                    split_SS = rv$split_SS, split_CO = rv$split_CO,
                    data_SS = rv$data_SS, data_CO = rv$data_CO
                  ), error = function(x){NULL}, warning = function(x){NULL}
@@ -1511,7 +1511,7 @@ update_rv_split_M_clear <- function(rv, input){
 
   if (!is.null(rv$M)){
     rv$Msplit <- tryCatch(
-                   calcSplits(M = rv$M$Mhat, Aj = rv$M$Aj,
+                   calcSplits(M = rv$M,
                      split_SS = NULL, split_CO = NULL,
                      data_SS = rv$data_SS, data_CO = rv$data_CO
                    ), error = function(x){NULL}, warning = function(x){NULL}

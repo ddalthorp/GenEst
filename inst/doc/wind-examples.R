@@ -60,7 +60,7 @@ model_CP
 ## ---- fig.width = 7, fig.height = 5, fig.align = 'center'----------------
 Mhat <- estM(nsim = 1000, data_CO = data_CO, data_SS = data_SS,
   data_DWP = data_DWP, model_SE = model_SE, model_CP = model_CP,
-  unitCol = "Turbine", dateFoundCol = "DateFound")
+  unitCol = "Turbine", COdate = "DateFound")
 
 summary(Mhat)
 plot(Mhat)
@@ -69,8 +69,7 @@ plot(Mhat)
 #  ?calcSplits
 
 ## ---- fig.width = 5, fig.height = 5, fig.align = 'center'----------------
-M_species <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
-  data_CO = data_CO)
+M_species <- calcSplits(M = Mhat, split_CO = "Species", data_CO = data_CO)
 summary(M_species)
 plot(M_species)
 
@@ -78,29 +77,26 @@ plot(M_species)
 SSdat <- prepSS(data_SS)
 
 ## ----Season Split, fig.width = 4, fig.height = 4, fig.align = 'center'----
-M_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_SS = "Season", data_SS = SSdat, split_CO = NULL,  data_CO = data_CO)
+M_season <- calcSplits(M = Mhat, split_SS = "Season", data_SS = SSdat,
+  split_CO = NULL,  data_CO = data_CO)
 summary(M_season)
 plot(M_season)
 
 ## ----Temporal Split, fig.width = 7, fig.height = 5, fig.align = 'center'----
-M_month <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_time = seq(0, max(SSdat$days), by = 28),
-  data_SS = SSdat, data_CO = data_CO)
+M_month <- calcSplits(M = Mhat, data_SS = SSdat, data_CO = data_CO,
+  split_time = seq(0, max(SSdat$days), by = 28))
 summary(M_month)
 plot(M_month)
 
 ## ----Time unit Split, fig.width = 7, fig.height = 5, fig.align = 'center'----
-M_various_times <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_time = c(seq(0, 90, by = 15), 120, 150, seq(155, 200, by = 5)),
-  data_SS = SSdat, data_CO = data_CO)
+M_various_times <- calcSplits(M = Mhat, data_SS = SSdat, data_CO = data_CO,
+  split_time = c(seq(0, 90, by = 15), 120, 150, seq(155, 200, by = 5)))
 plot(M_various_times)
 plot(M_various_times, rate = TRUE)
 
 ## ----Species and Season, fig.width = 4, fig.height = 6, fig.align = 'center'----
-M_species_by_season <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_CO = "Species", data_CO = data_CO,
-  split_SS = "Season", data_SS = SSdat)
+M_species_by_season <- calcSplits(M = Mhat,
+  split_CO = "Species", data_CO = data_CO, split_SS = "Season", data_SS = SSdat)
 plot(M_species_by_season)
 
 ## ------------------------------------------------------------------------
@@ -153,7 +149,7 @@ pkMods <- list(
 )
 
 ## ---- eval = F-----------------------------------------------------------
-#  ? pkmSetSize
+#  ? pkm
 #  vignette("command-line-example", package = "GenEst")
 
 ## ---- eval = F-----------------------------------------------------------
@@ -164,7 +160,7 @@ pkMods <- list(
 cpSet_sml <- cpmSet(
   l ~ Visibility * Season, s ~ Visibility * Season,
   data = data_CP[data_CP$Size == "sml", ], left = "LastPresent", right = "FirstAbsent",
-  dists = c( "weibull", "lognormal", "loglogistic", "exponential")
+  dist = c( "weibull", "lognormal", "loglogistic", "exponential")
 )
 
 ## ------------------------------------------------------------------------
@@ -201,20 +197,20 @@ cpMods <- list(
 ## ----Mhat plot, fig.height = 4, fig.width = 7, fig.align = 'center'------
 Mhat <- estM(nsim = 1000, data_CO = data_CO, data_SS = data_SS, frac = 0.23,
   data_DWP = data_DWP, model_SE = pkMods, model_CP = cpMods,
-  sizeclassCol = "Size", unitCol = "Turbine", dateFoundCol = "DateFound")
+  sizeCol = "Size", unitCol = "Turbine", COdate = "DateFound")
 
 summary(Mhat)
 plot(Mhat)
 
 ## ----Species Group Plot, , fig.height = 5, fig.width = 5, fig.align = 'center'----
-M_speciesGroup <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
+M_speciesGroup <- calcSplits(M = Mhat,
   split_CO = "SpeciesGroup",  data_CO = data_CO)
 summary(M_speciesGroup)
 plot(M_speciesGroup)
 
 ## ----Split Species and Season, fig.height = 12, fig.width = 4, fig.align = 'center'----
-M_speciesseason <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_CO = "Species",  data_CO = data_CO, split_SS = "Season", data_SS = data_SS)
+M_speciesseason <- calcSplits(M = Mhat, split_CO = "Species",
+  data_CO = data_CO, split_SS = "Season", data_SS = data_SS)
 summary(M_speciesseason)
 plot(M_speciesseason)
 
@@ -222,7 +218,7 @@ plot(M_speciesseason)
 plot(transposeSplits(M_speciesseason))
 
 ## ---- fig.width = 4, fig.height = 6, fig.align = 'center'----------------
-M_distance <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj,
-  split_CO = c("Distance", "Size"),  data_CO = data_CO)
+M_distance <- calcSplits(M = Mhat, split_CO = c("Distance", "Size"),
+  data_CO = data_CO)
 plot(M_distance)
 

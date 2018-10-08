@@ -5,7 +5,7 @@
 \title{Create search schedule data into an prepSS object for convenient 
  splits analyses}
 \usage{
-prepSS(data_SS, datesSearchedCol = NULL, preds = NULL)
+prepSS(data_SS, SSdate = NULL, preds = NULL)
 }
 \arguments{
 \item{data_SS}{data frame or matrix with search schedule parameters,
@@ -13,8 +13,8 @@ including columns for search dates, covariates (describing characteristics
 of the search intervals), and each unit (with 1s and 0s to indicate 
 whether the given unit was searched (= 1) or not (= 0) on the given date)}
 
-\item{datesSearchedCol}{name of the column with the search dates in it
-(optional). If no \code{datesSearchedCol} is given, \code{prepSS} will 
+\item{SSdate}{name of the column with the search dates in it
+(optional). If no \code{SSdate} is given, \code{prepSS} will
 try to find the date column based on data formats. If there is exactly one
 column that can be interpreted as dates, that column will be taken as the
 dates searched. If more than one date column is found, \code{prepSS} exits

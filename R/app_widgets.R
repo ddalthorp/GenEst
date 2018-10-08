@@ -85,7 +85,7 @@ dataDownloadWidget <- function(set){
 
   setName <- setNames[set]
   setButtonName <- paste0("download_", set)
-#  setButtonName2 <- paste0(setButtonName, 2) # dpesn't work
+#  setButtonName2 <- paste0(setButtonName, 2) # doesn't work
   fluidRow(
     column(6, h4(setName)), 
     column(2, downloadButton(setButtonName, "Download"))
@@ -100,9 +100,9 @@ dataDownloadWidget <- function(set){
 #'   widget used in the GenEst GUI, based on the input type (\code{inType}).
 #'
 #' @param inType Toggle control for the input type of the widget. One of 
-#'   "nsim", "CL", "sizeclassCol", "obsCols_SE", "preds_SE", "kFixed",
-#'   "ltp", "fta", "preds_CP", "dists", "frac", "DWPCol", 
-#'   "dateFoundCol", "gSearchInterval", "gSearchMax", 
+#'   "nsim", "CL", "sizeCol", "obsCols_SE", "preds_SE", "kFixed",
+#'   "ltp", "fta", "preds_CP", "dist", "frac", "DWPCol",
+#'   "COdate", "gSearchInterval", "gSearchMax",
 #'   "useSSinputs", or "useSSdata".  
 #'
 #' @return HTML for the model input widget. 
@@ -111,9 +111,9 @@ dataDownloadWidget <- function(set){
 #'
 modelInputWidget <- function(inType){
 
-  if (!inType %in% c("nsim", "CL", "sizeclassCol", "obsCols_SE", "preds_SE", 
-                     "kFixedInput", "ltp", "fta", "preds_CP", "dists", 
-                     "frac", "DWPCol", "dateFoundCol", 
+  if (!inType %in% c("nsim", "CL", "sizeCol", "obsCols_SE", "preds_SE",
+                     "kFixedInput", "ltp", "fta", "preds_CP", "dist",
+                     "frac", "DWPCol", "COdate",
                      "gSearchInterval", "gSearchMax", "useSSinputs",
                      "useSSdata")){
     stop(paste0("input inType (", inType, ") not supported"))
@@ -124,17 +124,17 @@ modelInputWidget <- function(inType){
   Label <- switch(inType, 
              "nsim" = "Number of Iterations:", 
              "CL" = "Confidence Level:", 
-             "sizeclassCol" = "Size Class Column (optional):", 
+             "sizeCol" = "Size Class Column (optional):",
              "obsCols_SE" = "Observations:", 
              "preds_SE" = "Predictor Variables:", 
              "kFixedInput" = NULL, 
              "ltp" = "Last Time Present:", 
              "fta" = "First Time Absent:", 
              "preds_CP" = "Predictor Variables:", 
-             "dists" = "Distributions to Include", 
+             "dist" = "Distributions to Include",
              "frac" = "Fraction of Facility Surveyed:", 
              "DWPCol" = "Density Weighted Proportion:", 
-             "dateFoundCol" = "Date Found:", 
+             "COdate" = "Date Found:",
              "gSearchInterval" = "Generic Search Interval (days):",
              "gSearchMax" = "Generic Final Search (day):",
              "useSSinputs" = "Create Custom Generic Schedule",
@@ -143,17 +143,17 @@ modelInputWidget <- function(inType){
   widgetFun <- switch(inType, 
                  "nsim" = "numericInput", 
                  "CL" = "numericInput", 
-                 "sizeclassCol" = "selectizeInput", 
+                 "sizeCol" = "selectizeInput",
                  "obsCols_SE" = "selectizeInput", 
                  "preds_SE" = "selectizeInput", 
                  "kFixedInput" = "htmlOutput", 
                  "ltp" = "selectizeInput", 
                  "fta" = "selectizeInput", 
                  "preds_CP" = "selectizeInput", 
-                 "dists" = "checkboxGroupInput", 
+                 "dist" = "checkboxGroupInput",
                  "frac" = "numericInput", 
                  "DWPCol" = "selectizeInput", 
-                 "dateFoundCol" = "selectizeInput", 
+                 "COdate" = "selectizeInput",
                  "gSearchInterval" = "numericInput",
                  "gSearchMax" = "numericInput",
                  "useSSinputs" = "actionButton",
@@ -162,7 +162,7 @@ modelInputWidget <- function(inType){
   Args <- switch(inType, 
             "nsim" = list(value = 1000, min = 1, max = 10000, step = 1), 
             "CL" = list(value = 0.90, min = 0, max = 1, step = 0.001), 
-            "sizeclassCol" = list(c("No data input yet"), multiple = TRUE, 
+            "sizeCol" = list(c("No data input yet"), multiple = TRUE,
                                options = list(maxItems = 1)), 
             "obsCols_SE" = list(c("No data input yet"), multiple = TRUE), 
             "preds_SE" = list(c("No data input yet"), multiple = TRUE),
@@ -172,12 +172,12 @@ modelInputWidget <- function(inType){
             "fta" = list(c("No data input yet"), multiple = TRUE,
                       options = list(maxItems = 1)),
             "preds_CP" = list(c("No data input yet"), multiple = TRUE),
-            "dists" = list(choices = CPdistOptions(), 
+            "dist" = list(choices = CPdistOptions(),
                         selected = unlist(CPdistOptions()), inline = TRUE),
             "frac" = list(value = 1.0, min = 0.01, max = 1.0, step = 0.01),
             "DWPCol" = list(c("No data input yet"), multiple = TRUE, 
                             options = list(maxItems = 1)),
-            "dateFoundCol" = list(c("No data input yet"), multiple = TRUE, 
+            "COdate" = list(c("No data input yet"), multiple = TRUE,
                                   options = list(maxItems = 1)),
             "gSearchInterval" = list(value = 7, min = 1, max = 400, step = 1),
             "gSearchMax" = list(value = 364, min = 1, max = 1000, step = 1),
@@ -187,17 +187,17 @@ modelInputWidget <- function(inType){
   Condition <- switch(inType, 
                  "nsim" = NULL, 
                  "CL" = NULL, 
-                 "sizeclassCol" = NULL, 
+                 "sizeCol" = NULL,
                  "obsCols_SE" = NULL, 
                  "preds_SE" = NULL, 
                  "kFixedInput" = NULL, 
                  "ltp" = NULL, 
                  "fta" = NULL, 
                  "preds_CP" = NULL, 
-                 "dists" = NULL, 
+                 "dist" = NULL,
                  "frac" = NULL, 
                  "DWPCol" = "output.DWPNeed == 'yes'", 
-                 "dateFoundCol" = NULL, 
+                 "COdate" = NULL,
                  "gSearchInterval" = NULL,
                  "gSearchMax" = NULL,
                  "useSSinputs" = NULL,
@@ -285,7 +285,7 @@ modelRunWidget <- function(modType){
                          input.modelChoices_CP1 != null & 
                          output.sizeclasses_SE == output.sizeclasses_CP & 
                          output.data_SS != null & 
-                         input.DWPCol != null & input.dateFoundCol != null &
+                         input.DWPCol != null & input.COdate != null &
                          output.kFillNeed != 'yes'",
                   "g" = "input.modelChoices_SE1 != null & 
                          input.modelChoices_CP1 != null & 
@@ -350,7 +350,7 @@ preTextMaker <- function(modType){
                          "input.modelChoices_SE1 != null & 
                          input.modelChoices_CP1 != null & 
                          output.sizeclasses_SE == output.sizeclasses_CP & 
-                         (input.DWPCol == null | input.dateFoundCol == null)",
+                         (input.DWPCol == null | input.COdate == null)",
                          "output.kFillNeed == 'yes' & 
                          input.modelChoices_SE1 != null"),
                  "g" = c("input.modelChoices_SE1 == null | 

@@ -144,14 +144,10 @@ calcTsplit <- function(rate, days, tsplit){
 #'   period into 30-day intervals, and \code{calcSplits()} would return 
 #'   mortality estimates for each of the intervals.
 #'
-#' @param M Numeric array (ncarc x nsim) of estimated mortalities, such as
-#'   those returned by the function \code{\link{estM}}.
+#' @param M \code{\link{estM}} object, containing numeric array (ncarc x nsim) of estimated
+#'    mortalities and other pieces
 #'   
-#' @param Aj Integer array (ncarc x nsim) of simulated arrival intervals for
-#'   each observed carcass. Typically, the \code{Aj}
-#'   array will be the \code{$Aj} return value of function \code{\link{estM}}.
-#'   
-#' @param split_CO Character vector of names of splitting covariates to be 
+#' @param split_CO Character vector of names of splitting covariates to be
 #'   found in the \code{data_CO} data frame. No more than two \code{split_CO} 
 #'   variables are allowed. Use \code{split_CO = NULL} if no CO splits are 
 #'   desired. 
@@ -209,19 +205,35 @@ calcTsplit <- function(rate, days, tsplit){
 #'   Mhat <- estM(nsim = 1000, data_CO = wind_RPbat$CO, 
 #'     data_SS = wind_RPbat$SS, data_DWP = wind_RPbat$DWP, 
 #'     model_SE = model_SE, model_CP = model_CP,
-#'     unitCol = "Turbine", dateFoundCol = "DateFound")
+#'     unitCol = "Turbine", COdate = "DateFound")
 #'
-#'   M_spp <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
+#'   M_spp <- calcSplits(M = Mhat, split_CO = "Species",
 #'     data_CO = wind_RPbat$CO)
 #'   summary(M_spp)
 #'   plot(M_spp)
 #'  }
 #' @export
 #'
-calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
+calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
                        ...){
   ##### read data and check for errors
+  if ("list" %in% class(M)){
+    if (!all(c("Mhat", "Aj") %in% names(M))){
+      stop("M must be a list with elements $M and $Aj")
+    }
+    Aj <- M$Aj
+    M <- M$Mhat
+    if (length(dim(M)) != 2){
+      stop("M must be a list with elements $M and $Aj")
+    }
+    if (!is.numeric(M) || anyNA(M)){
+      stop("M must be numeric and not contain missing values.")
+    }
+  } else {
+    stop("M must be a list with elements $M and $Aj")
+  }
+
   cleanInd <- which(Aj[, 1] == 0)
   if (length(intersect(split_CO, split_SS)) > 0){
     stop("CO and SS splitting variables must have distinct names")

@@ -29,8 +29,8 @@ update_input_clear_all <- function(rv, session){
 update_input_data_SE <- function(rv, session){
   updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds)
   updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
 
@@ -70,11 +70,11 @@ update_input_data_SE_clear <- function(rv, session){
   if (is.null(scc)){
     scc <- ""
   }
-  scs <- rv$sizeclassCol
+  scs <- rv$sizeCol
   if (is.null(scc)){
     scs <- ""
   }
-  updateSelectizeInput(session, "sizeclassCol", choices = scc, selected = scs)
+  updateSelectizeInput(session, "sizeCol", choices = scc, selected = scs)
   updateSelectizeInput(session, "modelChoices_SE1", choices = "")
   updateSelectizeInput(session, "split_SS", choices = "")
   updateSelectizeInput(session, "split_CO", choices = "")
@@ -100,8 +100,8 @@ update_input_data_CP <- function(rv, session){
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds)
   updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_ltp)
   updateSelectizeInput(session, "fta", choices = rv$colNames_CP_fta)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
 }
@@ -134,11 +134,11 @@ update_input_data_CP_clear <- function(rv, session){
   if (is.null(scc)){
     scc <- ""
   }
-  scs <- rv$sizeclassCol
+  scs <- rv$sizeCol
   if (is.null(scc)){
     scs <- ""
   }
-  updateSelectizeInput(session, "sizeclassCol", choices = scc, selected = scs)
+  updateSelectizeInput(session, "sizeCol", choices = scc, selected = scs)
   updateSelectizeInput(session, "modelChoices_CP1", choices = "")
   updateSelectizeInput(session, "outCPl", choices = "")
   updateSelectizeInput(session, "outCPs", choices = "")
@@ -240,14 +240,14 @@ update_input_data_DWP_clear <- function(rv, session){
 #' @export
 #'
 update_input_data_CO <- function(rv, session){
-  updateSelectizeInput(session, "dateFoundCol", choices = rv$colNames_COdates)
+  updateSelectizeInput(session, "COdate", choices = rv$colNames_COdates)
   if (length(rv$colNames_COdates) == 1){
-    updateSelectizeInput(session, "dateFoundCol", 
+    updateSelectizeInput(session, "COdate",
       choices = rv$colNames_COdates, selected = rv$colNames_COdates
     )
   }
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
 }
@@ -265,18 +265,18 @@ update_input_data_CO <- function(rv, session){
 update_input_data_CO_clear <- function(rv, session){
 
   reset("file_CO")
-  reset("dateFoundCol")
+  reset("COdate")
 
   scc <- rv$colNames_size
   if (is.null(scc)){
     scc <- ""
   }
-  scs <- rv$sizeclassCol
+  scs <- rv$sizeCol
   if (is.null(scc)){
     scs <- ""
   }
-  updateSelectizeInput(session, "sizeclassCol", choices = scc, selected = scs)
-  updateSelectizeInput(session, "dateFoundCol", choices = "")
+  updateSelectizeInput(session, "sizeCol", choices = scc, selected = scs)
+  updateSelectizeInput(session, "COdate", choices = "")
   reset("split_SS")
   reset("split_CO")
   updateSelectizeInput(session, "split_SS", choices = "")
@@ -295,7 +295,7 @@ update_input_data_CO_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_sizeclassCol <- function(rv, input, session){
+update_input_sizeCol <- function(rv, input, session){
   updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
     selected = input$preds_SE)
   updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
@@ -308,8 +308,8 @@ update_input_sizeclassCol <- function(rv, input, session){
     selected = input$preds_CP)
   updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
     selected = rv$DWPCol)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
 }
 
@@ -329,8 +329,8 @@ update_input_cols_SE_obs <- function(rv, session){
       selected = rv$preds_SE)
   updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
       selected = rv$obsCols_SE)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
 }
 
@@ -350,8 +350,8 @@ update_input_cols_SE_preds <- function(rv, session){
       selected = rv$obsCols_SE)
   updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
       selected = rv$preds_SE)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
 }
 
@@ -374,8 +374,8 @@ update_input_cols_ltp <- function(rv, session){
       selected = rv$ltp)
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
       selected = rv$preds_CP)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
 }
 
@@ -398,8 +398,8 @@ update_input_cols_fta <- function(rv, session){
       selected = rv$ltp)
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
       selected = rv$preds_CP)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
 }
 
@@ -421,8 +421,8 @@ update_input_cols_CP_preds <- function(rv, session){
       selected = rv$ltp)
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds,
       selected = rv$preds_CP)
-  updateSelectizeInput(session, "sizeclassCol", choices = rv$colNames_size,
-    selected = rv$sizeclassCol
+  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+    selected = rv$sizeCol
   )
 }
 

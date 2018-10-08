@@ -7,13 +7,13 @@
 cpmSetSizeFail(cpmSetSizeToCheck)
 }
 \arguments{
-\item{cpmSetSizeToCheck}{A \code{\link{cpmSetSize}} object to test}
+\item{cpmSetSizeToCheck}{A \code{cpmSetSize} object to test}
 }
 \value{
 A list of vectors of logical values indicating if each of the 
   models failed
 }
 \description{
-Run a check on each model within a \code{\link{cpmSetSize}}
+Run a check on each model within a \code{\link[=cpm]{cpmSetSize}}
   object to determine if they all failed or not
 }

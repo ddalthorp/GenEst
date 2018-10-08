@@ -8,7 +8,7 @@ dateCols(data)
 }
 \arguments{
 \item{data}{data table potentially containing columns that could be 
-coerced (via \code{as.Date(yyyymmmdd())}) into a date}
+coerced (via \code{checkDate()}) into a properly formatted date}
 }
 \value{
 column names of columns that can be coerced to dates
