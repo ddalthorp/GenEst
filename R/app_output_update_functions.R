@@ -228,7 +228,7 @@ update_output_data_CP_clear <- function(rv, output){
 #'
 update_output_data_SS <- function(rv, output){
   output <- update_output_data_SS_clear(rv, output)
-  output$data_SS <- renderDataTable(datatable(rv$data_SS), server = F)
+  output$data_SS <- renderDataTable(datatable(rv$data_SS), server = FALSE)
   outputOptions(output, "data_SS", suspendWhenHidden = FALSE)
   return(output)
 }
