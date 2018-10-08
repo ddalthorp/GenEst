@@ -1,4 +1,4 @@
-# This script creates the data used by the Ecbinom and Etcbinom functions
+# This script creates the data used by the Ecbinom function
 ############
 cbmean <- function(N, p, tlim = 0) {
   # assumes length(N) = length(p)
@@ -53,40 +53,5 @@ x <- c(0, gkey, 1)
 y <- c(1.48120380, cbmean(1/gkey, gkey), 2)
 EcbinomXY <- list("X" = x, "Y" = y)
 
-# Etcbinom
-gkey <- 0.000062
-node0 <- gkey
-while(node0 < 0.9999){
-  E0 <- cbmean(1/node0, node0, node0)
-  incr <- ifelse(node0 + 0.01 <= 1, 0.01, 1 - node0)
-  node1 <- node0 + incr
-  node2 <- node0
-
-  E1 <- cbmean(1/node1, node1, node1)
-  gmid <- (node0 + node1)/2
-
-  while (abs(cbmean(1/gmid, gmid, gmid) - (E0 + E1)/2) < tol){
-    node2 <- node1
-    node1 <- min(node2 + 0.01, 1)
-    E1 <- cbmean(1/node1, node1, node1)
-    gmid <- (node0 + node1)/2
-  }
-
-  node1 <- node2 + (node1 - node2)/2 # go half-way between node2 and node1
-  # keep dropping the node in half until < 0.0001
-  E1 <- cbmean(1/node1, node1, node1)
-  gmid <- (node0 + node1)/2
-  while (abs(cbmean(1/gmid, gmid, gmid) - (E0 + E1)/2) > tol){
-    node1 <- node2 + (node1 - node2)/2 # go half-way between node2 and node1
-    E1 <- cbmean(1/node1, node1, node1)
-    gmid <- (node0 + node1)/2
-  }
-  gkey <- c(gkey, node1)
-  node0 <- gkey[length(gkey)]
-}
-x <- c(0, gkey, 1)
-y <- c(1.481204, cbmean(1/gkey, gkey, gkey), 2)
-EtcbinomXY <- list("X" = x, "Y" = y)
-
-devtools::use_data(EcbinomXY, EtcbinomXY, internal = TRUE, overwrite = TRUE)
+devtools::use_data(EcbinomXY, internal = TRUE, overwrite = TRUE)
 
