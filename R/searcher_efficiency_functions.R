@@ -750,7 +750,7 @@ pkmSize <- function(formula_p, formula_k = NULL, data, kFixed = NULL,
   if (length(sizeCol) == 0 || is.na(sizeCol)){
     pkfunc <- ifelse(allCombos, "pkmSet", "pkm0")
     out <- list()
-    out[["all"]] <- pkfunc(formula_p = formula_p, formula_k = formula_k,
+    out[["all"]] <- get(pkfunc)(formula_p = formula_p, formula_k = formula_k,
       data = data, obsCol = obsCol, kFixed = kFixed, kInit = kInit,
       CL = CL,, quiet = quiet
     )
