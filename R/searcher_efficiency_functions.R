@@ -65,6 +65,23 @@
 #'   the assumption that the \code{k} parameter is fixed and known to be
 #'   \code{kFixed}.
 #'
+#' @param allCombos logical. If \code{allCombos = FALSE}, then the single model
+#'  expressed by \code{formula_p} and \code{formula_k} is fit using a call to
+#'  \code{pkm0}. If \code{allCombos = TRUE}, a full set of \code{\link{pkm}}
+#'  submodels derived from combinations of the given covariates for \code{p}
+#'  and \code{k} is fit. For example, submodels of \code{formula_p = p ~ A * B}
+#'  would be \code{p ~ A * B}, \code{p ~ A + B}, \code{p ~ A}, \code{p ~ B},
+#'  and \code{p ~ 1}. Models for each pairing of a \code{p} submodel with a
+#' \code{k} submodel are fit via \code{pkmSet}, which fits each model
+#'  combination using successive calls to \code{pkm0}, which fits a
+#'  single model.
+#'
+#' @param sizeCol character string. The name of the column in \code{data} that
+#'  gives the size class of the carcasses in the field trials. If
+#'  \code{sizeCol = NULL}, then models are not segregated by size. If a
+#'  \code{sizeCol} is provided, then separate models are fit for the \code{data}
+#'  subsetted by \code{sizeCol}.
+#'
 #' @param CL numeric value in (0, 1). confidence level
 #'
 #' @param kInit numeric value in (0, 1). Initial value used for numerical
@@ -182,7 +199,7 @@
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
     allCombos = FALSE, sizeCol = NULL,
-    CL = 0.90, kInit = 0.7, quiet = FALSE, ...){
+    CL = 0.90, kInit = 0.7, quiet = FALSE){
 
   if (is.null(allCombos) || is.na(allCombos) || !is.logical(allCombos)){
     stop("allCombos must be TRUE or FALSE")

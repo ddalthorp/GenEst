@@ -171,13 +171,15 @@ aicc <- function(x, ... ){
 
 #' @title Generic S3 function for printing corpus_frame
 #'
-#' @param x
+#' @param x data frame to print
+#'
+#' @param ... other arguments
 #'
 #' @return prints data frame
 #'
 #' @export
-print.corpus_frame <- function(x, rows = 80){
-  corpus::print.corpus_frame(x, rows)
+print.corpus_frame <- function(x, ...){
+  corpus::print.corpus_frame(x, rows = 80)
 }
 
 disclaimers <- function(){

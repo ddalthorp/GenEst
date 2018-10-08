@@ -190,7 +190,7 @@
 #'
 cpm <- function(formula_l, formula_s = NULL, data, left, right,
     dist = "weibull", allCombos = FALSE, sizeCol = NULL,
-    CL = 0.90, quiet = FALSE, ...){
+    CL = 0.90, quiet = FALSE){
 
   if (is.null(allCombos) || is.na(allCombos) || !is.logical(allCombos)){
     stop("allCombos must be TRUE or FALSE")
@@ -801,7 +801,7 @@ cpmSize <- function(formula_l, formula_s = NULL, data, left, right,
         data = data, left = left, right = right, dist = dist,
         CL = CL, quiet = quiet)
     }
-    class(out) <- c(ifelse(allCombo, "cpmSetSize", "cpmSize"), "list")
+    class(out) <- c(ifelse(allCombos, "cpmSetSize", "cpmSize"), "list")
     return(out)
   }
 
@@ -962,9 +962,7 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
 #' @param type The type of parameters requested. \code{"survreg"} or 
 #'   \code{"ppersist"}
 #'
-#' @param seed optional input to set the seed of the RNG
-#'
-#' @return list of two matrices of \code{n} simulated \code{l} and \code{s} 
+#' @return list of two matrices of \code{n} simulated \code{l} and \code{s}
 #'   (if \code{type = "survreg"}) or \code{a} and \code{b} (if \code{type = 
 #'   "ppersist"})for cells defined by the \code{model} object. 
 #'

@@ -144,14 +144,10 @@ calcTsplit <- function(rate, days, tsplit){
 #'   period into 30-day intervals, and \code{calcSplits()} would return 
 #'   mortality estimates for each of the intervals.
 #'
-#' @param M Numeric array (ncarc x nsim) of estimated mortalities, such as
-#'   those returned by the function \code{\link{estM}}.
+#' @param M \code{\link{estM}} object, containing numeric array (ncarc x nsim) of estimated
+#'    mortalities and other pieces
 #'   
-#' @param Aj Integer array (ncarc x nsim) of simulated arrival intervals for
-#'   each observed carcass. Typically, the \code{Aj}
-#'   array will be the \code{$Aj} return value of function \code{\link{estM}}.
-#'   
-#' @param split_CO Character vector of names of splitting covariates to be 
+#' @param split_CO Character vector of names of splitting covariates to be
 #'   found in the \code{data_CO} data frame. No more than two \code{split_CO} 
 #'   variables are allowed. Use \code{split_CO = NULL} if no CO splits are 
 #'   desired. 
