@@ -720,7 +720,7 @@ update_rv_run_SE <- function(rv, input){
   rv$CL <- input$CL
   rv$sizeCol <- input$sizeCol
   rv$mods_SE <- suppressWarnings(
-                  pkm(formula_p = rv$formula_p,
+                  pkmSize(formula_p = rv$formula_p,
                     formula_k = rv$formula_k, data = rv$data_SE,
                     obsCol = rv$obsCols_SE, sizeCol = rv$sizeCol,
                     kFixed = rv$kFixed, kInit = 0.7,
@@ -914,7 +914,7 @@ update_rv_run_CP <- function(rv, input){
   rv$formula_s <- formula(paste("s~", rv$predictors_CP, sep = ""))
 
   rv$mods_CP <- suppressWarnings(
-                  cpm(formula_l = rv$formula_l,
+                  cpmSize(formula_l = rv$formula_l,
                     formula_s = rv$formula_s, data = rv$data_CP,
                     left = rv$ltp, right = rv$fta, dist = rv$dist,
                     sizeCol = rv$sizeCol, CL = rv$CL, quiet = TRUE,
