@@ -123,18 +123,29 @@ dateToDay <- function(date, ref = NULL){
 #'
 #' @export
 #'
+
 checkDate <- function(testdate){
-  if (is.null(testdate) || anyNA(testdate) || is.numeric(testdate))
-    return(NULL)
   beginningOfTime <- as.Date("1900-01-01")
-  formats <- list("%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d", "%Y-%m-%d")
-  tmp1 <- try(as.Date(testdate, tryFormats  = formats[1]), silent = TRUE)
-  if (class(tmp1) == "try-error" || anyNA(tmp)){ # then not format[1]
-    tmp2 <- try(as.Date(testdate, tryFormats  = formats[1]), silent = TRUE)
+  canDate <- try(as.Date(testdate), silent = TRUE)
+  if (!("try-error" %in% class(canDate)) &&
+      !anyNA(canDate) &&
+      all(canDate > beginningOfTime)) return (canDate)
+
+  formats <- list("%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d")
+  canDate <- lapply(formats, function(x) try(as.Date(testdate, tryFormats = x), silent = TRUE))
+  canForm <- which(lapply(canDate, class) != "try-error")
+  if (length(canForm) == 0) return (NULL)
+  for (i in 1:length(canForm)){
+    if (anyNA(canDate[[canForm[i]]])){
+      canForm[i] <- NA
+    } else if (any(canDate[[canForm[i]]] < beginningOfTime)) {
+      canForm[i] <- NA
+    }
   }
-  if (class(tmp) == "try-error") return (NULL)
-  if (anyNA(tmp) || any(tmp < beginningOfTime)) return (NULL)
-  return(tmp)
+  if (all(is.na(canForm))) return(NULL)
+  canForm <- canForm[!is.na(canForm)]
+  if (length(canForm) > 1) return(NULL)
+  return(canDate[[canForm]])
 }
 
 
