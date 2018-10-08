@@ -752,7 +752,7 @@ pkmSize <- function(formula_p, formula_k = NULL, data, kFixed = NULL,
     out <- list()
     out[["all"]] <- get(pkfunc)(formula_p = formula_p, formula_k = formula_k,
       data = data, obsCol = obsCol, kFixed = kFixed, kInit = kInit,
-      CL = CL,, quiet = quiet
+      CL = CL, quiet = quiet
     )
     class(out) <- c(ifelse(allCombos, "pkmSetSize", "pkmSize"), "list")
     return(out)
@@ -1072,7 +1072,7 @@ pkmSetFail <- function(pkmSetToCheck){
 #' @description Run a check on each model within a \code{\link[=pkm]{pkmSetSize}}
 #'   object to determine if they all failed or not
 #'
-#' @param pkmSetSizeToCheck A \code{\link{pkmSetSize}} object to test
+#' @param pkmSetSizeToCheck A \code{pkmSetSize} object to test
 #'
 #' @return A list of logical vectors indicating which models failed
 #'

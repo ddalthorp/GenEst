@@ -1134,7 +1134,7 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
 #' @title Create the AICc tables for a list of sets of searcher efficiency models
 #'
 #' @description S3 function to generate model comparison tables for lists of
-#'  of sets of CP models of class \code{\link{cpmSetSize}}
+#'  of sets of CP models of class \code{\link[=cpm]{cpmSetSize}}
 #'
 #' @param x List of sets of CP models fit to the same observations
 #'
@@ -1292,10 +1292,10 @@ cpmSetFail <- function(cpmSetToCheck){
 
 #' @title Check if all of the cpm models fail
 #'
-#' @description Run a check on each model within a \code{\link{cpmSetSize}}
+#' @description Run a check on each model within a \code{\link[=cpm]{cpmSetSize}}
 #'   object to determine if they all failed or not
 #'
-#' @param cpmSetSizeToCheck A \code{\link{cpmSetSize}} object to test
+#' @param cpmSetSizeToCheck A \code{cpmSetSize} object to test
 #'
 #' @return A list of vectors of logical values indicating if each of the 
 #'   models failed
@@ -1322,11 +1322,11 @@ cpmSetFailRemove <- function(cpmSetToTidy){
   return(out)
 }
 
-#' @title Remove failed cpm models from a \code{\link{cpmSetSize}} object
+#' @title Remove failed cpm models from a \code{cpmSetSize} object
 #'
-#' @description Remove failed models from a \code{\link{cpmSetSize}} object
+#' @description Remove failed models from a \code{\link[=cpm]{cpmSetSize}} object
 #'
-#' @param cpmSetSizeToTidy A list of \code{\link{cpmSetSize}} objects to tidy
+#' @param cpmSetSizeToTidy A list of \code{cpmSetSize} objects to tidy
 #'
 #' @return A list of \code{\link{cpmSet}} objects with failed models removed
 #'
