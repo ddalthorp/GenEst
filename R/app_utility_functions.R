@@ -139,7 +139,7 @@ setkFix <- function(kFixedChoice, kFixed){
 #'   a data table
 #'
 #' @param data data table potentially containing columns that could be 
-#'   coerced (via \code{as.Date(yyyymmmdd())}) into a date
+#'   coerced (via \code{checkDate()}) into a properly formatted date
 #'
 #' @return column names of columns that can be coerced to dates
 #'
@@ -151,7 +151,7 @@ dateCols <- function(data){
   dateTF <- rep(NA, ncols)
   for (coli in 1:ncols){
     temp <- tryCatch(
-              as.Date(yyyymmdd(data[ , coli])),
+              checkDate(data[ , coli]),
               error = function(x){FALSE}
             )
     dateTF[coli] <- is.Date(temp)
@@ -171,7 +171,7 @@ dateCols <- function(data){
 #'
 #' @export
 #'
-sizeclassCols <- function(data){
+sizeCols <- function(data){
 
   if (is.null(data)){
     return(NULL)
@@ -375,9 +375,9 @@ removeCols <- function(colNames, selCols){
 updateColNames_size <- function(rv){
 
   SECPCO <- NULL
-  SE <- sizeclassCols(rv$data_SE)
-  CP <- sizeclassCols(rv$data_CP)
-  CO <- sizeclassCols(rv$data_CO)
+  SE <- sizeCols(rv$data_SE)
+  CP <- sizeCols(rv$data_CP)
+  CO <- sizeCols(rv$data_CO)
 
   SECP <- which(SE %in% CP)
   SECO <- which(SE %in% CO)
@@ -472,12 +472,12 @@ modNameSplit <- function(modNames, pos){
 #'
 countCarcs <- function(mods){
   nsizeclasses <- length(mods)
-  nmods <- length(mods[[1]])
+  nmods <- sum(unlist(lapply(mods, length)))
   if (nsizeclasses > 0 & nmods > 0){
-    ncarc <- rep(NA, nsizeclasses * nmods)
+    ncarc <- rep(NA, nmods)
     counter <- 0
     for (sci in 1:nsizeclasses){
-      for (modi in 1:nmods){
+      for (modi in 1:length(mods[[sci]])){
         counter <- counter + 1
         if (!grepl("Failed model fit", mods[[sci]][[modi]][1])){
           ncarc[counter] <- min(table(mods[[sci]][[modi]]$carcCell))
@@ -599,7 +599,7 @@ createReactiveValues <- function(){
 
     nsim = 1000, CL = 0.90,
 
-    sizeclassCol = NULL, sizeClassCol0 = NULL, toRemove_sizeClassCol = NULL,
+    sizeCol = NULL, sizeCol0 = NULL, toRemove_sizeCol = NULL,
     sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
     sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL, 
     nsizeclasses = NULL,
@@ -613,7 +613,7 @@ createReactiveValues <- function(){
     modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
     kFill = NULL, sizeclasses_k = NULL, nsizeclasses_k = NULL, 
 
-    ltp = NULL, fta = NULL, preds_CP = NULL, dists = NULL, 
+    ltp = NULL, fta = NULL, preds_CP = NULL, dist = NULL,
     predictors_CP = NULL, formula_l = NULL, formula_s = NULL, 
     mods_CP = NULL, mods_CP_og = NULL, CPdls = NULL, outCPdlsfig = NULL, 
     outCPdlstab = NULL, sizeclasses_CP = NULL, AICcTab_CP = NULL, 
@@ -623,7 +623,7 @@ createReactiveValues <- function(){
     modTabDL_CP = NULL, figH_CP = 700, figW_CP = 800,
 
     M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, 
-    sizeclassCol_M = NULL, DWPCol = NULL, dateFoundCol = NULL, 
+    sizeCol_M = NULL, DWPCol = NULL, COdate = NULL,
     SEmodToUse = NULL, CPmodToUse = NULL,
     split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0, 
     figH_M = 600, figW_M = 800,
@@ -646,17 +646,17 @@ createReactiveValues <- function(){
 #'
 #' @param data data table to draw sizes from
 #'
-#' @param sizeclassCol size class column name 
+#' @param sizeCol size class column name
 #'
 #' @return unique size classes
 #'
 #' @export
 #'
-updateSizeclasses <- function(data, sizeclassCol){
-  if (is.null(sizeclassCol)){
+updateSizeclasses <- function(data, sizeCol){
+  if (is.null(sizeCol)){
     return("all")
   }
-  return(as.character(unique(data[ , sizeclassCol])))
+  return(as.character(unique(data[ , sizeCol])))
 }
 
 #' @title Locate the sizeclass selected by the inputs
@@ -689,21 +689,21 @@ pickSizeclass <- function(sizeclasses, choice){
 #'   options. If the existing size class column name is no longer in the
 #'   set of available names, a NULL is returned to reset the column name.
 #'
-#' @param sizeclassCol current size class column name
+#' @param sizeCol current size class column name
 #'
 #' @param colNames_size updated vector of size column names in all needed 
 #'   tables
 #'
-#' @return updated sizeclassCol
+#' @return updated sizeCol
 #'
 #' @export
 #'
-updateSizeclassCol <- function(sizeclassCol, colNames_size){
-  if (!is.null(sizeclassCol)){
-    if (!(sizeclassCol %in% colNames_size)){
+updatesizeCol <- function(sizeCol, colNames_size){
+  if (!is.null(sizeCol)){
+    if (!(sizeCol %in% colNames_size)){
       NULL
     } else{
-      sizeclassCol
+      sizeCol
     }
   } else{
     NULL

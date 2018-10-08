@@ -209,19 +209,35 @@ calcTsplit <- function(rate, days, tsplit){
 #'   Mhat <- estM(nsim = 1000, data_CO = wind_RPbat$CO, 
 #'     data_SS = wind_RPbat$SS, data_DWP = wind_RPbat$DWP, 
 #'     model_SE = model_SE, model_CP = model_CP,
-#'     unitCol = "Turbine", dateFoundCol = "DateFound")
+#'     unitCol = "Turbine", COdate = "DateFound")
 #'
-#'   M_spp <- calcSplits(M = Mhat$Mhat, Aj = Mhat$Aj, split_CO = "Species",
+#'   M_spp <- calcSplits(M = Mhat, split_CO = "Species",
 #'     data_CO = wind_RPbat$CO)
 #'   summary(M_spp)
 #'   plot(M_spp)
 #'  }
 #' @export
 #'
-calcSplits <- function(M, Aj = NULL, split_CO = NULL, data_CO = NULL,
+calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
                        ...){
   ##### read data and check for errors
+  if ("list" %in% class(M)){
+    if (!all(c("Mhat", "Aj") %in% names(M))){
+      stop("M must be a list with elements $M and $Aj")
+    }
+    Aj <- M$Aj
+    M <- M$Mhat
+    if (length(dim(M)) != 2){
+      stop("M must be a list with elements $M and $Aj")
+    }
+    if (!is.numeric(M) || anyNA(M)){
+      stop("M must be numeric and not contain missing values.")
+    }
+  } else {
+    stop("M must be a list with elements $M and $Aj")
+  }
+
   cleanInd <- which(Aj[, 1] == 0)
   if (length(intersect(split_CO, split_SS)) > 0){
     stop("CO and SS splitting variables must have distinct names")

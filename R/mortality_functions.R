@@ -14,7 +14,7 @@
 #'
 #' @param frac fraction of facility (by units or by area) surveyed
 #'
-#' @param dateFoundCol Column name for the date found data
+#' @param COdate Column name for the date found data
 #'
 #' @param model_SE Searcher Efficiency model (or list of models if there are
 #'   multiple size classes)
@@ -24,9 +24,9 @@
 #'
 #' @param unitCol Column name for the unit indicator (optional)
 #'
-#' @param datesSearchedCol Column name for the date searched data
+#' @param SSdate Column name for the date searched data
 #'
-#' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
+#' @param sizeCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional. If none provided, it is assumed there is no
 #'  distinctions among size classes.
 #'
@@ -62,25 +62,25 @@
 #'              )
 #'  eM <- estM(nsim = 1000, data_CO = mock$CO, data_SS = mock$SS, 
 #'          data_DWP = mock$DWP, frac = 1, model_SE = model_SE, 
-#'          model_CP = model_CP, dateFoundCol = "DateFound", 
-#'          DWPCol = "S", sizeclassCol = NULL
+#'          model_CP = model_CP, COdate = "DateFound",
+#'          DWPCol = "S", sizeCol = NULL
 #'        )
 #'  }
 #'
 #' @export 
 #'
 estM <- function(data_CO, data_SS, data_DWP, frac = 1,
-                 dateFoundCol = "DateFound", model_SE, model_CP,
-                 unitCol = NULL, datesSearchedCol = NULL, sizeclassCol = NULL,
+                 COdate = "DateFound", model_SE, model_CP,
+                 unitCol = NULL, SSdate = NULL, sizeCol = NULL,
                  DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  seed_M = NULL, nsim = 1000, max_intervals = 8){
 
 
-  if (!(dateFoundCol %in% colnames(data_CO))){
-    stop("dateFoundCol not found in data_CO")
+  if (!(COdate %in% colnames(data_CO))){
+    stop("COdate not found in data_CO")
   }
-  data_CO[ , dateFoundCol] <- checkDate(data_CO[ , dateFoundCol])
-  if (is.null(data_CO[ , dateFoundCol]))
+  data_CO[ , COdate] <- checkDate(data_CO[ , COdate])
+  if (is.null(data_CO[ , COdate]))
     stop("dates_CO not unambiguously intepretable as dates")
   # attempted auto-parsing for unitCol:
   #  find common cols in CO and DWP as the candidate unitCol
@@ -101,34 +101,33 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
       )
     }
   }
-  # if no sizeclassCol is provided, then the later analysis is done without
+  # if no sizeCol is provided, then the later analysis is done without
   #   making distinctions between sizes; no error-checking here
-  # if sizeclassCol is provided, it must be present in CO. It's levels must 
+  # if sizeCol is provided, it must be present in CO. Its levels must
   #  also all be present in DWP, but the check is done in the DWPbyCarcass 
   #  function, which allow DWPbyCarcass to more readily be used as a 
   #  standalone function if user wishes.
-  if (!is.null(sizeclassCol)){
-    if (!(sizeclassCol %in% colnames(data_CO))){
+  if (!is.null(sizeCol)){
+    if (!(sizeCol %in% colnames(data_CO))){
       stop("size class column not in carcass data.")
-    } else if (!all(data_CO[, sizeclassCol] %in% names(data_DWP))){
+    } else if (!all(data_CO[, sizeCol] %in% names(data_DWP))){
       stop("a size class in data_CO is missing from data_DWP")
     } else {
-      sizeclasses <- as.character(unique(data_CO[ , sizeclassCol]))
+      sizeclasses <- as.character(unique(data_CO[ , sizeCol]))
       nsizeclass <- length(sizeclasses)
     }
   }
 
   # error-checking for match b/t DWP and CO data is done in DWPbyCarcass
   DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
-           sizeclassCol = sizeclassCol, unitCol = unitCol, DWPCol = DWPCol)
+           sizeCol = sizeCol, unitCol = unitCol, DWPCol = DWPCol)
 
-  est <- estg(data_CO = data_CO, data_SS = data_SS, 
-           dateFoundCol = dateFoundCol, model_SE = model_SE, 
-           model_CP = model_CP, unitCol = unitCol,
-           datesSearchedCol = datesSearchedCol, sizeclassCol = sizeclassCol,
-           seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g,
-           nsim = nsim, max_intervals = max_intervals
-         )
+  est <- estg(data_CO = data_CO, COdate = COdate,
+      data_SS = data_SS, SSdate = SSdate,
+      model_SE = model_SE, model_CP = model_CP,
+      unitCol = unitCol, sizeCol = sizeCol,
+      nsim = nsim, max_intervals = max_intervals,
+      seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g)
 
   gDf <- est$ghat * DWP * frac
   set.seed(seed_M)
@@ -164,13 +163,13 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #'   remedy. If data sets share more than one column, user is asked to input 
 #'   \code{unitCol}.
 #'
-#' @param sizeclassCol Name of colum in \code{data_CO} where the size classes
+#' @param sizeCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional.
 #'
 #' @param DWPCol Name of column where DWP values are stored (optional). Used
 #'  when there is more than one DWP column in \code{data_DWP} but analysis is
 #'  intended for a single class (i.e., no "size" is specified in data_CO).
-#'  If \code{sizeclassCol} is \code{NULL} and \code{DWPCol} is not provided,
+#'  If \code{sizeCol} is \code{NULL} and \code{DWPCol} is not provided,
 #'  there is a check for possible DWPCols. If there is only one column with
 #'  values in (0, 1], that's DWPCol. If there is not a unique column with
 #'  values in (0, 1], an error is returned.
@@ -180,14 +179,14 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #' @examples 
 #'  data(mock)
 #'  DWP <- DWPbyCarcass(data_DWP = mock$DWP, data_CO = mock$CO,
-#'           sizeclassCol = "Size", unitCol = "Unit")
+#'           sizeCol = "Size", unitCol = "Unit")
 #'  DWP <- DWPbyCarcass(data_DWP = mock$DWP, data_CO = mock$CO,
 #'           unitCol = "Unit", DWPCol = "S")
 #'
 #' @export 
 #'
 DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL, 
-                         sizeclassCol = NULL, DWPCol = NULL){
+                         sizeCol = NULL, DWPCol = NULL){
 
   if (is.null(unitCol)){
     unitCol <- colnames(data_DWP)[colnames(data_DWP) %in% colnames(data_CO)]
@@ -210,12 +209,12 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
     stop("Some units present in carcass table not in DWP table")
   } # error-checking on units is complete
 
-  # parse w.r.t. sizeclassCol arg and assign DWP to carcasses
-  if (!is.null(sizeclassCol)){
-    if (!(sizeclassCol %in% colnames(data_CO))){
+  # parse w.r.t. sizeCol arg and assign DWP to carcasses
+  if (!is.null(sizeCol)){
+    if (!(sizeCol %in% colnames(data_CO))){
       stop("size class column not found in carcass data.")
     }
-    if (!all(unique(data_CO[,sizeclassCol]) %in% colnames(data_DWP))){
+    if (!all(unique(data_CO[,sizeCol]) %in% colnames(data_DWP))){
       stop("not all sizes in data_CO are represented in data_DWP.")
     }
     # size classes and units have been error-checked, and assigning DWP to
@@ -224,11 +223,11 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
     # unit in CO defines the desired row in DWP:
     rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
     # size in CO defines the desired column in DWP:
-    colind <- match(data_CO[ , sizeclassCol], names(data_DWP))
+    colind <- match(data_CO[ , sizeCol], names(data_DWP))
     # and DWPbyCarc falls out naturally
     DWPbyCarc <- as.numeric(data_DWP[cbind(rowind, colind)])
     if (!is.null(DWPCol) && !is.na(DWPCol)){
-      message("\nBoth sizeclassCol and DWPCol were provided by user. ",
+      message("\nBoth sizeCol and DWPCol were provided by user. ",
         "Assigning DWP by size.\n")
     }
   } else { # assume same DWP for all sizes, so matching is by unit only

@@ -7,7 +7,7 @@
 #'
 #' @param data_SS Search Schedule data
 #'
-#' @param dateFoundCol Column name for the date found data
+#' @param COdate Column name for the date found data
 #'
 #' @param model_SE Searcher Efficiency model (or list of models if there are
 #'   multiple size classes)
@@ -17,13 +17,13 @@
 #'
 #' @param unitCol Column name for the unit indicator
 #'
-#' @param datesSearchedCol Column name for the date searched data. Optional.
-#'   If not provided, \code{estg} will try to find the datesSearchedCol among
+#' @param SSdate Column name for the date searched data. Optional.
+#'   If not provided, \code{estg} will try to find the SSdate among
 #'   the columns in data_SS. See \code{\link{prepSS}}.
 #'
-#' @param sizeclassCol Name of column in \code{data_CO} where the size classes
+#' @param sizeCol Name of column in \code{data_CO} where the size classes
 #'   are recorded. Optional. If not provided, no distinctions are made among
-#'   sizes. \code{sizeclassCol} not only identifies what the name of the size 
+#'   sizes. \code{sizeCol} not only identifies what the name of the size
 #    column is, it also identifies that the model should include size as a 
 #'   segregating class
 #'
@@ -47,51 +47,47 @@
 #' @examples
 #'  data(mock)
 #'  model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
-#'               data = mock$SE
-#'              )
+#'               data = mock$SE)
 #'  model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
 #'                data = mock$CP, dist = "weibull",
 #'                left = "LastPresentDecimalDays", 
 #'                right = "FirstAbsentDecimalDays"
 #'              )
-#'  ghat <- estg(data_CO = mock$CO, data_SS = mock$SS, 
-#'            dateFoundCol = "DateFound", unitCol = "Unit", 
-#'            model_SE = model_SE, model_CP = model_CP, nsim = 1000
-#'          )
+#'  ghat <- estg(data_CO = mock$CO, COdate = "DateFound",  data_SS = mock$SS,
+#'            model_SE = model_SE, model_CP = model_CP, unitCol = "Unit")
 #'
 #' @export
 #'
-estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
-                 model_SE, model_CP, unitCol = NULL,
-                 datesSearchedCol = NULL, sizeclassCol = NULL,
-                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-                 nsim = 1000, max_intervals = 8){
+estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
+                 model_SE, model_CP, sizeCol = NULL, unitCol = NULL,
+                 nsim = 1000, max_intervals = 8,
+                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
 
   SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
-  dates_CO <- checkDate(data_CO[ , dateFoundCol])
+  dates_CO <- checkDate(data_CO[ , COdate])
   if (is.null(dates_CO)) stop("dates_CO not properly formatted as dates")
   COdat <- data_CO # format data_CO
-  COdat[ , dateFoundCol] <- dateToDay(dates_CO, t0date)
-  names(COdat)[names(COdat) == dateFoundCol] <- "day" # distinguish integers
-  if (is.null(sizeclassCol) || is.na(sizeclassCol)){
-    sizeclassCol <- "placeholder"
-    COdat[ , sizeclassCol] <- "value"
+  COdat[ , COdate] <- dateToDay(dates_CO, t0date)
+  names(COdat)[names(COdat) == COdate] <- "day" # distinguish integers
+  if (is.null(sizeCol) || is.na(sizeCol)){
+    sizeCol <- "placeholder"
+    COdat[ , sizeCol] <- "value"
     model_SE <- list("value" = model_SE)
     model_CP <- list("value" = model_CP)
   } else {
-    if (!(sizeclassCol %in% colnames(COdat))){
+    if (!(sizeCol %in% colnames(COdat))){
       stop("size class column not in carcass data.")
     }
     if (length(setdiff(names(model_SE), names(model_CP))) > 0) {
       stop("model_SE and model_CP must encompass the same size classes")
     }
-    if (!all(COdat[, sizeclassCol] %in% names(model_SE))){
+    if (!all(COdat[, sizeCol] %in% names(model_SE))){
       stop("no SE model for some size class represented in data_CO")
     }
   }
-  sizeclass <- as.list(as.character(COdat[, sizeclassCol]))
+  sizeclass <- as.list(as.character(COdat[, sizeCol]))
   sizeclasses <- unique(unlist(sizeclass))
   nsizeclass <- length(sizeclasses)
 
@@ -123,7 +119,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   pksim <- lapply(model_SE, function(x) rpk(nsim, x))
   names(pksim) <- names(model_SE)
 
-  cpsim <- lapply(model_CP, rcp, n = nsim, seed = seed_CP, type = "ppersist")
+  cpsim <- lapply(model_CP, rcp, n = nsim, type = "ppersist")
 
   X <- dim(COdat)[1]
   days <- list()
@@ -144,15 +140,15 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
   if (sum(unlist(lapply(SSpreds, length))) == 0){
     for (xi in 1:X){
       cells[[xi]] <- list()
-      cells[[xi]][[sizeclassCol]] <- COdat[xi, sizeclassCol]
-      pcol <- preds_SE[[COdat[xi, sizeclassCol]]]
+      cells[[xi]][[sizeCol]] <- COdat[xi, sizeCol]
+      pcol <- preds_SE[[COdat[xi, sizeCol]]]
       if (length(pcol) == 0) {
         cells[[xi]]$SEcell <- "all"
       } else {
         cells[[xi]]$SEcell <- paste(COdat[xi, pcol], collapse = ".")
       }
       cells[[xi]]$SErep <- length(days[[xi]]) - 1
-      pcol <- preds_CP[[COdat[xi, sizeclassCol]]]
+      pcol <- preds_CP[[COdat[xi, sizeCol]]]
       if (length(pcol) == 0) {
         cells[[xi]]$CPcell <- "all"
       } else {
@@ -164,8 +160,8 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     for (xi in 1:X){
       cells[[xi]] <- list()
       SEc <- SEr <- CPc <- CPr <- NULL
-      sz <- as.character(COdat[xi, sizeclassCol])
-      cells[[xi]][[sizeclassCol]] <- sz
+      sz <- as.character(COdat[xi, sizeCol])
+      cells[[xi]][[sizeCol]] <- sz
       # interpret the SE predictors
       nse <- length(preds_SE[[sz]])
       if (nse == 0){
@@ -229,7 +225,7 @@ estg <- function(data_CO, data_SS, dateFoundCol = "DateFound",
     SSxi <- SSdat$searches_unit[COdat[xi, unitCol], ] * SSdat$days
     SSxi <- c(0, SSxi[SSxi > 0])
     # calculate SE
-    sz <- cells[[xi]][[sizeclassCol]]
+    sz <- cells[[xi]][[sizeCol]]
     SEr <- cells[[xi]]$SErep
     oi <- length(days[[xi]]) - 1
     rng <- 0
@@ -433,12 +429,10 @@ SEsi_right <- function(nsi, pk){
 #' @examples
 #'   data(mock)
 #'   model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
-#'                 data = mock$SE
-#'               )
+#'                 data = mock$SE)
 #'   model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
 #'                 data = mock$CP, left = "LastPresentDecimalDays", 
-#'                 right = "FirstAbsentDecimalDays"
-#'               )
+#'                 right = "FirstAbsentDecimalDays")
 #'   avgSS <- averageSS(mock$SS)
 #'   ghatsGeneric <- estgGeneric(days = avgSS, model_SE = model_SE,
 #'    model_CP = model_CP)
@@ -461,7 +455,7 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
   preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
   set.seed(seed_SE)
   sim_SE <- rpk(n = nsim, model = model_SE)
-  sim_CP <- rcp(n = nsim, model = model_CP, type = "ppersist", seed = seed_CP)
+  sim_CP <- rcp(n = nsim, model = model_CP, type = "ppersist")
   dist <- tolower(model_CP$dist)
 
   ncell <- nrow(preds)
@@ -547,7 +541,7 @@ calcg <- function(days, param_SE, param_CP, dist){
 
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
-  ppersu <- ppersist(dist, t_arrive0 = 0, t_arrive1 = intxsearch[,1],
+  ppersu <- ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[,1],
     t_search = intxsearch[,1] + intxsearch[,2], pda = pda0, pdb = pdb0)
   arrvec <- (schedule[,2] - schedule[,1]) / max(days)
   prob_obs <- numeric(dim(schedule)[1])
@@ -580,7 +574,7 @@ calcg <- function(days, param_SE, param_CP, dist){
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
-  ppersu <- ppersist(dist, t_arrive0 = 0, t_arrive1 = intxsearch[ , 1],
+  ppersu <- ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[ , 1],
               t_search = intxsearch[ , 1] + intxsearch[ , 2],
               pda = param_CP[ , 1], pdb = param_CP[ , 2]
             )
@@ -650,18 +644,17 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @examples
 #'   data(mock)
-#'   pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+#'   pkmModsSize <- pkm(formula_p = p ~ HabitatType,
 #'                    formula_k = k ~ HabitatType, data = mock$SE,
 #'                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
-#'                    sizeclassCol = "Size"
-#'                  )
-#'   cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+#'                    sizeCol = "Size")
+#'   cpmModsSize <- cpm(formula_l = l ~ Visibility,
 #'                    formula_s = s ~ Visibility, data = mock$CP,
 #'                    left = "LastPresentDecimalDays",
 #'                    right = "FirstAbsentDecimalDays",
 #'                    dist = c("exponential", "lognormal"),
-#'                    sizeclassCol = "Size"
-#'                    )
+#'                    sizeCol = "Size", allCombos = T)
+#'
 #'   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
 #'              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
 #'             )
@@ -734,8 +727,8 @@ estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
 #'   Other columns are optional, but optional columns should not all contain
 #'   at least on value that is not a 1 or 0.
 #'
-#' @param datesSearchedCol Column name for the date searched data (optional).
-#'   if no \code{datesSearchedCol} is provided, \code{data_SS} will be parsed
+#' @param SSdate Column name for the date searched data (optional).
+#'   if no \code{SSdate} is provided, \code{data_SS} will be parsed
 #'   to extract the dates automatically. If there is more than one column with
 #'   dates, then an error will be thrown and the user will be required to
 #'   provide the name of the desired dates column.
@@ -748,8 +741,8 @@ estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
 #'
 #' @export
 #'
-averageSS <- function(data_SS, datesSearchedCol = NULL){
-  SSdat <- prepSS(data_SS, datesSearchedCol = datesSearchedCol)
+averageSS <- function(data_SS, SSdate = NULL){
+  SSdat <- prepSS(data_SS, SSdate = SSdate)
   schedules <- t(SSdat$searches_unit) * SSdat$days
   nintervals <- length(SSdat$days) - colCounts(schedules, value = 0)
   maxdays <- colMaxs(schedules)
@@ -774,12 +767,10 @@ averageSS <- function(data_SS, datesSearchedCol = NULL){
 #' @examples 
 #'   data(mock)
 #'   model_SE <- pkm(formula_p = p ~ HabitatType, formula_k = k ~ 1,
-#'                 data = mock$SE
-#'               )
+#'                 data = mock$SE)
 #'   model_CP <- cpm(formula_l = l ~ Visibility, formula_s = s ~ Visibility, 
 #'                 data = mock$CP, left = "LastPresentDecimalDays", 
-#'                 right = "FirstAbsentDecimalDays"
-#'               )
+#'                 right = "FirstAbsentDecimalDays")
 #'   avgSS <- averageSS(mock$SS)
 #'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
 #'                     seed_SE = 1, seed_CP = 1)
@@ -835,18 +826,16 @@ summary.gGeneric <- function(object, ..., CL = 0.90){
 #'
 #' @examples
 #'   data(mock)
-#'   pkmModsSize <- pkmSetSize(formula_p = p ~ HabitatType,
+#'   pkmModsSize <- pkm(formula_p = p ~ HabitatType,
 #'                    formula_k = k ~ HabitatType, data = mock$SE,
 #'                    obsCol = c("Search1", "Search2", "Search3", "Search4"),
-#'                    sizeclassCol = "Size"
-#'                  )
-#'   cpmModsSize <- cpmSetSize(formula_l = l ~ Visibility,
+#'                    sizeCol = "Size")
+#'   cpmModsSize <- cpm(formula_l = l ~ Visibility,
 #'                    formula_s = s ~ Visibility, data = mock$CP,
 #'                    left = "LastPresentDecimalDays",
 #'                    right = "FirstAbsentDecimalDays",
 #'                    dist = c("exponential", "lognormal"),
-#'                    sizeclassCol = "Size"
-#'                    )
+#'                    sizeCol = "Size", allCombos = T)
 #'   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
 #'              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
 #'             )
@@ -898,8 +887,8 @@ summary.gGenericSize <- function(object, ..., CL = 0.90){
 #'  of the search intervals), and each unit (with 1s and 0s to indicate 
 #'  whether the given unit was searched (= 1) or not (= 0) on the given date)
 #'
-#' @param datesSearchedCol name of the column with the search dates in it
-#'  (optional). If no \code{datesSearchedCol} is given, \code{prepSS} will 
+#' @param SSdate name of the column with the search dates in it
+#'  (optional). If no \code{SSdate} is given, \code{prepSS} will
 #'  try to find the date column based on data formats. If there is exactly one
 #'  column that can be interpreted as dates, that column will be taken as the
 #'  dates searched. If more than one date column is found, \code{prepSS} exits
@@ -920,45 +909,44 @@ summary.gGenericSize <- function(object, ..., CL = 0.90){
 #'
 #' @export
 #'
-prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
-  dateCol <- datesSearchedCol # to make typing easier
+prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
   if ("prepSS" %in% class(data_SS)) return(data_SS)
   if (length(intersect(class(data_SS), c("data.frame", "matrix"))) == 0){
     stop("data_SS must be a data frame or matrix")
   } else if (is.null(colnames(data_SS))){
     stop("data_SS columns must be named")
   }
-  # if dateCol not provided, extract search dates (if possible)
-  if (is.null(dateCol)){
+  # if SSdate not provided, extract search dates (if possible)
+  if (is.null(SSdate)){
     for (coli in colnames(data_SS)){
       tmp <- checkDate(data_SS[, coli])
       if (!is.null(tmp)){
-        if (!is.null(dateCol)){
+        if (!is.null(SSdate)){
           stop(
             "more than 1 date column in data_SS, and ",
-            "datesSearchedCol does not specify which to use."
+            "SSdate does not specify which to use."
           )
         } else {
-          dateCol <- coli
+          SSdate <- coli
           dates <- tmp
         }
       }
     }
-    if (is.null(dateCol)){
+    if (is.null(SSdate)){
       stop("no columns can be interpreted as dates")
     }
   } else {
-    if (length(dateCol) > 1 || !is.character(dateCol)){
-      stop("'datesSearchedCol' must be NULL or the name of a single column")
+    if (length(SSdate) > 1 || !is.character(SSdate)){
+      stop("'SSdate' must be NULL or the name of a single column")
     }
-    dates <- checkDate(data_SS[, dateCol])
+    dates <- checkDate(data_SS[, SSdate])
     if (is.null(dates)){
-      stop(paste(dateCol, "is not properly formatted as dates"))
+      stop(paste(SSdate, "is not properly formatted as dates"))
     }
   }
   # extract units
   unitNames <- NULL
-  preds <- dateCol
+  preds <- SSdate
   for (coli in colnames(data_SS)){
     if (coli %in% preds) next
     if (!is.numeric(data_SS[, coli])){
@@ -975,15 +963,14 @@ prepSS <- function(data_SS, datesSearchedCol = NULL, preds = NULL){
   if (grepl("-",paste(unitNames, collapse = ''))){
     stop("Unit names must not contain hyphens ( - )")
   }
-#  dates <- as.Date(yyyymmdd(data_SS[, dateCol]))
   date0 <- min(dates)
   ans <- list()
   ans$date0 <- date0
   ans$days <- as.numeric(difftime(dates, date0, units = "days"))
   if (any(diff(ans$days) <= 0)) stop("search dates must be in increasing order")
-  ans[[dateCol]] <- dates
+  ans[[SSdate]] <- dates
   for (i in 1:length(preds)){
-    if (preds[i] == dateCol) next
+    if (preds[i] == SSdate) next
     if (is.factor(data_SS[, preds[i]])){
       ans[[preds[i]]] <- as.character(data_SS[,preds[i]])
     } else {
