@@ -369,15 +369,15 @@ update_output_data_CO_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_sizeclassCol <- function(rv, output){
+update_output_sizeCol <- function(rv, output){
   if (!is.null(rv$obsCols_SE)){
-    selectedCols <- c(rv$obsCols_SE, rv$sizeclassCol, rv$preds_SE)
+    selectedCols <- c(rv$obsCols_SE, rv$sizeCol, rv$preds_SE)
     selectedData <- selectData(rv$data_SE, selectedCols)
     output$selected_SE <- renderDataTable(datatable(selectedData), server = FALSE)
   }
   if (!is.null(c(rv$ltp, rv$fta))){
     obsColsSelected <- c(rv$ltp, rv$fta)
-    selectedCols <- c(obsColsSelected, rv$sizeclassCol, rv$preds_CP)
+    selectedCols <- c(obsColsSelected, rv$sizeCol, rv$preds_CP)
     selectedData <- selectData(rv$data_CP, selectedCols)
     output$selected_CP <- renderDataTable(datatable(selectedData), server = FALSE)
   }
@@ -402,7 +402,7 @@ update_output_sizeclassCol <- function(rv, output){
 #' @export
 #'
 update_output_cols_SE <- function(rv, output){
-  selectedCols <- c(rv$obsCols_SE, rv$sizeclassCol, rv$preds_SE)
+  selectedCols <- c(rv$obsCols_SE, rv$sizeCol, rv$preds_SE)
   if (!is.null(rv$data_SE)){
     selectedData <- selectData(rv$data_SE, selectedCols)
     output$selected_SE <- renderDataTable(datatable(selectedData), server = FALSE)
@@ -423,7 +423,7 @@ update_output_cols_SE <- function(rv, output){
 #' @export
 #'
 update_output_cols_CP <- function(rv, output){
-  selectedCols <- c(rv$ltp, rv$fta, rv$sizeclassCol, rv$preds_CP)
+  selectedCols <- c(rv$ltp, rv$fta, rv$sizeCol, rv$preds_CP)
   selectedData <- selectData(rv$data_CP, selectedCols)
   output$selected_CP <- renderDataTable(datatable(selectedData), server = FALSE)
   return(output)
