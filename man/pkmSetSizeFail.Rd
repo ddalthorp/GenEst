@@ -13,6 +13,6 @@ pkmSetSizeFail(pkmSetSizeToCheck)
 A list of logical vectors indicating which models failed
 }
 \description{
-Run a check on each model within a \code{\link{pkmSetSize}}
+Run a check on each model within a \code{\link[=pkm]{pkmSetSize}}
   object to determine if they all failed or not
 }

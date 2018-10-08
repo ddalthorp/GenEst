@@ -2,7 +2,7 @@
 % Please edit documentation in R/searcher_efficiency_functions.R
 \name{pkmSetFailRemove}
 \alias{pkmSetFailRemove}
-\title{Remove failed pkm models from a \code{\link{pkmSet}} object}
+\title{Remove failed pkm models from a \code{pkmSet} object}
 \usage{
 pkmSetFailRemove(pkmSetToTidy)
 }
@@ -13,5 +13,5 @@ pkmSetFailRemove(pkmSetToTidy)
 A \code{\link{pkmSet}} object with failed models removed
 }
 \description{
-Remove all failed models within a \code{\link{pkmSet}} object
+Remove all failed models within a \code{\link[=pkm]{pkmSet}} object
 }
