@@ -21,7 +21,7 @@ S3 function to generate model comparison tables for lists of
 \examples{
  cpmods <- cpm(formula_l = l ~ Visibility, data = wind_RP$CP,
    left = "LastPresent", right = "FirstAbsent", sizeCol = "Size",
-   allCombos = T)
+   allCombos = TRUE)
  aicc(cpmods)
 
 }

@@ -34,7 +34,7 @@ methods for \code{summary} applied to a \code{gGenericSize}
                    left = "LastPresentDecimalDays",
                    right = "FirstAbsentDecimalDays",
                    dist = c("exponential", "lognormal"),
-                   sizeCol = "Size", allCombos = T)
+                   sizeCol = "Size", allCombos = TRUE)
   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
             )
