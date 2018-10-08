@@ -1147,7 +1147,7 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
 #' @examples
 #'  cpmods <- cpm(formula_l = l ~ Visibility, data = wind_RP$CP,
 #'    left = "LastPresent", right = "FirstAbsent", sizeCol = "Size",
-#'    allCombos = T)
+#'    allCombos = TRUE)
 #'  aicc(cpmods)
 #'
 #' @export

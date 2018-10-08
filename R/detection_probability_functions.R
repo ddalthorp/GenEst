@@ -653,7 +653,7 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'                    left = "LastPresentDecimalDays",
 #'                    right = "FirstAbsentDecimalDays",
 #'                    dist = c("exponential", "lognormal"),
-#'                    sizeCol = "Size", allCombos = T)
+#'                    sizeCol = "Size", allCombos = TRUE)
 #'
 #'   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
 #'              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
@@ -835,7 +835,7 @@ summary.gGeneric <- function(object, ..., CL = 0.90){
 #'                    left = "LastPresentDecimalDays",
 #'                    right = "FirstAbsentDecimalDays",
 #'                    dist = c("exponential", "lognormal"),
-#'                    sizeCol = "Size", allCombos = T)
+#'                    sizeCol = "Size", allCombos = TRUE)
 #'   pkMods <- c("S" = "p ~ 1; k ~ 1", "L" = "p ~ 1; k ~ 1",
 #'              "M" = "p ~ 1; k ~ 1", "XL" = "p ~ 1; k ~ 1"
 #'             )
