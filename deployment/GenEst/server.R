@@ -67,10 +67,10 @@ shinyServer(
       update_input_data_CO_clear(rv, session)
     })
 
-    observeEvent(input$sizeclassCol, ignoreNULL = FALSE, {
-      rv <- update_rv_sizeclassCol(rv, input)
-      output <- update_output_sizeclassCol(rv, output)
-      update_input_sizeclassCol(rv, input, session)
+    observeEvent(input$sizeCol, ignoreNULL = FALSE, {
+      rv <- update_rv_sizeCol(rv, input)
+      output <- update_output_sizeCol(rv, output)
+      update_input_sizeCol(rv, input, session)
     })
     
     observeEvent(input$obsCols_SE, ignoreNULL = FALSE, {
