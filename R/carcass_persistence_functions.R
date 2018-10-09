@@ -172,14 +172,14 @@
 #'
 #' @examples
 #'  head(data(wind_RP))
-#'  mod1 <- cpm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+#'  mod1 <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, data = wind_RP$CP)
 #'  class(mod1)
-#'  mod2 <- cpm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+#'  mod2 <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, data = wind_RP$CP,
 #'    allCombos = TRUE)
 #'  class(mod2)
 #'  names(mod2)
 #'  class(mod2[[1]])
-#'  mod3 <- cpm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+#'  mod3 <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, data = wind_RP$CP,
 #'    allCombos = TRUE, sizeCol = "Size")
 #'  class(mod3)
 #'  names(mod3)
