@@ -167,9 +167,9 @@ dlModTabCP <- function(modTabs, CL = 0.90){
 #' @export
 #'
 prettySplitTab <- function(splitSummary){
-  if (!("splitSummary" %in% class(splitSummary)))
-    stop("splitSummary must be splitSummary object")
-  if (is.list(splitSummary)){
+  if (!("splitSummary" %in% class(splitSummary))){
+    out <- as.matrix(splitSummary, nrow = 1)
+  } else if (is.list(splitSummary)){
     out <- NULL
     for (i in 1:length(splitSummary)){
       out <- round(rbind(out, splitSummary[[i]]), 2)
@@ -179,6 +179,9 @@ prettySplitTab <- function(splitSummary){
     rownames(out) <- NULL
     colnames(out) <- c(attr(splitSummary, "vars")[2:1], colnames(splitSummary[[1]]))
   } else {
+    if (!is.matrix(splitSummary)){
+      splitSummary <- t(as.matrix(splitSummary))
+    }
     out <- cbind(rownames(splitSummary), round(splitSummary, 2))
     rownames(out) <- NULL
     colnames(out) <- c(attr(splitSummary, "vars"), colnames(splitSummary))
