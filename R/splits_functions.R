@@ -529,21 +529,28 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   if (length(attr(splits, "vars")) == 0){
     sumry <- c(quantile(splits$M, probs = probs))
     sumry <- pmax(sumry, splits$X)
+    sumry <- c(X = splits$X, sumry)
   } else if (length(attr(splits, "vars")) == 1){
-    if (is.vector(splits$M)) splits$M <- matrix(splits$M, nrow = 1)
+    if (is.vector(splits$M)){
+      splits$M <- matrix(splits$M, nrow = 1)
+      splits$X <- matrix(splits$X, nrow = 1)
+    }
     sumry <- rowQuantiles(splits$M, probs = probs)
     ind <- (sumry < splits$X)
     sumry <- (sumry * !ind) + (splits$X * ind)
+    sumry <- cbind(X = splits$X, sumry)
   } else if (length(attr(splits, "vars")) == 2){
     if (is.vector(splits$M[[1]])){
       splits$M <- lapply(splits$M, function(x) matrix(x, nrow = 1))
+      splits$X <- lapply(splits$X, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits$M, function(x){
-      cbind(mean = rowMeans(x), rowQuantiles(x, probs = probs))
+      cbind(rowQuantiles(x, probs = probs))
     })
     for (levi in 1:length(sumry)){
       ind <- (sumry[[levi]] < splits$X[[levi]])
       sumry[[levi]] <- (sumry[[levi]] * !ind) + (splits$X[[levi]] * ind)
+      sumry[[levi]] <- cbind(X = splits$X[[levi]], sumry[[levi]])
     }
   } else {
     stop(
@@ -555,16 +562,16 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   if (!is.null(attr(splits, "type"))){
     if (!is.list(splits$M)){
       if (attr(splits, "type") == "CO"){
-        sumry <- sumry[mixedsort(rownames(sumry)), ]
+        sumry <- sumry[gtools::mixedsort(rownames(sumry)), ]
       }
     } else {
       if (attr(splits, "type")[1] == "CO"){
         for (i in 1:length(splits)){
-          sumry[[i]] <- sumry[[i]][mixedsort(rownames(sumry[[i]])), ]
+          sumry[[i]] <- sumry[[i]][gtools::mixedsort(rownames(sumry[[i]])), ]
         }
       }
       if (attr(splits, "type")[2] == "CO"){
-        sumry <- sumry[mixedsort(names(sumry))]
+        sumry <- sumry[gtools::mixedsort(names(sumry))]
        }
      }
    }
