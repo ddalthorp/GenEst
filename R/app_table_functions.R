@@ -167,67 +167,21 @@ dlModTabCP <- function(modTabs, CL = 0.90){
 #' @export
 #'
 prettySplitTab <- function(splitSummary){
-
-  vectored <- as.vector(splitSummary)
-
-  if ("splitSummary" %in% attr(vectored, "class")){
-
-    nspec <- length(splitSummary)
-    Out <- prettySplitSpecTab(splitSummary[[1]])
-    Out[, 1] <- row.names(splitSummary[[1]])
-    colnames(Out)[1] <- attr(splitSummary, "vars")[1]
-    extralev <- rep(names(splitSummary)[1], nrow(Out))
-    Out <- cbind(extralev, Out)    
-    colnames(Out)[1] <- attr(splitSummary, "vars")[2]
-
-    for (speci in 2:nspec){
-      specOut <- prettySplitSpecTab(splitSummary[[speci]])
-      colnames(specOut)[1] <- attr(splitSummary, "vars")[1]
-      specOut[, 1] <- row.names(splitSummary[[speci]])
-      colnames(specOut)[1] <- attr(splitSummary, "vars")[1]
-      extralev <- rep(names(splitSummary)[speci], nrow(specOut))
-      specOut <- cbind(extralev, specOut)    
-      colnames(specOut)[1] <- attr(splitSummary, "vars")[2]
-      Out <- rbind(Out, specOut)
+  if (!("splitSummary" %in% class(splitSummary)))
+    stop("splitSummary must be splitSummary object")
+  if (is.list(splitSummary)){
+    out <- NULL
+    for (i in 1:length(splitSummary)){
+      out <- round(rbind(out, splitSummary[[i]]), 2)
     }
-    return(Out)
-  } else{
-    return(prettySplitSpecTab(splitSummary))
+    out <- cbind(rep(names(splitSummary), each = dim(splitSummary[[1]])[1]),
+      rownames(out), out)
+    rownames(out) <- NULL
+    colnames(out) <- c(attr(splitSummary, "vars")[2:1], colnames(splitSummary[[1]]))
+  } else {
+    out <- cbind(rownames(splitSummary), round(splitSummary, 2))
+    rownames(out) <- NULL
+    colnames(out) <- c(attr(splitSummary, "vars"), colnames(splitSummary))
   }
-}
-
-#' @title Create the pretty version of a specific split summary table
-#'
-#' @description Format a reader-friendly version of a specific split summary 
-#'   table from a mortality estimation
-#'
-#' @param splitSummarySpec a specific split summary
-#'
-#' @return specific split pretty table  
-#'
-#' @export
-#'
-prettySplitSpecTab <- function(splitSummarySpec){
-  vectored <- as.vector(splitSummarySpec)
-  nrows <- nrow(splitSummarySpec)
-  ncols <- ncol(splitSummarySpec)
-  if (is.null(nrows)){
-    nrows <- 1
-    ncols <- length(splitSummarySpec)
-    rnames <- "all"
-    cnames <- names(splitSummarySpec)
-  } else{
-    rnames <- rownames(splitSummarySpec)
-    cnames <- colnames(splitSummarySpec)
-  }
-  prettyTab <- matrix(round(vectored, 2), nrow = nrows, ncol = ncols)
-    
-  colnames(prettyTab) <- cnames
-  varname <- attr(splitSummarySpec, "vars")
-  if (is.null(varname)){
-    return(prettyTab)
-  }
-  prettyTab <- cbind(rnames, prettyTab)
-  colnames(prettyTab)[1] <- varname
-  return(prettyTab)
+  out
 }

@@ -72,7 +72,7 @@ shinyServer(
       output <- update_output_sizeCol(rv, output)
       update_input_sizeCol(rv, input, session)
     })
-    
+
     observeEvent(input$obsCols_SE, ignoreNULL = FALSE, {
       rv <- update_rv_cols_SE_obs(rv, input)
       output <- update_output_cols_SE(rv, output)
@@ -94,7 +94,7 @@ shinyServer(
       clearNotifications(msgs)
       rv <- update_rv_run_SE_clear(rv, input)
       output <- update_output_run_SE_clear(rv, output)
-      update_input_run_SE_clear(rv, session)  
+      update_input_run_SE_clear(rv, session)
     })
     observeEvent(input$outsizeclassSE, {
       rv <- update_rv_outsc_SE(rv, input)
@@ -109,7 +109,7 @@ shinyServer(
       rv <- update_rv_outpk_SE(rv, input)
       output <- update_output_outpk_SE(rv, output)
     })
-    
+
     observeEvent(input$ltp, ignoreNULL = FALSE, {
       rv <- update_rv_cols_ltp(rv, input)
       output <- update_output_cols_CP(rv, output)
@@ -131,12 +131,12 @@ shinyServer(
       output <- update_output_run_CP(rv, output)
       update_input_run_CP(rv, session)
       msgs$ModCP <<- msgModDone(msgs, rv, "CP")
-    })    
+    })
     observeEvent(input$runMod_CP_clear, {
       clearNotifications(msgs)
       rv <- update_rv_run_CP_clear(rv, input)
       output <- update_output_run_CP_clear(rv, output)
-      update_input_run_CP_clear(rv, session)  
+      update_input_run_CP_clear(rv, session)
     })
     observeEvent(input$outsizeclassCP, {
       rv <- update_rv_outsc_CP(rv, input)
@@ -155,7 +155,7 @@ shinyServer(
       rv <- update_rv_outdls_CP(rv, input)
       output <- update_output_outdls_CP(rv, output)
     })
-    
+
     observeEvent(input$runMod_M, {
       msgs$ModM <<- msgModRun(msgs, "M")
       rv <- update_rv_run_M(rv, input)
@@ -167,7 +167,7 @@ shinyServer(
       clearNotifications(msgs)
       rv <- update_rv_run_M_clear(rv, input)
       output <- update_output_run_M_clear(rv, output)
-      update_input_run_M_clear(rv, session)  
+      update_input_run_M_clear(rv, session)
     })
     observeEvent(input$splitM, {
       rv <- update_rv_split_M(rv, input)
@@ -184,7 +184,7 @@ shinyServer(
       rv <- update_rv_transpose_split(rv)
       output <- update_output_transpose_split(rv, output)
     })
-    
+
     observeEvent(input$useSSdata, {
       rv <- update_rv_useSSdata(rv)
       msgs$SS <<- msgSSavgFail(msgs, rv)
@@ -207,7 +207,7 @@ shinyServer(
       clearNotifications(msgs)
       rv <- update_rv_run_g_clear(rv, input)
       output <- update_output_run_g_clear(rv, output)
-      update_input_run_g_clear(rv, session)  
+      update_input_run_g_clear(rv, session)
     })
     observeEvent(input$outsizeclassg, {
       rv <- update_rv_outsc_g(rv, input)

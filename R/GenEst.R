@@ -6,7 +6,6 @@
 #'   polygon rect text
 #' @importFrom grDevices dev.off devAskNewPage png rgb
 #' @importFrom gsl hyperg_2F1
-#' @importFrom gtools mixedsort
 #' @importFrom htmltools a br code div em h3 h4 HTML img p tags
 #' @importFrom lubridate is.Date
 #' @importFrom matrixStats colCounts colMaxs rowCumprods rowMaxs rowProds
@@ -235,7 +234,6 @@
 #' \code{\link{preTextMaker}}\cr
 #' \code{\link{prettyModTabCP}}\cr
 #' \code{\link{prettyModTabSE}}\cr
-#' \code{\link{prettySplitSpecTab}}\cr
 #' \code{\link{prettySplitTab}}\cr
 #' \code{\link{readCSV}}\cr
 #' \code{\link{refMod}}\cr

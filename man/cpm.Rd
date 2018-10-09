@@ -45,14 +45,14 @@ observation is stored.}
 "lognormal")}
 
 \item{allCombos}{logical. If \code{allCombos = FALSE}, then the single model
- expressed by \code{formula_p} and \code{formula_k} is fit using a call to
- \code{pkm0}. If \code{allCombos = TRUE}, a full set of \code{\link{pkm}}
+ expressed by \code{formula_l} and \code{formula_s} is fit using a call to
+ \code{cpm0}. If \code{allCombos = TRUE}, a full set of \code{\link{cpm}}
  submodels derived from combinations of the given covariates for \code{p}
- and \code{k} is fit. For example, submodels of \code{formula_p = p ~ A * B}
+ and \code{k} is fit. For example, submodels of \code{formula_l = p ~ A * B}
  would be \code{p ~ A * B}, \code{p ~ A + B}, \code{p ~ A}, \code{p ~ B},
  and \code{p ~ 1}. Models for each pairing of a \code{p} submodel with a
-\code{k} submodel are fit via \code{pkmSet}, which fits each model
- combination using successive calls to \code{pkm0}, which fits a
+\code{k} submodel are fit via \code{cpmSet}, which fits each model
+ combination using successive calls to \code{cpm0}, which fits a
  single model.}
 
 \item{sizeCol}{character string. The name of the column in \code{data} that
@@ -110,8 +110,8 @@ The probability of a carcass persisting to a particular time is
   entered for each. The models are entered as they would be in the familiar 
   \code{lm} or \code{glm} functions in R. For example, \code{l} might vary
   with \code{A}, \code{B}, and \code{C}, while \code{k} varies only with
- \code{A}. A user might then enter \code{p ~ A + B + C} for \code{formula_p}
-  and \code{k ~ A} for \code{formula_k}. Other R conventions for defining
+ \code{A}. A user might then enter \code{p ~ A + B + C} for \code{formula_l}
+  and \code{k ~ A} for \code{formula_s}. Other R conventions for defining
   formulas may also be used, with \code{A:B} for the interaction between
   covariates A and B and \code{A * B} as short-hand for \code{A + B + A:B}.
 
@@ -202,14 +202,16 @@ via the \code{$} operator:
 
 \examples{
  head(data(wind_RP))
- mod1 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE)
+ mod1 <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, data = wind_RP$CP,
+   left = "LastPresent", right = "FirstAbsent")
  class(mod1)
- mod2 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
-   allCombos = TRUE)
+ mod2 <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, data = wind_RP$CP,
+   left = "LastPresent", right = "FirstAbsent", allCombos = TRUE)
  class(mod2)
  names(mod2)
  class(mod2[[1]])
- mod3 <- pkm(formula_p = p ~ Season, formula_k = k ~ 1, data = wind_RP$SE,
+ mod3 <- cpm(formula_l = l ~ Season, formula_s = s ~ 1, data = wind_RP$CP,
+   left = "LastPresent", right = "FirstAbsent",
    allCombos = TRUE, sizeCol = "Size")
  class(mod3)
  names(mod3)
