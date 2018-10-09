@@ -218,7 +218,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{preTextMaker}}\cr
 \code{\link{prettyModTabCP}}\cr
 \code{\link{prettyModTabSE}}\cr
-\code{\link{prettySplitSpecTab}}\cr
 \code{\link{prettySplitTab}}\cr
 \code{\link{readCSV}}\cr
 \code{\link{refMod}}\cr
