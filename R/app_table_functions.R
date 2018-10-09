@@ -1,4 +1,4 @@
-#' @title Create the pretty version of the Searcher Efficiency model table
+#' @title Create the pretty versi10/8/2018 5:06:59 PMon of the Searcher Efficiency model table
 #'
 #' @description Format a reader-friendly version of the parameter table from
 #'   a Searcher Efficiency model, based on confidence level of interest
@@ -21,7 +21,7 @@ prettyModTabSE <- function(modTab, CL = 0.90){
     modTab$k_upper <- NA
   }
 
-  out <- modTab[ , c("cell", "p_median", "k_median")]
+  out <- modTab[ , c("cell", "n", "p_median", "k_median")]
   ncell <- nrow(out)
 
   for (celli in 1:ncell){
@@ -40,7 +40,7 @@ prettyModTabSE <- function(modTab, CL = 0.90){
     }
   }
 
-  colnames(out) <- c("Cell", "p", "k")
+  colnames(out) <- c("Cell", "n", "p", "k")
   return(out)
 }
 
@@ -70,7 +70,7 @@ dlModTabSE <- function(modTab, CL = 0.90){
   lo <- 100 * (1 - CL) / 2
   up <- 100 - 100 * (1 - CL) / 2
   coltypes <- c("Median", paste0(lo, "%"), paste0(up, "%"))
-  colnames(out) <- c("Cell", paste0("p ", coltypes), paste0("k ", coltypes))
+  colnames(out) <- c("Cell", "n", paste0("p ", coltypes), paste0("k ", coltypes))
   return(out)
 }
 
@@ -90,7 +90,7 @@ dlModTabSE <- function(modTab, CL = 0.90){
 prettyModTabCP <- function(modTabs, CL = 0.90){
   modTab <- modTabs[["ls"]]
   modTab_d <- modTabs[["desc"]]
-  out <- modTab[ , c("cell", "l_median", "s_median")]
+  out <- modTab[ , c("cell", "n", "l_median", "s_median")]
   ncell <- nrow(out)
 
   for (celli in 1:ncell){
@@ -109,7 +109,7 @@ prettyModTabCP <- function(modTabs, CL = 0.90){
     }
   }
 
-  colnames(out) <- c("Cell", c("Location", "Scale"))
+  colnames(out) <- c("Cell", "n", c("Location", "Scale"))
   cellCol <- which(colnames(modTab_d) == "cell")
   out_d <- modTab_d[ , -cellCol]
   for (celli in 1:ncell){
@@ -142,7 +142,7 @@ dlModTabCP <- function(modTabs, CL = 0.90){
   lo <- 100 * (1 - CL) / 2
   up <- 100 - 100 * (1 - CL) / 2
   coltypes <- c("Median", paste0(lo, "%"), paste0(up, "%"))
-  colnames(out) <- c("Cell", paste0("Location ", coltypes), 
+  colnames(out) <- c("Cell", "n", paste0("Location ", coltypes),
                      paste0("Scale ", coltypes))
   cellCol <- which(colnames(modTab_d) == "cell")
   out_d <- modTab_d[ , -cellCol]
