@@ -562,12 +562,12 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   if (!is.null(attr(splits, "type"))){
     if (!is.list(splits$M)){
       if (attr(splits, "type") == "CO"){
-        sumry <- sumry[mixedsort(rownames(sumry)), ]
+        sumry <- sumry[gtools::mixedsort(rownames(sumry)), ]
       }
     } else {
       if (attr(splits, "type")[1] == "CO"){
         for (i in 1:length(splits)){
-          sumry[[i]] <- sumry[[i]][mixedsort(rownames(sumry[[i]])), ]
+          sumry[[i]] <- sumry[[i]][gtools::mixedsort(rownames(sumry[[i]])), ]
         }
       }
       if (attr(splits, "type")[2] == "CO"){
