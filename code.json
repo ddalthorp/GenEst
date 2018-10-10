@@ -5,7 +5,6 @@
     "description": "R package for estimating bird and bat fatalities at wind and solar power facilities",
     "version": "1.0.0",
     "status": "Release Candidate",
-
     "permissions": {
       "usageType": "openSource",
       "licenses": [
