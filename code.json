@@ -4,7 +4,7 @@
     "organization": "U.S. Geological Survey",
     "description": "R package for estimating bird and bat fatalities at wind and solar power facilities",
     "version": "1.0.0",
-    "status": "RELEASE_STATUS",
+    "status": "provisional",
 
     "permissions": {
       "usageType": "openSource",
