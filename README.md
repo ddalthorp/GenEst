@@ -1,4 +1,3 @@
-[![Build Status](https://api.travis-ci.org/ddalthorp/GenEst.svg?branch=master)](https://travis-ci.org/ddalthorp/GenEst)
 # GenEst_beta
 
 <img src = 'inst/app/www/GenEst.png' height = '80' align="right" />
