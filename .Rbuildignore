@@ -3,6 +3,6 @@
 ^.travis.yml$
 ^data-raw$
 ^deployment$
-^code.json$
 ^LICENSE.md$
+^code.json$
 ^DISCLAIMER.md$
