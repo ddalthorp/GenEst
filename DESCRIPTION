@@ -1,6 +1,6 @@
 Package: GenEst
 Title: Generalized Fatality Estimator
-Version: 1.0.0
+Version: 1.0.1
 Date: 2018-10-10
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
@@ -15,7 +15,7 @@ Authors@R: c(
 Description: A tool for estimating mortality from searcher efficiency, carcass
   persistence, search schedule, and carcass observation data. 
 Depends: R (>= 3.5.0)
-License: file LICENSE.md
+License: CC0
 Encoding: UTF-8
 LazyData: true
 Imports:
