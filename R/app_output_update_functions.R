@@ -11,11 +11,11 @@
 #' @export
 #'
 update_output_clear_all <- function(rv, output){
-  output <- update_output_data_SE_clear(rv, output)
-  output <- update_output_data_CP_clear(rv, output)
-  output <- update_output_data_DWP_clear(rv, output)
-  output <- update_output_data_SS_clear(rv, output)
-  output <- update_output_data_CO_clear(rv, output)
+  output <- update_output_file_SE_clear(rv, output)
+  output <- update_output_file_CP_clear(rv, output)
+  output <- update_output_file_DWP_clear(rv, output)
+  output <- update_output_file_SS_clear(rv, output)
+  output <- update_output_file_CO_clear(rv, output)
   return(output)
 }
 
@@ -41,16 +41,6 @@ initialOutput <- function(rv, output){
   output$download_PV <- downloadData("PV")
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
-
-#  output$download_RP2 <- downloadData("RP", csvformat = 2)
-#  output$download_RPbat2 <- downloadData("RPbat", csvformat = 2)
-#  output$download_cleared2 <- downloadData("cleared", csvformat = 2)
-#  output$download_powerTower2 <- downloadData("powerTower", csvformat = 2)
-#  output$download_PV2 <- downloadData("PV", csvformat = 2)
-#  output$download_trough2 <- downloadData("trough", csvformat = 2)
-#  output$download_mock2 <- downloadData("mock", csvformat = 2)
-
-
   output$kFillNeed <- renderText("no")
   outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
 
@@ -69,8 +59,8 @@ initialOutput <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_SE <- function(rv, output){
-  output <- update_output_data_SE_clear(rv, output)
+update_output_file_SE <- function(rv, output){
+  output <- update_output_file_SE_clear(rv, output)
   output$data_SE <- renderDataTable(datatable(rv$data_SE), server = FALSE)
   output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
   outputOptions(output, "filename_SE", suspendWhenHidden = FALSE)
@@ -89,7 +79,7 @@ update_output_data_SE <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_SE_clear <- function(rv, output){
+update_output_file_SE_clear <- function(rv, output){
   output$data_SE <- NULL
   output$filename_SE <- NULL
   output$selected_SE <- NULL
@@ -147,8 +137,8 @@ update_output_data_SE_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_CP <- function(rv, output){
-  output <- update_output_data_CP_clear(rv, output)
+update_output_file_CP <- function(rv, output){
+  output <- update_output_file_CP_clear(rv, output)
   output$data_CP <- renderDataTable(datatable(rv$data_CP), server = FALSE)
   output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
   outputOptions(output, "filename_CP", suspendWhenHidden = FALSE)
@@ -167,7 +157,7 @@ update_output_data_CP <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_CP_clear <- function(rv, output){
+update_output_file_CP_clear <- function(rv, output){
   output$data_CP <- NULL
   output$filename_CP <- NULL
   outputOptions(output, "filename_CP", suspendWhenHidden = FALSE)
@@ -226,8 +216,8 @@ update_output_data_CP_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_SS <- function(rv, output){
-  output <- update_output_data_SS_clear(rv, output)
+update_output_file_SS <- function(rv, output){
+  output <- update_output_file_SS_clear(rv, output)
   output$data_SS <- renderDataTable(datatable(rv$data_SS), server = FALSE)
   outputOptions(output, "data_SS", suspendWhenHidden = FALSE)
   return(output)
@@ -245,7 +235,7 @@ update_output_data_SS <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_SS_clear <- function(rv, output){
+update_output_file_SS_clear <- function(rv, output){
   output$data_SS <- NULL
 
   output$fig_M <- NULL
@@ -282,8 +272,8 @@ update_output_data_SS_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_DWP <- function(rv, output){
-  output <- update_output_data_DWP_clear(rv, output)
+update_output_file_DWP <- function(rv, output){
+  output <- update_output_file_DWP_clear(rv, output)
   output$data_DWP <- renderDataTable(datatable(rv$data_DWP), server = FALSE)
   outputOptions(output, "data_DWP", suspendWhenHidden = FALSE)
   return(output)
@@ -302,7 +292,7 @@ update_output_data_DWP <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_DWP_clear <- function(rv, output){
+update_output_file_DWP_clear <- function(rv, output){
   output$data_DWP <- NULL
   output$fig_M <- NULL
   output$table_M <- NULL
@@ -325,8 +315,8 @@ update_output_data_DWP_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_CO <- function(rv, output){
-  output <- update_output_data_CO_clear(rv, output)
+update_output_file_CO <- function(rv, output){
+  output <- update_output_file_CO_clear(rv, output)
   output$data_CO <- renderDataTable(datatable(rv$data_CO), server = FALSE)
   outputOptions(output, "data_CO", suspendWhenHidden = FALSE)
   return(output)
@@ -344,7 +334,7 @@ update_output_data_CO <- function(rv, output){
 #'
 #' @export
 #'
-update_output_data_CO_clear <- function(rv, output){
+update_output_file_CO_clear <- function(rv, output){
   output$data_CO <- NULL
   output$fig_M <- NULL
   output$table_M <- NULL
@@ -369,22 +359,24 @@ update_output_data_CO_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_sizeCol <- function(rv, output){
+update_output_class <- function(rv, output){
   if (!is.null(rv$obsCols_SE)){
     selectedCols <- c(rv$obsCols_SE, rv$sizeCol, rv$preds_SE)
     selectedData <- selectData(rv$data_SE, selectedCols)
-    output$selected_SE <- renderDataTable(datatable(selectedData), server = FALSE)
+    output$selected_SE <- renderDataTable(datatable(selectedData), 
+                                          server = FALSE)
   }
   if (!is.null(c(rv$ltp, rv$fta))){
     obsColsSelected <- c(rv$ltp, rv$fta)
     selectedCols <- c(obsColsSelected, rv$sizeCol, rv$preds_CP)
     selectedData <- selectData(rv$data_CP, selectedCols)
-    output$selected_CP <- renderDataTable(datatable(selectedData), server = FALSE)
+    output$selected_CP <- renderDataTable(datatable(selectedData), 
+                                          server = FALSE)
   }
 
-  isolate({
+#  isolate({
     output$kFixedInput <- kFixedWidget(rv$sizeclasses_k)
-  })
+#  })
 
   return(output)
 }
@@ -401,11 +393,22 @@ update_output_sizeCol <- function(rv, output){
 #'
 #' @export
 #'
-update_output_cols_SE <- function(rv, output){
+update_output_obsSE <- function(rv, output){
   selectedCols <- c(rv$obsCols_SE, rv$sizeCol, rv$preds_SE)
   if (!is.null(rv$data_SE)){
     selectedData <- selectData(rv$data_SE, selectedCols)
-    output$selected_SE <- renderDataTable(datatable(selectedData), server = FALSE)
+    output$selected_SE <- renderDataTable(datatable(selectedData), 
+                                          server = FALSE)
+  }
+  return(output)
+}
+
+update_output_predsSE <- function(rv, output){
+  selectedCols <- c(rv$obsCols_SE, rv$sizeCol, rv$preds_SE)
+  if (!is.null(rv$data_SE)){
+    selectedData <- selectData(rv$data_SE, selectedCols)
+    output$selected_SE <- renderDataTable(datatable(selectedData), 
+                                          server = FALSE)
   }
   return(output)
 }
@@ -422,10 +425,27 @@ update_output_cols_SE <- function(rv, output){
 #'
 #' @export
 #'
-update_output_cols_CP <- function(rv, output){
+update_output_fta <- function(rv, output){
   selectedCols <- c(rv$ltp, rv$fta, rv$sizeCol, rv$preds_CP)
   selectedData <- selectData(rv$data_CP, selectedCols)
-  output$selected_CP <- renderDataTable(datatable(selectedData), server = FALSE)
+  output$selected_CP <- renderDataTable(datatable(selectedData), 
+                                          server = FALSE)
+  return(output)
+}
+
+update_output_ltp <- function(rv, output){
+  selectedCols <- c(rv$ltp, rv$fta, rv$sizeCol, rv$preds_CP)
+  selectedData <- selectData(rv$data_CP, selectedCols)
+  output$selected_CP <- renderDataTable(datatable(selectedData), 
+                                          server = FALSE)
+  return(output)
+}
+
+update_output_predsCP <- function(rv, output){
+  selectedCols <- c(rv$ltp, rv$fta, rv$sizeCol, rv$preds_CP)
+  selectedData <- selectData(rv$data_CP, selectedCols)
+  output$selected_CP <- renderDataTable(datatable(selectedData), 
+                                          server = FALSE)
   return(output)
 }
 
@@ -477,7 +497,8 @@ update_output_run_SE <- function(rv, output){
     }    
 
     output$text_SE_est <- renderText(paste0(
-      "Table shows median estimates and ", 100 * rv$CL,  "% confidence intervals"))
+      "Table shows median estimates and ", 100 * rv$CL,  
+           "% confidence intervals"))
 
     scText <- renderText(preText)
     output$sizeclass_SE1 <- scText
@@ -491,8 +512,10 @@ update_output_run_SE <- function(rv, output){
     }
     outputOptions(output, "sizeclass_SEyn", suspendWhenHidden = FALSE)
 
-    output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, rv$csvformat)
-    output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE, rv$csvformat)
+    output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, 
+                                          rv$csvformat)
+    output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE, 
+                                          rv$csvformat)
     output$dlSEfig <- downloadSEFig(rv)
 
     outputOptions(output, "text_SE_est", suspendWhenHidden = FALSE)
@@ -591,7 +614,7 @@ update_output_run_SE_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_outsc_SE <- function(rv, output){
+update_output_outSEclass <- function(rv, output){
   if (length(rv$mods_SE) > 0){
     output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
     output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
@@ -609,8 +632,10 @@ update_output_outsc_SE <- function(rv, output){
     output$sizeclass_SE2 <- scText
     output$sizeclass_SE3 <- scText
 
-    output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, rv$csvformat)
-    output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE, rv$csvformat)
+    output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, 
+                                          rv$csvformat)
+    output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE, 
+                                          rv$csvformat)
     output$dlSEfig <- downloadSEFig(rv)
   }
   return(output)
@@ -628,7 +653,7 @@ update_output_outsc_SE <- function(rv, output){
 #'
 #' @export
 #'
-update_output_outpk_SE <- function(rv, output){
+update_output_outSEp <- function(rv, output){
   if (length(rv$mods_SE) > 0){
     output$fig_SE <- renderPlot({ 
                        tryCatch(
@@ -640,11 +665,32 @@ update_output_outpk_SE <- function(rv, output){
     output$dlSEfig <- downloadSEFig(rv)
     if (!is.null(rv$modTab_SE)){
       output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
-      output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, rv$csvformat)
+      output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, 
+                                          rv$csvformat)
     }
   }
   return(output)
 }
+
+update_output_outSEk <- function(rv, output){
+  if (length(rv$mods_SE) > 0){
+    output$fig_SE <- renderPlot({ 
+                       tryCatch(
+                         plot(rv$modSet_SE, specificModel = rv$outSEpk, 
+                           app = TRUE),
+                         error = function(x){plotNA()}
+                       )
+                     }, height = rv$figH_SE, width = rv$figW_SE)
+    output$dlSEfig <- downloadSEFig(rv)
+    if (!is.null(rv$modTab_SE)){
+      output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
+      output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, 
+                                          rv$csvformat)
+    }
+  }
+  return(output)
+}
+
 
 #' @title Update the output when an CP model has been run
 #'
@@ -701,8 +747,10 @@ update_output_run_CP <- function(rv, output){
     outputOptions(output, "sizeclass_CPyn", suspendWhenHidden = FALSE)
 
 
-    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, rv$csvformat)
-    output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP, rv$csvformat)
+    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, 
+                                          rv$csvformat)
+    output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP, 
+                                          rv$csvformat)
     output$dlCPfig <- downloadCPFig(rv)
   }
 
@@ -814,8 +862,10 @@ update_output_outsc_CP <- function(rv, output){
     output$sizeclass_CP2 <- scText
     output$sizeclass_CP3 <- scText
 
-    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, rv$csvformat)
-    output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP, rv$csvformat)
+    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, 
+                                          rv$csvformat)
+    output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP, 
+                                          rv$csvformat)
     output$dlCPfig <- downloadCPFig(rv)
   }
   return(output)
@@ -846,12 +896,14 @@ update_output_outdls_CP <- function(rv, output){
                        error = function(x){plotNA()}
                      )
                      }, height = rv$figH_CP, width = rv$figW_CP)
-    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, rv$csvformat)
+    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+                                           rv$csvformat)
     output$dlCPfig <- downloadCPFig(rv)
 
     if (!is.null(rv$modTab_CP)){
       output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
-      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, rv$csvformat)
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+                                           rv$csvformat)
     }
 
   }
@@ -917,7 +969,8 @@ update_output_run_g <- function(rv, output){
     output$sizeclass_g1 <- scText
     output$sizeclass_g2 <- scText
 
-    output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, rv$csvformat)
+    output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, 
+                                          rv$csvformat)
     output$dlgfig <- downloadgFig(rv, 1)
   }
   return(output)
@@ -985,7 +1038,8 @@ update_output_outsc_g <- function(rv, output){
     output$sizeclass_g1 <- scText
     output$sizeclass_g2 <- scText
 
-    output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, rv$csvformat)
+    output$dlgtab <- downloadTable("g_estimates.csv", summaryTab,
+                                           rv$csvformat)
     output$dlgfig <- downloadgFig(rv, rv$sizeclass_g)
   }
   return(output)
@@ -1073,12 +1127,14 @@ update_output_split_M <- function(rv, output){
                     )
     summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
     output$table_M <- renderDataTable(datatable(summaryTab))
-    output$dlMtab <- downloadTable("M_table.csv", summaryTab, rv$csvformat)
+    output$dlMtab <- downloadTable("M_table.csv", summaryTab,
+                                           rv$csvformat)
     output$dlMfig <- downloadMFig(rv)
   }
   output$MSplitDone <- renderText("OK")
   outputOptions(output, "MSplitDone", suspendWhenHidden = FALSE)
-  output$nMSplits <- renderText(as.character(rv$nsplit_CO + rv$nsplit_SS))
+  output$nMSplits <- renderText(
+                       as.character(rv$nsplit_CO + rv$nsplit_SS))
   outputOptions(output, "nMSplits", suspendWhenHidden = FALSE)
   return(output)
 }

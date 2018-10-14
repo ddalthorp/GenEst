@@ -112,7 +112,7 @@ GenEstAuthors <- function(){
       ", Jeffrey Mintz ",
       a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
       ", Robert Wolpert ",
-      a("(Duke)", href = "http://www2.stat.duke.edu/~rlw/", target = "_blank"),
+      a("(Duke)", href = "http://www2.stat.duke.edu/~rlw", target = "_blank"),
       ", Jared Studyvin ",
       a("(WEST)", href = "https://www.west-inc.com", target = "_blank"),
       ", and Franzi Korner-Nievergelt ",

@@ -8,12 +8,12 @@
 #'
 #' @export
 #'
-update_input_clear_all <- function(rv, session){
-  update_input_data_SE_clear(rv, session)
-  update_input_data_CP_clear(rv, session)
-  update_input_data_DWP_clear(rv, session)
-  update_input_data_SS_clear(rv, session)
-  update_input_data_CO_clear(rv, session)
+update_input_clear_all <- function(rv, input, session){
+  update_input_file_SE_clear(rv, input, session)
+  update_input_file_CP_clear(rv, input, session)
+  update_input_file_DWP_clear(rv, input, session)
+  update_input_file_SS_clear(rv, input, session)
+  update_input_file_CO_clear(rv, input, session)
 }
 
 #' @title Update the inputs when SE data are read in
@@ -26,10 +26,10 @@ update_input_clear_all <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_SE <- function(rv, session){
-  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds)
-  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs)
-  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+update_input_file_SE <- function(rv, input, session){
+  updateSelectizeInput(session, "predsSE", choices = rv$colNames_SE_preds)
+  updateSelectizeInput(session, "obsSE", choices = rv$colNames_SE_obs)
+  updateSelectizeInput(session, "class", choices = rv$colNames_size,
     selected = rv$sizeCol
   )
   updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
@@ -49,7 +49,7 @@ update_input_data_SE <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_SE_clear <- function(rv, session){
+update_input_file_SE_clear <- function(rv, input, session){
 
   reset("file_SE")
   reset("preds_SE")
@@ -96,7 +96,7 @@ update_input_data_SE_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_CP <- function(rv, session){
+update_input_file_CP <- function(rv, input, session){
   updateSelectizeInput(session, "preds_CP", choices = rv$colNames_CP_preds)
   updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_ltp)
   updateSelectizeInput(session, "fta", choices = rv$colNames_CP_fta)
@@ -116,7 +116,7 @@ update_input_data_CP <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_CP_clear <- function(rv, session){
+update_input_file_CP_clear <- function(rv, input, session){
 
   reset("file_CP")
   reset("preds_CP")
@@ -164,7 +164,7 @@ update_input_data_CP_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_SS <- function(rv, session){
+update_input_file_SS <- function(rv, input, session){
   updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
 }
 
@@ -178,7 +178,7 @@ update_input_data_SS <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_SS_clear <- function(rv, session){
+update_input_file_SS_clear <- function(rv, input, session){
   reset("file_SS")
   reset("gSearchInterval")
   reset("gSearchMax")
@@ -198,7 +198,7 @@ update_input_data_SS_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_DWP <- function(rv, session){
+update_input_file_DWP <- function(rv, input, session){
   updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
   if (length(rv$colNames_DWP) == 1){
     updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
@@ -219,7 +219,7 @@ update_input_data_DWP <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_DWP_clear <- function(rv, session){
+update_input_file_DWP_clear <- function(rv, input, session){
   reset("file_DWP")
   reset("DWPCol")
   updateSelectizeInput(session, "DWPCol", choices = "")
@@ -239,7 +239,7 @@ update_input_data_DWP_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_CO <- function(rv, session){
+update_input_file_CO <- function(rv, input, session){
   updateSelectizeInput(session, "COdate", choices = rv$colNames_COdates)
   if (length(rv$colNames_COdates) == 1){
     updateSelectizeInput(session, "COdate",
@@ -262,7 +262,7 @@ update_input_data_CO <- function(rv, session){
 #'
 #' @export
 #'
-update_input_data_CO_clear <- function(rv, session){
+update_input_file_CO_clear <- function(rv, input, session){
 
   reset("file_CO")
   reset("COdate")
@@ -295,11 +295,11 @@ update_input_data_CO_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_sizeCol <- function(rv, input, session){
-  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
-    selected = input$preds_SE)
-  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
-    selected = input$obsCols_SE)
+update_input_class <- function(rv, input, session){
+  updateSelectizeInput(session, "predsSE", choices = rv$colNames_SE_preds,
+    selected = input$predsSE)
+  updateSelectizeInput(session, "obsSE", choices = rv$colNames_SE_obs,
+    selected = input$obsSE)
   updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_nosel,
     selected = input$ltp)
   updateSelectizeInput(session, "fta", choices = rv$colNames_CP_nosel,
@@ -308,7 +308,7 @@ update_input_sizeCol <- function(rv, input, session){
     selected = input$preds_CP)
   updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
     selected = rv$DWPCol)
-  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+  updateSelectizeInput(session, "class", choices = rv$colNames_size,
     selected = rv$sizeCol
   )
 }
@@ -324,12 +324,12 @@ update_input_sizeCol <- function(rv, input, session){
 #'
 #' @export
 #'
-update_input_cols_SE_obs <- function(rv, session){
-  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
+update_input_obsSE <- function(rv, input, session){
+  updateSelectizeInput(session, "predsSE", choices = rv$colNames_SE_preds,
       selected = rv$preds_SE)
-  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
+  updateSelectizeInput(session, "obsSE", choices = rv$colNames_SE_obs,
       selected = rv$obsCols_SE)
-  updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+  updateSelectizeInput(session, "class", choices = rv$colNames_size,
     selected = rv$sizeCol
   )
 }
@@ -345,10 +345,10 @@ update_input_cols_SE_obs <- function(rv, session){
 #'
 #' @export
 #'
-update_input_cols_SE_preds <- function(rv, session){
-  updateSelectizeInput(session, "obsCols_SE", choices = rv$colNames_SE_obs,
+update_input_predsSE <- function(rv, input, session){
+  updateSelectizeInput(session, "obsSE", choices = rv$colNames_SE_obs,
       selected = rv$obsCols_SE)
-  updateSelectizeInput(session, "preds_SE", choices = rv$colNames_SE_preds,
+  updateSelectizeInput(session, "predsSE", choices = rv$colNames_SE_preds,
       selected = rv$preds_SE)
   updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
     selected = rv$sizeCol
@@ -367,7 +367,7 @@ update_input_cols_SE_preds <- function(rv, session){
 #'
 #' @export
 #'
-update_input_cols_ltp <- function(rv, session){
+update_input_ltp <- function(rv, input, session){
   updateSelectizeInput(session, "fta", choices = rv$colNames_fta,
       selected = rv$fta)
   updateSelectizeInput(session, "ltp", choices = rv$colNames_ltp,
@@ -391,7 +391,7 @@ update_input_cols_ltp <- function(rv, session){
 #'
 #' @export
 #'
-update_input_cols_fta <- function(rv, session){
+update_input_fta <- function(rv, input, session){
   updateSelectizeInput(session, "fta", choices = rv$colNames_fta,
       selected = rv$fta)
   updateSelectizeInput(session, "ltp", choices = rv$colNames_ltp,
@@ -414,7 +414,7 @@ update_input_cols_fta <- function(rv, session){
 #'
 #' @export
 #'
-update_input_cols_CP_preds <- function(rv, session){
+update_input_predsCP <- function(rv, input, session){
   updateSelectizeInput(session, "fta", choices = rv$colNames_fta,
       selected = rv$fta)
   updateSelectizeInput(session, "ltp", choices = rv$colNames_ltp,
@@ -436,7 +436,7 @@ update_input_cols_CP_preds <- function(rv, session){
 #'
 #' @export
 #'
-update_input_run_SE <- function(rv, session){
+update_input_run_SE <- function(rv, input, session){
   updateTabsetPanel(session, "analyses_SE", "Model Comparison")
   updateSelectizeInput(session, "outSEp", choices = rv$modNames_SEp)
   updateSelectizeInput(session, "outSEk", choices = rv$modNames_SEk)
@@ -467,7 +467,7 @@ update_input_run_SE <- function(rv, session){
 #'
 #' @export
 #'
-update_input_run_SE_clear <- function(rv, session){
+update_input_run_SE_clear <- function(rv, input, session){
   reset("outSEp")
   reset("outSEk")
   reset("outsizeclassSE")
@@ -501,9 +501,16 @@ update_input_run_SE_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_outsc_SE <- function(rv, session){
+update_input_outSEclass <- function(rv, input, session){
   updateSelectizeInput(session, "outSEp", choices = rv$modNames_SEp)
   updateSelectizeInput(session, "outSEk", choices = rv$modNames_SEk)
+}
+
+update_input_outSEp <- function(rv, input, session){
+
+}
+update_input_outSEk <- function(rv, input, session){
+
 }
 
 #' @title Update the CP output dropdown selections when the model is run
@@ -516,7 +523,7 @@ update_input_outsc_SE <- function(rv, session){
 #'
 #' @export
 #'
-update_input_run_CP <- function(rv, session){
+update_input_run_CP <- function(rv, input, session){
   updateTabsetPanel(session, "analyses_CP", "Model Comparison")
   updateSelectizeInput(session, "outCPl", choices = rv$modNames_CPl)
   updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)
@@ -541,7 +548,7 @@ update_input_run_CP <- function(rv, session){
 #'
 #' @export
 #'
-update_input_run_CP_clear <- function(rv, session){
+update_input_run_CP_clear <- function(rv, input, session){
   reset("outCPl")
   reset("outCPs")
   reset("outCPdist")

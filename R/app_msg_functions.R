@@ -54,7 +54,9 @@ clearNotifications <- function(msgs = msgList()){
 #'
 msgModRun <- function(msgs, modelType, clear = TRUE){
   if (clear){
-    clearNotifications(msgs)
+    if (!is.null(msgs)){
+      removeNotification(msgs)
+    }
   }
   msg <- NULL
   if (modelType == "SE"){
@@ -92,7 +94,9 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 #'
 msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
   if (clear){
-    clearNotifications(msgs)
+    if (!is.null(msgs)){
+      removeNotification(msgs)
+    }
   }
   if (type == "SE"){
     if (any(is.na(rv$kFixed[rv$kFixedChoice]))){

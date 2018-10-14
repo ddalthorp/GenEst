@@ -11,11 +11,11 @@
 #' @export
 #'
 update_rv_clear_all <- function(rv, input){
-  rv <- update_rv_data_SE_clear(rv, input)
-  rv <- update_rv_data_CP_clear(rv, input)
-  rv <- update_rv_data_DWP_clear(rv, input)
-  rv <- update_rv_data_SS_clear(rv, input)
-  rv <- update_rv_data_CO_clear(rv, input)
+  rv <- update_rv_file_SE_clear(rv, input)
+  rv <- update_rv_file_CP_clear(rv, input)
+  rv <- update_rv_file_DWP_clear(rv, input)
+  rv <- update_rv_file_SS_clear(rv, input)
+  rv <- update_rv_file_CO_clear(rv, input)
   return(rv)
 }
 
@@ -31,10 +31,9 @@ update_rv_clear_all <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_SE <- function(rv, input){
-  rv <- update_rv_data_SE_clear(rv, input)
+update_rv_file_SE <- function(rv, input){
+  rv <- update_rv_file_SE_clear(rv, input)
   rv$data_SE <- readCSV(input$file_SE$datapath)
-#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_SE$datapath, 1)), 2, "")
   rv$filename_SE <- input$file_SE$name
   rv$colNames_SE <- colnames(rv$data_SE)
   rv$colNames_SE_preds <- predsCols(rv$data_SE)
@@ -61,7 +60,7 @@ update_rv_data_SE <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_SE_clear <- function(rv, input){
+update_rv_file_SE_clear <- function(rv, input){
   rv$data_SE <- NULL
   rv$filename_SE <- NULL
   rv$colNames_SE <- NULL
@@ -151,9 +150,8 @@ update_rv_data_SE_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_CP <- function(rv, input){
-  rv <- update_rv_data_CP_clear(rv, input)
-#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_CP$datapath, 1)), 2, "")
+update_rv_file_CP <- function(rv, input){
+  rv <- update_rv_file_CP_clear(rv, input)
   rv$data_CP <- readCSV(input$file_CP$datapath)
   rv$filename_CP <- input$file_CP$name
   rv$colNames_CP <- colnames(rv$data_CP)
@@ -184,7 +182,7 @@ update_rv_data_CP <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_CP_clear <- function(rv, input){
+update_rv_file_CP_clear <- function(rv, input){
 
   rv$data_CP <- NULL
   rv$filename_CP <- NULL
@@ -284,9 +282,8 @@ update_rv_data_CP_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_SS <- function(rv, input){
-  rv <- update_rv_data_SS_clear(rv, input)
-#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_SS$datapath, 1)), 2, "")
+update_rv_file_SS <- function(rv, input){
+  rv <- update_rv_file_SS_clear(rv, input)
   rv$data_SS <- readCSV(input$file_SS$datapath)
   rv$colNames_SS <- colnames(rv$data_SS)
   return(rv)
@@ -304,7 +301,7 @@ update_rv_data_SS <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_SS_clear <- function(rv, input){
+update_rv_file_SS_clear <- function(rv, input){
   rv$data_SS <- NULL
   rv$colNames_SS <- NULL
   rv$SS <- seq(0, 364, 7)
@@ -347,9 +344,8 @@ update_rv_data_SS_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_DWP <- function(rv, input){
-  rv <- update_rv_data_DWP_clear(rv, input)
-#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_DWP$datapath, 1)), 2, "")
+update_rv_file_DWP <- function(rv, input){
+  rv <- update_rv_file_DWP_clear(rv, input)
   rv$data_DWP <- readCSV(input$file_DWP$datapath)
   rv$colNames_DWP <- DWPCols(rv$data_DWP)
   return(rv)
@@ -367,7 +363,7 @@ update_rv_data_DWP <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_DWP_clear <- function(rv, input){
+update_rv_file_DWP_clear <- function(rv, input){
   rv$data_DWP <- NULL
   rv$colNames_DWP <- NULL
   rv$M <- NULL
@@ -396,9 +392,8 @@ update_rv_data_DWP_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_CO <- function(rv, input){
-  rv <- update_rv_data_CO_clear(rv, input)
-#  rv$csvformat <- ifelse(grepl(";", readLines(input$file_CO$datapath, 1)), 2, "")
+update_rv_file_CO <- function(rv, input){
+  rv <- update_rv_file_CO_clear(rv, input)
   rv$data_CO <- readCSV(input$file_CO$datapath)
   rv$colNames_CO <- colnames(rv$data_CO)
   rv$colNames_COdates <- dateCols(rv$data_CO)
@@ -421,7 +416,7 @@ update_rv_data_CO <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_data_CO_clear <- function(rv, input){
+update_rv_file_CO_clear <- function(rv, input){
   rv$data_CO <- NULL
   rv$colNames_CO <- NULL
   rv$colNames_COdates <- NULL
@@ -459,10 +454,10 @@ update_rv_data_CO_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_sizeCol <- function(rv, input){
-  rv$sizeCol <- input$sizeCol
-  rv$obsCols_SE <- input$obsCols_SE
-  rv$preds_SE <- input$preds_SE
+update_rv_class <- function(rv, input){
+  rv$sizeCol <- input$class
+  rv$obsCols_SE <- input$obsSE
+  rv$preds_SE <- input$predsSE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
@@ -479,7 +474,7 @@ update_rv_sizeCol <- function(rv, input){
   rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0,
                             rv$toRemove_CP_preds)
 
-  scCol <- input$sizeCol
+  scCol <- input$class
   sizeclasses <- unique(c(rv$data_SE[ , scCol], rv$data_CP[ , scCol]))
   rv$nsizeclasses <- length(sizeclasses)
   rv$sizeclasses_k <- sizeclasses
@@ -493,7 +488,6 @@ update_rv_sizeCol <- function(rv, input){
     rv$nsizeclasses_k <- 1
     rv$DWPCol <- NULL
   }
-
   return(rv)
 }
 
@@ -510,10 +504,10 @@ update_rv_sizeCol <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_cols_SE_obs <- function(rv, input){
-  rv$sizeCol <- input$sizeCol
-  rv$obsCols_SE <- input$obsCols_SE
-  rv$preds_SE <- input$preds_SE
+update_rv_obsSE <- function(rv, input){
+  rv$sizeCol <- input$class
+  rv$obsCols_SE <- input$obsSE
+  rv$preds_SE <- input$predsSE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
@@ -539,10 +533,10 @@ update_rv_cols_SE_obs <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_cols_SE_preds <- function(rv, input){
-  rv$sizeCol <- input$sizeCol
-  rv$obsCols_SE <- input$obsCols_SE
-  rv$preds_SE <- input$preds_SE
+update_rv_predsSE <- function(rv, input){
+  rv$sizeCol <- input$class
+  rv$obsCols_SE <- input$obsSE
+  rv$preds_SE <- input$predsSE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
   rv$preds_CP <- input$preds_CP
@@ -569,13 +563,13 @@ update_rv_cols_SE_preds <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_cols_ltp <- function(rv, input){
-  rv$sizeCol <- input$sizeCol
-  rv$obsCols_SE <- input$obsCols_SE
-  rv$preds_SE <- input$preds_SE
+update_rv_ltp <- function(rv, input){
+  rv$sizeCol <- input$class
+  rv$obsCols_SE <- input$obsSE
+  rv$preds_SE <- input$predsSE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
-  rv$preds_CP <- input$preds_CP
+  rv$preds_CP <- input$predsCP
   rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeCol)
   rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeCol)
   rv$colNames_fta <- removeCols(rv$colNames_fta0, rv$toRemove_fta)
@@ -587,6 +581,9 @@ update_rv_cols_ltp <- function(rv, input){
 
   return(rv)
 }
+
+
+
 
 #' @title Update the reactive value list when a CP First Time Absent column is
 #'   selected
@@ -602,13 +599,13 @@ update_rv_cols_ltp <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_cols_fta <- function(rv, input){
-  rv$sizeCol <- input$sizeCol
-  rv$obsCols_SE <- input$obsCols_SE
-  rv$preds_SE <- input$preds_SE
+update_rv_fta <- function(rv, input){
+  rv$sizeCol <- input$class
+  rv$obsCols_SE <- input$obsSE
+  rv$preds_SE <- input$predsSE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
-  rv$preds_CP <- input$preds_CP
+  rv$preds_CP <- input$predsCP
   rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeCol)
   rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeCol)
   rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
@@ -634,13 +631,13 @@ update_rv_cols_fta <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_cols_CP_preds <- function(rv, input){
-  rv$sizeCol <- input$sizeCol
-  rv$obsCols_SE <- input$obsCols_SE
-  rv$preds_SE <- input$preds_SE
+update_rv_predsCP <- function(rv, input){
+  rv$sizeCol <- input$class
+  rv$obsCols_SE <- input$obsE
+  rv$preds_SE <- input$predsSE
   rv$ltp <- input$ltp
   rv$fta <- input$fta
-  rv$preds_CP <- input$preds_CP
+  rv$preds_CP <- input$predsCP
   rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeCol)
   rv$colNames_ltp <- removeCols(rv$colNames_ltp0, rv$toRemove_ltp)
   rv$toRemove_fta <- c(rv$preds_CP, rv$ltp, rv$sizeCol)
@@ -711,8 +708,8 @@ update_rv_run_SE <- function(rv, input){
     return(rv)
   }
 
-  rv$obsCols_SE <- input$obsCols_SE
-  rv$preds_SE <- input$preds_SE
+  rv$obsCols_SE <- input$obsSE
+  rv$preds_SE <- input$predsSE
   rv$predictors_SE <- prepPredictors(rv$preds_SE)
   rv$formula_p <- formula(paste0("p~", rv$predictors_SE))
   rv$formula_k <- formula(paste0("k~", rv$predictors_SE))
@@ -734,7 +731,8 @@ update_rv_run_SE <- function(rv, input){
     rv$sizeclasses_SE <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
     rv$sizeclass_SE <- rv$sizeclass
-    rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, app = TRUE)
+    rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, 
+                                          app = TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
     rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
     rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
@@ -837,11 +835,12 @@ update_rv_run_SE_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_outsc_SE <- function(rv, input){
+update_rv_outSEclass <- function(rv, input){
   if (length(rv$mods_SE) > 0){
-    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outSEclass)
     rv$sizeclass_SE <- rv$sizeclass
-    rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, app = TRUE)
+    rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, 
+                                          app = TRUE)
     rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
     rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
     rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
@@ -869,7 +868,7 @@ update_rv_outsc_SE <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_outpk_SE <- function(rv, input){
+update_rv_outSEp <- function(rv, input){
   if (length(rv$mods_SE) > 0){
     rv$outSEpk <- modNamePaste(c(input$outSEp, input$outSEk))
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
@@ -887,6 +886,27 @@ update_rv_outpk_SE <- function(rv, input){
   }
   return(rv)
 }
+
+update_rv_outSEk <- function(rv, input){
+  if (length(rv$mods_SE) > 0){
+    rv$outSEpk <- modNamePaste(c(input$outSEp, input$outSEk))
+    rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
+
+    if (rv$outSEpk %in% names(rv$modSet_SE)){
+      rv$modTab_SE <- rv$modSet_SE[[rv$outSEpk]]$cell_pk
+      rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
+      rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
+    } else {
+      rv$modTab_SE <- NULL
+      holder <- data.frame(msg = "Selected model was not successfully fit.")
+      rv$modTabPretty_SE <- holder
+      rv$modTabDL_SE <- holder
+    }
+  }
+  return(rv)
+}
+
+
 
 #' @title Run the CP Models
 #'
@@ -929,7 +949,8 @@ update_rv_run_CP <- function(rv, input){
     rv$sizeclasses_CP <- rv$sizeclasses
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
     rv$sizeclass_CP <- rv$sizeclass
-    rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE, app = TRUE)
+    rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE, 
+                                          app = TRUE)
     rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "",
                                            rv$AICcTab_CP[ , "Scale Formula"]
                                          )
@@ -1073,7 +1094,8 @@ update_rv_outsc_CP <- function(rv, input){
   if (length(rv$mods_CP) > 0){
     rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
     rv$sizeclass_CP <- rv$sizeclass
-    rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE, app = TRUE)
+    rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE,
+                                           app = TRUE)
     rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
     rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass_CP]])[rv$modOrder_CP]
     rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)

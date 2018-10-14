@@ -1,3 +1,33 @@
+eventReaction <- function(eventName, rv, input, output, session){
+
+  eventInput <- paste0("input$", eventName)
+  fun_rv <- paste0("update_rv_", eventName)
+  fun_output <- paste0("update_output_", eventName)
+  fun_input <- paste0("update_input_", eventName)
+
+  do.call(fun_rv, list(rv, input))
+  do.call(fun_output, list(rv, output))
+  do.call(fun_input, list(rv, input, session))  
+
+}
+
+
+eventAndReaction <- function(eventName, rv, input, output, session, 
+                             msgs, clear = FALSE, ignoreNull = TRUE){
+  inputName <- parse(text = paste0("input$", eventName))
+  observeEvent(eval(inputName), ignoreNULL = ignoreNull,  {
+
+    eventReaction(eventName, rv, input, output, session)
+
+    if (clear){
+      clearNotifications(msgs)
+    }
+  })
+}
+
+
+
+
 #' @title Create the version text for GenEst 
 #'
 #' @description Create a text string of the version number and date
@@ -579,7 +609,7 @@ plotNA <- function(type = "model"){
 #'
 #' @export
 #'
-createReactiveValues <- function(){
+initialReactiveValues <- function(){
   reactiveValues(
     data_SE = NULL, data_CP = NULL, data_SS = NULL, data_DWP = NULL, 
     data_CO = NULL,
@@ -602,7 +632,7 @@ createReactiveValues <- function(){
     sizeCol = NULL, sizeCol0 = NULL, toRemove_sizeCol = NULL,
     sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
     sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL, 
-    nsizeclasses = NULL,
+    nsizeclasses = 0,
 
     obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL, 
     formula_p = NULL, formula_k = NULL, kFixedChoice = NULL, kFixed = NULL, 
