@@ -1,5 +1,4 @@
-[![Build Status](https://api.travis-ci.org/ddalthorp/GenEst.svg?branch=master)](https://travis-ci.org/ddalthorp/GenEst)
-# GenEst_beta
+# GenEst
 <img src = 'inst/app/www/GenEst.png' height = '80' align="right" />
 
 ## GenEst: Generalized Fatality Estimator    
@@ -24,27 +23,27 @@ NOTE TO EXPERIENCED R USERS: When you install a new version of R, packages that 
 Several third-party pacakges are required; all are free and open source and available from CRAN. The easiest way to install them is to run the following commands in R (with guidance concerning potential dialog boxes given below the commands):
 
 ```
-package_new <- c("cbinom", "DT", "gsl", "gtools", "htmltools", "lubridate", 
+package_new <- c("corpus", "cbinom", "DT", "gsl", "gtools", "htmltools", "lubridate", 
    "matrixStats", "mvtnorm", "Rcpp", "shiny", "shinyjs", "sticky", "survival")
 package_new <- package_new[!(package_new %in% installed.packages()[,"Package"])] 
 if(length(package_new) > 0) install.packages(package_new)
 ```
 -- If asked about a "CRAN mirror", choose the nearest location.
 
--- If asked whether you want to use a "personal library instead", choose "Yes"
+-- If asked whether you want to use a "personal library", choose "Yes"
 
 -- If you are on Windows and are asked whether you want to install packages and their dependencies "from source", choose "No" (unless you are ready to go to lunch, in which case, you can select "Yes" and the installation may well be done by the time you get back).
 
 ### GenEst: 
-Click on "Releases" and then click the link for the specific release want. 
+Click on "Releases" and then click the link for the specific release you want. 
 
--- For Windows, download the compressed folder GenEst_0.1.0.zip (do not unzip) and note where it is stored. You will install from the local .zip folder. 
+-- For Windows, download the compressed folder GenEst_1.0.0.zip (do not unzip) and note where it is stored. You will install from the local .zip folder. 
 
--- For Mac OS or Unix-like OS, download the compressed file GenEst_0.1.0.tar.gz and note where it is stored. You will install from the local .tar.gz file. 
+-- For Mac OS or Unix-like OS, download the compressed file GenEst_1.0.0.tar.gz and note where it is stored. You will install from the local .tar.gz file. 
 
 If you are working directly in R (not R Studio), run the following command:
 ```
-install.packages(file.choose()) # and navigate to the package archive file you just downloaded: GenEst_0.1.0.xxx
+install.packages(file.choose()) # and navigate to the package archive file you just downloaded: GenEst_1.0.0.xxx
 ```
 
 If you are working in R Studio:
@@ -57,8 +56,6 @@ Browse to where you saved the zip file, and open it so it appears in the "Packag
 
 Click the Install button on the dialog box.
 
-NOTE: This will all be more straightforward once the package is published on CRAN.
-
 ## Getting Started
 ### Graphical user interface (GUI): easy-to-use buttons and menus
 
@@ -68,17 +65,17 @@ library(GenEst)
 runGenEst()
 ```
 
-Download the User Guide from the "user" folder at to learn about opening GenEst, data requirements, examples, etc.
+Download the User Guide from a link near the bottom of the "Help" page in the app or from...
 
 ### R command line: more functionality and flexibility
 ```
 library(GenEst)
 browseVignettes("GenEst")
+?GenEst
 ```
 Also, help files for GenEst functions are accessible in the standard R way, for example:
 ```
 ?pkm
-help(pkm)
 ```
 ## Further Reading
 For further reading about the models that GenEst is based on and about how to use the software, download the guides available in the release "assets". 

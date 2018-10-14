@@ -197,6 +197,11 @@ print.corpus_frame <- function(x, ...){
   corpus::print.corpus_frame(x, rows = 80)
 }
 
+#' @title Print list of disclaimer statements
+#'
+#' @return prints disclaimers
+#'
+#' @export
 disclaimers <- function(){
   out <- list(USGS = paste0(
     "This software is preliminary or provisional and is subject to revision. ",
