@@ -22,7 +22,7 @@ dataTabPanel <- function(dataType){
                             "CP" = "Carcass Persistence",
                             "SS" = "Search Schedule",
                             "DWP" = "Density Weighted Proportion",
-                            "CO" = "Carcass Observation")
+                            "CO" = "Carcass Observations")
   TableName <- switch(dataType, "SE" = "data_SE",
                                 "CP" = "data_CP",
                                 "SS" = "data_SS",
@@ -55,12 +55,12 @@ selectedDataPanel <- function(modType){
                   "CP" = "Selected Data",
                   "g" = "Schedule")
   Condition1 <- switch(modType,
-                  "SE" = "input.obsCols_SE == null",
+                  "SE" = "input.obsSE == null",
                   "CP" = "input.ltp == null | input.fta == null",
                   "g" = NULL)
   Condition2 <- switch(modType,
                   "SE" = "output.filename_SE != null & 
-                          input.obsCols_SE != null",
+                          input.obsSE != null",
                   "CP" = "output.filename_CP != null & input.ltp != null & 
                           input.fta != null",
                   "g" = NULL)
@@ -256,9 +256,9 @@ modelOutputPanel <- function(outType){
                "MFigures" = 
                  list(
                    em("Fitted SE and CP models must be selected before
-                     detection probability can be estimated. Return to the Model
-                     Selection tabs under Searcher Efficiency and Carcass
-                     Persistence."),
+                     detection probability can be estimated. Return to the 
+                     Model Selection tabs under Searcher Efficiency and 
+                     Carcass Persistence."),
                    em("Run estimate to view figure"),
                    list(plotOutput("fig_M", inline = TRUE), br(), br(),
                       downloadButton("dlMfig", "Download")

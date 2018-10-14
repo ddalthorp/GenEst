@@ -148,7 +148,7 @@ GeneralInputSidebar <- function(){
   sidebarPanel(width = 3,
     modelInputWidget("nsim"),
     modelInputWidget("CL"),
-    modelInputWidget("sizeCol")
+    modelInputWidget("class")
   )
 }
 
@@ -185,8 +185,8 @@ SESidebar <- function(){
   sidebarPanel(width = 3,
     b(u(big("Model Inputs:"))),
     br(), br(),
-    modelInputWidget("obsCols_SE"),
-    modelInputWidget("preds_SE"),
+    modelInputWidget("obsSE"),
+    modelInputWidget("predsSE"),
     modelInputWidget("kFixedInput"),
     modelRunWidget("SE"),
     modelOutputWidget("SE")
@@ -253,7 +253,7 @@ CPSidebar <- function(){
     br(), br(),
     modelInputWidget("ltp"),
     modelInputWidget("fta"),
-    modelInputWidget("preds_CP"),
+    modelInputWidget("predsCP"),
     modelInputWidget("dist"),
     modelRunWidget("CP"),
     modelOutputWidget("CP")
