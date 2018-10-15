@@ -215,6 +215,8 @@ reactionMessageDone <- function(eventName){
 #' @description \code{eventReaction}: Manages the running of the update
 #'   functions for rv, output, and input, based on the \code{eventName}.
 #'
+#' @param rv Reactive values list for the GenEst GUI.
+#'
 #' @export
 #'
 eventReaction <- function(eventName, rv, input, output, session){

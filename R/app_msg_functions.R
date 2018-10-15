@@ -17,27 +17,29 @@ msgList <- function(){
 #'
 #' @param msgs message list
 #'
+#' @param clear logical indicator if clearing should happen. 
+#'
 #' @export
 #'
 #'
 clearNotifications <- function(msgs = msgList(), clear = TRUE){
-if(clear){
-  if (!is.null(msgs$ModSE)){
-    removeNotification(msgs$ModSE)
+  if(clear){
+    if (!is.null(msgs$ModSE)){
+      removeNotification(msgs$ModSE)
+    }
+    if (!is.null(msgs$ModCP)){
+      removeNotification(msgs$ModCP)
+    }
+    if (!is.null(msgs$ModM)){
+      removeNotification(msgs$ModM)
+    }
+    if (!is.null(msgs$SS)){
+      removeNotification(msgs$SS)
+    }
+    if (!is.null(msgs$Modg)){
+      removeNotification(msgs$Modg)
+    }
   }
-  if (!is.null(msgs$ModCP)){
-    removeNotification(msgs$ModCP)
-  }
-  if (!is.null(msgs$ModM)){
-    removeNotification(msgs$ModM)
-  }
-  if (!is.null(msgs$SS)){
-    removeNotification(msgs$SS)
-  }
-  if (!is.null(msgs$Modg)){
-    removeNotification(msgs$Modg)
-  }
-}
 }
 
 #' @title Create a model running message
