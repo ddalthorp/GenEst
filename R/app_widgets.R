@@ -85,11 +85,9 @@ dataDownloadWidget <- function(set){
 
   setName <- setNames[set]
   setButtonName <- paste0("download_", set)
-#  setButtonName2 <- paste0(setButtonName, 2) # doesn't work
   fluidRow(
     column(6, h4(setName)), 
     column(2, downloadButton(setButtonName, "Download"))
-#    column(2, downloadButton(setButtonName2, ".csv ( ; )")) # doesn't work
   )
 }
 
@@ -100,10 +98,9 @@ dataDownloadWidget <- function(set){
 #'   widget used in the GenEst GUI, based on the input type (\code{inType}).
 #'
 #' @param inType Toggle control for the input type of the widget. One of 
-#'   "nsim", "CL", "sizeCol", "obsCols_SE", "preds_SE", "kFixed",
-#'   "ltp", "fta", "preds_CP", "dist", "frac", "DWPCol",
-#'   "COdate", "gSearchInterval", "gSearchMax",
-#'   "useSSinputs", or "useSSdata".  
+#'   "nsim", "CL", "class", "obsSE", "predsSE", "kFixed", "ltp", "fta", 
+#'   "predsCP", "dist", "frac", "DWPCol", "COdate", "gSearchInterval", 
+#'   "gSearchMax", "useSSinputs", or "useSSdata".  
 #'
 #' @return HTML for the model input widget. 
 #'
@@ -111,8 +108,8 @@ dataDownloadWidget <- function(set){
 #'
 modelInputWidget <- function(inType){
 
-  if (!inType %in% c("nsim", "CL", "sizeCol", "obsCols_SE", "preds_SE",
-                     "kFixedInput", "ltp", "fta", "preds_CP", "dist",
+  if (!inType %in% c("nsim", "CL", "class", "obsSE", "predsSE",
+                     "kFixedInput", "ltp", "fta", "predsCP", "dist",
                      "frac", "DWPCol", "COdate",
                      "gSearchInterval", "gSearchMax", "useSSinputs",
                      "useSSdata")){
@@ -124,13 +121,13 @@ modelInputWidget <- function(inType){
   Label <- switch(inType, 
              "nsim" = "Number of Iterations:", 
              "CL" = "Confidence Level:", 
-             "sizeCol" = "Size Class Column (optional):",
-             "obsCols_SE" = "Observations:", 
-             "preds_SE" = "Predictor Variables:", 
+             "class" = "Size Class Column (optional):",
+             "obsSE" = "Observations:", 
+             "predsSE" = "Predictor Variables:", 
              "kFixedInput" = NULL, 
              "ltp" = "Last Time Present:", 
              "fta" = "First Time Absent:", 
-             "preds_CP" = "Predictor Variables:", 
+             "predsCP" = "Predictor Variables:", 
              "dist" = "Distributions to Include",
              "frac" = "Fraction of Facility Surveyed:", 
              "DWPCol" = "Density Weighted Proportion:", 
@@ -143,13 +140,13 @@ modelInputWidget <- function(inType){
   widgetFun <- switch(inType, 
                  "nsim" = "numericInput", 
                  "CL" = "numericInput", 
-                 "sizeCol" = "selectizeInput",
-                 "obsCols_SE" = "selectizeInput", 
-                 "preds_SE" = "selectizeInput", 
+                 "class" = "selectizeInput",
+                 "obsSE" = "selectizeInput", 
+                 "predsSE" = "selectizeInput", 
                  "kFixedInput" = "htmlOutput", 
                  "ltp" = "selectizeInput", 
                  "fta" = "selectizeInput", 
-                 "preds_CP" = "selectizeInput", 
+                 "predsCP" = "selectizeInput", 
                  "dist" = "checkboxGroupInput",
                  "frac" = "numericInput", 
                  "DWPCol" = "selectizeInput", 
@@ -162,16 +159,16 @@ modelInputWidget <- function(inType){
   Args <- switch(inType, 
             "nsim" = list(value = 1000, min = 1, max = 10000, step = 1), 
             "CL" = list(value = 0.90, min = 0, max = 1, step = 0.001), 
-            "sizeCol" = list(c("No data input yet"), multiple = TRUE,
+            "class" = list(c("No data input yet"), multiple = TRUE,
                                options = list(maxItems = 1)), 
-            "obsCols_SE" = list(c("No data input yet"), multiple = TRUE), 
-            "preds_SE" = list(c("No data input yet"), multiple = TRUE),
+            "obsSE" = list(c("No data input yet"), multiple = TRUE), 
+            "predsSE" = list(c("No data input yet"), multiple = TRUE),
             "kFixedInput" = list(NULL),
             "ltp" = list(c("No data input yet"), multiple = TRUE,
                       options = list(maxItems = 1)),
             "fta" = list(c("No data input yet"), multiple = TRUE,
                       options = list(maxItems = 1)),
-            "preds_CP" = list(c("No data input yet"), multiple = TRUE),
+            "predsCP" = list(c("No data input yet"), multiple = TRUE),
             "dist" = list(choices = CPdistOptions(),
                         selected = unlist(CPdistOptions()), inline = TRUE),
             "frac" = list(value = 1.0, min = 0.01, max = 1.0, step = 0.01),
@@ -187,13 +184,13 @@ modelInputWidget <- function(inType){
   Condition <- switch(inType, 
                  "nsim" = NULL, 
                  "CL" = NULL, 
-                 "sizeCol" = NULL,
-                 "obsCols_SE" = NULL, 
-                 "preds_SE" = NULL, 
+                 "class" = NULL,
+                 "obsSE" = NULL, 
+                 "predsSE" = NULL, 
                  "kFixedInput" = NULL, 
                  "ltp" = NULL, 
                  "fta" = NULL, 
-                 "preds_CP" = NULL, 
+                 "predsCP" = NULL, 
                  "dist" = NULL,
                  "frac" = NULL, 
                  "DWPCol" = "output.DWPNeed == 'yes'", 
@@ -269,17 +266,17 @@ modelRunWidget <- function(modType){
   }
 
   rName <- switch(modType,
-             "SE" = "runMod_SE",
-             "CP" = "runMod_CP",
-             "M" = "runMod_M",
-             "g" = "runMod_g")
+             "SE" = "run_SE",
+             "CP" = "run_CP",
+             "M" = "run_M",
+             "g" = "run_g")
   rLabel <- switch(modType, 
               "SE" = "Run Model",
               "CP" = "Run Model",
               "M" = "Estimate",
               "g" = "Estimate")
   rCondition <- switch(modType, 
-                  "SE" = "input.obsCols_SE != null",
+                  "SE" = "input.obsSE != null",
                   "CP" = "input.ltp != null & input.fta != null",
                   "M" = "input.modelChoices_SE1 != null & 
                          input.modelChoices_CP1 != null & 
@@ -293,10 +290,10 @@ modelRunWidget <- function(modType){
                          output.kFillNeed != 'yes'")
 
   cName <- switch(modType, 
-             "SE" = "runMod_SE_clear",
-             "CP" = "runMod_CP_clear",
-             "M" = "runMod_M_clear",
-             "g" = "runMod_g_clear")
+             "SE" = "run_SE_clear",
+             "CP" = "run_CP_clear",
+             "M" = "run_M_clear",
+             "g" = "run_g_clear")
   cLabel <- switch(modType, 
               "SE" = "Clear Model",
               "CP" = "Clear Model",
@@ -341,7 +338,7 @@ preTextMaker <- function(modType){
   }
 
   Condition <- switch(modType, 
-                 "SE" = "input.obsCols_SE == null",
+                 "SE" = "input.obsSE == null",
                  "CP" = "input.ltp == null | input.fta == null",
                  "M" = c("input.modelChoices_SE1 == null |
                          input.modelChoices_CP1 == null | 
@@ -424,10 +421,10 @@ modelOutputWidget <- function(modType){
                   "g" = "")
 
   sName <- switch(modType,
-             "SE" = c("outsizeclassSE", "outSEp", "outSEk"),
-             "CP" = c("outsizeclassCP", "outCPdist", "outCPl", "outCPs"),
+             "SE" = c("outSEclass", "outSEp", "outSEk"),
+             "CP" = c("outCPclass", "outCPdist", "outCPl", "outCPs"),
              "M" = c("split_SS", "split_CO"),
-             "g" = "outsizeclassg")
+             "g" = "outgclass")
 
   sLabel <- switch(modType,
               "SE" = c("Size Class:", "p Model:", "k Model:"),
@@ -484,16 +481,16 @@ modelOutputWidget <- function(modType){
 splitButtonWidget <- function(){
   list(
     fluidRow(
-      column(width = 6, actionButton("splitM", "Split Estimate")),
+      column(width = 6, actionButton("split_M", "Split Estimate")),
       column(width = 6,
         conditionalPanel(
           condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
-          actionButton("transposeSplit", "Transpose")
+          actionButton("transpose_split", "Transpose")
         )
       )
     ),
     conditionalPanel(condition = "output.MSplitDone == 'OK'", 
-        actionButton("splitM_clear", "Clear Split", style = cButtonStyle())
+        actionButton("split_M_clear", "Clear Split", style = cButtonStyle())
     )
   )
 }

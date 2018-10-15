@@ -1,4 +1,4 @@
-#' @title Create the pretty versi10/8/2018 5:06:59 PMon of the Searcher Efficiency model table
+#' @title Create the pretty version of the Searcher Efficiency model table
 #'
 #' @description Format a reader-friendly version of the parameter table from
 #'   a Searcher Efficiency model, based on confidence level of interest
@@ -70,7 +70,8 @@ dlModTabSE <- function(modTab, CL = 0.90){
   lo <- 100 * (1 - CL) / 2
   up <- 100 - 100 * (1 - CL) / 2
   coltypes <- c("Median", paste0(lo, "%"), paste0(up, "%"))
-  colnames(out) <- c("Cell", "n", paste0("p ", coltypes), paste0("k ", coltypes))
+  colnames(out) <- c("Cell", "n", paste0("p ", coltypes), 
+                     paste0("k ", coltypes))
   return(out)
 }
 
@@ -177,7 +178,8 @@ prettySplitTab <- function(splitSummary){
     out <- cbind(rep(names(splitSummary), each = dim(splitSummary[[1]])[1]),
       rownames(out), out)
     rownames(out) <- NULL
-    colnames(out) <- c(attr(splitSummary, "vars")[2:1], colnames(splitSummary[[1]]))
+    colnames(out) <- c(attr(splitSummary, "vars")[2:1], 
+                       colnames(splitSummary[[1]]))
   } else {
     if (!is.matrix(splitSummary)){
       splitSummary <- t(as.matrix(splitSummary))
