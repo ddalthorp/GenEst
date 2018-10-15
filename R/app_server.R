@@ -131,8 +131,8 @@ reaction <- function(eventName){
   reactFun <-  'eventReaction'
   reactArgs <- paste0('"', eventName, '", rv, input, output, session')
   reactText <- paste0(reactFun, '(', reactArgs, ')')
-  reactMsgRun <- reactionMessageRun()
-  reactMsgDone <- reactionMessageDone()
+  reactMsgRun <- reactionMessageRun(eventName)
+  reactMsgDone <- reactionMessageDone(eventName)
 
   reactextFull <- c("{", reactMsgRun, reactText, reactMsgDone, "}")
 
@@ -225,7 +225,7 @@ eventReaction <- function(eventName, rv, input, output, session){
 
   do.call(fun_rv, list(rv, input))
   do.call(fun_output, list(rv, output))
-  do.call(fun_input, list(rv, input, session))  
+  update_input(eventName, rv, input, session)
 
 }
 
