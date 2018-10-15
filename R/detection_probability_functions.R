@@ -54,7 +54,7 @@
 #'                right = "FirstAbsentDecimalDays"
 #'              )
 #'  ghat <- estg(data_CO = mock$CO, COdate = "DateFound",  data_SS = mock$SS,
-#'            model_SE = model_SE, model_CP = model_CP, unitCol = "Unit")
+#'            model_SE = model_SE, model_CP = model_CP, unitCol = "Unit", nsim = 100)
 #'
 #' @export
 #'

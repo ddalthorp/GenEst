@@ -1,10 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^.travis.yml$
-^auxiliary_code$
 ^data-raw$
-^user$
-^GenEst\.zip$
-^GenEst_Statistical_Models\.pdf$
-^GenEst_User_Guide\.pdf$
 ^deployment$
+^code.json$
+^LICENSE.md$
+^DISCLAIMER.md$

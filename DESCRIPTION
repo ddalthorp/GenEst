@@ -15,7 +15,7 @@ Authors@R: c(
 Description: A tool for estimating mortality from searcher efficiency, carcass
   persistence, search schedule, and carcass observation data. 
 Depends: R (>= 3.5.0)
-License: file LICENSE.md
+License: CC0
 Encoding: UTF-8
 LazyData: true
 Imports:
