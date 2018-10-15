@@ -226,7 +226,7 @@ eventReaction <- function(eventName, rv, input, output, session){
   fun_input <- paste0("update_input_", eventName)
 
   do.call(fun_rv, list(rv, input))
-  do.call(fun_output, list(rv, output))
+  update_output(eventName, rv, output)
   update_input(eventName, rv, input, session)
 
 }
