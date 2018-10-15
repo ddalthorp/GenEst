@@ -12,19 +12,22 @@ vignette: >
 # Overview
 
 This document describes the codebase used to create the GenEst Graphic User 
-Interface (GUI).
-
-The Genest GUI is coded in HTML via external R packages (DT, [shiny](https://cran.r-project.org/web/packages/shiny), htmltools, 
-shinyjs), as well as a number of internal functions to facilitate a simple,
-human-readable codebase underlying the app.
+Interface (GUI). The Genest GUI is coded in HTML via external R packages 
+([DT](https://cran.r-project.org/web/packages/DT),
+[htmltools](https://cran.r-project.org/web/packages/htmltools), 
+[shiny](https://cran.r-project.org/web/packages/shiny), 
+[shinyjs](https://cran.r-project.org/web/packages/shinyjs), 
+as well as a number of internal functions to facilitate a simple,
+human-readable codebase underlying the app. The goal being to allow GenEst 
+to evolve as fluidly as possible at the user interface.
 
 # User Interface
 
 ### UI Function Hierarchy
 
-The GenEst User Interface is constructed using pages, panels, tabs, and 
-widgets. The code is parsed into a series of hierarchical functions to 
-facilitate readability and mobility of specific UI components.
+The GenEst User Interface is constructed in HTML using pages, panels, 
+tabs, and widgets. The code is parsed into a series of hierarchical functions 
+to facilitate readability and mobility of specific UI components.
 
 * `GenEstUI(appType)`
   * `dataInputPanel()`
@@ -45,7 +48,7 @@ facilitate readability and mobility of specific UI components.
       * `GeneralInputsSidebar()`
         * `modelInputWidget("nsim")`
         * `modelInputWidget("CL")`
-        * `modelInputWidget("sizeCol")`
+        * `modelInputWidget("sizeclassCol")`		
     * `SEPanel()`
       * `SESidebar()`
         * `modelInputWidget("obsCols_SE")`
@@ -64,7 +67,7 @@ facilitate readability and mobility of specific UI components.
         * `modelInputWidget("ltp")`
         * `modelInputWidget("fta")`
         * `modelInputWidget("preds_CP")`
-        * `modelInputWidget("dist")`
+        * `modelInputWidget("dists")`
         * `modelRunWidget("CP")`
         * `modelOutputWidget("CP")`
       * `CPMainPanel()`
@@ -78,7 +81,7 @@ facilitate readability and mobility of specific UI components.
         * `modelInputWidget("kFill")`
         * `modelInputWidget("frac")`
         * `modelInputWidget("DWPCol")`
-        * `modelInputWidget("COdate")`
+        * `modelInputWidget("dateFoundCol")`
         * `modelRunWidget("M")`
         * `modelOutputWidget("M")`
       * `MMainPanel()`	  

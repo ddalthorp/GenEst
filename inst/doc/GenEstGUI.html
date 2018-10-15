@@ -12,7 +12,7 @@
 
 <meta name="author" content="Juniper L. Simonis" />
 
-<meta name="date" content="2018-09-29" />
+<meta name="date" content="2018-10-14" />
 
 <title>GenEst - Graphic User Interface</title>
 
@@ -214,20 +214,19 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">GenEst - Graphic User Interface</h1>
 <h4 class="author"><em>Juniper L. Simonis</em></h4>
-<h4 class="date"><em>2018-09-29</em></h4>
+<h4 class="date"><em>2018-10-14</em></h4>
 
 
 
 <div id="overview" class="section level1">
 <h1>Overview</h1>
-<p>This document describes the codebase used to create the GenEst Graphic User Interface (GUI).</p>
-<p>The Genest GUI is coded in HTML via external R packages (DT, <a href="https://cran.r-project.org/web/packages/shiny">shiny</a>, htmltools, shinyjs), as well as a number of internal functions to facilitate a simple, human-readable codebase underlying the app.</p>
+<p>This document describes the codebase used to create the GenEst Graphic User Interface (GUI). The Genest GUI is coded in HTML via external R packages (<a href="https://cran.r-project.org/web/packages/DT">DT</a>, <a href="https://cran.r-project.org/web/packages/htmltools">htmltools</a>, <a href="https://cran.r-project.org/web/packages/shiny">shiny</a>, <a href="https://cran.r-project.org/web/packages/shinyjs">shinyjs</a>, as well as a number of internal functions to facilitate a simple, human-readable codebase underlying the app. The goal being to allow GenEst to evolve as fluidly as possible at the user interface.</p>
 </div>
 <div id="user-interface" class="section level1">
 <h1>User Interface</h1>
 <div id="ui-function-hierarchy" class="section level3">
 <h3>UI Function Hierarchy</h3>
-<p>The GenEst User Interface is constructed using pages, panels, tabs, and widgets. The code is parsed into a series of hierarchical functions to facilitate readability and mobility of specific UI components.</p>
+<p>The GenEst User Interface is constructed in HTML using pages, panels, tabs, and widgets. The code is parsed into a series of hierarchical functions to facilitate readability and mobility of specific UI components.</p>
 <ul>
 <li><code>GenEstUI(appType)</code>
 <ul>
@@ -352,7 +351,6 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 <li><code>dataDownloadsWidget(&quot;PV&quot;)</code></li>
 <li><code>dataDownloadsWidget(&quot;trough&quot;)</code></li>
 <li><code>dataDownloadsWidget(&quot;mock&quot;)</code></li>
-<li><code>dataDownloadsWidget(&quot;mock2&quot;)</code></li>
 </ul></li>
 <li><code>aboutPanel()</code>
 <ul>

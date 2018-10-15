@@ -5,6 +5,7 @@
 \alias{reaction}
 \alias{reactionMessageRun}
 \alias{reactionMessageDone}
+\alias{eventReaction}
 \title{The GenEst server definition function}
 \usage{
 GenEstServer(input, output, session)
@@ -14,6 +15,8 @@ reaction(eventName)
 reactionMessageRun(eventName)
 
 reactionMessageDone(eventName)
+
+eventReaction(eventName, rv, input, output, session)
 }
 \arguments{
 \item{input}{\code{input} list for the GenEst GUI.}
@@ -48,22 +51,25 @@ reactionMessageDone(eventName)
 This suite of functions defines the server-side program for
   the GenEst user interface (UI). See the "GenEst Graphic User Interface"
   vignette for a more complete detailing of the codebase underlying
-  the GenEst UI.
+  the GenEst UI. \cr \cr \code{GenEstServer}: main server function
+  expressed within the application.
 
 \code{reaction}: creates a handler expression to be 
-  used by \code{\link[shiny]{observeEvent}} within 
-  \code{\link{GenEstServer}}, which includes the call to 
-  \code{\link{eventReaction}} (the function that manages the reaction once 
-  the code is evaluated), any message generation or handling, and the 
-  enclosing curly braces. 
-  Calls \code{reactionMessageRun} and \code{ReactionMessageDone} to
-  create the event-specific reaction expression message components.
+  used by \code{\link[shiny]{observeEvent}} within \code{GenEstServer}, 
+  which includes the call to \code{eventReaction} (the function that 
+  manages the reaction once the code is evaluated), any message generation 
+  or handling, and the enclosing curly braces. Calls 
+  \code{reactionMessageRun} and \code{reactionMessageDone} to create the 
+  event-specific reaction expression message components.
 
 \code{reactionMessageRun}: Creates the message for model
   running, or clears the existing notifications if desired.
 
 \code{reactionMessageDone}: Creates the message for model
   done running.
+
+\code{eventReaction}: Manages the running of the update
+  functions for rv, output, and input, based on the \code{eventName}.
 }
 \details{
 \code{GenEstServer} is used as the main server function, and is
@@ -78,7 +84,7 @@ This suite of functions defines the server-side program for
       includes the \code{eventExpr} (event expression) as the first 
       argument and the \code{handlerExpr} (handler expression) as the 
       second argument, which is an evaluated (via \code{\link[base]{eval}})
-      block of code returned from \code{\link{reaction}} for the specific 
+      block of code returned from \code{reaction} for the specific 
       event, as well as any other control switch arguments needed (such as
       \code{ignoreNULL}). 
   }
