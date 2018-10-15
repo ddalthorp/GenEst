@@ -1,4 +1,4 @@
 library(shiny)
 library(GenEst)
 
-GenEstUI("deploy")
+GenEstUI(appType = "deploy")
