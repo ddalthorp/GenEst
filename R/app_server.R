@@ -92,7 +92,7 @@ GenEstServer <- function(input, output, session){
 #'   which includes the call to \code{eventReaction} (the function that 
 #'   manages the reaction once the code is evaluated), any message generation 
 #'   or handling, and the enclosing curly braces. Calls 
-#'   \code{reactionMessageRun} and \code{ReactionMessageDone} to create the 
+#'   \code{reactionMessageRun} and \code{reactionMessageDone} to create the 
 #'   event-specific reaction expression message components. 
 #'
 #' @param eventName Character name of the event. One of "clear_all",

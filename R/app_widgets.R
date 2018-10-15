@@ -98,10 +98,9 @@ dataDownloadWidget <- function(set){
 #'   widget used in the GenEst GUI, based on the input type (\code{inType}).
 #'
 #' @param inType Toggle control for the input type of the widget. One of 
-#'   "nsim", "CL", "col_class", "col_obsSE", "col_predsSE", "kFixed",
-#'   "ltp", "fta", "preds_CP", "dist", "frac", "DWPCol",
-#'   "COdate", "gSearchInterval", "gSearchMax",
-#'   "useSSinputs", or "useSSdata".  
+#'   "nsim", "CL", "class", "obsSE", "predsSE", "kFixed", "ltp", "fta", 
+#'   "predsCP", "dist", "frac", "DWPCol", "COdate", "gSearchInterval", 
+#'   "gSearchMax", "useSSinputs", or "useSSdata".  
 #'
 #' @return HTML for the model input widget. 
 #'
