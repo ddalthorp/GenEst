@@ -1,6 +1,5 @@
 
-yay this looks like it's working for the messages now!
-so build the message functions off of the code within eventReaction
+
 
 currently working through this whole business to tidy the flonk out of
 the server code

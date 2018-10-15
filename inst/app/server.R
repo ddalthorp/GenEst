@@ -6,82 +6,42 @@ function(input, output, session){
   options(htmlwidgets.TOJSON_ARGS = list(na = 'string'))
   options(DT.options = list(pageLength = 25))
 
-  eventAndReaction("clear_all", rv, input, output, session, msgs = msgs, 
-                 clear = TRUE)
+  observeEvent(input$clear_all,  eval(reaction("clear_all")))
 
-  eventAndReaction("file_SE", rv, input, output, session)
-  eventAndReaction("file_SE_clear", rv, input, output, session)
-  eventAndReaction("file_CP", rv, input, output, session)
-  eventAndReaction("file_CP_clear", rv, input, output, session)
-  eventAndReaction("file_SS", rv, input, output, session)
-  eventAndReaction("file_SS_clear", rv, input, output, session)
-  eventAndReaction("file_DWP", rv, input, output, session)
-  eventAndReaction("file_DWP_clear", rv, input, output, session)
-  eventAndReaction("file_CO", rv, input, output, session)
-  eventAndReaction("file_CO_clear", rv, input, output, session)
+  observeEvent(input$file_SE, eval(reaction("file_SE")))
+  observeEvent(input$file_SE_clear, eval(reaction("file_SE_clear")))
+  observeEvent(input$file_CP, eval(reaction("file_CP")))
+  observeEvent(input$file_CP_clear, eval(reaction("file_CP_clear")))
+  observeEvent(input$file_SS, eval(reaction("file_SS")))
+  observeEvent(input$file_SS_clear, eval(reaction("file_SS_clear")))
+  observeEvent(input$file_DWP, eval(reaction("file_DWP")))
+  observeEvent(input$file_DWP_clear, eval(reaction("file_DWP_clear")))
+  observeEvent(input$file_CO, eval(reaction("file_CO")))
+  observeEvent(input$file_CO_clear, eval(reaction("file_CO_clear")))
 
-  eventAndReaction("class", rv, input, output, session, ignoreNull = FALSE)
+  observeEvent(input$class, eval(reaction("class")), ignoreNULL = FALSE)
 
-  eventAndReaction("obsSE", rv, input, output, session, ignoreNull = FALSE)
-  eventAndReaction("predsSE", rv, input, output, session, ignoreNull = FALSE)
-  #eventAndReaction("run_SE", rv, input, output, session, msgs = msgs)
+  observeEvent(input$obsSE, eval(reaction("obsSE")), ignoreNULL = FALSE)
+  observeEvent(input$predsSE, eval(reaction("predsSE")), ignoreNULL = FALSE)
+  observeEvent(input$run_SE, eval(reaction("run_SE")))
+  observeEvent(input$run_SE_clear, eval(reaction("run_SE_clear")))
 
-  observeEvent(input$run_SE,  {
-    msgs$ModSE <<- msgModRun(msgs$ModSE, "SE")
-    eventReaction("run_SE", rv, input, output, session)
-    msgs$ModSE <<- msgModDone(msgs$ModSE, rv, "SE")
-  })
+  observeEvent(input$outSEclass, eval(reaction("outSEclass")))
+  observeEvent(input$outSEp, eval(reaction("outSEp")))
+  observeEvent(input$outSEk, eval(reaction("outSEk")))
 
-  eventAndReaction("run_SE_clear", rv, input, output, session, msgs = msgs,
-      clear=TRUE)
+  observeEvent(input$ltp, eval(reaction("ltp")), ignoreNULL = FALSE)
+  observeEvent(input$fta, eval(reaction("fta")), ignoreNULL = FALSE)
+  observeEvent(input$predsCP, eval(reaction("predsCP")), ignoreNULL = FALSE)
 
+  observeEvent(input$run_CP, eval(reaction("run_CP")))
+  observeEvent(input$run_CP_clear, eval(reaction("run_CP_clear")))
 
+  observeEvent(input$outCPclass, eval(reaction("outCPclass")))
+  observeEvent(input$outCPdist, eval(reaction("outCPdist")))
+  observeEvent(input$outCPl, eval(reaction("outCPl")))
+  observeEvent(input$outCPs, eval(reaction("outCPs")))
 
-  eventAndReaction("outSEclass", rv, input, output, session)
-  eventAndReaction("outSEp", rv, input, output, session)
-  eventAndReaction("outSEk", rv, input, output, session)
-
-  eventAndReaction("ltp", rv, input, output, session, ignoreNull = FALSE)
-  eventAndReaction("fta", rv, input, output, session, ignoreNull = FALSE)
-  eventAndReaction("predsCP", rv, input, output, session, ignoreNull = FALSE)
-
-  eventAndReaction("run_CP", rv, input, output, session, msgs = msgs)
-  eventAndReaction("run_CP_clear", rv, input, output, session, msgs = msgs,
-    clear = TRUE)
-
-
-#observeEvent(input$runMod_CP, {
-#  msgs$ModCP <<- msgModRun(msgs, "CP")
-#  rv <- update_rv_run_CP(rv, input)
-#  output <- update_output_run_CP(rv, output)
-#  update_input_run_CP(rv, session)
-#  msgs$ModCP <<- msgModDone(msgs, rv, "CP")
-#})
-#observeEvent(input$runMod_CP_clear, {
-#  clearNotifications(msgs)
-#  rv <- update_rv_run_CP_clear(rv, input)
-#  output <- update_output_run_CP_clear(rv, output)
-#  update_input_run_CP_clear(rv, session)
-#})
-
-
-observeEvent(input$outsizeclassCP, {
-  rv <- update_rv_outsc_CP(rv, input)
-  output <- update_output_outsc_CP(rv, output)
-  update_input_outsc_CP(rv, session)
-})
-observeEvent(input$outCPdist, {
-  rv <- update_rv_outdls_CP(rv, input)
-  output <- update_output_outdls_CP(rv, output)
-})
-observeEvent(input$outCPl, {
-  rv <- update_rv_outdls_CP(rv, input)
-  output <- update_output_outdls_CP(rv, output)
-})
-observeEvent(input$outCPs, {
-  rv <- update_rv_outdls_CP(rv, input)
-  output <- update_output_outdls_CP(rv, output)
-})
 
 observeEvent(input$runMod_M, {
   msgs$ModM <<- msgModRun(msgs, "M")

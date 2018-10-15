@@ -422,8 +422,8 @@ modelOutputWidget <- function(modType){
                   "g" = "")
 
   sName <- switch(modType,
-             "SE" = c("outsizeclassSE", "outSEp", "outSEk"),
-             "CP" = c("outsizeclassCP", "outCPdist", "outCPl", "outCPs"),
+             "SE" = c("outSEclass", "outSEp", "outSEk"),
+             "CP" = c("outCPclass", "outCPdist", "outCPl", "outCPs"),
              "M" = c("split_SS", "split_CO"),
              "g" = "outsizeclassg")
 
