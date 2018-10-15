@@ -18,7 +18,7 @@
 
     "homepageURL": "https://code.usgs.gov/ecosystems/GenEst",
     "downloadURL": "https://code.usgs.gov/ecosystems/GenEst/archive/master.zip",
-    "disclaimerURL": "https://code.usgs.gov/ecosystems/GenEst/blob/master/LICENSE.md",
+    "disclaimerURL": "https://code.usgs.gov/ecosystems/GenEst/blob/master/DISCLAIMER.md",
     "repositoryURL": "https://code.usgs.gov/ecosystems/GenEst/GenEst.git",
     "vcs": "git",
 
