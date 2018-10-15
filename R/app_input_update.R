@@ -308,31 +308,25 @@ update_input <- function(eventName, rv, input, session){
       updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
     }
 
-    reset("outsizeclassg")
+    reset("outgclass")
     reset("gSearchInterval")
     reset("gSearchMax")
     updateSelectizeInput(session, "split_SS", choices = "")
     updateSelectizeInput(session, "split_CO", choices = "")
-    updateSelectizeInput(session, "outsizeclassg", choices = "")
+    updateSelectizeInput(session, "outgclass", choices = "")
   }
 
   if (eventName == "run_SE_clear"){
-    reset("outSEp")
-    reset("outSEk")
-    reset("outsizeclassSE")
-    reset("kFill")
-    reset("DWPCol")
-    reset("split_SS")
-    reset("split_CO")
-    reset("modelChoices_SE1")
-    reset("outsizeclassg")
+    toReset <- c("outSEp", "outSEk", "outsizeclassSE", "kFill", "DWPCol",
+                 "split_SS", "split_CO", "modelChoices_SE1", "outgclass")
+    lapply(toReset, reset)
     updateSelectizeInput(session, "modelChoices_SE1", choices = "")
     updateSelectizeInput(session, "split_SS", choices = "")
     updateSelectizeInput(session, "split_CO", choices = "")
     updateSelectizeInput(session, "outSEp", choices = "")
     updateSelectizeInput(session, "outSEk", choices = "")
     updateSelectizeInput(session, "outSEclass", choices = "")
-    updateSelectizeInput(session, "outsizeclassg", choices = "")
+    updateSelectizeInput(session, "outgclass", choices = "")
   }
 
   if (eventName == "outSEclass"){
@@ -341,29 +335,23 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "run_CP"){
+    toReset <- c("outgclass", "gSearchInterval", "gSearchMax")
+    lapply(toReset, reset)
     updateTabsetPanel(session, "analyses_CP", "Model Comparison")
     updateSelectizeInput(session, "outCPl", choices = rv$modNames_CPl)
     updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)
     updateSelectizeInput(session, "outCPdist", choices = rv$modNames_CPdist)
     updateSelectizeInput(session, "outCPclass", choices = rv$sizeclasses)
-
-    reset("outsizeclassg")
-    reset("gSearchInterval")
-    reset("gSearchMax")
     updateSelectizeInput(session, "split_SS", choices = "")
     updateSelectizeInput(session, "split_CO", choices = "")
-    updateSelectizeInput(session, "outsizeclassg", choices = "")
+    updateSelectizeInput(session, "outgclass", choices = "")
   }
 
   if (eventName == "run_CP_clear"){
-    reset("outCPl")
-    reset("outCPs")
-    reset("outCPdist")
-    reset("outsizeclassCP")
-    reset("split_SS")
-    reset("split_CO")
-    reset("modelChoices_CP1")
-    reset("outsizeclassg")
+    toReset <- c("outCPl", "outCPs", "outCPdist", "outsizeclassCP", 
+                 "split_SS", "split_CO", "modelChoices_CP1", "outgclass", 
+                 "gSearchInterval", "gSearchMax")
+    lapply(toReset, reset)
     updateSelectizeInput(session, "modelChoices_CP1", choices = "")
     updateSelectizeInput(session, "split_SS", choices = "")
     updateSelectizeInput(session, "split_CO", choices = "")
@@ -371,7 +359,7 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "outCPs", choices = "")
     updateSelectizeInput(session, "outCPdist", choices = "")
     updateSelectizeInput(session, "outCPclass", choices = "")
-    updateSelectizeInput(session, "outsizeclassg", choices = "")
+    updateSelectizeInput(session, "outgclass", choices = "")
   }
 
   if (eventName == "outCPclass"){

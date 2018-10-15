@@ -8,6 +8,8 @@ clearNotifications(msgs = msgList(), clear = TRUE)
 }
 \arguments{
 \item{msgs}{message list}
+
+\item{clear}{logical indicator if clearing should happen.}
 }
 \description{
 Clear all messages in the message list

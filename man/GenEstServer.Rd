@@ -33,6 +33,8 @@ eventReaction(eventName, rv, input, output, session)
 "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
 "run_M", "run_M_clear", "split_M", "split_M_clear", "transpose_split",
 "useSSdata", "useSSinputs", "run_g", "run_g_clear", or "outgclass".}
+
+\item{rv}{Reactive values list for the GenEst GUI.}
 }
 \value{
 \code{reaction}: An object of type 
