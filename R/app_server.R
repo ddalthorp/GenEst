@@ -220,14 +220,8 @@ reactionMessageDone <- function(eventName){
 #' @export
 #'
 eventReaction <- function(eventName, rv, input, output, session){
-
-  fun_rv <- paste0("update_rv_", eventName)
-  fun_output <- paste0("update_output_", eventName)
-  fun_input <- paste0("update_input_", eventName)
-
-  do.call(fun_rv, list(rv, input))
+  update_rv(eventName, rv, input)
   update_output(eventName, rv, output)
   update_input(eventName, rv, input, session)
-
 }
 
