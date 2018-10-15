@@ -24,6 +24,9 @@ plot.pkm <- function(x, col = "black", ...){
   }
   name_p <- format(model$formula_p)
   name_k <- model$formula_k
+  if (!is.null(model$pOnly) && model$pOnly){
+    stop("k missing from pk model. Cannot plot.")
+  }
   if (class(name_k) == "numeric"){
     name_k <- paste("k fixed at ", name_k, sep = "")
   } else if (class(name_k) == "character"){
@@ -272,7 +275,12 @@ plot.pkmSet <- function(x, specificModel = NULL, app = FALSE, cols = SEcols(),
     if (modi == 2){
       devAskNewPage(TRUE)
     }
-    plotSEFigure(modelSet, specMods[modi], app, cols)
+    if (!is.null(modelSet[[modi]]$pOnly) && modelSet[[modi]]$pOnly){
+      plot(0, 0, type = 'n', axes = F, xlab = '', ylab = '')
+      text(0, .5, "k missing from pk model. Cannot plot.", cex = 2, col = 2)
+    } else {
+      plotSEFigure(modelSet, specMods[modi], app, cols)
+    }
   }
   devAskNewPage(FALSE)
 }
