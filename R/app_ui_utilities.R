@@ -143,7 +143,7 @@ GenEstInlineCSS <- function(...){
          "#predsSE" = "margin-bottom: 15px",
          "#ltp" = "margin-bottom: 15px",
          "#fta" = "margin-bottom: 15px",
-         "#preds_CP" = "margin-bottom: 15px",
+         "#predsCP" = "margin-bottom: 15px",
          "#frac" = "margin-bottom: 15px",
          "#useSSinputs" = "margin-bottom: 20px",
          "#gSearchInterval" = "margin-bottom: 15px",
@@ -153,13 +153,13 @@ GenEstInlineCSS <- function(...){
          "#useSSdata" = "margin-bottom: 15px",
          "#run_SE" = "margin-bottom: 10px",
          "#run_CP" = "margin-bottom: 10px",
-         "#runMod_M" = "margin-bottom: 10px",
-         "#splitM" = "margin-bottom: 10px",
-         "#runMod_g" = "margin-bottom: 10px",
+         "#run_M" = "margin-bottom: 10px",
+         "#split_M" = "margin-bottom: 10px",
+         "#run_g" = "margin-bottom: 10px",
          "#run_SE_clear" = "margin-bottom: 20px",
-         "#runMod_CP_clear" = "margin-bottom: 20px",
-         "#runMod_M_clear" = "margin-bottom: 20px",
-         "#runMod_g_clear" = "margin-bottom: 20px",
+         "#run_CP_clear" = "margin-bottom: 20px",
+         "#run_M_clear" = "margin-bottom: 20px",
+         "#run_g_clear" = "margin-bottom: 20px",
          "#split_CO" = "margin-bottom: 15px"
     ), ...
   )

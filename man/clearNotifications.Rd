@@ -4,7 +4,7 @@
 \alias{clearNotifications}
 \title{Clear all notifications}
 \usage{
-clearNotifications(msgs = msgList())
+clearNotifications(msgs = msgList(), clear = TRUE)
 }
 \arguments{
 \item{msgs}{message list}

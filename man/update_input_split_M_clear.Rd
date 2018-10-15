@@ -4,7 +4,7 @@
 \alias{update_input_split_M_clear}
 \title{Update the inputs when M split is cleared}
 \usage{
-update_input_split_M_clear(rv, session)
+update_input_split_M_clear(rv, input, session)
 }
 \arguments{
 \item{rv}{reactive values list}

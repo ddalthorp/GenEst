@@ -4,7 +4,7 @@
 \alias{update_rv_transpose_split}
 \title{Update the M reactive values when M split is transposed}
 \usage{
-update_rv_transpose_split(rv)
+update_rv_transpose_split(rv, input)
 }
 \arguments{
 \item{rv}{the reactive values list}

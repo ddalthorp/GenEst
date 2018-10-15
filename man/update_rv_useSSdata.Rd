@@ -4,7 +4,7 @@
 \alias{update_rv_useSSdata}
 \title{Update the SS reactive values when the SS are chosen}
 \usage{
-update_rv_useSSdata(rv)
+update_rv_useSSdata(rv, inputs)
 }
 \arguments{
 \item{rv}{the reactive values list}

@@ -4,7 +4,7 @@
 \alias{update_input_clear_all}
 \title{Update the inputs when everything is cleared out}
 \usage{
-update_input_clear_all(rv, session)
+update_input_clear_all(rv, input, session)
 }
 \arguments{
 \item{rv}{reactive values list}

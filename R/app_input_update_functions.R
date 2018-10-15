@@ -608,11 +608,14 @@ update_input_outCPs <- function(rv, input, session){
 #'
 #' @export
 #'
-update_input_useSSdata <- function(rv, session){
+update_input_useSSdata <- function(rv, input, session){
   if (!is.na(rv$SStemp[1])){
     updateNumericInput(session, "gSearchInterval", value = rv$avgSI)
     updateNumericInput(session, "gSearchMax", value = max(rv$SS))
   }
+}
+
+update_input_useSSinputs <- function(rv, input, session){
 }
 
 #' @title Update the g output dropdown selections when the model is run
@@ -625,8 +628,8 @@ update_input_useSSdata <- function(rv, session){
 #'
 #' @export
 #'
-update_input_run_g <- function(rv, session){
-  updateSelectizeInput(session, "outsizeclassg", choices = rv$sizeclasses_g)
+update_input_run_g <- function(rv, input, session){
+  updateSelectizeInput(session, "outgclass", choices = rv$sizeclasses_g)
   updateTabsetPanel(session, "analyses_g", "Summary")
 }
 
@@ -641,10 +644,13 @@ update_input_run_g <- function(rv, session){
 #'
 #' @export
 #'
-update_input_run_g_clear <- function(rv, session){
-  reset("outsizeclassg")
-  updateSelectizeInput(session, "outsizeclassg", choices = "")
+update_input_run_g_clear <- function(rv, input, session){
+  reset("outgclass")
+  updateSelectizeInput(session, "outgclass", choices = "")
 
+}
+
+update_input_outgclass <- function(rv, input, session){
 }
 
 #' @title Update the M output dropdown selections and the Fraction Surveyed
@@ -659,7 +665,7 @@ update_input_run_g_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_run_M <- function(rv, session){
+update_input_run_M <- function(rv, input, session){
   updateNumericInput(session, "frac", value = rv$frac)
   updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
   updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
@@ -675,7 +681,7 @@ update_input_run_M <- function(rv, session){
 #'
 #' @export
 #'
-update_input_run_M_clear <- function(rv, session){
+update_input_run_M_clear <- function(rv, input, session){
   reset("split_SS")
   reset("split_CO")
   updateSelectizeInput(session, "split_SS", choices = "")
@@ -692,9 +698,17 @@ update_input_run_M_clear <- function(rv, session){
 #'
 #' @export
 #'
-update_input_split_M_clear <- function(rv, session){
+update_input_split_M_clear <- function(rv, input, session){
   reset("split_SS")
   reset("split_CO")
   updateSelectizeInput(session, "split_SS", choices = rv$colNames_SS_nosel)
   updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
+}
+
+update_input_split_M <- function(rv, input, session){
+
+}
+
+update_input_transpose_split <- function(rv, input, session){
+
 }

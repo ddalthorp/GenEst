@@ -4,7 +4,7 @@
 \alias{update_input_useSSdata}
 \title{Update the SS average dropdown selections when the SS data are used}
 \usage{
-update_input_useSSdata(rv, session)
+update_input_useSSdata(rv, input, session)
 }
 \arguments{
 \item{rv}{reactive values list}

@@ -972,7 +972,12 @@ update_output_outCPs <- function(rv, output){
 #'
 #' @export
 #'
-update_output_SS <- function(rv, output){
+update_output_useSSdata <- function(rv, output){
+  output$SStext <- renderText(rv$SStext)
+  return(output)
+}
+
+update_output_useSSinputs <- function(rv, output){
   output$SStext <- renderText(rv$SStext)
   return(output)
 }
@@ -1065,7 +1070,7 @@ update_output_run_g_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_outsc_g <- function(rv, output){
+update_output_outgclass <- function(rv, output){
 
   if (class(rv$gGeneric[[rv$sizeclass_g]])[1] == "gGeneric"){
     summaryTab <- summary(rv$gGeneric[[rv$sizeclass_g]], CL = rv$CL)

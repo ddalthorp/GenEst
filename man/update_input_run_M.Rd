@@ -5,7 +5,7 @@
 \title{Update the M output dropdown selections and the Fraction Surveyed
   when the model is run}
 \usage{
-update_input_run_M(rv, session)
+update_input_run_M(rv, input, session)
 }
 \arguments{
 \item{rv}{reactive values list}
