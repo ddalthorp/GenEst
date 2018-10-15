@@ -844,7 +844,7 @@ update_output_run_CP_clear <- function(rv, output){
 #'
 #' @export
 #'
-update_output_outsc_CP <- function(rv, output){
+update_output_outCPclass <- function(rv, output){
   if (length(rv$mods_CP) > 0){
     output$modTab_CP <- renderDataTable(datatable(rv$modTabPretty_CP),
       server = FALSE)
@@ -885,7 +885,57 @@ update_output_outsc_CP <- function(rv, output){
 #'
 #' @export
 #'
-update_output_outdls_CP <- function(rv, output){
+update_output_outCPdist <- function(rv, output){
+  if (length(rv$mods_CP) > 0){
+    output$modTab_CP <- renderDataTable(datatable(rv$modTabPretty_CP),
+      server = FALSE)
+    output$fig_CP <- renderPlot({ 
+                     tryCatch(
+                       plot(rv$modSet_CP, specificModel = rv$outCPdlsfig, 
+                         app = TRUE),
+                       error = function(x){plotNA()}
+                     )
+                     }, height = rv$figH_CP, width = rv$figW_CP)
+    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+                                           rv$csvformat)
+    output$dlCPfig <- downloadCPFig(rv)
+
+    if (!is.null(rv$modTab_CP)){
+      output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+                                           rv$csvformat)
+    }
+
+  }
+  return(output)
+}
+
+update_output_outCPl <- function(rv, output){
+  if (length(rv$mods_CP) > 0){
+    output$modTab_CP <- renderDataTable(datatable(rv$modTabPretty_CP),
+      server = FALSE)
+    output$fig_CP <- renderPlot({ 
+                     tryCatch(
+                       plot(rv$modSet_CP, specificModel = rv$outCPdlsfig, 
+                         app = TRUE),
+                       error = function(x){plotNA()}
+                     )
+                     }, height = rv$figH_CP, width = rv$figW_CP)
+    output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+                                           rv$csvformat)
+    output$dlCPfig <- downloadCPFig(rv)
+
+    if (!is.null(rv$modTab_CP)){
+      output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+                                           rv$csvformat)
+    }
+
+  }
+  return(output)
+}
+
+update_output_outCPs <- function(rv, output){
   if (length(rv$mods_CP) > 0){
     output$modTab_CP <- renderDataTable(datatable(rv$modTabPretty_CP),
       server = FALSE)

@@ -20,7 +20,8 @@ msgList <- function(){
 #' @export
 #'
 #'
-clearNotifications <- function(msgs = msgList()){
+clearNotifications <- function(msgs = msgList(), clear = TRUE){
+if(clear){
   if (!is.null(msgs$ModSE)){
     removeNotification(msgs$ModSE)
   }
@@ -36,6 +37,7 @@ clearNotifications <- function(msgs = msgList()){
   if (!is.null(msgs$Modg)){
     removeNotification(msgs$Modg)
   }
+}
 }
 
 #' @title Create a model running message
@@ -53,11 +55,7 @@ clearNotifications <- function(msgs = msgList()){
 #' @export
 #'
 msgModRun <- function(msgs, modelType, clear = TRUE){
-  if (clear){
-    if (!is.null(msgs)){
-      removeNotification(msgs)
-    }
-  }
+  clearNotifications(msgs, clear)
   msg <- NULL
   if (modelType == "SE"){
     msg <- ("Running Searcher Efficiency Model")
@@ -93,11 +91,7 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 #' @export
 #'
 msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
-  if (clear){
-    if (!is.null(msgs)){
-      removeNotification(msgs)
-    }
-  }
+  clearNotifications(msgs, clear)
   if (type == "SE"){
     if (any(is.na(rv$kFixed[rv$kFixedChoice]))){
       return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))

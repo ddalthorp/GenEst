@@ -715,7 +715,7 @@ update_rv_run_SE <- function(rv, input){
   rv$formula_k <- formula(paste0("k~", rv$predictors_SE))
 
   rv$CL <- input$CL
-  rv$sizeCol <- input$sizeCol
+  rv$sizeCol <- input$class
   rv$mods_SE <- suppressWarnings(
                   pkmSize(formula_p = rv$formula_p,
                     formula_k = rv$formula_k, data = rv$data_SE,
@@ -729,7 +729,7 @@ update_rv_run_SE <- function(rv, input){
       !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
     rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeCol)
     rv$sizeclasses_SE <- rv$sizeclasses
-    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassSE)
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outSEclass)
     rv$sizeclass_SE <- rv$sizeclass
     rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, 
                                           app = TRUE)
@@ -869,6 +869,7 @@ update_rv_outSEclass <- function(rv, input){
 #' @export
 #'
 update_rv_outSEp <- function(rv, input){
+
   if (length(rv$mods_SE) > 0){
     rv$outSEpk <- modNamePaste(c(input$outSEp, input$outSEk))
     rv$modSet_SE <- rv$mods_SE[[rv$sizeclass]]
@@ -924,11 +925,11 @@ update_rv_run_CP <- function(rv, input){
 
   rv$ltp <- input$ltp
   rv$fta <- input$fta
-  rv$preds_CP <- input$preds_CP
+  rv$preds_CP <- input$predsCP
   rv$dist <- input$dist
   rv$nsim <- input$nsim
   rv$CL <- input$CL
-  rv$sizeCol <- input$sizeCol
+  rv$sizeCol <- input$class
   rv$predictors_CP <- prepPredictors(rv$preds_CP)
   rv$formula_l <- formula(paste("l~", rv$predictors_CP, sep = ""))
   rv$formula_s <- formula(paste("s~", rv$predictors_CP, sep = ""))
@@ -947,7 +948,7 @@ update_rv_run_CP <- function(rv, input){
   if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
     rv$sizeclasses <- updateSizeclasses(rv$data_CP, rv$sizeCol)
     rv$sizeclasses_CP <- rv$sizeclasses
-    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outCPclass)
     rv$sizeclass_CP <- rv$sizeclass
     rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE, 
                                           app = TRUE)
@@ -1090,9 +1091,9 @@ update_rv_run_CP_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_outsc_CP <- function(rv, input){
+update_rv_outCPclass <- function(rv, input){
   if (length(rv$mods_CP) > 0){
-    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outsizeclassCP)
+    rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outCPclass)
     rv$sizeclass_CP <- rv$sizeclass
     rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE,
                                            app = TRUE)
@@ -1130,7 +1131,7 @@ update_rv_outsc_CP <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_outdls_CP <- function(rv, input){
+update_rv_outCPdist <- function(rv, input){
   if (length(rv$mods_CP) > 0){
     rv$CPdls <- c(input$outCPdist, input$outCPl, input$outCPs)
     rv$outCPdlsfig <- modNamePaste(rv$CPdls, "CP")
@@ -1154,6 +1155,59 @@ update_rv_outdls_CP <- function(rv, input){
   }
   return(rv)
 }
+
+
+update_rv_outCPl <- function(rv, input){
+  if (length(rv$mods_CP) > 0){
+    rv$CPdls <- c(input$outCPdist, input$outCPl, input$outCPs)
+    rv$outCPdlsfig <- modNamePaste(rv$CPdls, "CP")
+    rv$outCPdlstab <- modNamePaste(rv$CPdls, "CP", tab = TRUE)
+    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
+
+    if (rv$outCPdlstab %in% names(rv$modSet_CP)){
+      rv$modTab_CP <-
+
+    rv$modTab_CP <- list(ls = rv$modSet_CP[[rv$outCPdlstab]]$cell_ls,
+                     desc = rv$modSet_CP[[rv$outCPdlstab]]$cell_desc
+                     )
+      rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
+      rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+    } else {
+      rv$modTab_CP <- NULL
+      holder <- data.frame(msg = "Selected model was not successfully fit.")
+      rv$modTabPretty_CP <- holder
+      rv$modTabDL_CP <- holder
+    }
+  }
+  return(rv)
+}
+
+
+update_rv_outCPs <- function(rv, input){
+  if (length(rv$mods_CP) > 0){
+    rv$CPdls <- c(input$outCPdist, input$outCPl, input$outCPs)
+    rv$outCPdlsfig <- modNamePaste(rv$CPdls, "CP")
+    rv$outCPdlstab <- modNamePaste(rv$CPdls, "CP", tab = TRUE)
+    rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
+
+    if (rv$outCPdlstab %in% names(rv$modSet_CP)){
+      rv$modTab_CP <-
+
+    rv$modTab_CP <- list(ls = rv$modSet_CP[[rv$outCPdlstab]]$cell_ls,
+                     desc = rv$modSet_CP[[rv$outCPdlstab]]$cell_desc
+                     )
+      rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
+      rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+    } else {
+      rv$modTab_CP <- NULL
+      holder <- data.frame(msg = "Selected model was not successfully fit.")
+      rv$modTabPretty_CP <- holder
+      rv$modTabDL_CP <- holder
+    }
+  }
+  return(rv)
+}
+
 
 #' @title Update the SS reactive values when the SS are chosen
 #'

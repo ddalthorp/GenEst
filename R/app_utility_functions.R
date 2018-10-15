@@ -13,17 +13,50 @@ eventReaction <- function(eventName, rv, input, output, session){
 
 
 eventAndReaction <- function(eventName, rv, input, output, session, 
-                             msgs, clear = FALSE, ignoreNull = TRUE){
+                             msgs = NULL, clear = FALSE, ignoreNull = TRUE){
   inputName <- parse(text = paste0("input$", eventName))
   observeEvent(eval(inputName), ignoreNULL = ignoreNull,  {
-
+    clearNotifications(msgs, clear)
     eventReaction(eventName, rv, input, output, session)
-
-    if (clear){
-      clearNotifications(msgs)
-    }
   })
 }
+
+
+
+reaction <- function(eventName){
+
+  reactFun <-  'eventReaction'
+  reactArgs <- paste0('"', eventName, '", rv, input, output, session')
+  reactText <- paste0(reactFun, '(', reactArgs, ')')
+  reactMsg1 <- NULL
+  reactMsg2 <- NULL
+
+  clearEvents <- c("clear_all", "file_SE_clear", "file_CP_clear", 
+                   "file_SS_clear", "file_DWP_clear", "file_CO_clear",
+                   "run_SE_clear", "run_CP_clear")
+
+  if (eventName == "run_SE"){
+    reactMsg1 <- 'msgs$ModSE <<- msgModRun(msgs, "SE")'
+    reactMsg2 <- 'msgs$ModSE <<- msgModDone(msgs, rv, "SE")'
+  }
+  if (eventName == "run_CP"){
+    reactMsg1 <- 'msgs$ModCP <<- msgModRun(msgs, "CP")'
+    reactMsg2 <- 'msgs$ModCP <<- msgModDone(msgs, rv, "CP")'
+  }
+
+  if (eventName %in% clearEvents){
+    reactMsg1 <- 'clearNotifications(msgs)'
+  }
+
+
+
+  reactOpen <- "{"
+  reactClose <- "}"
+  reactextFull <- c(reactOpen, reactMsg1, reactText, reactMsg2, reactClose)
+
+  return(parse(text=reactextFull))
+}
+
 
 
 
