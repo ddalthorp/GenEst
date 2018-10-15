@@ -1,3 +1,31 @@
+#' @title Create the version text for GenEst 
+#'
+#' @description Create a text string of the version number and date
+#'
+#' @param type "Full" or "Short" or "Name" or "NameDate"
+#'
+#' @return version text
+#'
+#' @export
+#'
+createvtext <- function(type = "Full"){
+  vnumber <- packageDescription("GenEst", fields = "Version")
+  vdate <- packageDescription("GenEst", fields = "Date")
+  if (type == "Full"){
+    vtext <- paste0("This is version ", vnumber, " (", vdate, ")")
+  }
+  if (type == "Short"){
+    vtext <- paste0("v", vnumber)
+  }
+  if (type == "Name"){
+    vtext <- paste0("GenEst ", "v", vnumber)
+  }
+  if (type == "NameDate"){
+    vtext <- paste0("GenEst ", "v", vnumber, " (", vdate, ")")
+  }
+  return(vtext)
+}
+
 #' @title Create the Content for the Getting Started Pabel
 #'
 #' @description Create the HTML code for the Help Getting Started main panel,

@@ -4,7 +4,7 @@
 \alias{update_input_run_CP}
 \title{Update the CP output dropdown selections when the model is run}
 \usage{
-update_input_run_CP(rv, session)
+update_input_run_CP(rv, input, session)
 }
 \arguments{
 \item{rv}{reactive values list}

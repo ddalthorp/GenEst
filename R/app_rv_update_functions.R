@@ -1219,7 +1219,7 @@ update_rv_outCPs <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_useSSdata <- function(rv){
+update_rv_useSSdata <- function(rv, inputs){
   rv$SS <- NULL
   rv$SStemp <- tryCatch(averageSS(rv$data_SS), error = function(x){NA})
   if (!is.na(rv$SStemp[1])){
@@ -1246,8 +1246,11 @@ update_rv_useSSinputs <- function(rv, input){
   rv$SStemp <- NA
   rv$gSearchInterval <- input$gSearchInterval
   rv$gSearchMax <- input$gSearchMax
-  if (rv$gSearchInterval > 0){
+  if (rv$gSearchInterval > 0 & rv$gSearchMax > 0){
     rv$SStemp <- seq(0, rv$gSearchMax, by = rv$gSearchInterval)
+  }
+  if (rv$gSearchMax %% 1 != 0){
+    rv$SStemp <- NA
   }
   if (any(is.na(rv$SStemp)) || any(rv$SStemp < 0) | any(rv$SStemp %% 1 != 0)){
     rv$SStemp <- NA
@@ -1374,8 +1377,8 @@ update_rv_run_g_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_outsc_g <- function(rv, input){
-  rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$outsizeclassg)
+update_rv_outgclass <- function(rv, input){
+  rv$sizeclass_g <- pickSizeclass(rv$sizeclasses_g, input$outgclass)
   rv$CL <- input$CL
   return(rv)
 }
@@ -1610,7 +1613,7 @@ update_rv_split_M_clear <- function(rv, input){
 #'
 #' @export
 #'
-update_rv_transpose_split <- function(rv){
+update_rv_transpose_split <- function(rv, input){
   if (rv$nsplit_CO + rv$nsplit_SS == 2){
     rv$Msplit <- transposeSplits(rv$Msplit)
   }

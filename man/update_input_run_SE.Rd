@@ -4,7 +4,7 @@
 \alias{update_input_run_SE}
 \title{Update the SE output dropdown selections when the model is run}
 \usage{
-update_input_run_SE(rv, session)
+update_input_run_SE(rv, input, session)
 }
 \arguments{
 \item{rv}{reactive values list}

@@ -269,8 +269,8 @@ modelRunWidget <- function(modType){
   rName <- switch(modType,
              "SE" = "run_SE",
              "CP" = "run_CP",
-             "M" = "runMod_M",
-             "g" = "runMod_g")
+             "M" = "run_M",
+             "g" = "run_g")
   rLabel <- switch(modType, 
               "SE" = "Run Model",
               "CP" = "Run Model",
@@ -293,8 +293,8 @@ modelRunWidget <- function(modType){
   cName <- switch(modType, 
              "SE" = "run_SE_clear",
              "CP" = "run_CP_clear",
-             "M" = "runMod_M_clear",
-             "g" = "runMod_g_clear")
+             "M" = "run_M_clear",
+             "g" = "run_g_clear")
   cLabel <- switch(modType, 
               "SE" = "Clear Model",
               "CP" = "Clear Model",
@@ -425,7 +425,7 @@ modelOutputWidget <- function(modType){
              "SE" = c("outSEclass", "outSEp", "outSEk"),
              "CP" = c("outCPclass", "outCPdist", "outCPl", "outCPs"),
              "M" = c("split_SS", "split_CO"),
-             "g" = "outsizeclassg")
+             "g" = "outgclass")
 
   sLabel <- switch(modType,
               "SE" = c("Size Class:", "p Model:", "k Model:"),
@@ -482,16 +482,16 @@ modelOutputWidget <- function(modType){
 splitButtonWidget <- function(){
   list(
     fluidRow(
-      column(width = 6, actionButton("splitM", "Split Estimate")),
+      column(width = 6, actionButton("split_M", "Split Estimate")),
       column(width = 6,
         conditionalPanel(
           condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
-          actionButton("transposeSplit", "Transpose")
+          actionButton("transpose_split", "Transpose")
         )
       )
     ),
     conditionalPanel(condition = "output.MSplitDone == 'OK'", 
-        actionButton("splitM_clear", "Clear Split", style = cButtonStyle())
+        actionButton("split_M_clear", "Clear Split", style = cButtonStyle())
     )
   )
 }

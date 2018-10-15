@@ -4,7 +4,7 @@
 \alias{update_input_run_SE_clear}
 \title{Update the inputs when SE model is cleared}
 \usage{
-update_input_run_SE_clear(rv, session)
+update_input_run_SE_clear(rv, input, session)
 }
 \arguments{
 \item{rv}{reactive values list}

@@ -7,12 +7,6 @@ the server code
 developing the eventReaction function to be a general purpose function that
 is called from the server script and implements the lower level functions
 
-worked through the data loading and all clearing functions
-
-worked through the SE column selection and the size column selection for SE
-
-
-
 to do
 
 generalize the message functions
