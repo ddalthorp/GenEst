@@ -8,7 +8,8 @@
 \description{
 This package is designed to analyze searcher efficiency,
   carcass persistence, search schedule, and carcass observation data for
-  the estimation of bird and bat mortality at wind and solar power facilities.
+  the estimation of bird and bat mortality at wind and solar power 
+  facilities.
 }
 \section{Data sets}{
 
@@ -28,7 +29,8 @@ This package is designed to analyze searcher efficiency,
    (\code{pk}) and carcass persistence (\code{cp}) parameters}
   \item{\code{\link{estM}}}{estimate mortality given \code{pkm}, \code{cpm}
    and data}
-  \item{\code{\link{calcSplits}}}{split mortality estimates by subcategories}
+  \item{\code{\link{calcSplits}}}{split mortality estimates by 
+     subcategories}
   \item{\code{plot}}{S3 function for \code{\link[=plot.pkm]{pkm}},
    \code{\link[=plot.pkmSet]{pkmSet}}, \code{\link[=plot.cpm]{cpm}},
    \code{\link[=plot.cpmSet]{cpmSet}}, \code{\link[=plot.estM]{estM}},
@@ -42,9 +44,10 @@ This package is designed to analyze searcher efficiency,
    \code{\link[=summary.gGeneric]{gGeneric}},
    \code{\link[=summary.gGenericSize]{gGenericSize}} objects}
   \item{\code{\link{aicc}}}{S3 function for extracting models' AICc values
-   from \code{\link{pkm}}, \code{\link[=pkm]{pkmSet}}, \code{\link[=pkm]{pkmSize}},
-   \code{\link[=pkm]{pkmSetSize}}, \code{\link{cpm}}, \code{\link[=cpm]{cpmSet}},
-   \code{\link[=cpm]{cpmSize}}, and  \code{\link[=cpm]{cpmSetSize}} objects}
+   from \code{\link{pkm}}, \code{\link[=pkm]{pkmSet}}, 
+   \code{\link[=pkm]{pkmSize}}, \code{\link[=pkm]{pkmSetSize}}, 
+   \code{\link{cpm}}, \code{\link[=cpm]{cpmSet}},
+   \code{\link[=cpm]{cpmSize}}, and \code{\link[=cpm]{cpmSetSize}} objects}
   \item{\code{\link{estgGeneric}}, \code{\link{estgGenericSize}}}{estimate
    detection probability (g) for given searcher efficiency and carcass
    persistence model}
@@ -60,7 +63,8 @@ This package is designed to analyze searcher efficiency,
 \code{\link{alogit}}, \code{\link{logit}}\cr
 \code{\link{Ecbinom}}\cr
 \code{\link{pkLogLik}}, \code{\link{cpLogLik}}\cr
-\code{\link{calcRate}}, \code{\link{calcTsplit}}, \code{\link{ltranspose}}\cr
+\code{\link{calcRate}}, \code{\link{calcTsplit}}, 
+\code{\link{ltranspose}}\cr
 }
 
 \section{Potentially useful editing functions}{
@@ -244,35 +248,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{trueLength}}\cr
 \code{\link{u}}\cr
 \code{\link{ul}}\cr
-\code{\link{update_input_clear_all}}\cr
-\code{\link{update_input_cols_CP_preds}}\cr
-\code{\link{update_input_cols_fta}}\cr
-\code{\link{update_input_cols_ltp}}\cr
-\code{\link{update_input_cols_SE_obs}}\cr
-\code{\link{update_input_cols_SE_preds}}\cr
-\code{\link{update_input_data_CO}}\cr
-\code{\link{update_input_data_CO_clear}}\cr
-\code{\link{update_input_data_CP}}\cr
-\code{\link{update_input_data_CP_clear}}\cr
-\code{\link{update_input_data_DWP}}\cr
-\code{\link{update_input_data_DWP_clear}}\cr
-\code{\link{update_input_data_SE}}\cr
-\code{\link{update_input_data_SE_clear}}\cr
-\code{\link{update_input_data_SS}}\cr
-\code{\link{update_input_data_SS_clear}}\cr
-\code{\link{update_input_outsc_CP}}\cr
-\code{\link{update_input_outsc_SE}}\cr
-\code{\link{update_input_run_CP}}\cr
-\code{\link{update_input_run_CP_clear}}\cr
-\code{\link{update_input_run_g}}\cr
-\code{\link{update_input_run_g_clear}}\cr
-\code{\link{update_input_run_M}}\cr
-\code{\link{update_input_run_M_clear}}\cr
-\code{\link{update_input_run_SE}}\cr
-\code{\link{update_input_run_SE_clear}}\cr
-\code{\link{update_input_sizeCol}}\cr
-\code{\link{update_input_split_M_clear}}\cr
-\code{\link{update_input_useSSdata}}\cr
+\code{\link{update_input}}\cr
 \code{\link{update_output_clear_all}}\cr
 \code{\link{update_output_cols_CP}}\cr
 \code{\link{update_output_cols_SE}}\cr
