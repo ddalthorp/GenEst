@@ -1,3 +1,65 @@
+#' @title Reset values of a reactive values list 
+#'
+#' @description Utility function for clearing and setting purposes.
+#'
+#' @param rv Reactive values list for the GenEst GUI, created by 
+#'   \code{\link{initialReactiveValues}}, which calls 
+#'   \code{\link[shiny]{reactiveValues}}
+#'
+#' @param toReVal Names of elements in \code{rv} to reset to their factory 
+#'   setting (as defined by \code{\link{initialReactiveValues}}).
+#'
+#' @return Updated \code{rv}.
+#'
+#' @export
+#'
+reVal <- function(rv, toReVal){
+  if("nsplit_CO" %in% toReVal){
+    rv$nsplit_CO <- 0
+  }
+  if("nsplit_SS" %in% toReVal){
+    rv$nsplit_SS <- 0
+  }
+
+  if("SS" %in% toReVal){
+    rv$SS <- seq(0, 364, 7)
+  }
+  if("gSearchInterval " %in% toReVal){
+    rv$gSearchInterval  <- 7
+  }
+  if("gSearchMax" %in% toReVal){
+    rv$gSearchMax <- 364
+  }
+  if("SStext" %in% toReVal){
+    rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+  }
+  if("figH_SE" %in% toReVal){
+    rv$figH_SE <- 800
+  }
+  if("figW_SE" %in% toReVal){
+    rv$figW_SE <- 800
+  }
+  if("figH_CP" %in% toReVal){
+    rv$figH_CP <- 800
+  }
+  if("figW_CP" %in% toReVal){
+    rv$figW_CP <- 800
+  }
+  if("figH_M" %in% toReVal){
+    rv$figH_M <- 600
+  }
+  if("figW_M" %in% toReVal){
+    rv$figW_M <- 800
+  }
+  if("figH_M" %in% toReVal){
+    rv$figH_g <- 400
+  }
+  if("figW_M" %in% toReVal){
+    rv$figW_g <- 800
+  }
+  rv
+}
+
 
 #' @title Read in csv files in either format
 #'
