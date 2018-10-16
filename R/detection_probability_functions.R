@@ -967,7 +967,9 @@ prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
   ans <- list()
   ans$date0 <- date0
   ans$days <- as.numeric(difftime(dates, date0, units = "days"))
-  if (any(diff(ans$days) <= 0)) stop("search dates must be in increasing order")
+  if (any(diff(ans$days) <= 0)){
+    stop("search dates must be in increasing order")
+  }
   ans[[SSdate]] <- dates
   for (i in 1:length(preds)){
     if (preds[i] == SSdate) next

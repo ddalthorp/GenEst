@@ -144,8 +144,8 @@ calcTsplit <- function(rate, days, tsplit){
 #'   period into 30-day intervals, and \code{calcSplits()} would return 
 #'   mortality estimates for each of the intervals.
 #'
-#' @param M \code{\link{estM}} object, containing numeric array (ncarc x nsim) of estimated
-#'    mortalities and other pieces
+#' @param M \code{\link{estM}} object, containing numeric array (ncarc x nsim)
+#'    of estimated mortalities and other pieces
 #'   
 #' @param split_CO Character vector of names of splitting covariates to be
 #'   found in the \code{data_CO} data frame. No more than two \code{split_CO} 
@@ -562,20 +562,20 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   if (!is.null(attr(splits, "type"))){
     if (!is.list(splits$M)){
       if (attr(splits, "type") == "CO"){
-        sumry <- sumry[gtools::mixedsort(rownames(sumry)), ]
+        sumry <- sumry[mixedsort(rownames(sumry)), ]
       }
     } else {
       if (attr(splits, "type")[1] == "CO"){
         for (i in 1:length(splits)){
-          sumry[[i]] <- sumry[[i]][gtools::mixedsort(rownames(sumry[[i]])), ]
+          sumry[[i]] <- sumry[[i]][mixedsort(rownames(sumry[[i]])), ]
         }
       }
       if (attr(splits, "type")[2] == "CO"){
-        sumry <- sumry[gtools::mixedsort(names(sumry))]
+        sumry <- sumry[mixedsort(names(sumry))]
        }
      }
    }
-  sumry <- sticky::sticky(sumry)
+  sumry <- sticky(sumry)
   attr(sumry, "CL") <- CL
   attr(sumry, "vars") <- attr(splits, "vars")
   attr(sumry, "type") <- attr(splits, "type")

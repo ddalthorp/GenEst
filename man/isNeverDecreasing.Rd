@@ -7,15 +7,15 @@
 isNeverDecreasing(x, tiesOK = TRUE, na.rm = TRUE)
 }
 \arguments{
-\item{x}{vector of values}
+\item{x}{Vector of numeric values.}
 
-\item{tiesOK}{logical if ties are ok or not}
+\item{tiesOK}{Logical indicator if ties are ok or not.}
 
-\item{na.rm}{logical if NAs are to be removed or not}
+\item{na.rm}{Logical indicator if NAs are to be removed or not.}
 }
 \value{
-logical value
+Logical value.
 }
 \description{
-Check if a vector is never decreasing
+Check if a vector is never decreasing.
 }
