@@ -183,7 +183,15 @@ update_output <- function(eventName, rv, output){
   }
 
   if (eventName == "run_SE"){
-    output$text_SE_est <- NULL
+    output$kFillNeed <- setkFillNeed(rv)
+    output$DWPNeed <- renderText("yes")
+    toNULL <- c("SEModDone", "AICcTab_SE", "modTab_SE", "fig_SE", 
+                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1", 
+                "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
+                "text_SE_est", "fig_M", "table_M", "MModDone", "table_g", 
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
+                "sizeclass_g2")
+    output <- reNULL(output, toNULL)
     if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
         !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
       output$SEModDone <- renderText("OK")
@@ -219,23 +227,17 @@ update_output <- function(eventName, rv, output){
       output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE, 
                                             rv$csvformat)
       output$dlSEfig <- downloadSEFig(rv)
-
-      dontSuspend <- c("SEModDone", "kFillNeed", "DWPNeed",  
-                       "sizeclasses_SE", "sizeclass_SEyn")
-      setNotSuspending(output, dontSuspend)
     }
-
-    toNULL <- c("fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
-                "sizeclass_g2")
-    output <- reNULL(output, toNULL)
-    dontSuspend <- c("text_SE_est", "MModDone", "gModDone", "sizeclass_gyn")
+    dontSuspend <- c("text_SE_est", "MModDone", "gModDone", "sizeclass_gyn",
+                     "SEModDone", "kFillNeed", "DWPNeed", "sizeclasses_SE", 
+                     "sizeclass_SEyn")
     setNotSuspending(output, dontSuspend)
   }
 
   if (eventName == "run_SE_clear"){
     output$kFillNeed <- setkFillNeed(rv)
-    toNULL <- c("SEModDone", "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE", 
+    output$DWPNeed <- renderText("yes")
+    toNULL <- c("SEModDone", "AICcTab_SE", "modTab_SE", "fig_SE", 
                 "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1", 
                 "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
                 "text_SE_est", "fig_M", "table_M", "MModDone", "table_g", 
@@ -288,7 +290,14 @@ update_output <- function(eventName, rv, output){
   }
 
   if (eventName == "run_CP"){
-    output$text_CP_est <- NULL
+    toNULL <- c("CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP", 
+                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1", 
+                "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
+                "text_CP_est", "dlCPest", "dlCPAICc", "dlCPfig", 
+                "fig_M", "table_M", "MModDone", "table_g", 
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
+                "sizeclass_g2")
+    output <- reNULL(output, toNULL)
     if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
       output$CPModDone <- renderText("OK")
       output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})    
@@ -311,24 +320,15 @@ update_output <- function(eventName, rv, output){
         output$sizeclass_CPyn <- renderText("YES")
       }
 
-      dontSuspend <- c("CPModDone", "sizeclasses_CP", "sizeclass_CPyn")
-      setNotSuspending(output, dontSuspend)
-
       output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, 
                                             rv$csvformat)
       output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP, 
                                             rv$csvformat)
       output$dlCPfig <- downloadCPFig(rv)
     }
-
-    toNULL <- c("fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
-                "sizeclass_g2")
-    output <- reNULL(output, toNULL)
-    dontSuspend <- c("text_CP_est", "MModDone", "gModDone", "sizeclass_gyn")
+    dontSuspend <- c("CPModDone", "sizeclasses_CP", "sizeclass_CPyn",
+                     "text_CP_est", "MModDone", "gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
-
-    
   }
 
   if (eventName == "run_CP_clear"){
@@ -340,8 +340,8 @@ update_output <- function(eventName, rv, output){
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    dontSuspend <- c("CPModDone", "sizeclasses_CP", "text_CP_est", 
-                     "MModDone", "gModDone", "sizeclass_gyn")
+    dontSuspend <- c("CPModDone", "sizeclasses_CP", "sizeclass_CPyn",
+                     "text_CP_est", "MModDone", "gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -393,7 +393,9 @@ update_output <- function(eventName, rv, output){
   }
 
   if (eventName == "run_g"){
-
+    toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn", 
+                "sizeclass_g1", "sizeclass_g2")
+    output <- reNULL(output, toNULL)
     if (!is.null(rv$gGeneric[[1]])){
       summaryTab <- summary(rv$gGeneric[[1]], CL = rv$CL)
       output$table_g <- renderDataTable(summaryTab)
@@ -417,14 +419,13 @@ update_output <- function(eventName, rv, output){
       output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, 
                                           rv$csvformat)
       output$dlgfig <- downloadgFig(rv, 1)
-      outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
-      outputOptions(output, "sizeclass_gyn", suspendWhenHidden = FALSE)
     }
-    
+    dontSuspend <- c("gModDone", "sizeclass_gyn")
+    setNotSuspending(output, dontSuspend)    
   }
 
   if (eventName == "run_g_clear"){
-   toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn", 
+    toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn", 
                 "sizeclass_g1", "sizeclass_g2")
     output <- reNULL(output, toNULL)
     dontSuspend <- c("gModDone", "sizeclass_gyn")
@@ -460,10 +461,10 @@ update_output <- function(eventName, rv, output){
   }
 
   if (eventName == "run_M"){
+    toNULL <- c("fig_M", "table_M", "MModDone")
+    output <- reNULL(output, toNULL)
     if (!is.null(rv$Msplit)){
       output$MModDone <- renderText("OK")
-      outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
-
       output$fig_M <- renderPlot({plot(rv$Msplit, CL = rv$CL)},
                         height = rv$figH_M, width = rv$figW_M
                       )
@@ -472,6 +473,7 @@ update_output <- function(eventName, rv, output){
       output$dlMtab <- downloadTable("M_table.csv", summaryTab, rv$csvformat)
       output$dlMfig <- downloadMFig(rv)
     }
+    outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
   }
 
   if (eventName == "run_M_clear"){
