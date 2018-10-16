@@ -161,20 +161,20 @@ modelInputWidget <- function(inType){
             "CL" = list(value = 0.90, min = 0, max = 1, step = 0.001), 
             "class" = list(c("No data input yet"), multiple = TRUE,
                                options = list(maxItems = 1)), 
-            "obsSE" = list(c("No data input yet"), multiple = TRUE), 
-            "predsSE" = list(c("No data input yet"), multiple = TRUE),
+            "obsSE" = list(c("No SE data input yet"), multiple = TRUE), 
+            "predsSE" = list(c("No SE data input yet"), multiple = TRUE),
             "kFixedInput" = list(NULL),
-            "ltp" = list(c("No data input yet"), multiple = TRUE,
+            "ltp" = list(c("No CP data input yet"), multiple = TRUE,
                       options = list(maxItems = 1)),
-            "fta" = list(c("No data input yet"), multiple = TRUE,
+            "fta" = list(c("No CP data input yet"), multiple = TRUE,
                       options = list(maxItems = 1)),
-            "predsCP" = list(c("No data input yet"), multiple = TRUE),
+            "predsCP" = list(c("No CP data input yet"), multiple = TRUE),
             "dist" = list(choices = CPdistOptions(),
                         selected = unlist(CPdistOptions()), inline = TRUE),
             "frac" = list(value = 1.0, min = 0.01, max = 1.0, step = 0.01),
-            "DWPCol" = list(c("No data input yet"), multiple = TRUE, 
+            "DWPCol" = list(c("No DWP data input yet"), multiple = TRUE, 
                             options = list(maxItems = 1)),
-            "COdate" = list(c("No data input yet"), multiple = TRUE,
+            "COdate" = list(c("No carcass data input yet"), multiple = TRUE,
                                   options = list(maxItems = 1)),
             "gSearchInterval" = list(value = 7, min = 1, max = 400, step = 1),
             "gSearchMax" = list(value = 364, min = 1, max = 1000, step = 1),
@@ -281,13 +281,12 @@ modelRunWidget <- function(modType){
                   "M" = "input.modelChoices_SE1 != null & 
                          input.modelChoices_CP1 != null & 
                          output.sizeclasses_SE == output.sizeclasses_CP & 
-                         output.data_SS != null & 
-                         input.DWPCol != null & input.COdate != null &
-                         output.kFillNeed != 'yes'",
+                         output.data_SS != null & output.kNeed != 'yes' &
+                         input.DWPCol != null & input.COdate != null",
                   "g" = "input.modelChoices_SE1 != null & 
                          input.modelChoices_CP1 != null & 
-                         output.sizeclasses_SE == output.sizeclasses_CP &
-                         output.kFillNeed != 'yes'")
+                         output.kNeed != 'yes' &
+                         output.sizeclasses_SE == output.sizeclasses_CP")
 
   cName <- switch(modType, 
              "SE" = "run_SE_clear",
@@ -348,12 +347,12 @@ preTextMaker <- function(modType){
                          input.modelChoices_CP1 != null & 
                          output.sizeclasses_SE == output.sizeclasses_CP & 
                          (input.DWPCol == null | input.COdate == null)",
-                         "output.kFillNeed == 'yes' & 
+                         "output.kNeed == 'yes' & 
                          input.modelChoices_SE1 != null"),
                  "g" = c("input.modelChoices_SE1 == null | 
                          input.modelChoices_CP1 == null | 
                          output.sizeclasses_SE != output.sizeclasses_CP",
-                         "output.kFillNeed == 'yes' & 
+                         "output.kNeed == 'yes' & 
                          input.modelChoices_SE1 != null")
                 )
 

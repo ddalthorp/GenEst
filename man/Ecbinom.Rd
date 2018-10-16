@@ -7,12 +7,12 @@
 Ecbinom(prob)
 }
 \arguments{
-\item{prob}{Vector of probabilities}
+\item{prob}{Vector of probabilities.}
 }
 \value{
-mean
+Mean value of the probabilities.
 }
 \description{
 Calculates the expected value of a continuous binomial random
- variable with size = 1/g. Uses internal-only data
+ variable with size = 1/g. Uses internal-only data.
 }

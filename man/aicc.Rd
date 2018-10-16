@@ -7,7 +7,7 @@
 aicc(x, ...)
 }
 \arguments{
-\item{x}{is the model or list of models to extract AICc values from}
+\item{x}{Model or list of models to extract AICc values from.}
 
 \item{...}{further arguments passed to or from other methods}
 }
@@ -16,5 +16,5 @@ list of models sorted by AICc
 }
 \description{
 Extract AICc values from \code{pkm}, \code{pkmSet},
- \code{pkmSetSize}, \code{cpm}, \code{cpmSet}, and \code{cpmSetSize}
+ \code{pkmSetSize}, \code{cpm}, \code{cpmSet}, and \code{cpmSetSize}.
 }

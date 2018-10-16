@@ -19,5 +19,5 @@ msgModDone(msgs, rv, type = "SE", clear = TRUE)
 an SE model done message
 }
 \description{
-Produces a SE or CP model-done notification
+Produces a model-done notification
 }

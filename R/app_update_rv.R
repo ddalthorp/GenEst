@@ -48,9 +48,9 @@ update_rv <- function(eventName, rv, input){
                 "mods_SE_og", "sizeclasses_SE", "outSEpk", "AICcTab_SE", 
                 "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk", 
                 "modSet_SE", "best_SE", "modTab_SE", "modTabPretty_SE",
-                "modTabDL_SE", "kFill", "SStemp", "avgSI", "colNames_ss_sel", 
+                "modTabDL_SE", "SStemp", "avgSI", "colNames_ss_sel", 
                 "colNames_ss_nosel", "M", "Msplit", "unitCol", "sizeCol_M", 
-                "split_CO", "split_SS", "kFill_g", "SEmodToUse",
+                "split_CO", "split_SS", "SEmodToUse",
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g",
                 "data_CP", "filename_CP", "colNames_CP", "colNames_CP_preds",
                 "colNames_CP_preds0", "colNames_fta", "colNames_fta0",
@@ -89,9 +89,9 @@ update_rv <- function(eventName, rv, input){
                 "mods_SE_og", "sizeclasses_SE", "outSEpk", "AICcTab_SE", 
                 "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk", 
                 "modSet_SE", "best_SE", "modTab_SE", "modTabPretty_SE",
-                "modTabDL_SE", "kFill", "SStemp", "avgSI", "colNames_ss_sel", 
+                "modTabDL_SE", "SStemp", "avgSI", "colNames_ss_sel", 
                 "colNames_ss_nosel", "M", "Msplit", "unitCol", "sizeCol_M", 
-                "split_CO", "split_SS", "kFill_g", "SEmodToUse",
+                "split_CO", "split_SS", "SEmodToUse",
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
 
@@ -129,9 +129,9 @@ update_rv <- function(eventName, rv, input){
                 "mods_SE_og", "sizeclasses_SE", "outSEpk", "AICcTab_SE", 
                 "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk", 
                 "modSet_SE", "best_SE", "modTab_SE", "modTabPretty_SE",
-                "modTabDL_SE", "kFill", "SStemp", "avgSI", "colNames_ss_sel", 
+                "modTabDL_SE", "SStemp", "avgSI", "colNames_ss_sel", 
                 "colNames_ss_nosel", "M", "Msplit", "unitCol", "sizeCol_M", 
-                "split_CO", "split_SS", "kFill_g", "SEmodToUse",
+                "split_CO", "split_SS", "SEmodToUse",
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
 
@@ -159,7 +159,7 @@ update_rv <- function(eventName, rv, input){
                 "modNames_CPdist", "modSet_CP", "best_CP", "modTab_CP", 
                 "modTabPretty_CP", "modTabDL_CP", "SStemp", "avgSI", 
                 "colNames_ss_sel", "colNames_ss_nosel", "M", "Msplit", 
-                "unitCol", "sizeCol_M", "split_CO", "split_SS", "kFill_g", 
+                "unitCol", "sizeCol_M", "split_CO", "split_SS",  
                 "CPmodToUse", "sizeclasses_g", "nsizeclasses_g", "gGeneric", 
                 "CPmodToUse_g")
     rv <- reNULL(rv, toNULL)
@@ -203,7 +203,7 @@ update_rv <- function(eventName, rv, input){
                 "modNames_CPdist", "modSet_CP", "best_CP", "modTab_CP", 
                 "modTabPretty_CP", "modTabDL_CP", "SStemp", "avgSI", 
                 "colNames_ss_sel", "colNames_ss_nosel", "M", "Msplit", 
-                "unitCol", "sizeCol_M", "split_CO", "split_SS", "kFill_g", 
+                "unitCol", "sizeCol_M", "split_CO", "split_SS",  
                 "CPmodToUse", "sizeclasses_g", "nsizeclasses_g", "gGeneric", 
                 "CPmodToUse_g")
     rv <- reNULL(rv, toNULL)
@@ -222,7 +222,7 @@ update_rv <- function(eventName, rv, input){
   if (eventName == "file_SS"){
     toNULL <- c("data_SS", "colNames_SS", "SStemp", "avgSI", 
                 "colNames_ss_sel", "colNames_ss_nosel", "M", "Msplit",
-                "unitCol", "sizeCol_M", "split_CO", "split_SS", "kFill_g",
+                "unitCol", "sizeCol_M", "split_CO", "split_SS", 
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M", "figH_g",
@@ -236,7 +236,7 @@ update_rv <- function(eventName, rv, input){
   if (eventName == "file_SS_clear"){
     toNULL <- c("data_SS", "colNames_SS", "SStemp", "avgSI", 
                 "colNames_ss_sel", "colNames_ss_nosel", "M", "Msplit",
-                "unitCol", "sizeCol_M", "split_CO", "split_SS", "kFill_g",
+                "unitCol", "sizeCol_M", "split_CO", "split_SS", 
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M", "figH_g",
@@ -418,14 +418,19 @@ update_rv <- function(eventName, rv, input){
 
 
   if (eventName == "run_SE"){
-    toNULL <- c("M", "Msplit", "unitCol", "sizeCol_M", "SEmodToUse", 
-                "split_CO", "split_SS", "SStemp", "avgSI", "colNames_SS_sel", 
-                "colNames_SS_nosel", "kFill_g", "sizeclasses_g", 
-                "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
+    toNULL <- c("predictors_SE", "formula_p", "formula_k", "outSEpk",
+                "mods_SE", "mods_SE_og", "sizeclasses_SE", "AICcTab_SE",
+                "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk",
+                "modSet_SE", "best_SE", "modTab_SE",
+                "modTabPretty_SE", "modTabDL_SE", "M", "Msplit", "unitCol",
+                "sizeCol_M", "SEmodToUse", "split_CO", "split_SS",
+                "SStemp", "avgSI", "colNames_SS_sel", "colNames_SS_nosel",
+                "sizeclasses_g", "nsizeclasses_g", "gGeneric",
+                "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "SS", "gSearchInterval", 
-                 "gSearchMax", "SStext", "figH_M", "figW_M", "figH_g", 
-                 "figW_g")
+                 "gSearchMax", "SStext", "figH_SE", "figW_SE", "figH_M",
+                 "figW_M", "figH_g", "figW_g")
     rv <- reVal(rv, toReVal)
 
     for (sci in 1:rv$nsizeclasses_k){
@@ -485,14 +490,14 @@ update_rv <- function(eventName, rv, input){
 
 
   if (eventName == "run_SE_clear"){
-    toNULL <- c("kFill", "predictors_SE", "formula_p", "formula_k", "outSEpk",
+    toNULL <- c("predictors_SE", "formula_p", "formula_k", "outSEpk",
                 "mods_SE", "mods_SE_og", "sizeclasses_SE", "AICcTab_SE",
                 "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk",
                 "modSet_SE", "best_SE", "modTab_SE",
                 "modTabPretty_SE", "modTabDL_SE", "M", "Msplit", "unitCol",
                 "sizeCol_M", "SEmodToUse", "split_CO", "split_SS",
                 "SStemp", "avgSI", "colNames_SS_sel", "colNames_SS_nosel",
-                "kFill_g", "sizeclasses_g", "nsizeclasses_g", "gGeneric",
+                "sizeclasses_g", "nsizeclasses_g", "gGeneric",
                 "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "SS", "gSearchInterval", 
@@ -543,7 +548,20 @@ update_rv <- function(eventName, rv, input){
   }
 
   if (eventName == "run_CP"){
-
+    toNULL <- c("dist", "predictors_CP", "formula_l", "formula_s",
+                "mods_CP", "mods_CP_og", "sizeclasses_CP", "AICcTab_CP",
+                "modOrder_CP", "modNames_CP", "modNames_CPl", "modNames_CPs",
+                "modNames_CPdist", "modSet_CP", "best_CP", "modTab_CP",
+                "modTabPretty_CP", "modTabDL_CP", "M", "Msplit", "unitCol",
+                "sizeCol_M", "SEmodToUse", "split_CO", "split_SS",
+                "SStemp", "avgSI", "colNames_SS_sel", "colNames_SS_nosel",
+                "sizeclasses_g", "nsizeclasses_g", "gGeneric",
+                "SEmodToUse_g")
+    rv <- reNULL(rv, toNULL)
+    toReVal <- c("nsplit_CO", "nsplit_SS", "SS", "gSearchInterval", 
+                 "gSearchMax", "SStext", "figH_CP", "figW_CP", "figH_M",
+                 "figW_M", "figH_g", "figW_g")
+    rv <- reVal(rv, toReVal)
     rv$ltp <- input$ltp
     rv$fta <- input$fta
     rv$preds_CP <- input$predsCP
@@ -593,21 +611,9 @@ update_rv <- function(eventName, rv, input){
       rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
       rv$figW_CP <- setFigW(rv$modSet_CP)
     }
-
-    toNULL <- c("M", "Msplit", "unitCol", "sizeCol_M", "SEmodToUse", 
-                "split_CO", "split_SS", "SStemp", "avgSI", "colNames_SS_sel", 
-                "colNames_SS_nosel", "kFill_g", "sizeclasses_g", 
-                "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
-    rv <- reNULL(rv, toNULL)
-    toReVal <- c("nsplit_CO", "nsplit_SS", "SS", "gSearchInterval", 
-                 "gSearchMax", "SStext", "figH_M", "figW_M", "figH_g", 
-                 "figW_g")
-    rv <- reVal(rv, toReVal)
   }
 
-
   if (eventName == "run_CP_clear"){
-
     toNULL <- c("dist", "predictors_CP", "formula_l", "formula_s",
                 "mods_CP", "mods_CP_og", "sizeclasses_CP", "AICcTab_CP",
                 "modOrder_CP", "modNames_CP", "modNames_CPl", "modNames_CPs",
@@ -615,7 +621,7 @@ update_rv <- function(eventName, rv, input){
                 "modTabPretty_CP", "modTabDL_CP", "M", "Msplit", "unitCol",
                 "sizeCol_M", "SEmodToUse", "split_CO", "split_SS",
                 "SStemp", "avgSI", "colNames_SS_sel", "colNames_SS_nosel",
-                "kFill_g", "sizeclasses_g", "nsizeclasses_g", "gGeneric",
+                "sizeclasses_g", "nsizeclasses_g", "gGeneric",
                 "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "SS", "gSearchInterval", 
@@ -627,7 +633,6 @@ update_rv <- function(eventName, rv, input){
                                   rv$preds_CP)
     rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
   }
-
 
   if (eventName == "outCPclass"){
     if (length(rv$mods_CP) > 0){
@@ -710,28 +715,19 @@ update_rv <- function(eventName, rv, input){
   }
 
   if (eventName == "run_g"){
-    rv$gGeneric <- NULL
     rv$CL <- input$CL
-    rv$kFill_g <- NA
+    toNULL <- c("sizeclasses_g", "gGeneric", "SEmodToUse_g")
+    rv <- reNULL(rv, toNULL)
+    toReVal <- c("figH_g", "figW_g")
+    rv <- reVal(rv, toReVal)
 
     if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
       rv$kCheck_g <- rep(NA, rv$nsizeclasses_k)
       counter <- 1
       for (sci in 1:rv$nsizeclasses_k){
-        if (is.na(rv$kFixed[sci])){
-          rv$kFill_g[sci] <- input[[sprintf("kFill_g_%d", counter)]]
-          rv$kCheck_g[sci] <- input[[sprintf("kFill_g_%d", counter)]]
-          counter <- counter + 1
-        } else{
-          rv$kCheck_g[sci] <- rv$kFixed[sci]
-        }
+        rv$kCheck_g[sci] <- rv$kFixed[sci]
       }
-      names(rv$kFill_g) <- rv$sizeclasses_k
-      rv$kFill_g <- na.omit(rv$kFill_g)
       if (length(na.omit(rv$kCheck_g)) != length(rv$kCheck_g)){
-        return(rv)  
-      }
-      if (any(rv$kFill_g < 0 |rv$kFill_g > 1)){
         return(rv)  
       }
     }
@@ -771,7 +767,7 @@ update_rv <- function(eventName, rv, input){
   }
 
   if (eventName == "run_g_clear"){
-    toNULL <- c("kFill_g", "sizeclasses_g", "gGeneric", "SEmodToUse_g")
+    toNULL <- c("sizeclasses_g", "gGeneric", "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("figH_g", "figW_g")
     rv <- reVal(rv, toReVal)
@@ -784,27 +780,19 @@ update_rv <- function(eventName, rv, input){
 
   if (eventName == "run_M"){
 
-    rv$M <- NULL
-    rv$kFill <- NA
+    toNULL <- c("M", "Msplit", "unitCol", "sizeCol_M", "SEmodToUse", 
+                "split_CO", "split_SS")
+    rv <- reNULL(rv, toNULL)
+    toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
+    rv <- reVal(rv, toReVal)
     if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
       rv$kCheck <- rep(NA, rv$nsizeclasses_k)
       counter <- 1
       for (sci in 1:rv$nsizeclasses_k){
-        if (is.na(rv$kFixed[sci])){
-          rv$kFill[sci] <- input[[sprintf("kFill_%d", counter)]]
-          rv$kCheck[sci] <- input[[sprintf("kFill_%d", counter)]]
-          counter <- counter + 1
-        } else{
-          rv$kCheck[sci] <- rv$kFixed[sci]
-        }
+        rv$kCheck[sci] <- rv$kFixed[sci]
       }
-      names(rv$kFill) <- rv$sizeclasses_k
-      rv$kFill <- na.omit(rv$kFill)
       if (length(na.omit(rv$kCheck)) != length(rv$kCheck)){
         return(rv)
-      }
-      if (any(rv$kFill < 0 |rv$kFill > 1)){
-        return(rv)  
       }
     }
 
@@ -896,7 +884,9 @@ update_rv <- function(eventName, rv, input){
   }
 
   if (eventName == "split_M"){
-    rv$Msplit <- NULL
+    toNULL <- c("split_CO", "split_SS", "Msplit")
+    rv <- reNULL(rv, toNULL)
+    toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
     rv$split_CO <- input$split_CO
     rv$split_SS <- input$split_SS
     rv$nsplit_CO <- length(rv$split_CO)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_table_functions.R
 \name{prettyModTabSE}
 \alias{prettyModTabSE}
-\title{Create the pretty versi10/8/2018 5:06:59 PMon of the Searcher Efficiency model table}
+\title{Create the pretty version of the Searcher Efficiency model table}
 \usage{
 prettyModTabSE(modTab, CL = 0.9)
 }
