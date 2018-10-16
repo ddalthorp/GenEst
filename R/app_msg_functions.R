@@ -130,13 +130,13 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
         return(msgModFail(rv$M, "M"))
       }
     }
-    if (type == "split"){
-      if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
-        return(msgSplitFail("setup"))
-      }
-      if (is.null(rv$Msplit)){
-        return(msgSplitFail("run"))
-      }
+  }
+  if (type == "split"){
+    if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
+      return(msgSplitFail("setup"))
+    }
+    if (is.null(rv$Msplit)){
+      return(msgSplitFail("run"))
     }
   }
   if (type == "g"){
