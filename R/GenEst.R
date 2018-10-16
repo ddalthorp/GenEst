@@ -6,6 +6,7 @@
 #'   polygon rect text
 #' @importFrom grDevices dev.off devAskNewPage png rgb
 #' @importFrom gsl hyperg_2F1
+#' @importFrom gtools mixedsort
 #' @importFrom htmltools a br code div em h3 h4 HTML img p tags
 #' @importFrom lubridate is.Date
 #' @importFrom matrixStats colCounts colMaxs rowCumprods rowMaxs rowProds
@@ -253,7 +254,7 @@
 #' \code{\link{SESidebar}}\cr
 #' \code{\link{setFigH}}\cr
 #' \code{\link{setFigW}}\cr
-#' \code{\link{setkFillNeed}}\cr
+#' \code{\link{setkNeed}}\cr
 #' \code{\link{setkFix}}\cr
 #' \code{\link{simpleMplot}}\cr
 #' \code{\link{sizeCols}}\cr

@@ -51,10 +51,10 @@ update_output <- function(eventName, rv, output){
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
                 "sizeclass_g2", "data_SS", "data_DWP", "data_CO")
     output <- reNULL(output, toNULL)
-    output$kFillNeed <- setkFillNeed(rv)
+    output$kNeed <- setkNeed(rv)
     dontSuspend <- c("SEModDone", 
                      "sizeclasses_SE", "filename_SE", "text_SE_est", 
-                     "kFillNeed", "MModDone", "gModDone",
+                     "kNeed", "MModDone", "gModDone",
                      "sizeclass_gyn", 
                      "filename_SE", "filename_CP", "text_CP_est", 
                      "CPModDone", 
@@ -71,13 +71,13 @@ update_output <- function(eventName, rv, output){
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    output$kFillNeed <- setkFillNeed(rv)
+    output$kNeed <- setkNeed(rv)
     if (eventName == "file_SE"){
       output$data_SE <- renderDTns(datatable(rv$data_SE))
       output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
     }
     dontSuspend <- c("SEModDone", "sizeclasses_SE", "filename_SE", 
-                     "text_SE_est", "kFillNeed", "MModDone", "gModDone",
+                     "text_SE_est", "kNeed", "MModDone", "gModDone",
                      "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
@@ -183,7 +183,7 @@ update_output <- function(eventName, rv, output){
   }
 
   if (eventName == "run_SE"){
-    output$kFillNeed <- setkFillNeed(rv)
+    output$kNeed <- setkNeed(rv)
     output$DWPNeed <- renderText("yes")
     toNULL <- c("SEModDone", "AICcTab_SE", "modTab_SE", "fig_SE", 
                 "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1", 
@@ -195,7 +195,7 @@ update_output <- function(eventName, rv, output){
     if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
         !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
       output$SEModDone <- renderText("OK")
-      output$kFillNeed <- setkFillNeed(rv)
+      output$kNeed <- setkNeed(rv)
       if (length(rv$sizeclasses) == 1){
         output$DWPNeed <- renderText("yes")
       } else{
@@ -229,13 +229,13 @@ update_output <- function(eventName, rv, output){
       output$dlSEfig <- downloadSEFig(rv)
     }
     dontSuspend <- c("text_SE_est", "MModDone", "gModDone", "sizeclass_gyn",
-                     "SEModDone", "kFillNeed", "DWPNeed", "sizeclasses_SE", 
+                     "SEModDone", "kNeed", "DWPNeed", "sizeclasses_SE", 
                      "sizeclass_SEyn")
     setNotSuspending(output, dontSuspend)
   }
 
   if (eventName == "run_SE_clear"){
-    output$kFillNeed <- setkFillNeed(rv)
+    output$kNeed <- setkNeed(rv)
     output$DWPNeed <- renderText("yes")
     toNULL <- c("SEModDone", "AICcTab_SE", "modTab_SE", "fig_SE", 
                 "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1", 
@@ -245,7 +245,7 @@ update_output <- function(eventName, rv, output){
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
     dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est", 
-                     "kFillNeed", "MModDone", "gModDone",
+                     "kNeed", "MModDone", "gModDone",
                      "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }

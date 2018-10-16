@@ -2,20 +2,28 @@
 % Please edit documentation in R/utility_functions.R
 \name{logit}
 \alias{logit}
-\title{Compute the logit}
+\alias{alogit}
+\title{Compute the logit or anti-logit}
 \usage{
 logit(x)
+
+alogit(x)
 }
 \arguments{
-\item{x}{A probability (between 0 and 1, inclusive).}
+\item{x}{A number. For  \code{logit}, a probability (between 0 and 1, 
+inclusive). For  \code{alogit}, any real number.}
 }
 \value{
-The logit of \code{x}.
+\code{logit}: The logit of \code{x}.
+
+\code{alogit}:  The anti-logit of \code{x}.
 }
 \description{
-Compute the logit
+Compute the logit or anti-logit
 }
 \examples{
   logit(0.5)
+
+  alogit(0)
 
 }

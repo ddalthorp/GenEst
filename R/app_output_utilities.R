@@ -130,8 +130,8 @@ initialOutput <- function(rv, output){
   output$download_PV <- downloadData("PV")
   output$download_trough <- downloadData("trough")
   output$download_mock <- downloadData("mock")
-  output$kFillNeed <- renderText("no")
-  outputOptions(output, "kFillNeed", suspendWhenHidden = FALSE)
+  output$kNeed <- renderText("no")
+  outputOptions(output, "kNeed", suspendWhenHidden = FALSE)
 
   return(output)
 }

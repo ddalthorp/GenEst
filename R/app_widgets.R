@@ -281,13 +281,12 @@ modelRunWidget <- function(modType){
                   "M" = "input.modelChoices_SE1 != null & 
                          input.modelChoices_CP1 != null & 
                          output.sizeclasses_SE == output.sizeclasses_CP & 
-                         output.data_SS != null & 
-                         input.DWPCol != null & input.COdate != null &
-                         output.kFillNeed != 'yes'",
+                         output.data_SS != null & output.kNeed != 'yes' &
+                         input.DWPCol != null & input.COdate != null",
                   "g" = "input.modelChoices_SE1 != null & 
                          input.modelChoices_CP1 != null & 
-                         output.sizeclasses_SE == output.sizeclasses_CP &
-                         output.kFillNeed != 'yes'")
+                         output.kNeed != 'yes' &
+                         output.sizeclasses_SE == output.sizeclasses_CP")
 
   cName <- switch(modType, 
              "SE" = "run_SE_clear",
@@ -348,12 +347,12 @@ preTextMaker <- function(modType){
                          input.modelChoices_CP1 != null & 
                          output.sizeclasses_SE == output.sizeclasses_CP & 
                          (input.DWPCol == null | input.COdate == null)",
-                         "output.kFillNeed == 'yes' & 
+                         "output.kNeed == 'yes' & 
                          input.modelChoices_SE1 != null"),
                  "g" = c("input.modelChoices_SE1 == null | 
                          input.modelChoices_CP1 == null | 
                          output.sizeclasses_SE != output.sizeclasses_CP",
-                         "output.kFillNeed == 'yes' & 
+                         "output.kNeed == 'yes' & 
                          input.modelChoices_SE1 != null")
                 )
 

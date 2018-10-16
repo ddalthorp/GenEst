@@ -41,7 +41,7 @@ update_input <- function(eventName, rv, input, session){
 
   if(eventName == "clear_all"){
     toReset <- c("file_SE", "predsSE", "obsSE", "outSEp", "outSEk",
-                 "outSEclass", "kFill", "DWPCol", "split_SS", "split_CO",
+                 "outSEclass", "DWPCol", "split_SS", "split_CO",
                  "modelChoices_SE1", "outgclass","file_CP", "predsCP", "ltp", 
                  "fta", "outCPl", "outCPs", "outCPdist", "outCPclass", 
                  "modelChoices_CP1", "file_SS", "gSearchInterval", 
@@ -94,7 +94,7 @@ update_input <- function(eventName, rv, input, session){
   if (eventName == "file_SE_clear"){
 
     toReset <- c("file_SE", "predsSE", "obsSE", "outSEp", "outSEk",
-                 "outSEclass", "kFill", "DWPCol", "split_SS", "split_CO",
+                 "outSEclass", "DWPCol", "split_SS", "split_CO",
                  "modelChoices_SE1", "outgclass")
     lapply(toReset, reset)
 
@@ -317,7 +317,7 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "run_SE_clear"){
-    toReset <- c("outSEp", "outSEk", "outsizeclassSE", "kFill", "DWPCol",
+    toReset <- c("outSEp", "outSEk", "outsizeclassSE", "DWPCol",
                  "split_SS", "split_CO", "modelChoices_SE1", "outgclass")
     lapply(toReset, reset)
     updateSelectizeInput(session, "modelChoices_SE1", choices = "")

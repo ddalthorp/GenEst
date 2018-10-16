@@ -92,7 +92,6 @@ to facilitate readability and mobility of specific UI components.
         * `modelOutputPanel("CPModSelection")`	
 	* `MPanel()`
       * `MSidebar()`
-        * `modelInputWidget("kFill")`
         * `modelInputWidget("frac")`
         * `modelInputWidget("DWPCol")`
         * `modelInputWidget("dateFoundCol")`
@@ -101,7 +100,6 @@ to facilitate readability and mobility of specific UI components.
       * `MMainPanel()`	  
     * `gPanel()`
       * `gSidebar()`
-        * `modelInputWidget("kFill_g")`
         * `modelInputWidget("gSearchInterval")`
         * `modelInputWidget("gSearchMax")`
         * `modelInputWidget("useSSinputs")`

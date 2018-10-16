@@ -125,18 +125,18 @@ prepPredictors <- function(preds = NULL){
  return(out)
 }
 
-#' @title Create the kFillNeed text
+#' @title Create the kNeed text
 #'
 #' @description Based on the number of observation columns, create text output
 #'   of "yes" or "no"
 #'
 #' @param rv reactive value list
 #'
-#' @return kFillNeed character of "yes" or "no"
+#' @return kNeed character of "yes" or "no"
 #'
 #' @export
 #'
-setkFillNeed <- function(rv){
+setkNeed <- function(rv){
   textout <- "no"
   if(length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
     textout <- "yes"
@@ -646,7 +646,7 @@ initialReactiveValues <- function(){
     modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
     best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
     modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
-    kFill = NULL, sizeclasses_k = NULL, nsizeclasses_k = NULL, 
+    sizeclasses_k = NULL, nsizeclasses_k = NULL, 
 
     ltp = NULL, fta = NULL, preds_CP = NULL, dist = NULL,
     predictors_CP = NULL, formula_l = NULL, formula_s = NULL, 
@@ -665,7 +665,7 @@ initialReactiveValues <- function(){
 
     SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "),
     avgSI = NULL, SStemp = NULL, gSearchInterval = 7, gSearchMax = 364,
-    kFill_g = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
+    sizeclasses_g = NULL, nsizeclasses_g = NULL,
     gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
     figH_g = 400, figW_g = 800,
 
