@@ -124,42 +124,42 @@ modelOutputPanel <- function(outType){
 
   Condition <- switch(outType,
                  "SEFigures" = 
-                   c("output.fig_SE == null",
+                   c("output.SEModDone == null",
                      "output.SEModDone == 'OK'", 
                      "1 == 1"),
                  "SEEstimates" = 
-                   c("output.modTab_SE == null", 
+                   c("output.SEModDone == null", 
                      "output.SEModDone == 'OK'", 
                      "1 == 1"),
                  "SEModComparison" =
-                   c("output.AICcTab_SE == null", 
+                   c("output.SEModDone == null", 
                      "output.SEModDone == 'OK'", 
                      "1 == 1"),
                  "SEModSelection" = 
-                   c("output.modelMenu_SE == null",
+                   c("output.SEModDone == null",
                      "output.SEModDone == 'OK'", 
                      "1 == 1"), 
                  "CPFigures" = 
-                   c("output.fig_CP == null", 
+                   c("output.CPModDone == null", 
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "CPEstimates" = 
-                   c("output.modTab_CP == null", 
+                   c("output.CPModDone == null", 
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "CPModComparison" = 
-                   c("output.AICcTab_CP == null", 
+                   c("output.CPModDone == null", 
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "CPModSelection" = 
-                   c("output.modelMenu_CP == null",
+                   c("output.CPModDone == null",
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "MFigures" = 
                    c("input.modelChoices_SE1 == null | 
                        input.modelChoices_CP1 == null | 
                        output.sizeclasses_SE != output.sizeclasses_CP", 
-                     "output.fig_M == null & 
+                     "output.MModDone == null & 
                        input.modelChoices_SE1 != null & 
                        input.modelChoices_CP1 != null &
                        output.sizeclasses_SE == output.sizeclasses_CP",
@@ -168,17 +168,17 @@ modelOutputPanel <- function(outType){
                    c("input.modelChoices_SE1 == null | 
                        input.modelChoices_CP1 == null | 
                        output.sizeclasses_SE != output.sizeclasses_CP", 
-                     "output.fig_M == null & 
+                     "output.MModDone == null & 
                        input.modelChoices_SE1 != null & 
                        input.modelChoices_CP1 != null &
                        output.sizeclasses_SE == output.sizeclasses_CP",
                      "output.MModDone == 'OK'"),
                  "gFigures" = 
-                   c("output.fig_g == null", 
+                   c("output.gModDone == null", 
                      "output.gModDone == 'OK'", 
                      "1 == 1"),
                  "gSummary" = 
-                   c("output.table_g == null",
+                   c("output.gModDone == null",
                      "output.gModDone == 'OK'", 
                      "1 == 1")
                )
