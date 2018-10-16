@@ -52,12 +52,12 @@ update_output <- function(eventName, rv, output){
                 "sizeclass_g2", "data_SS", "data_DWP", "data_CO")
     output <- reNULL(output, toNULL)
     output$kFillNeed <- setkFillNeed(rv)
-    dontSuspend <- c("AICcTab_SE", "fig_SE", "modTab_SE", "SEModDone", 
+    dontSuspend <- c("SEModDone", 
                      "sizeclasses_SE", "filename_SE", "text_SE_est", 
                      "kFillNeed", "MModDone", "gModDone",
-                     "sizeclass_gyn", "fig_g", "table_g", "fig_M", 
+                     "sizeclass_gyn", 
                      "filename_SE", "filename_CP", "text_CP_est", 
-                     "AICcTab_CP", "fig_CP", "modTab_CP", "CPModDone", 
+                     "CPModDone", 
                      "sizeclasses_CP", "data_SS", "data_DWP", "data_CO")
     setNotSuspending(output, dontSuspend)
   }
@@ -76,10 +76,9 @@ update_output <- function(eventName, rv, output){
       output$data_SE <- renderDTns(datatable(rv$data_SE))
       output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
     }
-    dontSuspend <- c("AICcTab_SE", "fig_SE", "modTab_SE", "SEModDone", 
-                     "sizeclasses_SE", "filename_SE", "text_SE_est", 
-                     "kFillNeed", "MModDone", "gModDone",
-                     "sizeclass_gyn", "fig_g", "table_g", "fig_M")
+    dontSuspend <- c("SEModDone", "sizeclasses_SE", "filename_SE", 
+                     "text_SE_est", "kFillNeed", "MModDone", "gModDone",
+                     "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -96,10 +95,9 @@ update_output <- function(eventName, rv, output){
       output$data_CP <- renderDTns(datatable(rv$data_CP))
       output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
     }
-    dontSuspend <- c("AICcTab_CP", "fig_CP", "modTab_CP", "CPModDone", 
-                     "sizeclasses_CP", "filename_CP", "text_CP_est", 
-                     "MModDone", "gModDone",
-                     "sizeclass_gyn", "fig_g", "table_g", "fig_M")
+    dontSuspend <- c("CPModDone", "sizeclasses_CP", "filename_CP", 
+                     "text_CP_est", "MModDone", "gModDone",
+                     "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -111,8 +109,7 @@ update_output <- function(eventName, rv, output){
     if (eventName == "file_SS"){
       output$data_SS <- renderDTns(datatable(rv$data_SS))
     }
-    dontSuspend <- c("data_SS", "MModDone", "gModDone", "sizeclass_gyn", 
-                     "fig_g", "table_g", "fig_M")
+    dontSuspend <- c("data_SS", "MModDone", "gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -122,7 +119,7 @@ update_output <- function(eventName, rv, output){
     if (eventName == "file_DWP"){
       output$data_DWP <- renderDTns(datatable(rv$data_DWP))
     }
-    dontSuspend <- c("data_DWP", "MModDone", "fig_M")
+    dontSuspend <- c("data_DWP", "MModDone")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -132,7 +129,7 @@ update_output <- function(eventName, rv, output){
     if (eventName == "file_CO"){
       output$data_CO <- renderDTns(datatable(rv$data_CO))
     }
-    dontSuspend <- c("data_CO", "MModDone", "fig_M")
+    dontSuspend <- c("data_CO", "MModDone")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -232,8 +229,7 @@ update_output <- function(eventName, rv, output){
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    dontSuspend <- c("text_SE_est", "MModDone", "gModDone", "sizeclass_gyn", 
-                     "fig_g", "table_g", "fig_M")
+    dontSuspend <- c("text_SE_est", "MModDone", "gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -246,10 +242,9 @@ update_output <- function(eventName, rv, output){
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    dontSuspend <- c("AICcTab_SE", "fig_SE", "modTab_SE", "SEModDone", 
-                     "sizeclasses_SE", "text_SE_est", 
+    dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est", 
                      "kFillNeed", "MModDone", "gModDone",
-                     "sizeclass_gyn", "fig_g", "table_g", "fig_M")
+                     "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -330,8 +325,7 @@ update_output <- function(eventName, rv, output){
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    dontSuspend <- c("text_CP_est", "MModDone", "gModDone", "sizeclass_gyn",
-                     "fig_g", "table_g", "fig_M")
+    dontSuspend <- c("text_CP_est", "MModDone", "gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
 
     
@@ -346,9 +340,8 @@ update_output <- function(eventName, rv, output){
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    dontSuspend <- c("AICcTab_CP", "fig_CP", "modTab_CP", "CPModDone", 
-                     "sizeclasses_CP", "text_CP_est", "MModDone", "gModDone",
-                     "sizeclass_gyn", "fig_g", "table_g", "fig_M")
+    dontSuspend <- c("CPModDone", "sizeclasses_CP", "text_CP_est", 
+                     "MModDone", "gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -434,7 +427,7 @@ update_output <- function(eventName, rv, output){
    toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn", 
                 "sizeclass_g1", "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    dontSuspend <- c("gModDone", "sizeclass_gyn", "fig_g", "table_g")
+    dontSuspend <- c("gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -485,7 +478,6 @@ update_output <- function(eventName, rv, output){
     toNULL <- c("fig_M", "table_M", "MModDone")
     output <- reNULL(output, toNULL)
     outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
-    outputOptions(output, "fig_M", suspendWhenHidden = FALSE)
   }
 
   if (eventName == "split_M"){
