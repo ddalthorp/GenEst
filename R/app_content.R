@@ -125,7 +125,7 @@ aboutContent <- function(){
 GenEstAuthors <- function(){
   HTML(
     paste0(br(), 
-      b("Authors:"),
+      b("Authors: "),
       "Daniel Dalthorp ", 
       a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
       ", Juniper Simonis ",
