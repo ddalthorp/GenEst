@@ -1220,8 +1220,8 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
   if (dist == "weibull"){
     pda[log(pda) < -5] <- exp(-5) # adjustment to avoid overflow errors
     pda[log(pda) > 5] <- exp(5)   # adjustment to avoid overflow errors
-    sa0 <- pgamma(outer(1/pdb, t_search - t_arrive0)^pda, 1/pda, log = T)
-    sa1 <- pgamma(outer(1/pdb, t_search - t_arrive1)^pda, 1/pda, log = T)
+    sa0 <- pgamma(outer(1/pdb, t_search - t_arrive0)^pda, 1/pda, log = TRUE)
+    sa1 <- pgamma(outer(1/pdb, t_search - t_arrive1)^pda, 1/pda, log = TRUE)
     a1a0 <- outer(pdb, 1/(t_arrive1 - t_arrive0))
     probs <- (exp(sa0) - exp(sa1)) * gamma(1 + 1/pda) * a1a0
     probs <- t(probs)
@@ -1234,12 +1234,12 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     root_pda <- sqrt(pda)
     exp_value <- exp((pda / 2) + pdb)
     tt <- t_search - t_arrive0
-    p1 <- exp(pnorm(outer(pdb, -log(tt), "+") / root_pda, log = T))
-    p2 <- exp(pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda, log = T)) * exp_value
+    p1 <- exp(pnorm(outer(pdb, -log(tt), "+") / root_pda, log = TRUE))
+    p2 <- exp(pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda, log = TRUE)) * exp_value
     part0 <- t(p1) * tt + t(p2)
     tt <- t_search - t_arrive1
-    p1 <- exp(pnorm(outer(pdb, -log(tt), "+") / root_pda, log = T))
-    p2 <- exp(pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda, log = T)) * exp_value
+    p1 <- exp(pnorm(outer(pdb, -log(tt), "+") / root_pda, log = TRUE))
+    p2 <- exp(pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda, log = TRUE)) * exp_value
     part1 <- t(p1) * tt + t(p2)
     probs <- -(part1 - part0) / (t_arrive1 - t_arrive0)
   } else if (dist == "loglogistic" | dist == "log-logistic"){
