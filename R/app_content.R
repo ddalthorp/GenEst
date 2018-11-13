@@ -68,12 +68,6 @@ gettingStartedContent <- function(){
             desired---click the ", code("Mortality Estimation"), " tab")
       ),
       br(),
-      p("Further details can be found in the user guide and a technical manual
-        that describes the statistical models at ",
-         a("code.usgs.gov",
-          href = "https://code.usgs.gov/ecosystems/GenEst/tags/1.0.0")
-      ), 
-      br(),
       p("Example data sets are available in comma-separated (.csv) files that
         may be downloaded under the ", code("Downloads"), " tab. ")
     )
@@ -99,11 +93,6 @@ aboutContent <- function(){
     column(10, offset = 0,
       br(), 
       h3(createvtext("NameDate")),
-      h4(a("User Guide", href = ftpLink("UserGuide"), target = "_blank")),
-      h4(a("GenEst Statistical Models", href = ftpLink("Models"), 
-           target = "_blank"
-         )
-      ),
       GenEstAuthors(),
       GenEstGUIauthors(),
       GenEstLicense(),
