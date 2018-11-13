@@ -252,8 +252,8 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   }
   formulaRHS_l <- formula(delete.response(terms(formula_l)))
   preds_l <- all.vars(formulaRHS_l)
+
   if (is.null(formula_s)) formula_s <- formula(s ~ 1)
-  
   formulaRHS_s <- formula(delete.response(terms(formula_s)))
   preds_s <- all.vars(formulaRHS_s)
 
@@ -282,7 +282,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   event[is.na(t2) | is.infinite(t2)] <- 0 # study ends before removal
   event[round(t1, 3) == round(t2, 3)] <- 1 # carcass removal observed
   t1 <- pmax(t1, 0.0001)
-  tevent <- Surv(time = t1, time2 = t2, event = event, type = "interval")
+  tevent <- survival::Surv(time = t1, time2 = t2, event = event, type = "interval")
 
   # in all cases, formula_l is used (with formula_s appended in some cases)
 #  if (length(all.vars(formula_l)) == 1) mod_l <- l ~ 1
@@ -343,11 +343,11 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
   if (use_survreg){
     cpmod <- tryCatch(
-      survreg(formula = formula_cp, data = data, dist = dist),
+      survival::survreg(formula = formula_cp, data = data, dist = dist),
       error = function(x) NA, warning = function (x) NA
     )
     if (length(cpmod) == 1){
-      stop("Failed CP optimization. Consider using fewer covariates.")
+      stop("Failed CP model optimization.")
     }
     betahat_l <- cpmod$coefficients
     npreds_s <- length(all.vars(formula_s)) - 1
@@ -501,7 +501,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     carcCells <- cellNames[cellByCarc]
     init_formRHS <- as.character(formulaRHS_l)[-1]
     init_form <- reformulate(init_formRHS, response = "tevent")
-    init_mod <- survreg(formula = init_form, data = data, dist = dist)
+    init_mod <- survival::survreg(formula = init_form, data = data, dist = dist)
     init_l <- init_mod$coef
     names(init_l) <- paste("l_", names(init_l), sep = "")
     init_s <- rep(init_mod$scale, nbeta_s)
@@ -936,13 +936,13 @@ cpLogLik <- function(t1, t2, beta, nbeta_l, cellByCarc, cellMM, dataMM, dist){
   dataMM_s <- matrix(dataMM[which_s, ], ncol = nbeta_s, byrow = TRUE)
   Beta_l <- dataMM_l %*% beta_l 
   Beta_s <- dataMM_s %*% beta_s  
-  psurv_t1 <- psurvreg(t1, Beta_l, exp(Beta_s), dist)
-  psurv_t2 <- psurvreg(t2, Beta_l, exp(Beta_s), dist)
+  psurv_t1 <- survival::psurvreg(t1, Beta_l, exp(Beta_s), dist)
+  psurv_t2 <- survival::psurvreg(t2, Beta_l, exp(Beta_s), dist)
   psurv_t2[which(is.na(psurv_t2))] <- 1
   lik <- psurv_t2 - psurv_t1
   too_small <- (t1 + 0.0001) >= t2
   if (any(too_small)){
-    lik[too_small] <- dsurvreg(t2[too_small], Beta_l[too_small],
+    lik[too_small] <- survival::dsurvreg(t2[too_small], Beta_l[too_small],
       exp(Beta_s)[too_small], dist)
   }
   lik <- pmax(lik, .Machine$double.eps) 
@@ -1005,10 +1005,10 @@ rcp <- function(n, model, type = "survreg"){
   }
   method <-  "svd"
 
-  sim_beta <- rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
+  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta, method)
 
-  sim_l <- as.matrix(sim_beta[ , 1:nbeta_l] %*% t(cellMM_l))
-  sim_s <- exp(as.matrix(sim_beta[ , which_beta_s] %*% t(cellMM_s)))
+  sim_l <- as.matrix(sim_beta[ , 1:nbeta_l] %*% t(cellMM_l))  # coef
+  sim_s <- exp(as.matrix(sim_beta[ , which_beta_s] %*% t(cellMM_s))) # scale
 
   if (type == "ppersist"){
     if (dist == "exponential"){
@@ -1094,7 +1094,7 @@ aicc.cpmSet <- function(x, ... , quiet = FALSE, app = FALSE){
     AICc <- tryCatch(cpmset[[1]]$AICc, error = function(x) {1e7})
     deltaAICc <- 0    
     AICcOrder <- 1
-  }else{
+  } else {
     for (modi in 1:nmod){
       splitFormulas_i <- strsplit(formulas[modi], "; ")[[1]]
       dist[modi] <- strsplit(splitFormulas_i, "dist: ")[[1]][2]
@@ -1216,53 +1216,47 @@ aicc.cpm <- function(x,...){
 #' @export 
 #'
 ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
-
   dist <- tolower(dist)
-
   if (dist == "weibull"){
-
-    sa0 <- pgamma(outer(1 / pdb, t_search - t_arrive0)^pda, 1 / pda)
-    sa1 <- pgamma(outer(1 / pdb, t_search - t_arrive1)^pda, 1 / pda)
-    a1a0 <- outer(pdb, 1 / (t_arrive1 - t_arrive0))
-    probs <- (sa0 - sa1) * gamma(1 + 1 / pda) * a1a0
+    pda[log(pda) < -5] <- exp(-5) # adjustment to avoid overflow errors
+    pda[log(pda) > 5] <- exp(5)   # adjustment to avoid overflow errors
+    sa0 <- pgamma(outer(1/pdb, t_search - t_arrive0)^pda, 1/pda, log = T)
+    sa1 <- pgamma(outer(1/pdb, t_search - t_arrive1)^pda, 1/pda, log = T)
+    a1a0 <- outer(pdb, 1/(t_arrive1 - t_arrive0))
+    probs <- (exp(sa0) - exp(sa1)) * gamma(1 + 1/pda) * a1a0
     probs <- t(probs)
-
   } else if (dist == "exponential"){
-
-    a1a0 <- outer(t_arrive1 - t_arrive0, 1 / pdb)
-    a0s <- outer(t_arrive0 - t_search, 1 / pdb)
-    a1s <- outer(t_arrive1 - t_search, 1 / pdb)
-    probs <- (exp(a1s) - exp(a0s)) / (a1a0)
-
+    a1a0 <- outer(t_arrive1 - t_arrive0, 1/pdb)
+    a0s <- outer(t_arrive0 - t_search, 1/pdb)
+    a1s <- outer(t_arrive1 - t_search, 1/pdb)
+    probs <- (exp(a1s) - exp(a0s))/(a1a0)
   } else if (dist == "lognormal"){
-
     root_pda <- sqrt(pda)
     exp_value <- exp((pda / 2) + pdb)
     tt <- t_search - t_arrive0
-    p1 <- pnorm(outer(pdb, -log(tt), "+") / root_pda)
-    p2 <- pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda) * exp_value
+    p1 <- exp(pnorm(outer(pdb, -log(tt), "+") / root_pda, log = T))
+    p2 <- exp(pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda, log = T)) * exp_value
     part0 <- t(p1) * tt + t(p2)
     tt <- t_search - t_arrive1
-    p1 <- pnorm(outer(pdb, -log(tt), "+") / root_pda)
-    p2 <- pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda) * exp_value
+    p1 <- exp(pnorm(outer(pdb, -log(tt), "+") / root_pda, log = T))
+    p2 <- exp(pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda, log = T)) * exp_value
     part1 <- t(p1) * tt + t(p2)
     probs <- -(part1 - part0) / (t_arrive1 - t_arrive0)
-
   } else if (dist == "loglogistic" | dist == "log-logistic"){
     yox <- function(x, y) y/x
     t1 <- t_search-t_arrive1
     t0 <- t_search-t_arrive0
     tob <- outer(pdb, t1, "yox")
     part1 <- t1/t(1 + tob^pda) * 
-               t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+               t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     tob <- outer(pdb, t0, "yox")
     part0 <- t0 / t(1 + tob^pda) *
-               t(hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+               t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
   }
   return(probs)
 }
-
+1
 #' @title Check if a CP model is well-fit
 #'
 #' @description Run a check the arg is a well-fit cpm object

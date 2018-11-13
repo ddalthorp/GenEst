@@ -853,7 +853,7 @@ update_rv <- function(eventName, rv, input){
     rv$CL <- input$CL
 
     rv$M <- tryCatch(
-              estM(data_CO = rv$data_CO, data_SS = rv$data_SS, rv$data_DWP,
+              estM(data_CO = rv$data_CO, data_SS = rv$data_SS, data_DWP = rv$data_DWP,
                 frac = rv$frac, model_SE = rv$models_SE,
                 model_CP = rv$models_CP,
                 COdate = rv$COdate, DWPCol = rv$DWPCol,
@@ -861,7 +861,6 @@ update_rv <- function(eventName, rv, input){
                 max_intervals = 8
               ), error = function(x){NULL}
             )
-
     if (!is.null(rv$M)){
       rv$Msplit <- tryCatch(
                      calcSplits(M = rv$M,
