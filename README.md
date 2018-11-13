@@ -9,7 +9,7 @@ and carcass data.
 
 ## DISCLAIMER
 
-This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS). No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.
+This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS). No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software. For approved versions of the software, click on "Tags" under the "Repository" tab on the left sidebar.
 
 ## Installation
 With this preliminary version of GenEst, setup and installation require several steps. Do not skip any steps.
@@ -36,15 +36,15 @@ if(length(package_new) > 0) install.packages(package_new)
 -- If you are on Windows and are asked whether you want to install packages and their dependencies "from source", choose "No" (unless you are ready to go to lunch, in which case, you can select "Yes" and the installation may well be done by the time you get back).
 
 ### GenEst: 
-Click on "Tags" and then click the link for the specific release want. 
+Click on "Tags" under the "Repository" tab on the left sidebar and then click the link for the specific release you want. 
 
--- For Windows, download the compressed folder GenEst_1.0.0.zip (do not unzip) and note where it is stored. You will install from the local .zip folder. 
+-- For Windows, download the compressed folder GenEst_x.x.x.zip (do not unzip) and note where it is stored. You will install from the local .zip folder. 
 
--- For Mac OS or Unix-like OS, download the compressed file GenEst_1.0.0.tar.gz and note where it is stored. You will install from the local .tar.gz file. 
+-- For Mac OS or Unix-like OS, download the compressed file GenEst_x.x.x.tar.gz and note where it is stored. You will install from the local .tar.gz file. 
 
 If you are working directly in R (not R Studio), run the following command:
 ```
-install.packages(file.choose()) # and navigate to the package archive file you just downloaded: GenEst_0.1.0.xxx
+install.packages(file.choose()) # and navigate to the package archive file you just downloaded: GenEst_x.x.x
 ```
 
 If you are working in R Studio:
@@ -81,6 +81,6 @@ Also, help files for GenEst functions are accessible in the standard R way, for 
 help(pkm)
 ```
 ## Further Reading
-For further reading about the models that GenEst is based on and about how to
-use the software, download the guides available under the "tags" tab under 
-"Repositories" on the left sidebar at https://code.usgs.gov/ecosystems/GenEst
+GenEst User Guide: https://pubs.usgs.gov/tm/7c19/tm7c19.pdf
+
+GenEst Statistical Models: https://pubs.usgs.gov/tm/7a2/tm7a2.pdf
