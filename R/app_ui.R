@@ -420,7 +420,13 @@ gMainPanel <- function(){
 #' @export
 #'
 helpPanel <- function(appType = "base"){
-  tabPanel("Help", 
+  tabPanel("Help",
+    h3("For help, see: ", br(), br(),
+      a("GenEst User Guide",
+        href = "https://pubs.usgs.gov/tm/7c19/tm7c19.pdf"), br(), br(),
+      a("GenEst Statistical Models",
+        href = "https://pubs.usgs.gov/tm/7a2/tm7a2.pdf")),
+    br(),
     tabsetPanel(
       gettingStartedPanel(),
       downloadsPanel(),

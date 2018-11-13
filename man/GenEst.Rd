@@ -90,7 +90,7 @@ This package is designed to analyze searcher efficiency,
 \code{disclaimers()}\cr
 }
 
-\section{Other functions (primary associated with the GUI)}{
+\section{Other functions (primarily associated with the GUI)}{
 
 \code{\link{aboutContent}}\cr
 \code{\link{aboutPanel}}\cr

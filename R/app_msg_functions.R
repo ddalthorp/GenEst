@@ -120,8 +120,7 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
     if (is.null(rv$M)){
       if (!is.null(rv$fracNote)){
         return(msgFracNote(rv$fracNote))
-      }
-      if (is.null(rv$M)){
+      } else {
         return(msgModFail(rv$M, "M"))
       }
     }

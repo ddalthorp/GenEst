@@ -66,7 +66,7 @@ library(GenEst)
 runGenEst()
 ```
 
-Download the User Guide from a link near the bottom of the "Help" page in the app or from...
+Download the User Guide from a link near the bottom of the "Help" page in the app or from https://pubs.usgs.gov/tm/7c19/tm7c19.pdf
 
 ### R command line: more functionality and flexibility
 ```
@@ -79,4 +79,7 @@ Also, help files for GenEst functions are accessible in the standard R way, for 
 ?pkm
 ```
 ## Further Reading
-For further reading about the models that GenEst is based on and about how to use the software, download the guides available in the release "assets". 
+GenEst User Guide: https://pubs.usgs.gov/tm/7c19/tm7c19.pdf
+
+GenEst Statistical Models: https://pubs.usgs.gov/tm/7a2/tm7a2.pdf
+

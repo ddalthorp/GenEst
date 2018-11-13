@@ -1,4 +1,4 @@
-#' @title Estimate the number of fatalities in each search interval throughout 
+#' @title Estimate the number of fatalities in each search interval throughout
 #'   the monitoring period.
 #'
 #' @description A carcass that is observed in a given search may have arrived 
@@ -470,7 +470,7 @@ calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
     }
   }
   #protection against unintended loss of attr's
-  splits <- sticky(splits)
+  splits <- sticky::sticky(splits)
   attr(splits, "vars") <- c(split_h$name, split_v$name)
   attr(splits, "type") <- c(split_h$type, split_v$type)
   if (!is.null(split_h) && (split_h$type %in% c("time", "SS"))){
@@ -535,7 +535,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
       splits$M <- matrix(splits$M, nrow = 1)
       splits$X <- matrix(splits$X, nrow = 1)
     }
-    sumry <- rowQuantiles(splits$M, probs = probs)
+    sumry <- matrixStats::rowQuantiles(splits$M, probs = probs)
     ind <- (sumry < splits$X)
     sumry <- (sumry * !ind) + (splits$X * ind)
     sumry <- cbind(X = splits$X, sumry)
@@ -545,7 +545,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
       splits$X <- lapply(splits$X, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits$M, function(x){
-      cbind(rowQuantiles(x, probs = probs))
+      cbind(matrixStats::rowQuantiles(x, probs = probs))
     })
     for (levi in 1:length(sumry)){
       ind <- (sumry[[levi]] < splits$X[[levi]])
@@ -562,20 +562,20 @@ summary.splitFull <- function(object, CL = 0.90, ...){
   if (!is.null(attr(splits, "type"))){
     if (!is.list(splits$M)){
       if (attr(splits, "type") == "CO"){
-        sumry <- sumry[mixedsort(rownames(sumry)), ]
+        sumry <- sumry[gtools::mixedsort(rownames(sumry)), ]
       }
     } else {
       if (attr(splits, "type")[1] == "CO"){
         for (i in 1:length(splits)){
-          sumry[[i]] <- sumry[[i]][mixedsort(rownames(sumry[[i]])), ]
+          sumry[[i]] <- sumry[[i]][gtools::mixedsort(rownames(sumry[[i]])), ]
         }
       }
       if (attr(splits, "type")[2] == "CO"){
-        sumry <- sumry[mixedsort(names(sumry))]
+        sumry <- sumry[gtools::mixedsort(names(sumry))]
        }
      }
    }
-  sumry <- sticky(sumry)
+  sumry <- sticky::sticky(sumry)
   attr(sumry, "CL") <- CL
   attr(sumry, "vars") <- attr(splits, "vars")
   attr(sumry, "type") <- attr(splits, "type")

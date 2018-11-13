@@ -68,13 +68,6 @@ gettingStartedContent <- function(){
             desired---click the ", code("Mortality Estimation"), " tab")
       ),
       br(),
-      p("Further details can be found in the ",
-        a("User Guide", href = ftpLink("UserGuide"), target = "_blank"),
-        " and in a technical manual that describes the",
-        a("statistical models", href = ftpLink("Models"), target = "_blank"),
-        "." 
-      ), 
-      br(),
       p("Example data sets are available in comma-separated (.csv) files that
         may be downloaded under the ", code("Downloads"), " tab. ")
     )
@@ -100,11 +93,6 @@ aboutContent <- function(){
     column(10, offset = 0,
       br(), 
       h3(createvtext("NameDate")),
-      h4(a("User Guide", href = ftpLink("UserGuide"), target = "_blank")),
-      h4(a("GenEst Statistical Models", href = ftpLink("Models"), 
-           target = "_blank"
-         )
-      ),
       GenEstAuthors(),
       GenEstGUIauthors(),
       GenEstLicense(),
