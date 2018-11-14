@@ -33,6 +33,11 @@
 #'
 #' @name GenEst
 #'
+#' @section Information:
+#' \code{browseVignettes("GenEst")}\cr
+#' \code{packageDescription("GenEst")}\cr
+#' \code{disclaimers()}\cr
+#'
 #' @section Data sets:
 #' \code{\link{mock}}\cr
 #' \code{\link{wind_cleared}}\cr
@@ -96,11 +101,6 @@
 #' \code{\link{tidyModelSetCP}}\cr
 #' \code{\link{tidyModelSetSE}}\cr
 #'
-#' @section Information:
-#' \code{browseVignettes("GenEst")}\cr
-#' \code{packageDescription("GenEst")}\cr
-#' \code{disclaimers()}\cr
-#'
 #' @section Other functions (primarily associated with the GUI):
 #' \code{\link{aboutContent}}\cr
 #' \code{\link{aboutPanel}}\cr
@@ -149,7 +149,6 @@
 #' \code{\link{downloadTable}}\cr
 #' \code{\link{DWPCols}}\cr
 #' \code{\link{expandModelSetCP}}\cr
-#' \code{\link{ftpLink}}\cr
 #' \code{\link{GeneralInputSidebar}}\cr
 #' \code{\link{GeneralInputsPanel}}\cr
 #' \code{\link{GenEstAcknowledgements}}\cr

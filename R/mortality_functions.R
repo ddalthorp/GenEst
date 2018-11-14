@@ -90,15 +90,27 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     unitCol <- intersect(colnames(data_CO), colnames(data_DWP))
     if (length(unitCol) == 0){
       stop(
-        "No columns in data_CO and data_DWP share a common name ",
-        "to use as a unit column."
+        "Unit column name not provided, and no columns in data_CO and data_DWP",
+        " share a common name to use as a unit column. Cannot estimate M"
       )
     }
     if (length(unitCol) > 1){
-      stop(
-        "Multiple matching column names in data_CO and data_DWP, ",
-        "so unitCol is not uniquely defined. Cannot estimate M."
-      )
+      bad <- NULL
+      for (ni in 1:length(unitCol)){
+        if (any(!(data_CO[ , unitCol[ni]] %in% names(data_SS))) ||
+            any(!(data_DWP[ , unitCol[ni]] %in% names(data_SS)))){
+          bad <- c(bad, ni)
+          next
+        }
+      }
+      if (length(bad) != length(unitCol) - 1){
+        stop(
+          "No unitCol provided, and data_CO and data_DWP do not have a column ",
+          "that can unambiguously serve as unitCol. Cannot estimate M."
+        )
+      } else {
+        unitCol <- unitCol[-bad]
+      }
     }
   }
   # if no sizeCol is provided, then the later analysis is done without

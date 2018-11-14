@@ -392,27 +392,3 @@ disclaimerWEST <- function(appType){
                  damages.")
   out
 }
-
-#' @title Create a Link to the FTP-Housed Document of Interest
-#'
-#' @description The GenEst User Guide and Models Document live on the USGS
-#'   FTP and can be linked to, rather than stored in the app. This function
-#'   provides the link of interest. 
-#'
-#' @param doc "UserGuide" or "Models".
-#'
-#' @return Character element of the link to the document.
-#'
-#' @export
-#'
-ftpLink <- function(doc = "UserGuide"){
-  if (!doc %in% c("UserGuide", "Models")){
-    stop(paste0("doc ", doc, " not supported."))
-  }
-  mainLink <- "ftp://ftpext.usgs.gov/pub/wr/or/corvallis/Dalthorp/"
-  if (doc == "UserGuide"){
-    paste0(mainLink, "GenEst_User_Guide%200.2.0.pdf")
-  } else if (doc == "Models"){
-    paste0(mainLink, "GenEst_Statistical_Models.pdf")
-  }
-}

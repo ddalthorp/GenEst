@@ -273,12 +273,3 @@ test_that("Button style function produces a single character element", {
   expect_equal(length(cButtonStyle("all")), 1)
   expect_error(cButtonStyle("_NOT_RIGHT_"))
 })
-
-test_that("FTP link function produces a single character element", {
-  expect_is(ftpLink("UserGuide"), "character")
-  expect_equal(length(ftpLink("UserGuide")), 1)
-  expect_is(ftpLink("Models"), "character")
-  expect_equal(length(ftpLink("Models")), 1)
-  expect_error(ftpLink("_NOT_RIGHT_"))
-})
-
