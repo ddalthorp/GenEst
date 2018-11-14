@@ -11,6 +11,13 @@ This package is designed to analyze searcher efficiency,
   the estimation of bird and bat mortality at wind and solar power 
   facilities.
 }
+\section{Information}{
+
+\code{browseVignettes("GenEst")}\cr
+\code{packageDescription("GenEst")}\cr
+\code{disclaimers()}\cr
+}
+
 \section{Data sets}{
 
 \code{\link{mock}}\cr
@@ -83,13 +90,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{tidyModelSetSE}}\cr
 }
 
-\section{Information}{
-
-\code{browseVignettes("GenEst")}\cr
-\code{packageDescription("GenEst")}\cr
-\code{disclaimers()}\cr
-}
-
 \section{Other functions (primarily associated with the GUI)}{
 
 \code{\link{aboutContent}}\cr
@@ -139,7 +139,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{downloadTable}}\cr
 \code{\link{DWPCols}}\cr
 \code{\link{expandModelSetCP}}\cr
-\code{\link{ftpLink}}\cr
 \code{\link{GeneralInputSidebar}}\cr
 \code{\link{GeneralInputsPanel}}\cr
 \code{\link{GenEstAcknowledgements}}\cr

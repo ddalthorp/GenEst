@@ -851,7 +851,6 @@ update_rv <- function(eventName, rv, input){
       rv$models_CP <- rv$models_CP[[1]]
     }
     rv$CL <- input$CL
-
     rv$M <- tryCatch(
               estM(data_CO = rv$data_CO, data_SS = rv$data_SS, data_DWP = rv$data_DWP,
                 frac = rv$frac, model_SE = rv$models_SE,
