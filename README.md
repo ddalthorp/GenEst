@@ -11,7 +11,7 @@ and carcass data.
 This software is preliminary or provisional and is subject to revision. It is being provided to meet the need for timely best science. The software has not received final approval by the U.S. Geological Survey (USGS). No warranty, expressed or implied, is made by the USGS or the U.S. Government as to the functionality of the software and related material nor shall the fact of release constitute any such warranty. The software is provided on the condition that neither the USGS nor the U.S. Government shall be held liable for any damages resulting from the authorized or unauthorized use of the software.
 
 ## Installation
-With this preliminary version of GenEst, setup and installation require several steps. Do not skip any steps.
+Setup and installation require several steps. Do not skip any steps.
 
 ### Updated version of R (>= 3.5.0, released on 23 April 2018):
 R is free and open source software for statistical computing. If R is not installed on your computer or if your version of R is <3.5.0, download and install the latest version from https://cran.r-project.org/, following the instructions provided at the site. In particular, "Download" and then "install R for the first time" (if working in Windows), or "Download" and then follow the further instructions on the subsequent web page (if working on Mac OS or Linux-like OS). If you already have an older copy of R installed on your computer, the new version will be installed alongside the old. Unless you know a reason why you want to keep both versions, it is usually a good idea to uninstall the old version to avoid confusion and clutter. 
