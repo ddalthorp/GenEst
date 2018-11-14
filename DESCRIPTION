@@ -12,7 +12,7 @@ Authors@R: c(
     person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"),
     person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
     person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"))
-Description: GenEst package includes command-line and 'shiny' GUI implementation of the GenEst models for estimating bird and bat mortality at wind and solar power facilities, following Dalthorp, et al. (2018) <https://pubs.usgs.gov/tm/7a2/tm7a2.pdf>. 
+Description: Command-line and 'shiny' GUI implementation of the GenEst models for estimating bird and bat mortality at wind and solar power facilities, following Dalthorp, et al. (2018) <https://pubs.usgs.gov/tm/7a2/tm7a2.pdf>. 
 Depends: R (>= 3.5.0)
 License: CC0
 Encoding: UTF-8

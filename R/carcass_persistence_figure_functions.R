@@ -175,7 +175,7 @@ plot.cpm <- function(x, col = "black", ...){
 #'   data(wind_RP)
 #'   mod <- cpmSet(formula_l = l ~ Season, formula_s = s ~ Season,  
 #'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
-#'  plot(mod)
+#'  \donttest{plot(mod)}
 #'
 #' @export
 #'
