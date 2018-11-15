@@ -421,11 +421,11 @@ gMainPanel <- function(){
 #'
 helpPanel <- function(appType = "base"){
   tabPanel("Help",
-    h3("For help, see: ", br(), br(),
+    h5(br(), "For help, see: ",
       a("GenEst User Guide",
-        href = "https://pubs.usgs.gov/tm/7c19/tm7c19.pdf"), br(), br(),
+        href = "https://pubs.usgs.gov/tm/7c19/tm7c19.pdf", target = "_blank"), " and ",
       a("GenEst Statistical Models",
-        href = "https://pubs.usgs.gov/tm/7a2/tm7a2.pdf")),
+        href = "https://pubs.usgs.gov/tm/7a2/tm7a2.pdf", target = "_blank")),
     br(),
     tabsetPanel(
       gettingStartedPanel(),
