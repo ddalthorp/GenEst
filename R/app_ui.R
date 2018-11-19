@@ -423,9 +423,9 @@ helpPanel <- function(appType = "base"){
   tabPanel("Help",
     h5(br(), "For help, see: ",
       a("GenEst User Guide",
-        href = "https://pubs.usgs.gov/tm/7c19/tm7c19.pdf", target = "_blank"), " and ",
+        href = "https://doi.org/10.3133/tm7C19", target = "_blank"), " and ",
       a("GenEst Statistical Models",
-        href = "https://pubs.usgs.gov/tm/7a2/tm7a2.pdf", target = "_blank")),
+        href = " https://doi.org/10.3133/tm7A2", target = "_blank")),
     br(),
     tabsetPanel(
       gettingStartedPanel(),
