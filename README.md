@@ -36,7 +36,7 @@ if(length(package_new) > 0) install.packages(package_new)
 -- If you are on Windows and are asked whether you want to install packages and their dependencies "from source", choose "No" (unless you are ready to go to lunch, in which case, you can select "Yes" and the installation may well be done by the time you get back).
 
 ### GenEst: 
-Click on "Releases" and then click the link for the specific release you want. 
+Click on "Tags" under the "Repository" tab on the left sidebar at https://code.usgs.gov/ecosystems/GenEst and then click the link for the specific release you want. 
 
 -- For Windows, download the compressed folder GenEst_1.0.0.zip (do not unzip) and note where it is stored. You will install from the local .zip folder. 
 
