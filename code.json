@@ -6,20 +6,19 @@
     "version": "1.1.1",
     "status": "Release Candidate",
 
-    "permissions": {
+ "permissions": {
       "usageType": "openSource",
       "licenses": [
         {
           "name": "Public Domain, CC0-1.0",
-          "URL": "https://github.com/usgs/GenEst/blob/master/LICENSE.md"
+          "URL": "https://code.usgs.gov/ecosystems/GenEst/blob/master/LICENSE.md"
         }
       ]
     },
-
-    "homepageURL": "https://usgs.github.io/GenEst/",
-    "downloadURL": "https://github.com/usgs/REPOSITORY_NAME/archive/master.zip",
-    "disclaimerURL": "https://github.com/usgs/REPOSITORY_NAME/blob/master/LICENSE.md",
-    "repositoryURL": "https://code.usgs.gov/ecosystems/GenEst.git",
+    "homepageURL": "https://code.usgs.gov/ecosystems/GenEst",
+    "downloadURL": "https://code.usgs.gov/ecosystems/GenEst/archive/master.zip",
+    "disclaimerURL": "https://code.usgs.gov/ecosystems/GenEst/blob/master/DISCLAIMER.md",
+    "repositoryURL": "https://code.usgs.gov/ecosystems/GenEst/GenEst.git",
     "vcs": "git",
 
     "laborHours": 0,
