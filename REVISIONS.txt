@@ -1,8 +1,14 @@
 Revision log
 
+2018.11.19
+v1.1.1
+
+* estg: error-check added for carcasses discovered before searches begin
+
+* estM: error-check added for CO units not included in DWP
+
 2018.11.14
 v1.1.0
-
 
 * added links to published GenEst User Guide and GenEst Statistical Models
 
