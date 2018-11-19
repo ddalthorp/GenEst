@@ -7,6 +7,9 @@ v1.1.1
 
 * estM: error-check added for CO units not included in DWP
 
+* cpm0: sample size was missing from cp model tables when s parameter has an
+additive model (e.g., s ~ A + B). Fixed
+
 2018.11.14
 v1.1.0
 
