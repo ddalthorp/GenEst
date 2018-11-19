@@ -23,6 +23,12 @@ human-readable codebase underlying the app. The goal being to allow GenEst
 to evolve as fluidly as possible at the user interface.
 >>>>>>> fully developed server function
 
+=======
+as well as a number of internal functions to facilitate a simple,
+human-readable codebase underlying the app. The goal being to allow GenEst 
+to evolve as fluidly as possible at the user interface.
+
+>>>>>>> 7c856b525c650c6abd71def292f47e99a1b9258f
 # Execution 
 
 The GUI is executed locally or as a deployed app following the basic approach
