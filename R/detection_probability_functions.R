@@ -68,7 +68,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   t0date <- SSdat$date0
   dates_CO <- checkDate(data_CO[ , COdate])
   if (is.null(dates_CO)) stop("dates_CO not properly formatted as dates")
-  if (t0date > min(dates_CO) stop("first carcass discovered before first search date")
+  if (t0date > min(dates_CO)) stop("first carcass discovered before first search date")
   COdat <- data_CO # format data_CO
   COdat[ , COdate] <- dateToDay(dates_CO, t0date)
   names(COdat)[names(COdat) == COdate] <- "day" # distinguish integers

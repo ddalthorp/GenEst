@@ -96,7 +96,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     }
     if (length(unitCol) == 1){
       if (any(!(data_CO[ , unitCol] %in% names(data_SS))) ||
-          any(!(data_DWP[ , unitCol] %in% names(data_SS)) ||
+          any(!(data_DWP[ , unitCol] %in% names(data_SS))) ||
           any(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))){
         stop("No unitCol provided, and data_CO and data_DWP do not have a column ",
              "that can unambiguously serve as unitCol. Cannot estimate M.")
