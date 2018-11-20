@@ -17,7 +17,7 @@ pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, cols, axes)
 \item{cols}{named vector of colors to use for the specific and reference
 models}
 
-\item{axes}{named vector of logical values indicating whether or not to 
+\item{axes}{named vector of logical values indicating whether or not to
 plot the x axis and the y axis}
 }
 \value{
