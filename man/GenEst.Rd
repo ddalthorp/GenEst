@@ -8,8 +8,16 @@
 \description{
 This package is designed to analyze searcher efficiency,
   carcass persistence, search schedule, and carcass observation data for
-  the estimation of bird and bat mortality at wind and solar power facilities.
+  the estimation of bird and bat mortality at wind and solar power 
+  facilities.
 }
+\section{Information}{
+
+\code{browseVignettes("GenEst")}\cr
+\code{packageDescription("GenEst")}\cr
+\code{disclaimers()}\cr
+}
+
 \section{Data sets}{
 
 \code{\link{mock}}\cr
@@ -28,7 +36,8 @@ This package is designed to analyze searcher efficiency,
    (\code{pk}) and carcass persistence (\code{cp}) parameters}
   \item{\code{\link{estM}}}{estimate mortality given \code{pkm}, \code{cpm}
    and data}
-  \item{\code{\link{calcSplits}}}{split mortality estimates by subcategories}
+  \item{\code{\link{calcSplits}}}{split mortality estimates by 
+     subcategories}
   \item{\code{plot}}{S3 function for \code{\link[=plot.pkm]{pkm}},
    \code{\link[=plot.pkmSet]{pkmSet}}, \code{\link[=plot.cpm]{cpm}},
    \code{\link[=plot.cpmSet]{cpmSet}}, \code{\link[=plot.estM]{estM}},
@@ -42,9 +51,10 @@ This package is designed to analyze searcher efficiency,
    \code{\link[=summary.gGeneric]{gGeneric}},
    \code{\link[=summary.gGenericSize]{gGenericSize}} objects}
   \item{\code{\link{aicc}}}{S3 function for extracting models' AICc values
-   from \code{\link{pkm}}, \code{\link[=pkm]{pkmSet}}, \code{\link[=pkm]{pkmSize}},
-   \code{\link[=pkm]{pkmSetSize}}, \code{\link{cpm}}, \code{\link[=cpm]{cpmSet}},
-   \code{\link[=cpm]{cpmSize}}, and  \code{\link[=cpm]{cpmSetSize}} objects}
+   from \code{\link{pkm}}, \code{\link[=pkm]{pkmSet}}, 
+   \code{\link[=pkm]{pkmSize}}, \code{\link[=pkm]{pkmSetSize}}, 
+   \code{\link{cpm}}, \code{\link[=cpm]{cpmSet}},
+   \code{\link[=cpm]{cpmSize}}, and \code{\link[=cpm]{cpmSetSize}} objects}
   \item{\code{\link{estgGeneric}}, \code{\link{estgGenericSize}}}{estimate
    detection probability (g) for given searcher efficiency and carcass
    persistence model}
@@ -60,7 +70,8 @@ This package is designed to analyze searcher efficiency,
 \code{\link{alogit}}, \code{\link{logit}}\cr
 \code{\link{Ecbinom}}\cr
 \code{\link{pkLogLik}}, \code{\link{cpLogLik}}\cr
-\code{\link{calcRate}}, \code{\link{calcTsplit}}, \code{\link{ltranspose}}\cr
+\code{\link{calcRate}}, \code{\link{calcTsplit}}, 
+\code{\link{ltranspose}}\cr
 }
 
 \section{Potentially useful editing functions}{
@@ -79,14 +90,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{tidyModelSetSE}}\cr
 }
 
-\section{Information}{
-
-\code{browseVignettes("GenEst")}\cr
-\code{packageDescription("GenEst")}\cr
-\code{disclaimers()}\cr
-}
-
-\section{Other functions (primary associated with the GUI)}{
+\section{Other functions (primarily associated with the GUI)}{
 
 \code{\link{aboutContent}}\cr
 \code{\link{aboutPanel}}\cr
@@ -111,7 +115,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{cpmSetSpecCPCellPlot}}\cr
 \code{\link{CPPanel}}\cr
 \code{\link{CPSidebar}}\cr
-\code{\link{createReactiveValues}}\cr
+\code{\link{initialReactiveValues}}\cr
 \code{\link{createvtext}}\cr
 \code{\link{dataDownloadWidget}}\cr
 \code{\link{dataInputPanel}}\cr
@@ -135,7 +139,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{downloadTable}}\cr
 \code{\link{DWPCols}}\cr
 \code{\link{expandModelSetCP}}\cr
-\code{\link{ftpLink}}\cr
 \code{\link{GeneralInputSidebar}}\cr
 \code{\link{GeneralInputsPanel}}\cr
 \code{\link{GenEstAcknowledgements}}\cr
@@ -233,7 +236,7 @@ This package is designed to analyze searcher efficiency,
 \code{\link{SESidebar}}\cr
 \code{\link{setFigH}}\cr
 \code{\link{setFigW}}\cr
-\code{\link{setkFillNeed}}\cr
+\code{\link{setkNeed}}\cr
 \code{\link{setkFix}}\cr
 \code{\link{simpleMplot}}\cr
 \code{\link{sizeCols}}\cr
@@ -244,101 +247,9 @@ This package is designed to analyze searcher efficiency,
 \code{\link{trueLength}}\cr
 \code{\link{u}}\cr
 \code{\link{ul}}\cr
-\code{\link{update_input_clear_all}}\cr
-\code{\link{update_input_cols_CP_preds}}\cr
-\code{\link{update_input_cols_fta}}\cr
-\code{\link{update_input_cols_ltp}}\cr
-\code{\link{update_input_cols_SE_obs}}\cr
-\code{\link{update_input_cols_SE_preds}}\cr
-\code{\link{update_input_data_CO}}\cr
-\code{\link{update_input_data_CO_clear}}\cr
-\code{\link{update_input_data_CP}}\cr
-\code{\link{update_input_data_CP_clear}}\cr
-\code{\link{update_input_data_DWP}}\cr
-\code{\link{update_input_data_DWP_clear}}\cr
-\code{\link{update_input_data_SE}}\cr
-\code{\link{update_input_data_SE_clear}}\cr
-\code{\link{update_input_data_SS}}\cr
-\code{\link{update_input_data_SS_clear}}\cr
-\code{\link{update_input_outsc_CP}}\cr
-\code{\link{update_input_outsc_SE}}\cr
-\code{\link{update_input_run_CP}}\cr
-\code{\link{update_input_run_CP_clear}}\cr
-\code{\link{update_input_run_g}}\cr
-\code{\link{update_input_run_g_clear}}\cr
-\code{\link{update_input_run_M}}\cr
-\code{\link{update_input_run_M_clear}}\cr
-\code{\link{update_input_run_SE}}\cr
-\code{\link{update_input_run_SE_clear}}\cr
-\code{\link{update_input_sizeCol}}\cr
-\code{\link{update_input_split_M_clear}}\cr
-\code{\link{update_input_useSSdata}}\cr
-\code{\link{update_output_clear_all}}\cr
-\code{\link{update_output_cols_CP}}\cr
-\code{\link{update_output_cols_SE}}\cr
-\code{\link{update_output_data_CO}}\cr
-\code{\link{update_output_data_CO_clear}}\cr
-\code{\link{update_output_data_CP}}\cr
-\code{\link{update_output_data_CP_clear}}\cr
-\code{\link{update_output_data_DWP}}\cr
-\code{\link{update_output_data_DWP_clear}}\cr
-\code{\link{update_output_data_SE}}\cr
-\code{\link{update_output_data_SE_clear}}\cr
-\code{\link{update_output_data_SS}}\cr
-\code{\link{update_output_data_SS_clear}}\cr
-\code{\link{update_output_outdls_CP}}\cr
-\code{\link{update_output_outpk_SE}}\cr
-\code{\link{update_output_outsc_CP}}\cr
-\code{\link{update_output_outsc_g}}\cr
-\code{\link{update_output_outsc_SE}}\cr
-\code{\link{update_output_run_CP}}\cr
-\code{\link{update_output_run_CP_clear}}\cr
-\code{\link{update_output_run_g}}\cr
-\code{\link{update_output_run_g_clear}}\cr
-\code{\link{update_output_run_M}}\cr
-\code{\link{update_output_run_M_clear}}\cr
-\code{\link{update_output_run_SE}}\cr
-\code{\link{update_output_run_SE_clear}}\cr
-\code{\link{update_output_sizeCol}}\cr
-\code{\link{update_output_split_M}}\cr
-\code{\link{update_output_split_M_clear}}\cr
-\code{\link{update_output_SS}}\cr
-\code{\link{update_output_transpose_split}}\cr
-\code{\link{update_rv_clear_all}}\cr
-\code{\link{update_rv_cols_CP_preds}}\cr
-\code{\link{update_rv_cols_fta}}\cr
-\code{\link{update_rv_cols_ltp}}\cr
-\code{\link{update_rv_cols_SE_obs}}\cr
-\code{\link{update_rv_cols_SE_preds}}\cr
-\code{\link{update_rv_data_CO}}\cr
-\code{\link{update_rv_data_CO_clear}}\cr
-\code{\link{update_rv_data_CP}}\cr
-\code{\link{update_rv_data_CP_clear}}\cr
-\code{\link{update_rv_data_DWP}}\cr
-\code{\link{update_rv_data_DWP_clear}}\cr
-\code{\link{update_rv_data_SE}}\cr
-\code{\link{update_rv_data_SE_clear}}\cr
-\code{\link{update_rv_data_SS}}\cr
-\code{\link{update_rv_data_SS_clear}}\cr
-\code{\link{update_rv_outdls_CP}}\cr
-\code{\link{update_rv_outpk_SE}}\cr
-\code{\link{update_rv_outsc_CP}}\cr
-\code{\link{update_rv_outsc_g}}\cr
-\code{\link{update_rv_outsc_SE}}\cr
-\code{\link{update_rv_run_CP}}\cr
-\code{\link{update_rv_run_CP_clear}}\cr
-\code{\link{update_rv_run_g}}\cr
-\code{\link{update_rv_run_g_clear}}\cr
-\code{\link{update_rv_run_M}}\cr
-\code{\link{update_rv_run_M_clear}}\cr
-\code{\link{update_rv_run_SE}}\cr
-\code{\link{update_rv_run_SE_clear}}\cr
-\code{\link{update_rv_sizeCol}}\cr
-\code{\link{update_rv_split_M}}\cr
-\code{\link{update_rv_split_M_clear}}\cr
-\code{\link{update_rv_transpose_split}}\cr
-\code{\link{update_rv_useSSdata}}\cr
-\code{\link{update_rv_useSSinputs}}\cr
+\code{\link{update_input}}\cr
+\code{\link{update_output}}\cr
+\code{\link{update_rv}}\cr
 \code{\link{updateColNames_size}}\cr
 \code{\link{updateSizeclasses}}\cr
 \code{\link{updatesizeCol}}\cr

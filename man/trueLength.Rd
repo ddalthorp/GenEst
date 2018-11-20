@@ -2,18 +2,18 @@
 % Please edit documentation in R/utility_functions.R
 \name{trueLength}
 \alias{trueLength}
-\title{Get the length of real things}
+\title{Get the length of real (non-NA) things}
 \usage{
 trueLength(x)
 }
 \arguments{
-\item{x}{vector of values}
+\item{x}{Vector of values, some of which many be \code{NA}.}
 }
 \value{
-integer of how many non-NA values in x
+Integer count of how many non-\code{NA} values in \code{x}.
 }
 \description{
-Length of non-missing values in a vector
+Length of non-missing (non-\code{NA}) values in a vector.
 }
 \examples{
   x <- c(1, 2, NA, 3)
