@@ -17,24 +17,28 @@ msgList <- function(){
 #'
 #' @param msgs message list
 #'
+#' @param clear logical indicator if clearing should happen. 
+#'
 #' @export
 #'
 #'
-clearNotifications <- function(msgs = msgList()){
-  if (!is.null(msgs$ModSE)){
-    removeNotification(msgs$ModSE)
-  }
-  if (!is.null(msgs$ModCP)){
-    removeNotification(msgs$ModCP)
-  }
-  if (!is.null(msgs$ModM)){
-    removeNotification(msgs$ModM)
-  }
-  if (!is.null(msgs$SS)){
-    removeNotification(msgs$SS)
-  }
-  if (!is.null(msgs$Modg)){
-    removeNotification(msgs$Modg)
+clearNotifications <- function(msgs = msgList(), clear = TRUE){
+  if(clear){
+    if (!is.null(msgs$ModSE)){
+      removeNotification(msgs$ModSE)
+    }
+    if (!is.null(msgs$ModCP)){
+      removeNotification(msgs$ModCP)
+    }
+    if (!is.null(msgs$ModM)){
+      removeNotification(msgs$ModM)
+    }
+    if (!is.null(msgs$SS)){
+      removeNotification(msgs$SS)
+    }
+    if (!is.null(msgs$Modg)){
+      removeNotification(msgs$Modg)
+    }
   }
 }
 
@@ -53,9 +57,7 @@ clearNotifications <- function(msgs = msgList()){
 #' @export
 #'
 msgModRun <- function(msgs, modelType, clear = TRUE){
-  if (clear){
-    clearNotifications(msgs)
-  }
+  clearNotifications(msgs, clear)
   msg <- NULL
   if (modelType == "SE"){
     msg <- ("Running Searcher Efficiency Model")
@@ -76,7 +78,7 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 
 #' @title Create a model done message
 #'
-#' @description Produces a SE or CP model-done notification
+#' @description Produces a model-done notification
 #'
 #' @param msgs message list
 #'
@@ -91,9 +93,7 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 #' @export
 #'
 msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
-  if (clear){
-    clearNotifications(msgs)
-  }
+  clearNotifications(msgs, clear)
   if (type == "SE"){
     if (any(is.na(rv$kFixed[rv$kFixedChoice]))){
       return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
@@ -118,34 +118,24 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
   }  
   if (type == "M"){
     if (is.null(rv$M)){
-      if (length(na.omit(rv$kCheck)) != length(rv$kCheck)){
-        return(msgModFail(rv$gGeneric, "M", "NA_kFill"))
-      } else if (any(rv$kFill < 0 | rv$kFill > 1)){
-        return(msgModFail(rv$gGeneric, "M", "NA_kFill"))
-      }
       if (!is.null(rv$fracNote)){
         return(msgFracNote(rv$fracNote))
-      }
-      if (is.null(rv$M)){
+      } else {
         return(msgModFail(rv$M, "M"))
       }
     }
-    if (type == "split"){
-      if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
-        return(msgSplitFail("setup"))
-      }
-      if (is.null(rv$Msplit)){
-        return(msgSplitFail("run"))
-      }
+  }
+  if (type == "split"){
+    if (rv$nsplit_CO + rv$nsplit_SS > 2 | rv$nsplit_SS > 1){
+      return(msgSplitFail("setup"))
+    }
+    if (is.null(rv$Msplit)){
+      return(msgSplitFail("run"))
     }
   }
   if (type == "g"){
     if ((is.null(rv$gGeneric))){
-      if (length(na.omit(rv$kCheck_g)) != length(rv$kCheck_g)){
-        return(msgModFail(rv$gGeneric, "g", "NA_kFill"))
-      } else if (any(rv$kFill_g < 0 | rv$kFill_g > 1)){
-        return(msgModFail(rv$gGeneric, "g", "NA_kFill"))
-      } else if (is.null(rv$gGeneric[[1]])){    
+      if (is.null(rv$gGeneric[[1]])){    
         return(msgModFail(rv$gGeneric, "g"))
       }
     }
@@ -307,7 +297,7 @@ msgModFail <- function(mods, type = "SE", special = NULL){
     } else if (special == "size_k"){
       msg <- "Some size classes had no successful models. Consider a fixed k."
     } else if (special == "NA_kFixed"){
-      msg <- "kFixed check box selected but no value entered."
+      msg <- "Fixed k check box selected but no or invalid value entered."
     }
   }
   if (type == "g"){

@@ -7,20 +7,20 @@
 checkDate(testdate)
 }
 \arguments{
-\item{testdate}{date(s) to check and format}
+\item{testdate}{Date(s) to check and format.}
 }
 \value{
-dates formatted as yyyy-mm-dd (if possible) or NULL (if some value is
- not interpretable as a date after 1900-01-01).
+dates formatted as yyyy-mm-dd (if possible) or NULL (if some value
+ is not interpretable as a date after 1900-01-01).
 }
 \description{
-Checks whether the dates are in a standard format and sensible.
- If so, function returns the dates converted to R standard yyyy-mm-dd format;
- Acceptable formats are yyyy-mm-dd, yyyy/mm/dd, mm/dd/yyyy, and dd/mm/yyyy.
- If format is mm/dd/yyyy or dd/mm/yyyy, the dates must be interpretable
- unambiguously. Also, dates must be later than 1900-01-01. This additional
- check provides some protection against common data entry errors like
- entering a year as 0217 or 1017 instead of 2017.
+Checks whether the dates are in a standard format and 
+ sensible. If so, function returns the dates converted to ISO 8601 
+ yyyy-mm-dd format. Acceptable formats are yyyy-mm-dd, yyyy/mm/dd, 
+ mm/dd/yyyy, and dd/mm/yyyy. If format is mm/dd/yyyy or dd/mm/yyyy, the 
+ dates must be interpretable unambiguously. Also, dates must be later than 
+ 1900-01-01. This additional check provides some protection against common 
+ data entry errors like entering a year as 0217 or 1017 instead of 2017.
 }
 \examples{
  checkDate("02/20/2018")

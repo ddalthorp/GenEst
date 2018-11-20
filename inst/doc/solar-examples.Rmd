@@ -362,7 +362,7 @@ M_week <- calcSplits(M = Mest,
   data_SS = SSdat,
   data_CO = data_CO
 )
-plot(x = M_week, rate = T)
+plot(x = M_week, rate = TRUE)
 
 ```
 

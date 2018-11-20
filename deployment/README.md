@@ -7,9 +7,9 @@ account and have configured **rsconnect** to work with your account.
 1. Download of the suite of dependency packages:
 
 ```
-packages <- c("cbinom", "devtools", "DT", "gsl", "gtools", 
+packages <- c("cbinom", "corpus", "devtools", "DT", "gsl", "gtools", 
                  "htmltools", "lubridate", "matrixStats", "mvtnorm", "Rcpp",
-                 "rsconnect", "shiny", "shinyjs",  "sticky", "survival")
+                 "rsconnect", "shiny", "shinyjs", "sticky", "survival")
 packages <- package_new[!(packages %in% installed.packages()[,"Package"])] 
 if(length(packages) > 0){
   install.packages(packages)

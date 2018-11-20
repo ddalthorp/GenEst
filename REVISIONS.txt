@@ -1,0 +1,46 @@
+Revision log
+
+2018.11.19
+v1.1.1
+
+* estg: error-check added for carcasses discovered before searches begin
+
+* estM: error-check added for CO units not included in DWP
+
+* cpm0: sample size was missing from cp model tables when s parameter has an
+additive model (e.g., s ~ A + B). Fixed
+
+2018.11.14
+v1.1.0
+
+* added links to published GenEst User Guide and GenEst Statistical Models
+
+* corrected a GUI bug that prevented mortality estimation when CO and DWP files
+had more than one column name in common
+
+* corrected a GUI bug that caused intermittent failure to update some results
+figs when user selected new models. The bug was caused by figs sometimes not
+being properly suspended when hidden.
+
+* corrected a bug that caused ppersist to return NaN or 0 for Weibull 
+distributed persistence times when the variance of the scale parameter was very
+large. The error occured when all CP field trial carcasses were removed in the
+span of two intervals. Improved error-checking and an updated calculation of 
+Weibull ppersist for data that generates fits with very large uncertainty in
+scale parameter.
+
+* corrected a GUI bug that erroneously allowed the drop-down selection menus for
+mortality splits to permit more than two covariates to be selected in certain
+cases where an improper model was first entered, later corrected, and then a 
+third covariate selected from the temporal splits menu. Results figures and 
+tables would show the proper covariates, but they would not be properly 
+reflected in the drop-downs. This was due to an error in the conditionals for
+the drop-down lists not being properly updated. It had no effect on calculations
+or results.
+
+* GUI code was revised for readability and easier maintenance: some groups of
+very small functions were consolidated into larger functions, overly long 
+variable names were shortened, some groups of short files were consolidated into
+longer files. 
+
+* Documentation for GUI code was updated to facilitate code maintenance.

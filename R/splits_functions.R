@@ -1,4 +1,4 @@
-#' @title Estimate the number of fatalities in each search interval throughout 
+#' @title Estimate the number of fatalities in each search interval throughout
 #'   the monitoring period.
 #'
 #' @description A carcass that is observed in a given search may have arrived 
@@ -144,8 +144,8 @@ calcTsplit <- function(rate, days, tsplit){
 #'   period into 30-day intervals, and \code{calcSplits()} would return 
 #'   mortality estimates for each of the intervals.
 #'
-#' @param M \code{\link{estM}} object, containing numeric array (ncarc x nsim) of estimated
-#'    mortalities and other pieces
+#' @param M \code{\link{estM}} object, containing numeric array (ncarc x nsim)
+#'    of estimated mortalities and other pieces
 #'   
 #' @param split_CO Character vector of names of splitting covariates to be
 #'   found in the \code{data_CO} data frame. No more than two \code{split_CO} 
@@ -470,7 +470,7 @@ calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
     }
   }
   #protection against unintended loss of attr's
-  splits <- sticky(splits)
+  splits <- sticky::sticky(splits)
   attr(splits, "vars") <- c(split_h$name, split_v$name)
   attr(splits, "type") <- c(split_h$type, split_v$type)
   if (!is.null(split_h) && (split_h$type %in% c("time", "SS"))){
@@ -535,7 +535,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
       splits$M <- matrix(splits$M, nrow = 1)
       splits$X <- matrix(splits$X, nrow = 1)
     }
-    sumry <- rowQuantiles(splits$M, probs = probs)
+    sumry <- matrixStats::rowQuantiles(splits$M, probs = probs)
     ind <- (sumry < splits$X)
     sumry <- (sumry * !ind) + (splits$X * ind)
     sumry <- cbind(X = splits$X, sumry)
@@ -545,7 +545,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
       splits$X <- lapply(splits$X, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits$M, function(x){
-      cbind(rowQuantiles(x, probs = probs))
+      cbind(matrixStats::rowQuantiles(x, probs = probs))
     })
     for (levi in 1:length(sumry)){
       ind <- (sumry[[levi]] < splits$X[[levi]])

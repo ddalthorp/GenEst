@@ -2,7 +2,7 @@
 % Please edit documentation in R/splits_functions.R
 \name{calcRate}
 \alias{calcRate}
-\title{Estimate the number of fatalities in each search interval throughout 
+\title{Estimate the number of fatalities in each search interval throughout
   the monitoring period.}
 \usage{
 calcRate(M, Aj, days = NULL, searches_carcass = NULL, data_SS = NULL)

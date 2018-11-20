@@ -1,7 +1,7 @@
 Package: GenEst
-Title: Generalized Fatality Estimator
-Version: 1.0.0
-Date: 2018-10-10
+Title: Generalized Mortality Estimator
+Version: 1.1.1
+Date: 2018-11-19
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
@@ -12,15 +12,14 @@ Authors@R: c(
     person("Robert", "Wolpert", , "wolpert@stat.duke.edu", "aut"),
     person("Jared", "Studyvin", , "jstudyvin@west-inc.com", "aut"),
     person("Franzi", "Korner-Nievergelt", , "fraenzi.korner@oikostat.ch", "aut"))
-Description: A tool for estimating mortality from searcher efficiency, carcass
-  persistence, search schedule, and carcass observation data. 
+Description: Command-line and 'shiny' GUI implementation of the GenEst models for estimating bird and bat mortality at wind and solar power facilities, following Dalthorp, et al. (2018) <https://pubs.usgs.gov/tm/7a2/tm7a2.pdf>. 
 Depends: R (>= 3.5.0)
 License: CC0
 Encoding: UTF-8
 LazyData: true
 Imports:
-    corpus,
     cbinom (>= 1.3),
+    corpus,
     DT,	
     gsl,
     gtools,
@@ -41,3 +40,4 @@ Suggests:
 VignetteBuilder:
     knitr
 LinkingTo: Rcpp
+

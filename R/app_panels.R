@@ -22,7 +22,7 @@ dataTabPanel <- function(dataType){
                             "CP" = "Carcass Persistence",
                             "SS" = "Search Schedule",
                             "DWP" = "Density Weighted Proportion",
-                            "CO" = "Carcass Observation")
+                            "CO" = "Carcass Observations")
   TableName <- switch(dataType, "SE" = "data_SE",
                                 "CP" = "data_CP",
                                 "SS" = "data_SS",
@@ -55,12 +55,12 @@ selectedDataPanel <- function(modType){
                   "CP" = "Selected Data",
                   "g" = "Schedule")
   Condition1 <- switch(modType,
-                  "SE" = "input.obsCols_SE == null",
+                  "SE" = "input.obsSE == null",
                   "CP" = "input.ltp == null | input.fta == null",
                   "g" = NULL)
   Condition2 <- switch(modType,
                   "SE" = "output.filename_SE != null & 
-                          input.obsCols_SE != null",
+                          input.obsSE != null",
                   "CP" = "output.filename_CP != null & input.ltp != null & 
                           input.fta != null",
                   "g" = NULL)
@@ -124,42 +124,42 @@ modelOutputPanel <- function(outType){
 
   Condition <- switch(outType,
                  "SEFigures" = 
-                   c("output.fig_SE == null",
+                   c("output.SEModDone == null",
                      "output.SEModDone == 'OK'", 
                      "1 == 1"),
                  "SEEstimates" = 
-                   c("output.modTab_SE == null", 
+                   c("output.SEModDone == null", 
                      "output.SEModDone == 'OK'", 
                      "1 == 1"),
                  "SEModComparison" =
-                   c("output.AICcTab_SE == null", 
+                   c("output.SEModDone == null", 
                      "output.SEModDone == 'OK'", 
                      "1 == 1"),
                  "SEModSelection" = 
-                   c("output.modelMenu_SE == null",
+                   c("output.SEModDone == null",
                      "output.SEModDone == 'OK'", 
                      "1 == 1"), 
                  "CPFigures" = 
-                   c("output.fig_CP == null", 
+                   c("output.CPModDone == null", 
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "CPEstimates" = 
-                   c("output.modTab_CP == null", 
+                   c("output.CPModDone == null", 
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "CPModComparison" = 
-                   c("output.AICcTab_CP == null", 
+                   c("output.CPModDone == null", 
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "CPModSelection" = 
-                   c("output.modelMenu_CP == null",
+                   c("output.CPModDone == null",
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "MFigures" = 
                    c("input.modelChoices_SE1 == null | 
                        input.modelChoices_CP1 == null | 
                        output.sizeclasses_SE != output.sizeclasses_CP", 
-                     "output.fig_M == null & 
+                     "output.MModDone == null & 
                        input.modelChoices_SE1 != null & 
                        input.modelChoices_CP1 != null &
                        output.sizeclasses_SE == output.sizeclasses_CP",
@@ -168,17 +168,17 @@ modelOutputPanel <- function(outType){
                    c("input.modelChoices_SE1 == null | 
                        input.modelChoices_CP1 == null | 
                        output.sizeclasses_SE != output.sizeclasses_CP", 
-                     "output.fig_M == null & 
+                     "output.MModDone == null & 
                        input.modelChoices_SE1 != null & 
                        input.modelChoices_CP1 != null &
                        output.sizeclasses_SE == output.sizeclasses_CP",
                      "output.MModDone == 'OK'"),
                  "gFigures" = 
-                   c("output.fig_g == null", 
+                   c("output.gModDone == null", 
                      "output.gModDone == 'OK'", 
                      "1 == 1"),
                  "gSummary" = 
-                   c("output.table_g == null",
+                   c("output.gModDone == null",
                      "output.gModDone == 'OK'", 
                      "1 == 1")
                )
@@ -256,9 +256,9 @@ modelOutputPanel <- function(outType){
                "MFigures" = 
                  list(
                    em("Fitted SE and CP models must be selected before
-                     detection probability can be estimated. Return to the Model
-                     Selection tabs under Searcher Efficiency and Carcass
-                     Persistence."),
+                     detection probability can be estimated. Return to the 
+                     Model Selection tabs under Searcher Efficiency and 
+                     Carcass Persistence."),
                    em("Run estimate to view figure"),
                    list(plotOutput("fig_M", inline = TRUE), br(), br(),
                       downloadButton("dlMfig", "Download")

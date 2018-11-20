@@ -8,8 +8,8 @@ calcSplits(M, split_CO = NULL, data_CO = NULL, split_SS = NULL,
   data_SS = NULL, split_time = NULL, ...)
 }
 \arguments{
-\item{M}{\code{\link{estM}} object, containing numeric array (ncarc x nsim) of estimated
-mortalities and other pieces}
+\item{M}{\code{\link{estM}} object, containing numeric array (ncarc x nsim)
+of estimated mortalities and other pieces}
 
 \item{split_CO}{Character vector of names of splitting covariates to be
 found in the \code{data_CO} data frame. No more than two \code{split_CO} 

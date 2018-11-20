@@ -7,15 +7,16 @@
 dateToDay(date, ref = NULL)
 }
 \arguments{
-\item{date}{date to convert}
+\item{date}{A date or vector of dates to convert to days.}
 
-\item{ref}{reference date}
+\item{ref}{Reference date.}
 }
 \value{
-converted days from reference
+Numeric value(s) of days from \code{ref}.
 }
 \description{
-Convert calendar date to day from reference
+Convert calendar date to integer day from a reference date
+  (\code{ref}).
 }
 \examples{
   x <- c("2018-01-01", "2018-02-01")

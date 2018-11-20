@@ -1,12 +1,12 @@
 [
   {
-    "name": "GenEst",
+    "Name": "GenEst",
     "organization": "U.S. Geological Survey",
     "description": "R package for estimating bird and bat fatalities at wind and solar power facilities",
-    "version": "1.0.0",
+    "version": "1.1.1",
     "status": "Release Candidate",
 
-    "permissions": {
+ "permissions": {
       "usageType": "openSource",
       "licenses": [
         {
@@ -15,7 +15,6 @@
         }
       ]
     },
-
     "homepageURL": "https://code.usgs.gov/ecosystems/GenEst",
     "downloadURL": "https://code.usgs.gov/ecosystems/GenEst/archive/master.zip",
     "disclaimerURL": "https://code.usgs.gov/ecosystems/GenEst/blob/master/DISCLAIMER.md",
@@ -25,7 +24,7 @@
     "laborHours": 0,
 
     "tags": [
-      "GenEst",
+      "GenEst",    
       "mortality estimator",
       "turbines birds bats",
       "solar birds",
@@ -45,7 +44,6 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2018-10-15"
+      "metadataLastUpdated": "2018-11-19"
     }
   }
-]

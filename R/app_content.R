@@ -1,3 +1,31 @@
+#' @title Create the version text for GenEst 
+#'
+#' @description Create a text string of the version number and date
+#'
+#' @param type "Full" or "Short" or "Name" or "NameDate"
+#'
+#' @return version text
+#'
+#' @export
+#'
+createvtext <- function(type = "Full"){
+  vnumber <- packageDescription("GenEst", fields = "Version")
+  vdate <- packageDescription("GenEst", fields = "Date")
+  if (type == "Full"){
+    vtext <- paste0("This is version ", vnumber, " (", vdate, ")")
+  }
+  if (type == "Short"){
+    vtext <- paste0("v", vnumber)
+  }
+  if (type == "Name"){
+    vtext <- paste0("GenEst ", "v", vnumber)
+  }
+  if (type == "NameDate"){
+    vtext <- paste0("GenEst ", "v", vnumber, " (", vdate, ")")
+  }
+  return(vtext)
+}
+
 #' @title Create the Content for the Getting Started Pabel
 #'
 #' @description Create the HTML code for the Help Getting Started main panel,
@@ -40,12 +68,6 @@ gettingStartedContent <- function(){
             desired---click the ", code("Mortality Estimation"), " tab")
       ),
       br(),
-      p("Further details can be found in the user guide and a technical manual
-        that describes the statistical models at ",
-         a("code.usgs.gov",
-          href = "https://code.usgs.gov/ecosystems/GenEst/tags/1.0.0")
-      ), 
-      br(),
       p("Example data sets are available in comma-separated (.csv) files that
         may be downloaded under the ", code("Downloads"), " tab. ")
     )
@@ -71,11 +93,6 @@ aboutContent <- function(){
     column(10, offset = 0,
       br(), 
       h3(createvtext("NameDate")),
-      h4(a("User Guide", href = ftpLink("UserGuide"), target = "_blank")),
-      h4(a("GenEst Statistical Models", href = ftpLink("Models"), 
-           target = "_blank"
-         )
-      ),
       GenEstAuthors(),
       GenEstGUIauthors(),
       GenEstLicense(),
@@ -97,7 +114,7 @@ aboutContent <- function(){
 GenEstAuthors <- function(){
   HTML(
     paste0(br(), 
-      b("Authors:"),
+      b("Authors: "),
       "Daniel Dalthorp ", 
       a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
       ", Juniper Simonis ",
@@ -112,7 +129,7 @@ GenEstAuthors <- function(){
       ", Jeffrey Mintz ",
       a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
       ", Robert Wolpert ",
-      a("(Duke)", href = "http://www2.stat.duke.edu/~rlw/", target = "_blank"),
+      a("(Duke)", href = "http://www2.stat.duke.edu/~rlw", target = "_blank"),
       ", Jared Studyvin ",
       a("(WEST)", href = "https://www.west-inc.com", target = "_blank"),
       ", and Franzi Korner-Nievergelt ",
@@ -306,25 +323,25 @@ disclaimersContent <- function(appType = "base"){
 #' @export
 #'
 disclaimerUSGS <- function(){
-#  "This software is preliminary or provisional and is subject to revision.
-#  It is being provided to meet the need for timely best science. The
-#  software has not received final approval by the U.S. Geological Survey
-#  (USGS). No warranty, expressed or implied, is made by the USGS or the U.S.
-#  Government as to the functionality of the software and related material
-#  nor shall the fact of release constitute any such warranty. The software
-#  is provided on the condition that neither the USGS nor the U.S. Government
-#  shall be held liable for any damages resulting from the authorized or
-#  unauthorized use of the software."
-  "This software has been approved for release by the U.S. Geological
-  Survey (USGS). Although the software has been subjected to rigorous
-  review, the USGS reserves the right to update the software as needed
-  pursuant to further analysis and review. No warranty, expressed or
-  implied, is made by the USGS or the U.S. Government as to the
-  functionality of the software and related material nor shall the fact of
-  release constitute any such warranty. Furthermore, the software is
-  released on condition that neither the USGS nor the U.S. Government shall
-  be held liable for any damages resulting from its authorized or
-  unauthorized use."
+  "This software is preliminary or provisional and is subject to revision.
+  It is being provided to meet the need for timely best science. The
+  software has not received final approval by the U.S. Geological Survey
+  (USGS). No warranty, expressed or implied, is made by the USGS or the U.S.
+  Government as to the functionality of the software and related material
+  nor shall the fact of release constitute any such warranty. The software
+  is provided on the condition that neither the USGS nor the U.S. Government
+  shall be held liable for any damages resulting from the authorized or
+  unauthorized use of the software."
+#  "This software has been approved for release by the U.S. Geological
+#  Survey (USGS). Although the software has been subjected to rigorous
+#  review, the USGS reserves the right to update the software as needed
+#  pursuant to further analysis and review. No warranty, expressed or
+#  implied, is made by the USGS or the U.S. Government as to the
+#  functionality of the software and related material nor shall the fact of
+#  release constitute any such warranty. Furthermore, the software is
+#  released on condition that neither the USGS nor the U.S. Government shall
+#  be held liable for any damages resulting from its authorized or
+#  unauthorized use."
 }
 
 #' @rdname disclaimersContent
@@ -374,28 +391,4 @@ disclaimerWEST <- function(appType){
                  other party has been advised of the possibility of such 
                  damages.")
   out
-}
-
-#' @title Create a Link to the FTP-Housed Document of Interest
-#'
-#' @description The GenEst User Guide and Models Document live on the USGS
-#'   FTP and can be linked to, rather than stored in the app. This function
-#'   provides the link of interest. 
-#'
-#' @param doc "UserGuide" or "Models".
-#'
-#' @return Character element of the link to the document.
-#'
-#' @export
-#'
-ftpLink <- function(doc = "UserGuide"){
-  if (!doc %in% c("UserGuide", "Models")){
-    stop(paste0("doc ", doc, " not supported."))
-  }
-  mainLink <- "ftp://ftpext.usgs.gov/pub/wr/or/corvallis/Dalthorp/"
-  if (doc == "UserGuide"){
-    paste0(mainLink, "GenEst_User_Guide%200.2.0.pdf")
-  } else if (doc == "Models"){
-    paste0(mainLink, "GenEst_Statistical_Models.pdf")
-  }
 }
