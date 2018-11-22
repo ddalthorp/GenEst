@@ -14,14 +14,14 @@
 #'   removeNotification renderPlot renderText renderUI runApp 
 #'   selectizeInput shinyApp shinyAppDir showNotification sidebarLayout
 #'   sidebarPanel tabPanel tabsetPanel textOutput updateNumericInput
-#'   updateSelectizeInput updateTabsetPanel 
+#'   updateSelectizeInput updateTabsetPanel  updateNavbarPage
 #' @importFrom shinyjs inlineCSS reset useShinyjs 
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
 #'   reformulate rnorm runif terms update.formula weighted.mean
 #' @importFrom survival strata
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
-#'   zip
+#'   zip globalVariables
 #'
 
 #' @title Generalized estimation of mortality

@@ -338,16 +338,16 @@ update_rv <- function(eventName, rv, input){
     rv <- reVal(rv, toReVal)
 
     if (grepl("mock", eventName)){
-      dataset <- mock
+      dataset <- GenEst::mock
       dataName <- "mock"
     } else {
       dataset <- switch(eventName,
-        "load_RP" = wind_RP,
-        "load_RPbat" = wind_RPbat,
-        "load_cleared" = wind_cleared,
-        "load_PV" = solar_PV,
-        "load_trough" = solar_trough,
-        "load_powerTower" = solar_powerTower
+        "load_RP" = GenEst::wind_RP,
+        "load_RPbat" = GenEst::wind_RPbat,
+        "load_cleared" = GenEst::wind_cleared,
+        "load_PV" = GenEst::solar_PV,
+        "load_trough" = GenEst::solar_trough,
+        "load_powerTower" = GenEst::solar_powerTower
       )
       dataName <- switch(eventName,
         "load_RP" = "wind_RP",
