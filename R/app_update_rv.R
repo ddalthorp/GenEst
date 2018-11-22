@@ -24,7 +24,6 @@
 #' @export
 #'
 update_rv <- function(eventName, rv, input){
-
   eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
                     "file_CP_clear", "file_SS", "file_SS_clear", "file_DWP",
                     "file_DWP_clear", "file_CO", "file_CO_clear", "class",
@@ -33,7 +32,9 @@ update_rv <- function(eventName, rv, input){
                     "run_CP", "run_CP_clear", "outCPclass", "outCPdist",
                     "outCPl", "outCPs", "run_M", "run_M_clear", "split_M",
                     "split_M_clear", "transpose_split", "useSSdata",
-                    "useSSinputs", "run_g", "run_g_clear", "outgclass")
+                    "useSSinputs", "run_g", "run_g_clear", "outgclass",
+                    "load_RP", "load_RPbat", "load_cleared", "load_PV",
+                    "load_trough", "load_powerTower", "load_mock")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")
@@ -64,7 +65,8 @@ update_rv <- function(eventName, rv, input){
                 "modTabPretty_CP", "modTabDL_CP", "CPmodToUse", 
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "CPmodToUse_g",
                 "data_SS", "colNames_SS", "data_DWP", "colNames_DWP",
-                "data_CO", "colNames_CO", "colNames_COdates")
+                "data_CO", "colNames_CO", "colNames_COdates", "filename_SS",
+                "filename_DWP", "filename_CO")
     rv <- reNULL(rv, toNULL)
 
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M", "figH_g",
@@ -77,26 +79,25 @@ update_rv <- function(eventName, rv, input){
     rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
                                   rv$preds_CP)
     rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
-
   }
 
   if (eventName == "file_SE"){
     toNULL <- c("data_SE", "filename_SE", "colNames_SE", "colNames_SE_preds",
                 "colNames_SE_preds0", "colNames_SE_obs", "colNames_SE_obs0",
                 "toRemove_SE_obs", "toRemove_SE_preds", "sizeclass_SE",
-                "obsCols_SE", "preds_SE", "predictors_SE", "formula_p", 
-                "formula_k", "kFixedChoice", "kFixed", "mods_SE", 
-                "mods_SE_og", "sizeclasses_SE", "outSEpk", "AICcTab_SE", 
-                "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk", 
+                "obsCols_SE", "preds_SE", "predictors_SE", "formula_p",
+                "formula_k", "kFixedChoice", "kFixed", "mods_SE",
+                "mods_SE_og", "sizeclasses_SE", "outSEpk", "AICcTab_SE",
+                "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk",
                 "modSet_SE", "best_SE", "modTab_SE", "modTabPretty_SE",
-                "modTabDL_SE", "SStemp", "avgSI", "colNames_ss_sel", 
-                "colNames_ss_nosel", "M", "Msplit", "unitCol", "sizeCol_M", 
+                "modTabDL_SE", "SStemp", "avgSI", "colNames_ss_sel",
+                "colNames_ss_nosel", "M", "Msplit", "unitCol", "sizeCol_M",
                 "split_CO", "split_SS", "SEmodToUse",
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
 
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M", "figH_g",
-                 "figW_g", "figH_SE", "figW_SE", "SS", "SStext", 
+                 "figW_g", "figH_SE", "figW_SE", "SS", "SStext",
                  "gSearchInterval", "gSearchMax")
     rv <- reVal(rv, toReVal)
     rv$colNames_size <- updateColNames_size(rv)
@@ -119,6 +120,7 @@ update_rv <- function(eventName, rv, input){
     rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs, rv$sizeCol)
     rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds, rv$sizeCol)
   }
+
 
   if (eventName == "file_SE_clear"){
     toNULL <- c("data_SE", "filename_SE", "colNames_SE", "colNames_SE_preds",
@@ -150,17 +152,17 @@ update_rv <- function(eventName, rv, input){
   if (eventName == "file_CP"){
     toNULL <- c("data_CP", "filename_CP", "colNames_CP", "colNames_CP_preds",
                 "colNames_CP_preds0", "colNames_fta", "colNames_fta0",
-                "colNames_ltp", "colNames_ltp0", "colNames_CP_preds", 
-                "toRemove_fta", "toRemove_ltp", "toRemove_CP_preds", 
-                "sizeclass_CP", "ltp", "fta", "preds_CP", "dist", 
-                "predictors_CP", "formula_l", "formula_s", "mods_CP", 
-                "mods_CP_og", "sizeclasses_CP", "AICcTab_CP", "modOrder_CP", 
-                "modNames_CP", "modNames_CPl", "modNames_CPs", 
-                "modNames_CPdist", "modSet_CP", "best_CP", "modTab_CP", 
-                "modTabPretty_CP", "modTabDL_CP", "SStemp", "avgSI", 
-                "colNames_ss_sel", "colNames_ss_nosel", "M", "Msplit", 
-                "unitCol", "sizeCol_M", "split_CO", "split_SS",  
-                "CPmodToUse", "sizeclasses_g", "nsizeclasses_g", "gGeneric", 
+                "colNames_ltp", "colNames_ltp0", "colNames_CP_preds",
+                "toRemove_fta", "toRemove_ltp", "toRemove_CP_preds",
+                "sizeclass_CP", "ltp", "fta", "preds_CP", "dist",
+                "predictors_CP", "formula_l", "formula_s", "mods_CP",
+                "mods_CP_og", "sizeclasses_CP", "AICcTab_CP", "modOrder_CP",
+                "modNames_CP", "modNames_CPl", "modNames_CPs",
+                "modNames_CPdist", "modSet_CP", "best_CP", "modTab_CP",
+                "modTabPretty_CP", "modTabDL_CP", "SStemp", "avgSI",
+                "colNames_ss_sel", "colNames_ss_nosel", "M", "Msplit",
+                "unitCol", "sizeCol_M", "split_CO", "split_SS",
+                "CPmodToUse", "sizeclasses_g", "nsizeclasses_g", "gGeneric",
                 "CPmodToUse_g")
     rv <- reNULL(rv, toNULL)
     rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
@@ -170,7 +172,7 @@ update_rv <- function(eventName, rv, input){
     rv$colNames_size0 <- updateColNames_size(rv)
     rv$sizeCol <- updatesizeCol(input$class, rv$colNames_size)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M", "figH_g",
-                 "figW_g", "figH_CP", "figW_CP", "SS", "SStext", 
+                 "figW_g", "figH_CP", "figW_CP", "SS", "SStext",
                  "gSearchInterval", "gSearchMax")
     rv <- reVal(rv, toReVal)
 
@@ -229,12 +231,13 @@ update_rv <- function(eventName, rv, input){
                  "figW_g", "SS", "SStext", "gSearchInterval", "gSearchMax")
     rv <- reVal(rv, toReVal)
     rv$data_SS <- readCSV(input$file_SS$datapath)
+    rv$filename_SS <- input$file_SS$name
     rv$colNames_SS <- colnames(rv$data_SS)
   }
 
 
   if (eventName == "file_SS_clear"){
-    toNULL <- c("data_SS", "colNames_SS", "SStemp", "avgSI", 
+    toNULL <- c("data_SS", "filename_SS", "colNames_SS", "SStemp", "avgSI",
                 "colNames_ss_sel", "colNames_ss_nosel", "M", "Msplit",
                 "unitCol", "sizeCol_M", "split_CO", "split_SS", 
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
@@ -245,18 +248,19 @@ update_rv <- function(eventName, rv, input){
   }
 
   if (eventName == "file_DWP"){
-    toNULL <- c("data_DWP", "colNames_DWP", "M", "Msplit", "unitCol", 
+    toNULL <- c("data_DWP", "filename_DWP", "colNames_DWP", "M", "Msplit", "unitCol",
                 "sizeCol_M", "split_CO", "split_SS")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
     rv <- reVal(rv, toReVal)
     rv$data_DWP <- readCSV(input$file_DWP$datapath)
+    rv$filename_DWP <- input$file_DWP$name
     rv$colNames_DWP <- DWPCols(rv$data_DWP)
   }
 
 
   if (eventName == "file_DWP_clear"){
-    toNULL <- c("data_DWP", "colNames_DWP", "M", "Msplit", "unitCol", 
+    toNULL <- c("data_DWP", "filename_DWP", "colNames_DWP", "M", "Msplit", "unitCol",
                 "sizeCol_M", "split_CO", "split_SS")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
@@ -265,7 +269,7 @@ update_rv <- function(eventName, rv, input){
 
   if (eventName == "file_CO"){
 
-    toNULL <- c("data_CO", "colNames_CO", "colNames_COdates", "M", "Msplit",
+    toNULL <- c("data_CO", "filename_CO", "colNames_CO", "colNames_COdates", "M", "Msplit",
                 "unitCol", "sizeCol_M", "SEmodToUse", "split_CO", "split_SS")
     rv <- reNULL(rv, toNULL)
     rv$colNames_size <- updateColNames_size(rv)
@@ -277,6 +281,7 @@ update_rv <- function(eventName, rv, input){
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
     rv <- reVal(rv, toReVal)
     rv$data_CO <- readCSV(input$file_CO$datapath)
+    rv$filename_CO <- input$file_CO$name
     rv$colNames_CO <- colnames(rv$data_CO)
     rv$colNames_COdates <- dateCols(rv$data_CO)
     rv$colNames_size <- updateColNames_size(rv)
@@ -284,9 +289,8 @@ update_rv <- function(eventName, rv, input){
     rv$sizeCol <- updatesizeCol(input$class, rv$colNames_size)
   }
 
-
   if (eventName == "file_CO_clear"){
-    toNULL <- c("data_CO", "colNames_CO", "colNames_COdates", "M", "Msplit",
+    toNULL <- c("data_CO", "filename_CO", "colNames_CO", "colNames_COdates", "M", "Msplit",
                 "unitCol", "sizeCol_M", "SEmodToUse", "split_CO", "split_SS")
     rv <- reNULL(rv, toNULL)
     rv$colNames_size <- updateColNames_size(rv)
@@ -297,6 +301,115 @@ update_rv <- function(eventName, rv, input){
     rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
     rv <- reVal(rv, toReVal)
+  }
+
+  if (grepl("load_", eventName)){
+    toNULL <- c("data_SE", "filename_SE", "colNames_SE", "colNames_SE_preds",
+                "colNames_SE_preds0", "colNames_SE_obs", "colNames_SE_obs0",
+                "toRemove_SE_obs", "toRemove_SE_preds", "sizeclass_SE",
+                "obsCols_SE", "preds_SE", "predictors_SE", "formula_p",
+                "formula_k", "kFixedChoice", "kFixed", "mods_SE",
+                "mods_SE_og", "sizeclasses_SE", "outSEpk", "AICcTab_SE",
+                "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk",
+                "modSet_SE", "best_SE", "modTab_SE", "modTabPretty_SE",
+                "modTabDL_SE", "SStemp", "avgSI", "colNames_ss_sel",
+                "colNames_ss_nosel", "M", "Msplit", "unitCol", "sizeCol_M",
+                "split_CO", "split_SS", "SEmodToUse",
+                "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g",
+                "data_CP", "filename_CP", "colNames_CP", "colNames_CP_preds",
+                "colNames_CP_preds0", "colNames_fta", "colNames_fta0",
+                "colNames_ltp", "colNames_ltp0", "colNames_CP_preds",
+                "toRemove_fta", "toRemove_ltp", "toRemove_CP_preds",
+                "sizeclass_CP", "ltp", "fta", "preds_CP", "dist",
+                "predictors_CP", "formula_l", "formula_s", "mods_CP",
+                "mods_CP_og", "sizeclasses_CP", "AICcTab_CP", "modOrder_CP",
+                "modNames_CP", "modNames_CPl", "modNames_CPs",
+                "modNames_CPdist", "modSet_CP", "best_CP", "modTab_CP",
+                "modTabPretty_CP", "modTabDL_CP", "CPmodToUse",
+                "sizeclasses_g", "nsizeclasses_g", "gGeneric", "CPmodToUse_g",
+                "data_SS", "colNames_SS", "data_DWP", "colNames_DWP",
+                "data_CO", "colNames_CO", "colNames_COdates", "filename_SS",
+                "filename_DWP", "filename_CO")
+    rv <- reNULL(rv, toNULL)
+
+    toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M", "figH_g",
+                 "figW_g", "figH_SE", "figW_SE", "SS", "SStext",
+                 "gSearchInterval", "gSearchMax", "figH_CP", "figW_CP")
+    rv <- reVal(rv, toReVal)
+
+    if (grepl("mock", eventName)){
+      dataset <- GenEst::mock
+      dataName <- "mock"
+    } else {
+      dataset <- switch(eventName,
+        "load_RP" = GenEst::wind_RP,
+        "load_RPbat" = GenEst::wind_RPbat,
+        "load_cleared" = GenEst::wind_cleared,
+        "load_PV" = GenEst::solar_PV,
+        "load_trough" = GenEst::solar_trough,
+        "load_powerTower" = GenEst::solar_powerTower
+      )
+      dataName <- switch(eventName,
+        "load_RP" = "wind_RP",
+        "load_RPbat" = "wind_RPbat",
+        "load_cleared" = "wind_cleared",
+        "load_PV" = "solar_PV",
+        "load_trough" = "solar_trough",
+        "load_powerTower" = "solar_powerTower"
+      )
+    }
+
+    rv$data_SE <- dataset$SE
+    rv$filename_SE <- paste0(dataName, "$SE")
+
+    rv$data_CP <- dataset$CP
+    rv$filename_CP <- paste0(dataName, "$CP")
+
+    rv$data_SS <- dataset$SS
+    rv$filename_SS <- paste0(dataName, "$SS")
+
+    rv$data_DWP <- dataset$DWP
+    rv$filename_DWP <- paste0(dataName, "$DWP")
+
+    rv$data_CO <- dataset$CO
+    rv$filename_CO <- paste0(dataName, "$CO")
+
+    rv$colNames_CO <- colnames(rv$data_CO)
+    rv$colNames_COdates <- dateCols(rv$data_CO)
+
+    rv$colNames_SS <- colnames(rv$data_SS)
+    rv$colNames_DWP <- DWPCols(rv$data_DWP)
+    rv$colNames_CP <- colnames(rv$data_CP)
+    rv$colNames_CP_preds <- predsCols(rv$data_CP)
+    rv$colNames_CP_preds0 <- predsCols(rv$data_CP)
+    rv$colNames_fta <- obsCols_fta(rv$data_CP)
+    rv$colNames_ltp <- obsCols_ltp(rv$data_CP)
+    rv$colNames_fta0 <- obsCols_fta(rv$data_CP)
+    rv$colNames_ltp0 <- obsCols_ltp(rv$data_CP)
+
+    rv$colNames_SE <- colnames(rv$data_SE)
+    rv$colNames_SE_preds <- predsCols(rv$data_SE)
+    rv$colNames_SE_preds0 <- predsCols(rv$data_SE)
+    rv$colNames_SE_obs <- obsCols_SE(rv$data_SE)
+    rv$colNames_SE_obs0 <- obsCols_SE(rv$data_SE)
+
+    rv$colNames_size <- updateColNames_size(rv)
+    rv$colNames_size0 <- updateColNames_size(rv)
+    rv$sizeCol <- updatesizeCol(input$class, rv$colNames_size)
+
+    rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs, rv$sizeCol)
+    rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds, rv$sizeCol)
+    rv$colNames_CP_fta <- removeCols(rv$colNames_fta, rv$sizeCol)
+    rv$colNames_CP_ltp <- removeCols(rv$colNames_ltp, rv$sizeCol)
+    rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds, rv$sizeCol)
+
+    rv$colNames_size <- updateColNames_size(rv)
+    rv$colNames_size0 <- updateColNames_size(rv)
+    rv$sizeCol <- updatesizeCol(input$class, rv$colNames_size)
+    rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
+                                  rv$preds_CP)
+    rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
+
   }
 
 
@@ -858,9 +971,9 @@ update_rv <- function(eventName, rv, input){
                 COdate = rv$COdate, DWPCol = rv$DWPCol,
                 sizeCol = rv$sizeCol_M, nsim = rv$nsim,
                 max_intervals = 8
-              ), error = function(x){NULL}
+              ), error = function(e) e
             )
-    if (!is.null(rv$M)){
+    if (!("error" %in% class(rv$M))){
       rv$Msplit <- tryCatch(
                      calcSplits(M = rv$M,
                        split_SS = NULL, split_CO = NULL,
@@ -928,6 +1041,7 @@ update_rv <- function(eventName, rv, input){
       rv$Msplit <- transposeSplits(rv$Msplit)
     }
   }
+
 
   return(rv)
 }

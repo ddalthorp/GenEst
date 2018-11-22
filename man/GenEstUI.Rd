@@ -234,7 +234,7 @@ This suite of functions create the HTML code underlying the
   the raw content for the page (which is text heavy and so moved to its own 
   function).
 
-\code{downloadsPanel}: Help panel's Downloads panel. Calls 
+\code{downloadsPanel}: Help panel's Example Data panel. Calls
   \code{\link{dataDownloadWidget}} for each data set.
 
 \code{aboutPanel}: Help panel's About panel. Calls 

@@ -12,16 +12,14 @@ vignette: >
 # Overview
 
 This document describes the codebase used to create the GenEst Graphic User 
-Interface (GUI). The Genest GUI is coded in HTML via external R packages
+Interface (GUI). The Genest GUI is coded in HTML via external R packages 
 ([DT](https://cran.r-project.org/package=DT),
 [htmltools](https://cran.r-project.org/package=htmltools),
 [shiny](https://cran.r-project.org/package=shiny),
 [shinyjs](https://cran.r-project.org/package=shinyjs),
-
 as well as a number of internal functions to facilitate a simple,
 human-readable codebase underlying the app. The goal being to allow GenEst 
 to evolve as fluidly as possible at the user interface.
->>>>>>> fully developed server function
 
 =======
 as well as a number of internal functions to facilitate a simple,
