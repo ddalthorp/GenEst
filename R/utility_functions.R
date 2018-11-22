@@ -197,4 +197,3 @@ aicc <- function(x, ... ){
 print.corpus_frame <- function(x, ...){
   corpus::print.corpus_frame(x, rows = 80)
 }
-

@@ -499,6 +499,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       cellByCarc[matchingTotal] <- celli
     }
     carcCells <- cellNames[cellByCarc]
+    cell_n <- as.numeric(table(carcCells)[cellNames])
     init_formRHS <- as.character(formulaRHS_l)[-1]
     init_form <- reformulate(init_formRHS, response = "tevent")
     init_mod <- survival::survreg(formula = init_form, data = data, dist = dist)
@@ -570,7 +571,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
     cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
     colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
-    cellTable_ls <- data.frame(cell = cellNames, cellTable_l, cellTable_s)
+    cellTable_ls <- data.frame(cell = cellNames, n = cell_n, cellTable_l, cellTable_s)
 
     if (dist == "exponential"){
       cellTable_a <- matrix("-", nrow = ncell, ncol = 3)

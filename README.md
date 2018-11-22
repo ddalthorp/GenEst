@@ -36,15 +36,15 @@ if(length(package_new) > 0) install.packages(package_new)
 -- If you are on Windows and are asked whether you want to install packages and their dependencies "from source", choose "No" (unless you are ready to go to lunch, in which case, you can select "Yes" and the installation may well be done by the time you get back).
 
 ### GenEst: 
-Click on "Releases" and then click the link for the specific release you want. 
+Click on "Tags" under the "Repository" tab on the left sidebar at https://code.usgs.gov/ecosystems/GenEst and then click the link for the specific release you want. 
 
--- For Windows, download the compressed folder GenEst_1.0.0.zip (do not unzip) and note where it is stored. You will install from the local .zip folder. 
+-- For Windows, download the compressed folder GenEst_1.x.x.zip (do not unzip) and note where it is stored. You will install from the local .zip folder. 
 
--- For Mac OS or Unix-like OS, download the compressed file GenEst_1.0.0.tar.gz and note where it is stored. You will install from the local .tar.gz file. 
+-- For Mac OS or Unix-like OS, download the compressed file GenEst_1.x.x.tar.gz and note where it is stored. You will install from the local .tar.gz file. 
 
 If you are working directly in R (not R Studio), run the following command:
 ```
-install.packages(file.choose()) # and navigate to the package archive file you just downloaded: GenEst_1.0.0.xxx
+install.packages(file.choose()) # and navigate to the package archive file you just downloaded: GenEst_1.x.x.xxx
 ```
 
 If you are working in R Studio:
@@ -79,6 +79,6 @@ Also, help files for GenEst functions are accessible in the standard R way, for 
 ?pkm
 ```
 ## Further Reading
-GenEst User Guide: https://pubs.usgs.gov/tm/7c19/tm7c19.pdf
+GenEst User Guide: https://doi.org/10.3133/tm7C19
 
-GenEst Statistical Models: https://pubs.usgs.gov/tm/7a2/tm7a2.pdf
+GenEst Statistical Models:  https://doi.org/10.3133/tm7A2
