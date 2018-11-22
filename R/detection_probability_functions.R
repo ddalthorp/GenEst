@@ -70,12 +70,15 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   dates_CO <- checkDate(data_CO[ , COdate])
   if (is.null(dates_CO)) stop("dates_CO not properly formatted as dates")
   if (t0date > min(dates_CO)) stop("first carcass discovered before first search date")
+<<<<<<< HEAD
   if (any(as.numeric(data_SS[cbind(
       match(data_CO[, COdate], SSdat[[SSdate]]),
       match(data_CO[, unitCol], names(data_SS)))]) == 0)){
     stop("some carcasses (CO) were found at turbines that were not searched (SS) ",
          "on the the date recorded for the carcass discovery")
   }
+=======
+>>>>>>> e349bc4a8f74cd56a024d1c76b388d84b7453508
   COdat <- data_CO # format data_CO
   COdat[ , COdate] <- dateToDay(dates_CO, t0date)
   names(COdat)[names(COdat) == COdate] <- "day" # distinguish integers

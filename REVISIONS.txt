@@ -1,6 +1,6 @@
 Revision log
 
-2018.11.21
+2018.11.22
 v1.1.2
 
 * example data sets can now be loaded directly into the GUI from buttons on
@@ -21,6 +21,12 @@ v1.1.1
 
 * estM: error-check added for CO units not included in DWP
 
+<<<<<<< HEAD
+=======
+* cpm0: sample size was missing from cp model tables when s parameter has an
+additive model (e.g., s ~ A + B). Fixed
+
+>>>>>>> e349bc4a8f74cd56a024d1c76b388d84b7453508
 2018.11.14
 v1.1.0
 
