@@ -1,4 +1,4 @@
-#' @title Reset values of a reactive values list 
+#' @title Reset values of a reactive values list
 #'
 #' @description Utility function for clearing and setting purposes.
 #'
@@ -618,7 +618,8 @@ initialReactiveValues <- function(){
   reactiveValues(
     data_SE = NULL, data_CP = NULL, data_SS = NULL, data_DWP = NULL, 
     data_CO = NULL,
-    filename_SE = NULL, filename_CP = NULL,
+    filename_SE = NULL, filename_CP = NULL, filename_SS = NULL,
+    filename_DWP = NULL, filename_CO = NULL,
     colNames_SE = NULL, colNames_SE_preds = NULL, colNames_SE_preds0 = NULL,
     toRemove_SE_obs = NULL, toRemove_SE_preds = NULL,
     colNames_SE_obs = NULL, colNames_SE_obs0 = NULL, 

@@ -455,7 +455,7 @@ gettingStartedPanel <- function(){
 
 #' @rdname GenEstUI
 #'
-#' @description \code{downloadsPanel}: Help panel's Downloads panel. Calls 
+#' @description \code{downloadsPanel}: Help panel's Example Data panel. Calls
 #'   \code{\link{dataDownloadWidget}} for each data set.
 #'
 #' @return \code{downloadsPanel}: Help -> Downloads panel.
@@ -463,7 +463,7 @@ gettingStartedPanel <- function(){
 #' @export
 #'
 downloadsPanel<- function(){
-  tabPanel("Downloads", 
+  tabPanel("Example Data",
       mainPanel(
     column(10, offset = 0,
       br(), 

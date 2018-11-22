@@ -24,7 +24,7 @@
 #'
 update_output <- function(eventName, rv, output){
 
-  eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
+    eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
                     "file_CP_clear", "file_SS", "file_SS_clear", "file_DWP",
                     "file_DWP_clear", "file_CO", "file_CO_clear", "class",
                     "obsSE", "predsSE", "run_SE", "run_SE_clear",
@@ -32,105 +32,161 @@ update_output <- function(eventName, rv, output){
                     "run_CP", "run_CP_clear", "outCPclass", "outCPdist",
                     "outCPl", "outCPs", "run_M", "run_M_clear", "split_M",
                     "split_M_clear", "transpose_split", "useSSdata",
-                    "useSSinputs", "run_g", "run_g_clear", "outgclass")
+                    "useSSinputs", "run_g", "run_g_clear", "outgclass",
+                    "load_RP", "load_RPbat", "load_cleared", "load_PV",
+                    "load_trough", "load_powerTower", "load_mock")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")
   }
 
-  if (eventName == "clear_all"){
-    toNULL <- c("data_SE", "filename_SE", "selected_SE", "SEModDone", 
-                "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE", 
-                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1", 
+  if (eventName == "clear_all" | grepl("load_", eventName)){
+    toNULL <- c("data_SE", "filename_SE", "selected_SE", "SEModDone",
+                "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE",
+                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
                 "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
-                "text_SE_est", "data_CP", "filename_CP", "selected_CP", 
-                "CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP", 
-                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1", 
+                "text_SE_est", "data_CP", "filename_CP", "selected_CP",
+                "CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP",
+                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
                 "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
-                "text_CP_est", "fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
-                "sizeclass_g2", "data_SS", "data_DWP", "data_CO")
+                "text_CP_est", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
+                "sizeclass_g2", "data_SS", "data_DWP", "data_CO", "filename_SS",
+                "filename_CO", "filename_DWP")
     output <- reNULL(output, toNULL)
     output$kNeed <- setkNeed(rv)
-    dontSuspend <- c("SEModDone", 
-                     "sizeclasses_SE", "filename_SE", "text_SE_est", 
-                     "kNeed", "MModDone", "gModDone",
-                     "sizeclass_gyn", 
-                     "filename_SE", "filename_CP", "text_CP_est", 
-                     "CPModDone", 
-                     "sizeclasses_CP", "data_SS", "data_DWP", "data_CO")
+    dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
+                     "kNeed", "MModDone", "gModDone", "sizeclass_gyn",
+                     "CPModDone", "sizeclasses_CP", "text_CP_est",
+      "filename_SE", "filename_CP", "filename_SS", "filename_DWP", "filename_CO")
     setNotSuspending(output, dontSuspend)
   }
 
   if (eventName == "file_SE" | eventName == "file_SE_clear"){
-    toNULL <- c("data_SE", "filename_SE", "selected_SE", "SEModDone", 
-                "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE", 
-                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1", 
+    toNULL <- c("data_SE", "filename_SE", "selected_SE", "SEModDone",
+                "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE",
+                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
                 "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
-                "text_SE_est", "fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
+                "text_SE_est", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
     output$kNeed <- setkNeed(rv)
     if (eventName == "file_SE"){
-      output$data_SE <- renderDTns(datatable(rv$data_SE))
+      output$data_SE <- renderDTns(datatable(rv$data_SE,
+        caption = paste0("File: ", rv$filename_SE)))
       output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
     }
-    dontSuspend <- c("SEModDone", "sizeclasses_SE", "filename_SE", 
+    dontSuspend <- c("SEModDone", "sizeclasses_SE", "filename_SE",
                      "text_SE_est", "kNeed", "MModDone", "gModDone",
                      "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
   if (eventName == "file_CP" | eventName == "file_CP_clear"){
-    toNULL <- c("data_CP", "filename_CP", "selected_CP", "CPModDone", 
-                "AICcTab_CP", "modTab_CP", "fig_CP", 
-                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1", 
+    toNULL <- c("data_CP", "filename_CP", "selected_CP", "CPModDone",
+                "AICcTab_CP", "modTab_CP", "fig_CP",
+                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
                 "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
-                "text_CP_est", "fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
+                "text_CP_est", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
     if (eventName == "file_CP"){
-      output$data_CP <- renderDTns(datatable(rv$data_CP))
+      output$data_CP <- renderDTns(datatable(rv$data_CP,
+        caption = paste0("File: ", rv$filename_CP)))
       output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
     }
-    dontSuspend <- c("CPModDone", "sizeclasses_CP", "filename_CP", 
+    dontSuspend <- c("CPModDone", "sizeclasses_CP", "filename_CP",
                      "text_CP_est", "MModDone", "gModDone",
                      "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
   if (eventName == "file_SS" | eventName == "file_SS_clear"){
-    toNULL <- c("data_SS", "fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
-                "sizeclass_g2")
+    toNULL <- c("data_SS", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
+                "sizeclass_g2", "filename_SS")
     output <- reNULL(output, toNULL)
     if (eventName == "file_SS"){
-      output$data_SS <- renderDTns(datatable(rv$data_SS))
+      output$data_SS <- renderDTns(datatable(rv$data_SS,
+        caption = paste0("File: ", rv$filename_SS)))
+      output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
     }
-    dontSuspend <- c("data_SS", "MModDone", "gModDone", "sizeclass_gyn")
+    dontSuspend <- c("filename_SS", "MModDone", "gModDone",
+      "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
   if (eventName == "file_DWP" | eventName == "file_DWP_clear"){
-    toNULL <- c("data_DWP", "fig_M", "table_M", "MModDone")
+    toNULL <- c("filename_DWP", "data_DWP", "fig_M", "table_M", "MModDone")
     output <- reNULL(output, toNULL)
     if (eventName == "file_DWP"){
-      output$data_DWP <- renderDTns(datatable(rv$data_DWP))
+      output$data_DWP <- renderDTns(datatable(rv$data_DWP,
+        caption = paste0("File: ", rv$filename_DWP)))
+      output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
     }
-    dontSuspend <- c("data_DWP", "MModDone")
+    dontSuspend <- c("filename_DWP", "MModDone")
     setNotSuspending(output, dontSuspend)
   }
 
   if (eventName == "file_CO" | eventName == "file_CO_clear"){
-    toNULL <- c("data_CO", "fig_M", "table_M", "MModDone")
+    toNULL <- c("data_CO", "filename_CO", "fig_M", "table_M", "MModDone")
     output <- reNULL(output, toNULL)
     if (eventName == "file_CO"){
-      output$data_CO <- renderDTns(datatable(rv$data_CO))
+      output$data_CO <- renderDTns(datatable(rv$data_CO,
+        caption = paste0("File: ", rv$filename_CO)))
+      output$filename_CO <- renderText(paste0("File: ", rv$filename_CO))
     }
-    dontSuspend <- c("data_CO", "MModDone")
+    dontSuspend <- c("filename_CO", "MModDone")
     setNotSuspending(output, dontSuspend)
+  }
+
+
+  if (grepl("load_", eventName)){
+    toNULL <- c("data_SE", "filename_SE", "selected_SE", "SEModDone",
+                "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE",
+                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
+                "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
+                "text_SE_est", "data_CP", "selected_CP", "filename_CP",
+                "CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP",
+                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
+                "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
+                "text_CP_est", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
+                "sizeclass_g2", "data_SS", "data_DWP", "data_CO", "filename_SS",
+                "filename_CO", "filename_DWP")
+    output <- reNULL(output, toNULL)
+    output$kNeed <- setkNeed(rv)
+
+
+    output$data_SE <- renderDTns(datatable(rv$data_SE,
+      caption = paste0("File: ", rv$filename_SE)))
+    output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
+
+    output$data_CP <- renderDTns(datatable(rv$data_CP,
+      caption = paste0("File: ", rv$filename_CP)))
+    output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
+
+    output$data_SS <- renderDTns(datatable(rv$data_SS,
+      caption = paste0("File: ", rv$filename_SS)))
+    output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
+
+    output$data_DWP <- renderDTns(datatable(rv$data_DWP,
+      caption = paste0("File: ", rv$filename_DWP)))
+    output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
+
+    output$data_CO <- renderDTns(datatable(rv$data_CO,
+      caption = paste0("File: ", rv$filename_CO)))
+    output$filename_CO <- renderText(paste0("File: ", rv$filename_CO))
+
+    dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
+                     "kNeed", "MModDone", "gModDone", "sizeclass_gyn",
+                     "CPModDone", "sizeclasses_CP", "text_CP_est",
+      "filename_SE", "filename_CP", "filename_SS", "filename_DWP", "filename_CO")
+#      "data_SE", "data_CP", "data_SS", "data_DWP", "data_CO")
+#    setNotSuspending(output, dontSuspend)
+
   }
 
   if (eventName == "class"){
@@ -185,11 +241,11 @@ update_output <- function(eventName, rv, output){
   if (eventName == "run_SE"){
     output$kNeed <- setkNeed(rv)
     output$DWPNeed <- renderText("yes")
-    toNULL <- c("SEModDone", "AICcTab_SE", "modTab_SE", "fig_SE", 
-                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1", 
+    toNULL <- c("SEModDone", "AICcTab_SE", "modTab_SE", "fig_SE",
+                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
                 "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
-                "text_SE_est", "fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
+                "text_SE_est", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
     if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
@@ -203,11 +259,11 @@ update_output <- function(eventName, rv, output){
       }
       output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
       output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
-      output$fig_SE <- renderPlot({ 
-                         plot(rv$modSet_SE, specificModel = rv$best_SE, 
+      output$fig_SE <- renderPlot({
+                         plot(rv$modSet_SE, specificModel = rv$best_SE,
                            app = TRUE)
                        }, height = rv$figH_SE, width = rv$figW_SE)
-  
+
       output$sizeclasses_SE <- prepSizeclassText(rv$sizeclasses_SE)
       output$modelMenu_SE <- modelSelectionWidget(rv$mods_SE, "SE")
 
@@ -221,15 +277,15 @@ update_output <- function(eventName, rv, output){
       } else{
         output$sizeclass_SEyn <- renderText("YES")
       }
-  
-      output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, 
+
+      output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE,
                                             rv$csvformat)
-      output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE, 
+      output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE,
                                             rv$csvformat)
       output$dlSEfig <- downloadSEFig(rv)
     }
     dontSuspend <- c("text_SE_est", "MModDone", "gModDone", "sizeclass_gyn",
-                     "SEModDone", "kNeed", "DWPNeed", "sizeclasses_SE", 
+                     "SEModDone", "kNeed", "DWPNeed", "sizeclasses_SE",
                      "sizeclass_SEyn")
     setNotSuspending(output, dontSuspend)
   }
@@ -237,14 +293,14 @@ update_output <- function(eventName, rv, output){
   if (eventName == "run_SE_clear"){
     output$kNeed <- setkNeed(rv)
     output$DWPNeed <- renderText("yes")
-    toNULL <- c("SEModDone", "AICcTab_SE", "modTab_SE", "fig_SE", 
-                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1", 
+    toNULL <- c("SEModDone", "AICcTab_SE", "modTab_SE", "fig_SE",
+                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
                 "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
-                "text_SE_est", "fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
+                "text_SE_est", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est", 
+    dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
                      "kNeed", "MModDone", "gModDone",
                      "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
@@ -254,18 +310,18 @@ update_output <- function(eventName, rv, output){
     if (length(rv$mods_SE) > 0){
       output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
       output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
-      output$fig_SE <- renderPlot({ 
-                         plot(rv$modSet_SE, specificModel = rv$best_SE, 
+      output$fig_SE <- renderPlot({
+                         plot(rv$modSet_SE, specificModel = rv$best_SE,
                            app = TRUE)
                        }, height = rv$figH_SE, width = rv$figW_SE)
-  
+
       output$sizeclass_SE1 <- classText(rv, "SE")
       output$sizeclass_SE2 <- classText(rv, "SE")
       output$sizeclass_SE3 <- classText(rv, "SE")
 
-      output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, 
+      output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE,
                                             rv$csvformat)
-      output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE, 
+      output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE,
                                             rv$csvformat)
       output$dlSEfig <- downloadSEFig(rv)
     }
@@ -273,9 +329,9 @@ update_output <- function(eventName, rv, output){
 
   if (eventName == "outSEp" | eventName == "outSEk"){
     if (length(rv$mods_SE) > 0){
-      output$fig_SE <- renderPlot({ 
+      output$fig_SE <- renderPlot({
                          tryCatch(
-                           plot(rv$modSet_SE, specificModel = rv$outSEpk, 
+                           plot(rv$modSet_SE, specificModel = rv$outSEpk,
                              app = TRUE),
                            error = function(x){plotNA()}
                          )
@@ -283,27 +339,27 @@ update_output <- function(eventName, rv, output){
       output$dlSEfig <- downloadSEFig(rv)
       if (!is.null(rv$modTab_SE)){
         output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
-        output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE, 
+        output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE,
                                             rv$csvformat)
       }
     }
   }
 
   if (eventName == "run_CP"){
-    toNULL <- c("CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP", 
-                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1", 
+    toNULL <- c("CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP",
+                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
                 "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
-                "text_CP_est", "dlCPest", "dlCPAICc", "dlCPfig", 
-                "fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
+                "text_CP_est", "dlCPest", "dlCPAICc", "dlCPfig",
+                "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
     if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
       output$CPModDone <- renderText("OK")
-      output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})    
+      output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})
       output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
-      output$fig_CP <- renderPlot({ 
-                         plot(rv$modSet_CP, specificModel = rv$best_CP, 
+      output$fig_CP <- renderPlot({
+                         plot(rv$modSet_CP, specificModel = rv$best_CP,
                            app = TRUE)
                        }, height = rv$figH_CP, width = rv$figW_CP)
       output$sizeclasses_CP <- prepSizeclassText(rv$sizeclasses_CP)
@@ -320,9 +376,9 @@ update_output <- function(eventName, rv, output){
         output$sizeclass_CPyn <- renderText("YES")
       }
 
-      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, 
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
                                             rv$csvformat)
-      output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP, 
+      output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP,
                                             rv$csvformat)
       output$dlCPfig <- downloadCPFig(rv)
     }
@@ -332,12 +388,12 @@ update_output <- function(eventName, rv, output){
   }
 
   if (eventName == "run_CP_clear"){
-    toNULL <- c("CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP", 
-                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1", 
+    toNULL <- c("CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP",
+                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
                 "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
-                "text_CP_est", "dlCPest", "dlCPAICc", "dlCPfig", 
-                "fig_M", "table_M", "MModDone", "table_g", 
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1", 
+                "text_CP_est", "dlCPest", "dlCPAICc", "dlCPfig",
+                "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
     dontSuspend <- c("CPModDone", "sizeclasses_CP", "sizeclass_CPyn",
@@ -348,8 +404,8 @@ update_output <- function(eventName, rv, output){
   if (eventName == "outCPclass"){
     if (length(rv$mods_CP) > 0){
       output$modTab_CP <- renderDTns(datatable(rv$modTabPretty_CP))
-      output$fig_CP <- renderPlot({ 
-                         plot(rv$modSet_CP, specificModel = rv$best_CP, 
+      output$fig_CP <- renderPlot({
+                         plot(rv$modSet_CP, specificModel = rv$best_CP,
                            app = TRUE)
                        }, height = rv$figH_CP, width = rv$figW_CP)
 
@@ -358,9 +414,9 @@ update_output <- function(eventName, rv, output){
       output$sizeclass_CP2 <- classText(rv, "CP")
       output$sizeclass_CP3 <- classText(rv, "CP")
 
-      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP, 
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
                                             rv$csvformat)
-      output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP, 
+      output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP,
                                             rv$csvformat)
       output$dlCPfig <- downloadCPFig(rv)
     }
@@ -369,9 +425,9 @@ update_output <- function(eventName, rv, output){
   if (eventName %in% c("outCPdist", "outCPl", "outCPs")){
     if (length(rv$mods_CP) > 0){
       output$modTab_CP <- renderDTns(datatable(rv$modTabPretty_CP))
-      output$fig_CP <- renderPlot({ 
+      output$fig_CP <- renderPlot({
                        tryCatch(
-                         plot(rv$modSet_CP, specificModel = rv$outCPdlsfig, 
+                         plot(rv$modSet_CP, specificModel = rv$outCPdlsfig,
                            app = TRUE),
                          error = function(x){plotNA()}
                        )
@@ -393,7 +449,7 @@ update_output <- function(eventName, rv, output){
   }
 
   if (eventName == "run_g"){
-    toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn", 
+    toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn",
                 "sizeclass_g1", "sizeclass_g2")
     output <- reNULL(output, toNULL)
     if (!is.null(rv$gGeneric[[1]])){
@@ -416,16 +472,16 @@ update_output <- function(eventName, rv, output){
       output$sizeclass_g1 <- classText(rv, "g")
       output$sizeclass_g2 <- classText(rv, "g")
 
-      output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, 
+      output$dlgtab <- downloadTable("g_estimates.csv", summaryTab,
                                           rv$csvformat)
       output$dlgfig <- downloadgFig(rv, 1)
     }
     dontSuspend <- c("gModDone", "sizeclass_gyn")
-    setNotSuspending(output, dontSuspend)    
+    setNotSuspending(output, dontSuspend)
   }
 
   if (eventName == "run_g_clear"){
-    toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn", 
+    toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn",
                 "sizeclass_g1", "sizeclass_g2")
     output <- reNULL(output, toNULL)
     dontSuspend <- c("gModDone", "sizeclass_gyn")
@@ -449,7 +505,7 @@ update_output <- function(eventName, rv, output){
       preText <- paste0("Size class: ", rv$sizeclass_g)
       if (length(rv$sizeclasses_g) == 1){
         preText <- ""
-      }    
+      }
       scText <- renderText(preText)
       output$sizeclass_g1 <- scText
       output$sizeclass_g2 <- scText
@@ -542,7 +598,8 @@ update_output <- function(eventName, rv, output){
                       }, height = rv$figH_M, width = rv$figW_M
                       )
       output$dlMfig <- downloadMFig(rv, TRUE, TRUE)
-    }  
+    }
   }
+
   return(output)
 }

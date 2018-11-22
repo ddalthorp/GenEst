@@ -64,11 +64,18 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
 
   SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
+  if (is.null(SSdate)) SSdate <- SSdat$SSdate
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
   dates_CO <- checkDate(data_CO[ , COdate])
   if (is.null(dates_CO)) stop("dates_CO not properly formatted as dates")
-  if (t0date > min(dates_CO) stop("first carcass discovered before first search date")
+  if (t0date > min(dates_CO)) stop("first carcass discovered before first search date")
+  if (any(as.numeric(data_SS[cbind(
+      match(data_CO[, COdate], SSdat[[SSdate]]),
+      match(data_CO[, unitCol], names(data_SS)))]) == 0)){
+    stop("some carcasses (CO) were found at turbines that were not searched (SS) ",
+         "on the the date recorded for the carcass discovery")
+  }
   COdat <- data_CO # format data_CO
   COdat[ , COdate] <- dateToDay(dates_CO, t0date)
   names(COdat)[names(COdat) == COdate] <- "day" # distinguish integers
@@ -91,7 +98,6 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   sizeclass <- as.list(as.character(COdat[, sizeCol]))
   sizeclasses <- unique(unlist(sizeclass))
   nsizeclass <- length(sizeclasses)
-
 # data pre-processing
 # create lists of arrays for SS (days) and cells (SE and CP)
   for (sc in sizeclasses){
@@ -982,6 +988,7 @@ prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
   }
   ans$searches_unit <- t(as.matrix(data_SS[, unitNames]))
   ans$unit <- unitNames
+  ans$SSdate <- SSdate
   class(ans) <- c("prepSS", "list")
   return(ans)
 }

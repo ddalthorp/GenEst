@@ -121,7 +121,13 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
       if (!is.null(rv$fracNote)){
         return(msgFracNote(rv$fracNote))
       } else {
-        return(msgModFail(rv$M, "M"))
+        return(msgModFail(mods = rv$M, "M"))
+      }
+    } else if ("error" %in% class(rv$M)){
+      if (!is.null(rv$fracNote)){
+        return(msgFracNote(rv$fracNote))
+      } else {
+        return(msgModFail(mods = rv$M[1], type = "M"))
       }
     }
   }
@@ -304,7 +310,7 @@ msgModFail <- function(mods, type = "SE", special = NULL){
     msg <- "Cannot estimate detection probability"
   }
   if (type == "M"){
-    msg <- "Cannot estimate Mortality"
+    msg <- mods
   }
   if(!is.null(msg)){
     return(showNotification(msg, type = "error", duration = NULL))

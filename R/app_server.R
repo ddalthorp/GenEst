@@ -83,6 +83,13 @@ GenEstServer <- function(input, output, session){
   observeEvent(input$run_g_clear, eval(reaction("run_g_clear")))
   observeEvent(input$outgclass, eval(reaction("outgclass")))
 
+  observeEvent(input$load_RP, eval(reaction("load_RP")))
+  observeEvent(input$load_RPbat, eval(reaction("load_RPbat")))
+  observeEvent(input$load_cleared, eval(reaction("load_cleared")))
+  observeEvent(input$load_PV, eval(reaction("load_PV")))
+  observeEvent(input$load_trough, eval(reaction("load_trough")))
+  observeEvent(input$load_powerTower, eval(reaction("load_powerTower")))
+  observeEvent(input$load_mock, eval(reaction("load_mock")))
 }
 
 #' @rdname GenEstServer
@@ -122,7 +129,9 @@ reaction <- function(eventName){
                     "run_CP", "run_CP_clear", "outCPclass", "outCPdist",
                     "outCPl", "outCPs", "run_M", "run_M_clear", "split_M",
                     "split_M_clear", "transpose_split", "useSSdata",
-                    "useSSinputs", "run_g", "run_g_clear", "outgclass")
+                    "useSSinputs", "run_g", "run_g_clear", "outgclass",
+                    "load_RP", "load_RPbat", "load_cleared", "load_PV",
+                    "load_trough", "load_powerTower", "load_mock")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")

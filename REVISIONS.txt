@@ -1,5 +1,19 @@
 Revision log
 
+2018.11.21
+v1.1.2
+
+* example data sets can now be loaded directly into the GUI from buttons on
+the (newly named "Example Data" tab...formerly "Downloads") rather than
+requiring that they be first downloaded as .csv files and then uploaded
+one by one into the GUI. (The data sets can still be downloaded for use
+as input file templates or other purposes if desired.)
+
+* improved error-checking and error messages for estM function
+
+* export the more informative estM error messages from command line function
+to the GUI
+
 2018.11.19
 v1.1.1
 
