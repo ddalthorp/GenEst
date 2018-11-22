@@ -14,6 +14,9 @@ as input file templates or other purposes if desired.)
 * export the more informative estM error messages from command line function
 to the GUI
 
+* updated links to User Guide and technical manual to point to doi's rather
+than pdf's
+
 2018.11.19
 v1.1.1
 
@@ -21,12 +24,9 @@ v1.1.1
 
 * estM: error-check added for CO units not included in DWP
 
-<<<<<<< HEAD
-=======
 * cpm0: sample size was missing from cp model tables when s parameter has an
 additive model (e.g., s ~ A + B). Fixed
 
->>>>>>> e349bc4a8f74cd56a024d1c76b388d84b7453508
 2018.11.14
 v1.1.0
 
