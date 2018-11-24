@@ -21,7 +21,7 @@
 #'   reformulate rnorm runif terms update.formula weighted.mean
 #' @importFrom survival strata
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
-#'   zip
+#'   zip globalVariables
 #'
 
 #' @title Generalized estimation of mortality
