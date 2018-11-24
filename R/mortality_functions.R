@@ -82,45 +82,10 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   data_CO[ , COdate] <- checkDate(data_CO[ , COdate])
   if (is.null(data_CO[ , COdate]))
     stop("dates_CO not unambiguously intepretable as dates")
-  # attempted auto-parsing for unitCol:
-  #  find common cols in CO and DWP as the candidate unitCol
-  #  if unique, then use that as unitCol
-  #  if not present or not unique, then error
-  if (is.null(unitCol)){ 
-    unitCol <- intersect(colnames(data_CO), colnames(data_DWP))
-    if (length(unitCol) == 0){
-      stop(
-        "Unit column name not provided, and no columns in data_CO and data_DWP",
-        " share a common name to use as a unit column. Cannot estimate M"
-      )
-    }
-    if (length(unitCol) == 1){
-      if (any(!(data_CO[ , unitCol] %in% names(data_SS))) ||
-          any(!(data_DWP[ , unitCol] %in% names(data_SS))) ||
-          any(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))){
-        stop("No unitCol provided, and data_CO and data_DWP do not have a column ",
-             "that can unambiguously serve as unitCol. Cannot estimate M.")
-      }
-    }
-    if (length(unitCol) > 1){
-      bad <- NULL
-      for (ni in 1:length(unitCol)){
-        if (any(!(data_CO[ , unitCol[ni]] %in% names(data_SS))) ||
-            any(!(data_DWP[ , unitCol[ni]] %in% names(data_SS)))){
-          bad <- c(bad, ni)
-          next
-        }
-      }
-      if (length(bad) != length(unitCol) - 1){
-        stop(
-          "No unitCol provided, and data_CO and data_DWP do not have a column ",
-          "that can unambiguously serve as unitCol. Cannot estimate M."
-        )
-      } else {
-        unitCol <- unitCol[-bad]
-      }
-    }
-  }
+
+  if (is.null(unitCol))
+    unitCol <- defineUnitCol(data_CO = data_CO, data_DWP = data_DWP)
+
   # if no sizeCol is provided, then the later analysis is done without
   #   making distinctions between sizes; no error-checking here
   # if sizeCol is provided, it must be present in CO. Its levels must
@@ -220,7 +185,7 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
   } else {
     if (length(unitCol) > 1) stop("length(unitCol) must be 1 if provided")
     if (!(unitCol %in% colnames(data_DWP))){
-      stop(unitCol, " not found in data_DWP")
+      stop("\"", unitCol, "\" not found in data_DWP")
     }
   }
   # length(unitCol) = 1 and has been found in both CO and DWP;
@@ -313,3 +278,4 @@ summary.estM <- function(object, ..., CL = 0.90){
   names(out) <- c("median", paste0(100*c(alpha/2, 1- alpha/2), "%"))
   return(out)
 }
+

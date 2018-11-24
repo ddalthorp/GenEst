@@ -113,7 +113,7 @@ update_output <- function(eventName, rv, output){
         caption = paste0("File: ", rv$filename_SS)))
       output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
     }
-    dontSuspend <- c("filename_SS", "MModDone", "gModDone",
+    dontSuspend <- c("filename_SS", "data_SS", "MModDone", "gModDone",
       "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
@@ -140,6 +140,54 @@ update_output <- function(eventName, rv, output){
     }
     dontSuspend <- c("filename_CO", "MModDone")
     setNotSuspending(output, dontSuspend)
+  }
+
+
+  if (grepl("load_", eventName)){
+    toNULL <- c("data_SE", "filename_SE", "selected_SE", "SEModDone",
+                "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE",
+                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
+                "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
+                "text_SE_est", "data_CP", "selected_CP", "filename_CP",
+                "CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP",
+                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
+                "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
+                "text_CP_est", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
+                "sizeclass_g2", "data_SS", "data_DWP", "data_CO", "filename_SS",
+                "filename_CO", "filename_DWP")
+    output <- reNULL(output, toNULL)
+    output$kNeed <- setkNeed(rv)
+
+
+    output$data_SE <- renderDTns(datatable(rv$data_SE,
+      caption = paste0("File: ", rv$filename_SE)))
+    output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
+
+    output$data_CP <- renderDTns(datatable(rv$data_CP,
+      caption = paste0("File: ", rv$filename_CP)))
+    output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
+
+    output$data_SS <- renderDTns(datatable(rv$data_SS,
+      caption = paste0("File: ", rv$filename_SS)))
+    output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
+
+    output$data_DWP <- renderDTns(datatable(rv$data_DWP,
+      caption = paste0("File: ", rv$filename_DWP)))
+    output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
+
+    output$data_CO <- renderDTns(datatable(rv$data_CO,
+      caption = paste0("File: ", rv$filename_CO)))
+    output$filename_CO <- renderText(paste0("File: ", rv$filename_CO))
+
+    dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
+                     "kNeed", "MModDone", "gModDone", "sizeclass_gyn",
+                     "CPModDone", "sizeclasses_CP", "text_CP_est",
+                     "data_SS", "filename_SE", "filename_CP", "filename_SS",
+                     "filename_DWP", "filename_CO")
+#      "data_SE", "data_CP", "data_SS", "data_DWP", "data_CO")
+    setNotSuspending(output, dontSuspend)
+
   }
 
 

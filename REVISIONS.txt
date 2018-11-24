@@ -1,5 +1,13 @@
 Revision log
 
+2018.11.23
+v1.1.3
+
+* improved error-checking and error messages for auto-parsing of CO, SS, and
+DWP files to find unit column when not provided by user in arg list to
+estg or estM. The error-checking is extracted into a short function that is 
+called by estg and estM when necessary.
+
 2018.11.22
 v1.1.2
 
