@@ -63,16 +63,30 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
                  nsim = 1000, max_intervals = 8,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
 
+# error-checking
+  if (is.null(unitCol))
+    unitCol <- defineUnitCol(data_CO = data_CO, data_SS = data_SS)
   SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
   if (is.null(SSdate)) SSdate <- SSdat$SSdate
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
   dates_CO <- checkDate(data_CO[ , COdate])
-  if (is.null(dates_CO)) stop("dates_CO not properly formatted as dates")
-  if (t0date > min(dates_CO)) stop("first carcass discovered before first search date")
-  if (any(as.numeric(data_SS[cbind(
-      match(data_CO[, COdate], SSdat[[SSdate]]),
-      match(data_CO[, unitCol], names(data_SS)))]) == 0)){
+  if (is.null(dates_CO))
+    stop("data_CO[ , COdate] values  not properly formatted as dates")
+  if (t0date > min(dates_CO))
+    stop("first carcass discovered before first search date")
+  rind <- match(dates_CO, SSdat[[SSdate]])
+  cind <- match(data_CO[, unitCol], names(data_SS))
+  if (anyNA(rind)){
+    stop("carcasses ", paste0(which(is.na(rind)), collapse = ', '),
+         " in CO found on dates not listed in SS")
+  }
+  if (anyNA(cind)){
+    stop("carcasses discovered at unit(s) ",
+      paste0(data_CO[rind, unitCol], collapse =", "),
+      "in CO...not represented in SS. Cannot estimate g or M.")
+  }
+  if (any(as.numeric(data_SS[cbind(rind, cind)]) == 0)){
     stop("some carcasses (CO) were found at turbines that were not searched (SS) ",
          "on the the date recorded for the carcass discovery")
   }

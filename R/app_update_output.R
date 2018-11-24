@@ -113,7 +113,7 @@ update_output <- function(eventName, rv, output){
         caption = paste0("File: ", rv$filename_SS)))
       output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
     }
-    dontSuspend <- c("filename_SS", "MModDone", "gModDone",
+    dontSuspend <- c("filename_SS", "data_SS", "MModDone", "gModDone",
       "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
@@ -183,9 +183,10 @@ update_output <- function(eventName, rv, output){
     dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
                      "kNeed", "MModDone", "gModDone", "sizeclass_gyn",
                      "CPModDone", "sizeclasses_CP", "text_CP_est",
-      "filename_SE", "filename_CP", "filename_SS", "filename_DWP", "filename_CO")
+                     "data_SS", "filename_SE", "filename_CP", "filename_SS",
+                     "filename_DWP", "filename_CO")
 #      "data_SE", "data_CP", "data_SS", "data_DWP", "data_CO")
-#    setNotSuspending(output, dontSuspend)
+    setNotSuspending(output, dontSuspend)
 
   }
 
