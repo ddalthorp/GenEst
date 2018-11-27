@@ -41,9 +41,9 @@ dataInputWidget <- function(dataType){
                                       "CO" = "file_CO_clear")
   ConditionPrefix <- switch(dataType, "SE" = "output.filename_",
                                       "CP" = "output.filename_",
-                                      "SS" = "output.data_",
-                                      "DWP" = "output.data_",
-                                      "CO" = "output.data_")
+                                      "SS" = "output.filename_",
+                                      "DWP" = "output.filename_",
+                                      "CO" = "output.filename_")
   PanelCondition <- paste0(ConditionPrefix, dataType, " != null")
 
   list(
@@ -84,10 +84,10 @@ dataDownloadWidget <- function(set){
                 "mock" = "Mock data")
 
   setName <- setNames[set]
-  setButtonName <- paste0("download_", set)
   fluidRow(
     column(6, h4(setName)), 
-    column(2, downloadButton(setButtonName, "Download"))
+    column(2, actionButton(paste0("load_", set), "Load Data")),
+    column(2, downloadButton(paste0("download_", set), "Download"))
   )
 }
 
@@ -720,3 +720,5 @@ kFixedWidgetRow <- function(sizeclasses, sci){
 
   fluidRow(spacerCol, rowNameCol, checkCol, numCol)
 }
+
+

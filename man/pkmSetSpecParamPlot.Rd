@@ -20,6 +20,6 @@ models}
 a specific parameter plot panel
 }
 \description{
-Plot parameter box plots for each cell within a model for 
+Plot parameter box plots for each cell within a model for
   either p or k with comparison to the cellwise model
 }

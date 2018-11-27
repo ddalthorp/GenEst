@@ -18,6 +18,6 @@ models}
 a plot
 }
 \description{
-Produce a set of cellwise figures for a specific SE model, as 
+Produce a set of cellwise figures for a specific SE model, as
   fit by \code{\link{pkmSet}}
 }

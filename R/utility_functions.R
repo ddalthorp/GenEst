@@ -197,3 +197,102 @@ aicc <- function(x, ... ){
 print.corpus_frame <- function(x, ...){
   corpus::print.corpus_frame(x, rows = 80)
 }
+
+#' @title Auto-parsing to find the name of the unit column (\code{unitCol})
+#'
+#' If a unit column is not explicitly defined by user in the arg list to
+#'  \code{estM} or \code{estg}, then \code{defineUnitCol} parses the CO, DWP,
+#'  and SS files to extract the unit column if possible.
+#'
+#' Criteria that a column must meet to be a unit column are that it is found
+#'  in both \code{data_CO} and \code{data_DWP}, all units in \code{data_CO} must
+#'  also be included among units in \code{data_DWP}, all units in both
+#'  \code{data_CO} and \code{data_DWP} must be included among the column names
+#'  in \code{data_SS}. If \code{data_DWP = NULL}, then the unit column must be
+#'  included in \code{data_CO} and all its units must be included among the
+#'  column names of \code{data_SS}.
+#'
+#'
+#' @param data_CO carcass observation data (data frame)
+#'
+#' @param data_SS search schedule data (data frame)
+#'
+#' @param data_DWP density-weighted proportion data (data frame)
+#'
+#' @return name of unit column (\code{unitCol}), if a unique unit column can be
+#'  identified. If no unit column is present or there is more than one unit
+#'  column, \code{defineUnitCol} stops with an error.
+#'
+#' @export
+
+defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
+  if (is.null(data_CO)) stop("data_CO empty")
+  if (is.null(data_SS) && is.null(data_DWP))
+    stop("cannot find an unambiguous unit column in data_CO")
+  if (is.null(data_SS)){ # unique column with matching names and levels in CO and DWP?
+    unitCol <- intersect(colnames(data_CO), colnames(data_DWP))
+    if (length(unitCol) == 0){
+      stop(
+        "No columns in data_CO and data_DWP share a common name to use as a ",
+        "unit column. Cannot estimate M"
+      )
+    }
+    if (length(unitCol) == 1 & any(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))){
+      ind <- which(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))
+      if (length(ind) > 1)
+        stop("Units ", paste0(data_CO[ind, unitCol], collapse = ", "), " are ",
+          "represented in data_CO but not in data_DWP. Cannot estimate M.")
+        stop("Unit ", data_CO[ind, unitCol], " is ",
+          "represented in data_CO but not in data_DWP. Cannot estimate M.")
+    }
+    if (length(unitCol) > 1){
+      stop("data_CO and data_DWP have columns ", paste0(unitCol, collapse = ", "),
+        " in common. Cannot unambiguously define a unit column")
+    }
+    return(unitCol)
+  }
+  if (is.null(data_DWP)){
+    unitCol <- colnames(data_CO)
+  } else {
+    unitCol <- intersect(colnames(data_CO), colnames(data_DWP))
+    if (length(unitCol) == 0){
+      stop(
+        "No columns in data_CO and data_DWP share a common name to use as a ",
+        "unit column. Cannot estimate M"
+      )
+    }
+    if (length(unitCol) == 1 & any(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))){
+      ind <- which(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))
+      if (length(ind) > 1)
+        stop("Units ", paste0(data_CO[ind, unitCol], collapse = ", "), " are ",
+          "represented in data_CO but not in data_DWP. Cannot estimate M.")
+      stop("Unit ", data_CO[ind, unitCol], " is ",
+        "represented in data_CO but not in data_DWP. Cannot estimate M.")
+    }
+  }
+  if (length(unitCol) == 1){
+    ind <- !(data_CO[ , unitCol] %in% names(data_SS))
+    if (any(ind))
+      stop("Carcasses were found (CO) at units (",
+        paste0(data_CO[ind, unitCol], collapse = "), "), " which are not ",
+        "included in the search schedule (SS). Cannot estimate g or M.")
+  }
+  if (length(unitCol) > 1){
+    bad <- NULL
+    for (ni in 1:length(unitCol)){
+      if (any(!(data_CO[ , unitCol[ni]] %in% names(data_SS)))){
+        bad <- c(bad, ni)
+        next
+      }
+    }
+    if (length(bad) != length(unitCol) - 1){
+      stop(
+        "No unitCol provided, and data_CO and data_DWP do not have a column ",
+        "that can unambiguously serve as unitCol. Cannot estimate M."
+      )
+    } else {
+      unitCol <- unitCol[-bad]
+    }
+  }
+  unitCol
+}

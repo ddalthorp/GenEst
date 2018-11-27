@@ -69,7 +69,7 @@ gettingStartedContent <- function(){
       ),
       br(),
       p("Example data sets are available in comma-separated (.csv) files that
-        may be downloaded under the ", code("Downloads"), " tab. ")
+        may be downloaded under the ", code("Example Data"), " tab. ")
     )
   )
 }
