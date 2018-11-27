@@ -154,7 +154,7 @@ cp_smlCandidates <-
 cp_smlCandidates
 
 ## ---- eval = F--------------------------------------------------------------------------------------------------------
-#  plot(cpSet_sml, specificModel = cp_smlCandidates)
+#  plot(cpModels[["sml"]], specificModel = cp_smlCandidates)
 
 ## ---------------------------------------------------------------------------------------------------------------------
 cp_sml <- cpModels[["sml"]][[cp_smlCandidates[1]]]

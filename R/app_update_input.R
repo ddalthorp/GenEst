@@ -24,7 +24,7 @@
 #'
 update_input <- function(eventName, rv, input, session){
 
-  eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
+    eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
                     "file_CP_clear", "file_SS", "file_SS_clear", "file_DWP",
                     "file_DWP_clear", "file_CO", "file_CO_clear", "class",
                     "obsSE", "predsSE", "run_SE", "run_SE_clear",
@@ -32,12 +32,13 @@ update_input <- function(eventName, rv, input, session){
                     "run_CP", "run_CP_clear", "outCPclass", "outCPdist",
                     "outCPl", "outCPs", "run_M", "run_M_clear", "split_M",
                     "split_M_clear", "transpose_split", "useSSdata",
-                    "useSSinputs", "run_g", "run_g_clear", "outgclass")
+                    "useSSinputs", "run_g", "run_g_clear", "outgclass",
+                    "load_RP", "load_RPbat", "load_cleared", "load_PV",
+                    "load_trough", "load_powerTower", "load_mock")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")
   }
-
 
   if(eventName == "clear_all"){
     toReset <- c("file_SE", "predsSE", "obsSE", "outSEp", "outSEk",
@@ -115,7 +116,7 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "outSEclass", choices = "")
     updateSelectizeInput(session, "outgclass", choices = "")
     updateSelectizeInput(session, "DWPCol", choices = "")
-
+    updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
   }
 
   if (eventName == "file_CP"){
@@ -132,7 +133,7 @@ update_input <- function(eventName, rv, input, session){
   if (eventName == "file_CP_clear"){
 
     toReset <- c("file_CP", "predsCP", "ltp", "fta", "outCPl", "outCPs",
-                 "outCPdist", "outCPclass", "modelChoices_CP1", 
+                 "outCPdist", "outCPclass", "modelChoices_CP1",
                  "split_SS", "split_CO", "outgclass")
     lapply(toReset, reset)
 
@@ -154,6 +155,7 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "split_SS", choices = "")
     updateSelectizeInput(session, "split_CO", choices = "")
     updateSelectizeInput(session, "outgclass", choices = "")
+    updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
   }
 
   if (eventName == "file_SS"){
@@ -162,13 +164,14 @@ update_input <- function(eventName, rv, input, session){
 
   if (eventName == "file_SS_clear"){
 
-    toReset <- c("file_SS", "gSearchInterval", "gSearchMax", 
+    toReset <- c("file_SS", "gSearchInterval", "gSearchMax",
                  "split_SS", "split_CO", "outgclass")
     lapply(toReset, reset)
 
     updateSelectizeInput(session, "split_SS", choices = "")
     updateSelectizeInput(session, "split_CO", choices = "")
     updateSelectizeInput(session, "outgclass", choices = "")
+    updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
   }
 
   if (eventName == "file_DWP"){
@@ -190,6 +193,7 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "DWPCol", choices = "")
     updateSelectizeInput(session, "split_SS", choices = "")
     updateSelectizeInput(session, "split_CO", choices = "")
+    updateTabsetPanel(session, "LoadedDataViz", "Density Weighted Proportion")
   }
 
   if (eventName == "file_CO"){
@@ -219,8 +223,47 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "COdate", choices = "")
     updateSelectizeInput(session, "split_SS", choices = "")
     updateSelectizeInput(session, "split_CO", choices = "")
+    updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
   }
 
+  if (grepl("load_", eventName)){
+    updateSelectizeInput(session, "predsSE", choices = rv$colNames_SE_preds)
+    updateSelectizeInput(session, "obsSE", choices = rv$colNames_SE_obs)
+    updateSelectizeInput(session, "class", choices = rv$colNames_size,
+      selected = rv$sizeCol
+    )
+    updateSelectizeInput(session, "predsCP", choices = rv$colNames_CP_preds)
+    updateSelectizeInput(session, "ltp", choices = rv$colNames_CP_ltp)
+    updateSelectizeInput(session, "fta", choices = rv$colNames_CP_fta)
+    updateSelectizeInput(session, "class", choices = rv$colNames_size,
+      selected = rv$sizeCol
+    )
+    updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
+    if (length(rv$colNames_DWP) == 1){
+      updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
+    }
+    if (rv$nsizeclasses > 1){
+      updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP[1])
+    }
+    updateSelectizeInput(session, "COdate", choices = rv$colNames_COdates)
+    if (length(rv$colNames_COdates) == 1){
+      updateSelectizeInput(session, "COdate",
+        choices = rv$colNames_COdates, selected = rv$colNames_COdates
+      )
+    }
+    updateSelectizeInput(session, "sizeCol", choices = rv$colNames_size,
+      selected = rv$sizeCol
+    )
+    if (rv$nsizeclasses > 1){
+      updateSelectizeInput(session, "DWPCol", selected = " ")
+    }
+    updateNavbarPage(session, "GenEstApp", selected = "Data Input")
+    updateTabsetPanel(session, "LoadedDataViz", "Carcass Persistence")
+    updateTabsetPanel(session, "LoadedDataViz", "Search Schedule")
+    updateTabsetPanel(session, "LoadedDataViz", "Density Weighted Proportion")
+    updateTabsetPanel(session, "LoadedDataViz", "Carcass Observations")
+    updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
+  }
 
   if (eventName == "class"){
     updateSelectizeInput(session, "predsSE", choices = rv$colNames_SE_preds,
@@ -348,8 +391,8 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "run_CP_clear"){
-    toReset <- c("outCPl", "outCPs", "outCPdist", "outsizeclassCP", 
-                 "split_SS", "split_CO", "modelChoices_CP1", "outgclass", 
+    toReset <- c("outCPl", "outCPs", "outCPdist", "outsizeclassCP",
+                 "split_SS", "split_CO", "modelChoices_CP1", "outgclass",
                  "gSearchInterval", "gSearchMax")
     lapply(toReset, reset)
     updateSelectizeInput(session, "modelChoices_CP1", choices = "")
@@ -378,7 +421,7 @@ update_input <- function(eventName, rv, input, session){
   if (eventName == "run_g"){
     updateSelectizeInput(session, "outgclass", choices = rv$sizeclasses_g)
     updateTabsetPanel(session, "analyses_g", "Summary")
-  } 
+  }
 
   if (eventName == "run_g_clear"){
     reset("outgclass")

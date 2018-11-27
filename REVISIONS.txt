@@ -1,5 +1,30 @@
 Revision log
 
+2018.11.23
+v1.1.3
+
+* improved error-checking and error messages for auto-parsing of CO, SS, and
+DWP files to find unit column when not provided by user in arg list to
+estg or estM. The error-checking is extracted into a short function that is 
+called by estg and estM when necessary.
+
+2018.11.22
+v1.1.2
+
+* example data sets can now be loaded directly into the GUI from buttons on
+the (newly named "Example Data" tab...formerly "Downloads") rather than
+requiring that they be first downloaded as .csv files and then uploaded
+one by one into the GUI. (The data sets can still be downloaded for use
+as input file templates or other purposes if desired.)
+
+* improved error-checking and error messages for estM function
+
+* export the more informative estM error messages from command line function
+to the GUI
+
+* updated links to User Guide and technical manual to point to doi's rather
+than pdf's
+
 2018.11.19
 v1.1.1
 

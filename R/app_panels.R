@@ -59,9 +59,9 @@ selectedDataPanel <- function(modType){
                   "CP" = "input.ltp == null | input.fta == null",
                   "g" = NULL)
   Condition2 <- switch(modType,
-                  "SE" = "output.filename_SE != null & 
+                  "SE" = "output.filename_SE != null &
                           input.obsSE != null",
-                  "CP" = "output.filename_CP != null & input.ltp != null & 
+                  "CP" = "output.filename_CP != null & input.ltp != null &
                           input.fta != null",
                   "g" = NULL)
   Text1 <- switch(modType,

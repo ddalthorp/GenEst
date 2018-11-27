@@ -554,7 +554,7 @@ cp_smlCandidates
 These can be compared in graphs as follows:
 
 ```{r, eval = F}
-plot(cpSet_sml, specificModel = cp_smlCandidates)
+plot(cpModels[["sml"]], specificModel = cp_smlCandidates)
 ```
 
 The figure shows the raw persistence data (fraction of carcasses remaining after

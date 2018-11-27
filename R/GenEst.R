@@ -14,7 +14,7 @@
 #'   removeNotification renderPlot renderText renderUI runApp 
 #'   selectizeInput shinyApp shinyAppDir showNotification sidebarLayout
 #'   sidebarPanel tabPanel tabsetPanel textOutput updateNumericInput
-#'   updateSelectizeInput updateTabsetPanel 
+#'   updateSelectizeInput updateTabsetPanel  updateNavbarPage
 #' @importFrom shinyjs inlineCSS reset useShinyjs 
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
