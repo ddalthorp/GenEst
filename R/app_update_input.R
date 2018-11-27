@@ -32,22 +32,19 @@ update_input <- function(eventName, rv, input, session){
                     "run_CP", "run_CP_clear", "outCPclass", "outCPdist",
                     "outCPl", "outCPs", "run_M", "run_M_clear", "split_M",
                     "split_M_clear", "transpose_split", "useSSdata",
-                    "useSSinputs", "run_g", "run_g_clear", "outgclass",
-                    "load_RP", "load_RPbat", "load_cleared", "load_PV",
-                    "load_trough", "load_powerTower", "load_mock")
+                    "useSSinputs", "run_g", "run_g_clear", "outgclass")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")
   }
 
-  if(eventName == "clear_all" | grepl("load_", eventName)){
-    toReset <- c("predsSE", "obsSE", "outSEp", "outSEk",
+  if(eventName == "clear_all"){
+    toReset <- c("file_SE", "predsSE", "obsSE", "outSEp", "outSEk",
                  "outSEclass", "DWPCol", "split_SS", "split_CO",
-                 "modelChoices_SE1", "outgclass", "predsCP", "ltp",
-                 "fta", "outCPl", "outCPs", "outCPdist", "outCPclass",
-                 "modelChoices_CP1", "gSearchInterval",
-                 "gSearchMax", "COdate",
-                 "file_SE", "file_CP", "file_SS", "file_DWP", "file_CO")
+                 "modelChoices_SE1", "outgclass","file_CP", "predsCP", "ltp", 
+                 "fta", "outCPl", "outCPs", "outCPdist", "outCPclass", 
+                 "modelChoices_CP1", "file_SS", "gSearchInterval", 
+                 "gSearchMax", "file_DWP", "file_CO", "COdate")
     lapply(toReset, reset)
 
     scc <- rv$colNames_size

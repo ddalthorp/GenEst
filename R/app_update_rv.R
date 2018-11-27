@@ -121,7 +121,6 @@ update_rv <- function(eventName, rv, input){
     rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds, rv$sizeCol)
   }
 
-
   if (eventName == "file_SE_clear"){
     toNULL <- c("data_SE", "filename_SE", "colNames_SE", "colNames_SE_preds",
                 "colNames_SE_preds0", "colNames_SE_obs", "colNames_SE_obs0",
@@ -1041,7 +1040,6 @@ update_rv <- function(eventName, rv, input){
       rv$Msplit <- transposeSplits(rv$Msplit)
     }
   }
-
 
   return(rv)
 }
