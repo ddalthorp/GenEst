@@ -25,7 +25,7 @@ Several third-party pacakges are required; all are free and open source and avai
 ```
 
 package_new <- c("cbinom", "corpus", "DT", "gsl", "gtools", "htmltools", "lubridate", 
-   "matrixStats", "mvtnorm", "Rcpp", "shiny", "shinyjs", "sticky", "survival")
+   "matrixStats", "mvtnorm", "Rcpp", "shiny", "shinyjs", "sticky", "survival", "zip")
 package_new <- package_new[!(package_new %in% installed.packages()[,"Package"])] 
 if(length(package_new) > 0) install.packages(package_new)
 ```

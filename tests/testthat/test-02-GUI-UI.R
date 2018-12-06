@@ -120,7 +120,7 @@ test_that("Model Selection Menu Widget function produces an HTML-rendering
                   formula_k = k ~ 1, sizeCol = "Size", allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "SE"), "shiny.render.function")
   expect_is(modelSelectionWidgetHeader(modSetSize), "character")
-  expect_is(modelSelectionWidgetRow(modSetSize, "SE", 1), "shiny.tag")
+  expect_error(modelSelectionWidgetRow(modSetSize, "SE", 1))
   expect_error(modelSelectionWidgetRow(modSetSize, "_NOT_RIGHT_", 1))
   expect_error(modelSelectionWidgetRow(modSetSize, "SE", 10))
   modSetSize <- cpmSize(data = mock$CP, formula_l = l ~ 1,
@@ -133,7 +133,7 @@ test_that("Model Selection Menu Widget function produces an HTML-rendering
                   formula_k = k ~ 1, allCombos = TRUE)
   expect_is(modelSelectionWidget(modSetSize, "SE"), "shiny.render.function")
   expect_is(modelSelectionWidgetHeader(modSetSize), "character")
-  expect_is(modelSelectionWidgetRow(modSetSize, "SE", 1), "shiny.tag")
+  expect_error(modelSelectionWidgetRow(modSetSize, "SE", 1))
   expect_error(modelSelectionWidgetRow(modSetSize, "_NOT_RIGHT_", 1))
   expect_error(modelSelectionWidgetRow(modSetSize, "SE", 10))
   modSetSize <- cpmSize(data = mock$CP, formula_l = l ~ 1,
@@ -153,7 +153,7 @@ test_that("kFixed Widget function produces an HTML-rendering shiny
 
   expect_is(kFixedWidgetHeader("all"), "shiny.tag")
 
-  expect_is(kFixedWidgetRow("all", 1), "shiny.tag")
+  expect_error(kFixedWidgetRow("all", 1))
   expect_error(kFixedWidgetRow("all", "OK"))
   expect_error(kFixedWidgetRow("all", 3))
 

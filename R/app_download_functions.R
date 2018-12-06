@@ -174,7 +174,8 @@ downloadData <- function(set, csvformat = NULL){
     filename = filename,
     content = function(file)  {
       tozip <- paste0(pth, "/", names(exob), "_", set, ".csv")
-      zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
+      #zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
+      zip::zip(zipfile = file, files = tozip)
     },
     contentType = "application/zip"
   )

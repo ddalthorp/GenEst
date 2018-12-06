@@ -11,7 +11,9 @@
 #'   "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
 #'   "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
 #'   "run_M", "run_M_clear", "split_M", "split_M_clear", "transpose_split",
-#'   "useSSdata", "useSSinputs", "run_g", "run_g_clear", or "outgclass".
+#'   "useSSdata", "useSSinputs", "run_g", "run_g_clear", "outgclass", "load_RP",
+#'   "load_RPbat", "load_cleared", "load_PV", "load_trough", "load_powerTower",
+#'   or "load_mock"
 #'
 #' @param rv Reactive values list for the GenEst GUI, created by 
 #'   \code{\link{initialReactiveValues}}, which calls 
@@ -92,7 +94,7 @@ update_rv <- function(eventName, rv, input){
                 "modSet_SE", "best_SE", "modTab_SE", "modTabPretty_SE",
                 "modTabDL_SE", "SStemp", "avgSI", "colNames_ss_sel",
                 "colNames_ss_nosel", "M", "Msplit", "unitCol", "sizeCol_M",
-                "split_CO", "split_SS", "SEmodToUse",
+                "split_CO", "split_SS", "SEmodToUse", "sizeCol", "sizeclasses",
                 "sizeclasses_g", "nsizeclasses_g", "gGeneric", "SEmodToUse_g")
     rv <- reNULL(rv, toNULL)
 
@@ -116,9 +118,7 @@ update_rv <- function(eventName, rv, input){
     rv$colNames_SE_obs0 <- obsCols_SE(rv$data_SE)
     rv$colNames_size <- updateColNames_size(rv)
     rv$colNames_size0 <- updateColNames_size(rv)
-    rv$sizeCol <- updatesizeCol(input$class, rv$colNames_size)
-    rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs, rv$sizeCol)
-    rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds, rv$sizeCol)
+    rv$sizeCol <- NULL
   }
 
 
@@ -161,7 +161,8 @@ update_rv <- function(eventName, rv, input){
                 "modNames_CPdist", "modSet_CP", "best_CP", "modTab_CP",
                 "modTabPretty_CP", "modTabDL_CP", "SStemp", "avgSI",
                 "colNames_ss_sel", "colNames_ss_nosel", "M", "Msplit",
-                "unitCol", "sizeCol_M", "split_CO", "split_SS",
+                "unitCol", "sizeCol_M", "split_CO", "split_SS", "sizeclasses",
+                "sizeCol",
                 "CPmodToUse", "sizeclasses_g", "nsizeclasses_g", "gGeneric",
                 "CPmodToUse_g")
     rv <- reNULL(rv, toNULL)
@@ -187,10 +188,7 @@ update_rv <- function(eventName, rv, input){
     rv$colNames_ltp0 <- obsCols_ltp(rv$data_CP)
     rv$colNames_size <- updateColNames_size(rv)
     rv$colNames_size0 <- updateColNames_size(rv)
-    rv$sizeCol <- updatesizeCol(input$class, rv$colNames_size)
-    rv$colNames_CP_fta <- removeCols(rv$colNames_fta, rv$sizeCol)
-    rv$colNames_CP_ltp <- removeCols(rv$colNames_ltp, rv$sizeCol)
-    rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds, rv$sizeCol)
+    rv$sizeCol <- NULL
   }
 
   if (eventName == "file_CP_clear"){
@@ -393,6 +391,7 @@ update_rv <- function(eventName, rv, input){
     rv$colNames_SE_obs <- obsCols_SE(rv$data_SE)
     rv$colNames_SE_obs0 <- obsCols_SE(rv$data_SE)
 
+
     rv$colNames_size <- updateColNames_size(rv)
     rv$colNames_size0 <- updateColNames_size(rv)
     rv$sizeCol <- updatesizeCol(input$class, rv$colNames_size)
@@ -405,14 +404,11 @@ update_rv <- function(eventName, rv, input){
 
     rv$colNames_size <- updateColNames_size(rv)
     rv$colNames_size0 <- updateColNames_size(rv)
-    rv$sizeCol <- updatesizeCol(input$class, rv$colNames_size)
-    rv$toRemove_sizeCol <- c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta,
-                                  rv$preds_CP)
-    rv$colNames_size <- removeCols(rv$colNames_size0, rv$toRemove_sizeCol)
+    rv$colNames_size <- updateColNames_size(rv)
+    rv$colNames_size0 <- updateColNames_size(rv)
+    rv$sizeCol <- NULL #updatesizeCol(input$class, rv$colNames_size)
 
   }
-
-
   if (eventName == "class"){
     rv$sizeCol <- input$class
     rv$obsCols_SE <- input$obsSE
@@ -421,8 +417,7 @@ update_rv <- function(eventName, rv, input){
     rv$fta <- input$fta
     rv$preds_CP <- input$predsCP
     rv$toRemove_SE_preds <- c(rv$obsCols_SE, rv$sizeCol)
-    rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0,
-                              rv$toRemove_SE_preds)
+    rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0, rv$toRemove_SE_preds)
     rv$toRemove_SE_obs <- c(rv$preds_SE, rv$sizeCol)
     rv$colNames_SE_obs <- removeCols(rv$colNames_SE_obs0, rv$toRemove_SE_obs)
     rv$toRemove_ltp <- c(rv$preds_CP, rv$fta, rv$sizeCol)
@@ -432,11 +427,16 @@ update_rv <- function(eventName, rv, input){
     rv$toRemove_CP_preds <- c(rv$ltp, rv$fta, rv$sizeCol)
     rv$colNames_CP_preds <- removeCols(rv$colNames_CP_preds0,
                               rv$toRemove_CP_preds)
-    scCol <- input$class
-    sizeclasses <- unique(c(rv$data_SE[ , scCol], rv$data_CP[ , scCol]))
+    if (!is.null(rv$sizeCol)){
+      sizeclasses <- sort(unique(
+        c(rv$data_SE[ , rv$sizeCol], rv$data_CP[ , rv$sizeCol])
+      ))
+    } else {
+      sizeclasses <- NULL
+    }
     rv$nsizeclasses <- length(sizeclasses)
-    rv$sizeclasses_k <- sizeclasses
-    rv$nsizeclasses_k <- length(sizeclasses)
+    rv$sizeclasses_k <- sort(unique(rv$data_SE[ , rv$sizeCol]))
+    rv$nsizeclasses_k <- length(rv$sizeclasses_k)
     if (rv$nsizeclasses > 1 & is.null(rv$DWPCol)){
       rv$DWPCol <- sizeclasses[1]
     }
@@ -545,22 +545,12 @@ update_rv <- function(eventName, rv, input){
                  "gSearchMax", "SStext", "figH_SE", "figW_SE", "figH_M",
                  "figW_M", "figH_g", "figW_g")
     rv <- reVal(rv, toReVal)
-
-    for (sci in 1:rv$nsizeclasses_k){
-      rv$kFixed[sci] <- input[[sprintf("kFixed_val_%d", sci)]]
-      rv$kFixedChoice[sci] <- input[[sprintf("kFixed_yn_%d", sci)]]
-    }
+    rv$kFixed <- numeric(rv$nsizeclasses_k) + NA
     names(rv$kFixed) <- rv$sizeclasses_k
-
-    names(rv$kFixedChoice) <- rv$sizeclasses_k
-    rv$kFixed <- setkFix(rv$kFixedChoice, rv$kFixed)
-
-    if (any(is.na(as.numeric(rv$kFixed[rv$kFixedChoice]) == 1))){
-      return(rv)
+    for (sci in rv$sizeclasses_k){
+      rv$kFixed[sci] <- input[[paste0("kFixed_val_", sci)]]
     }
-    if (any(rv$kFixed[rv$kFixedChoice] < 0 | rv$kFixed[rv$kFixedChoice] > 1)){
-      return(rv)
-    }
+    rv$kFixed[!is.na(rv$kFixed) & (rv$kFixed > 1 | rv$kFixed < 0)] <- NA
 
     rv$obsCols_SE <- input$obsSE
     rv$preds_SE <- input$predsSE
@@ -570,6 +560,7 @@ update_rv <- function(eventName, rv, input){
 
     rv$CL <- input$CL
     rv$sizeCol <- input$class
+
     rv$mods_SE <- suppressWarnings(
                     pkmSize(formula_p = rv$formula_p,
                       formula_k = rv$formula_k, data = rv$data_SE,
@@ -582,7 +573,7 @@ update_rv <- function(eventName, rv, input){
     if (!all(unlist(pkmSetSizeFail(rv$mods_SE))) &&
         !any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
       rv$sizeclasses <- updateSizeclasses(rv$data_SE, rv$sizeCol)
-      rv$sizeclasses_SE <- rv$sizeclasses
+      rv$sizeclasses_SE <- sort(rv$sizeclasses)
       rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outSEclass)
       rv$sizeclass_SE <- rv$sizeclass
       rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, 
@@ -699,7 +690,7 @@ update_rv <- function(eventName, rv, input){
 
     if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
       rv$sizeclasses <- updateSizeclasses(rv$data_CP, rv$sizeCol)
-      rv$sizeclasses_CP <- rv$sizeclasses
+      rv$sizeclasses_CP <- sort(rv$sizeclasses)
       rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outCPclass)
       rv$sizeclass_CP <- rv$sizeclass
       rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE, 
@@ -836,8 +827,9 @@ update_rv <- function(eventName, rv, input){
 
     if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
       rv$kCheck_g <- rep(NA, rv$nsizeclasses_k)
+      names(rv$kCheck_g) <- rv$sizeclasses_k
       counter <- 1
-      for (sci in 1:rv$nsizeclasses_k){
+      for (sci in rv$sizeclasses_k){
         rv$kCheck_g[sci] <- rv$kFixed[sci]
       }
       if (length(na.omit(rv$kCheck_g)) != length(rv$kCheck_g)){
@@ -855,10 +847,10 @@ update_rv <- function(eventName, rv, input){
     }
 
     rv$nsim <- input$nsim
-    rv$gGeneric <- vector("list", length = rv$nsizeclasses_g)
-    for (sci in 1:rv$nsizeclasses_g){
-      rv$SEmodToUse_g <- input[[sprintf("modelChoices_SE%d", sci)]]
-      rv$CPmodToUse_g <- input[[sprintf("modelChoices_CP%d", sci)]]
+    rv$gGeneric <- list()
+    for (sci in 1:length(rv$sizeclasses_g)){
+      rv$SEmodToUse_g <- input[[paste0("modelChoices_SE", sci)]]
+      rv$CPmodToUse_g <- input[[paste0("modelChoices_CP", sci)]]
       rv$SEmodToUse_g <- gsub("~ constant", "~ 1", rv$SEmodToUse_g)
       rv$CPmodToUse_g <- gsub("~ constant", "~ 1", rv$CPmodToUse_g)
 
@@ -900,8 +892,9 @@ update_rv <- function(eventName, rv, input){
     rv <- reVal(rv, toReVal)
     if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
       rv$kCheck <- rep(NA, rv$nsizeclasses_k)
+      names(rv$kCheck) <- rv$sizeclasses_k
       counter <- 1
-      for (sci in 1:rv$nsizeclasses_k){
+      for (sci in rv$sizeclasses_k){
         rv$kCheck[sci] <- rv$kFixed[sci]
       }
       if (length(na.omit(rv$kCheck)) != length(rv$kCheck)){
@@ -924,22 +917,22 @@ update_rv <- function(eventName, rv, input){
 
     rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
     rv$CPmodToUse <- rep(NA, rv$nsizeclasses)
-
     if (length(rv$SEmodToUse) != length(rv$CPmodToUse)){
       return(rv)
     }
-    for (sci in 1:rv$nsizeclasses){
-      rv$SEmodToUse[sci] <- input[[sprintf("modelChoices_SE%d", sci)]]
-      rv$CPmodToUse[sci] <- input[[sprintf("modelChoices_CP%d", sci)]]
-      if (!grepl("s ~", rv$CPmodToUse[sci])){
-        rv$CPmodToUse[sci] <- paste(rv$CPmodToUse[sci], "; NULL", sep = "")
+    names(rv$SEmodToUse) <- rv$sizeclasses
+    names(rv$CPmodToUse) <- rv$sizeclasses
+
+    for (sci in 1:length(rv$sizeclasses)){
+      rv$SEmodToUse[sci] <- input[[paste0("modelChoices_SE", sci)]]
+      rv$CPmodToUse[sci] <- input[[paste0("modelChoices_CP", sci)]]
+      if (!grepl("s ~", rv$CPmodToUse[rv$sizeclasses[sci]])){
+        rv$CPmodToUse[sci] <- paste(rv$CPmodToUse[rv$sizeclasses[sci]], "; NULL", sep = "")
       }
-      rv$CPmodToUse[sci] <- paste("dist: ", rv$CPmodToUse[sci], sep = "")
+      rv$CPmodToUse[sci] <- paste("dist: ", rv$CPmodToUse[rv$sizeclasses[sci]], sep = "")
     }
     rv$SEmodToUse <- gsub("~ constant", "~ 1", rv$SEmodToUse)
     rv$CPmodToUse <- gsub("~ constant", "~ 1", rv$CPmodToUse)
-    names(rv$SEmodToUse) <- rv$sizeclasses
-    names(rv$CPmodToUse) <- rv$sizeclasses
 
     rv$models_SE <- tryCatch(
                       trimSetSize(rv$mods_SE, rv$SEmodToUse),

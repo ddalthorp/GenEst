@@ -109,12 +109,11 @@ update_output <- function(eventName, rv, output){
                 "sizeclass_g2", "filename_SS")
     output <- reNULL(output, toNULL)
     if (eventName == "file_SS"){
-      output$data_SS <- renderDTns(datatable(rv$data_SS,
-        caption = paste0("File: ", rv$filename_SS)))
+      output$data_SS <- renderDTns(datatable(rv$data_SS, caption = paste0(
+        "File: ", rv$filename_SS)))
       output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
     }
-    dontSuspend <- c("filename_SS", "data_SS", "MModDone", "gModDone",
-      "sizeclass_gyn")
+    dontSuspend <- c("filename_SS", "MModDone", "gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
   }
 
@@ -144,21 +143,21 @@ update_output <- function(eventName, rv, output){
 
 
   if (grepl("load_", eventName)){
-    toNULL <- c("data_SE", "filename_SE", "selected_SE", "SEModDone",
+    toNULL <- c("data_SE", "data_CP", "data_SS", "data_DWP", "data_CO",
+                "filename_SE", "filename_CP", "filename_SS", "filename_CO",
+                "filename_DWP", "selected_SE", "SEModDone",
                 "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE",
                 "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
                 "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
-                "text_SE_est", "data_CP", "selected_CP", "filename_CP",
+                "text_SE_est", "selected_CP",
                 "CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP",
                 "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
                 "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
                 "text_CP_est", "fig_M", "table_M", "MModDone", "table_g",
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
-                "sizeclass_g2", "data_SS", "data_DWP", "data_CO", "filename_SS",
-                "filename_CO", "filename_DWP")
+                "sizeclass_g2")
     output <- reNULL(output, toNULL)
     output$kNeed <- setkNeed(rv)
-
 
     output$data_SE <- renderDTns(datatable(rv$data_SE,
       caption = paste0("File: ", rv$filename_SE)))
@@ -168,6 +167,7 @@ update_output <- function(eventName, rv, output){
       caption = paste0("File: ", rv$filename_CP)))
     output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
 
+    outputOptions(output, "data_SS", suspendWhenHidden = FALSE)
     output$data_SS <- renderDTns(datatable(rv$data_SS,
       caption = paste0("File: ", rv$filename_SS)))
     output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
@@ -183,57 +183,9 @@ update_output <- function(eventName, rv, output){
     dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
                      "kNeed", "MModDone", "gModDone", "sizeclass_gyn",
                      "CPModDone", "sizeclasses_CP", "text_CP_est",
-                     "data_SS", "filename_SE", "filename_CP", "filename_SS",
+                     "filename_SE", "filename_CP", "filename_SS",
                      "filename_DWP", "filename_CO")
-#      "data_SE", "data_CP", "data_SS", "data_DWP", "data_CO")
     setNotSuspending(output, dontSuspend)
-
-  }
-
-
-  if (grepl("load_", eventName)){
-    toNULL <- c("data_SE", "filename_SE", "selected_SE", "SEModDone",
-                "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE",
-                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
-                "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
-                "text_SE_est", "data_CP", "selected_CP", "filename_CP",
-                "CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP",
-                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
-                "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
-                "text_CP_est", "fig_M", "table_M", "MModDone", "table_g",
-                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
-                "sizeclass_g2", "data_SS", "data_DWP", "data_CO", "filename_SS",
-                "filename_CO", "filename_DWP")
-    output <- reNULL(output, toNULL)
-    output$kNeed <- setkNeed(rv)
-
-
-    output$data_SE <- renderDTns(datatable(rv$data_SE,
-      caption = paste0("File: ", rv$filename_SE)))
-    output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
-
-    output$data_CP <- renderDTns(datatable(rv$data_CP,
-      caption = paste0("File: ", rv$filename_CP)))
-    output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
-
-    output$data_SS <- renderDTns(datatable(rv$data_SS,
-      caption = paste0("File: ", rv$filename_SS)))
-    output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
-
-    output$data_DWP <- renderDTns(datatable(rv$data_DWP,
-      caption = paste0("File: ", rv$filename_DWP)))
-    output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
-
-    output$data_CO <- renderDTns(datatable(rv$data_CO,
-      caption = paste0("File: ", rv$filename_CO)))
-    output$filename_CO <- renderText(paste0("File: ", rv$filename_CO))
-
-    dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
-                     "kNeed", "MModDone", "gModDone", "sizeclass_gyn",
-                     "CPModDone", "sizeclasses_CP", "text_CP_est",
-      "filename_SE", "filename_CP", "filename_SS", "filename_DWP", "filename_CO")
-#      "data_SE", "data_CP", "data_SS", "data_DWP", "data_CO")
-#    setNotSuspending(output, dontSuspend)
 
   }
 
@@ -312,7 +264,7 @@ update_output <- function(eventName, rv, output){
                            app = TRUE)
                        }, height = rv$figH_SE, width = rv$figW_SE)
 
-      output$sizeclasses_SE <- prepSizeclassText(rv$sizeclasses_SE)
+      output$sizeclasses_SE <- renderText(paste(rv$sizeclasses_SE, collapse = " "))
       output$modelMenu_SE <- modelSelectionWidget(rv$mods_SE, "SE")
 
       output$sizeclass_SE1 <- classText(rv, "SE")
@@ -410,7 +362,8 @@ update_output <- function(eventName, rv, output){
                          plot(rv$modSet_CP, specificModel = rv$best_CP,
                            app = TRUE)
                        }, height = rv$figH_CP, width = rv$figW_CP)
-      output$sizeclasses_CP <- prepSizeclassText(rv$sizeclasses_CP)
+
+      output$sizeclasses_CP <- renderText(paste(rv$sizeclasses_CP, collapse = " "))
       output$modelMenu_CP <- modelSelectionWidget(rv$mods_CP, "CP")
 
       output$text_CP_est <- estText(rv, "CP")
@@ -603,7 +556,13 @@ update_output <- function(eventName, rv, output){
                         )
                       }, height = rv$figH_M, width = rv$figW_M
                       )
-      summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
+      tmp <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
+      summaryTab <- data.frame(tmp, stringsAsFactors = FALSE)
+      names(summaryTab) <- colnames(tmp)
+      for (sti in 1:dim(tmp)[2]) {
+        testcol <- suppressWarnings(as.numeric(summaryTab[ , sti]))
+        if (!anyNA(testcol)) summaryTab[, sti] <- testcol
+      }
       output$table_M <- renderDataTable(datatable(summaryTab))
       output$dlMtab <- downloadTable("M_table.csv", summaryTab,
                                              rv$csvformat)

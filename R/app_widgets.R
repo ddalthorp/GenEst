@@ -278,13 +278,13 @@ modelRunWidget <- function(modType){
   rCondition <- switch(modType, 
                   "SE" = "input.obsSE != null",
                   "CP" = "input.ltp != null & input.fta != null",
-                  "M" = "input.modelChoices_SE1 != null & 
-                         input.modelChoices_CP1 != null & 
+                  "M" = "input.modelChoices_SE1 != null &
+                         input.modelChoices_CP1 != null &
                          output.sizeclasses_SE == output.sizeclasses_CP & 
                          output.data_SS != null & output.kNeed != 'yes' &
                          input.DWPCol != null & input.COdate != null",
-                  "g" = "input.modelChoices_SE1 != null & 
-                         input.modelChoices_CP1 != null & 
+                  "g" = "input.modelChoices_SE1 != null &
+                         input.modelChoices_CP1 != null &
                          output.kNeed != 'yes' &
                          output.sizeclasses_SE == output.sizeclasses_CP")
 
@@ -337,24 +337,24 @@ preTextMaker <- function(modType){
   }
 
   Condition <- switch(modType, 
-                 "SE" = "input.obsSE == null",
-                 "CP" = "input.ltp == null | input.fta == null",
-                 "M" = c("input.modelChoices_SE1 == null |
-                         input.modelChoices_CP1 == null | 
-                         output.sizeclasses_SE != output.sizeclasses_CP",
-                         "output.data_SS == null",
-                         "input.modelChoices_SE1 != null & 
-                         input.modelChoices_CP1 != null & 
-                         output.sizeclasses_SE == output.sizeclasses_CP & 
-                         (input.DWPCol == null | input.COdate == null)",
-                         "output.kNeed == 'yes' & 
-                         input.modelChoices_SE1 != null"),
-                 "g" = c("input.modelChoices_SE1 == null | 
-                         input.modelChoices_CP1 == null | 
-                         output.sizeclasses_SE != output.sizeclasses_CP",
-                         "output.kNeed == 'yes' & 
-                         input.modelChoices_SE1 != null")
-                )
+     "SE" = "input.obsSE == null",
+     "CP" = "input.ltp == null | input.fta == null",
+     "M" = c("input.modelChoices_SE1 == null |
+             input.modelChoices_CP1 == null |
+             output.sizeclasses_SE != output.sizeclasses_CP",
+             "output.data_SS == null",
+             "input.modelChoices_SE1 != null &
+             input.modelChoices_CP1 != null &
+             output.sizeclasses_SE == output.sizeclasses_CP & 
+             (input.DWPCol == null | input.COdate == null)",
+             "output.kNeed == 'yes' & 
+             input.modelChoices_SE1 != null"),
+     "g" = c("input.modelChoices_SE1 == null |
+             input.modelChoices_CP1 == null |
+             output.sizeclasses_SE != output.sizeclasses_CP",
+             "output.kNeed == 'yes' & 
+             input.modelChoices_SE1 != null")
+  )
 
   Text <- switch(modType, 
              "SE" = "Select observation columns to run model",
@@ -519,8 +519,8 @@ modelSelectionWidget <- function(mods, modType){
   nsizeclasses <- length(mods)
   menuHeader <- modelSelectionWidgetHeader(mods)
   modelMenu <- menuHeader
-  if (nsizeclasses > 0){
-    for(sci in 1:nsizeclasses){
+  if (length(mods) > 0){
+    for(sci in names(mods)){
       modelMenuRow <- modelSelectionWidgetRow(mods, modType, sci)
       modelMenu <- paste(modelMenu, modelMenuRow)  
     }
@@ -564,7 +564,7 @@ modelSelectionWidgetHeader <- function(mods){
 #' @details \code{modelSelectionWidgetRow} creates a row of the widget (input
 #'   for one size class).
 #'
-#' @param sci Numeric size class element index.
+#' @param sci Name of size class element
 #'
 #' @export
 #'
@@ -578,12 +578,7 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
   }
   sizeclasses <- names(mods)
   nsizeclasses <- length(mods)
-  if (!is.numeric(sci)){
-    stop("sci needs to be numeric")
-  }
-  if (sci > nsizeclasses){
-    stop("sci out of range")
-  }
+  if (! sci %in% sizeclasses) stop(sci, "not in size classes")
   if (modType == "SE"){
     AICcTab <- aicc(mods[[sci]], quiet = TRUE)
   }
@@ -609,8 +604,8 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
   labels_maxchar <- max(labels_nchar)
   widthval <- max(c(400, labels_maxchar * 7 + 20))
   widthtxt <- paste0(widthval, "px")
-  mtuText <- paste0("modelChoices_", modType, sci) 
-  scText <- paste0(sizeclasses[sci], ":")
+  mtuText <- paste0("modelChoices_", modType, which(names(mods) == sci))
+  scText <- paste0(sci, ":")
   if (nsizeclasses == 1){
     scText <- ""
   }
@@ -632,13 +627,12 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
 #' @export
 #'
 kFixedWidget <- function(sizeclasses){
-  nsizeclasses <- length(sizeclasses)
   widgetHeader <- kFixedWidgetHeader(sizeclasses)
 
   kFixedMenu <- widgetHeader
-  for(sci in 1:nsizeclasses){
+  for(sci in sizeclasses){
     kFixedRow <- kFixedWidgetRow(sizeclasses, sci)
-    kFixedMenu <- paste(kFixedMenu, kFixedRow)  
+    kFixedMenu <- paste(kFixedMenu, kFixedRow)
   }
   renderUI({HTML(kFixedMenu)})
 }
@@ -652,18 +646,7 @@ kFixedWidget <- function(sizeclasses){
 #'
 kFixedWidgetHeader <- function(sizeclasses){
   nsizeclasses <- length(sizeclasses)
-  if (nsizeclasses == 1){
-    fluidRow(
-      column(width = 4, align = "center", b("Fix k?")), 
-      column(width = 4, align = "center", b("Value"))
-    )
-  } else if (nsizeclasses > 1){
-    fluidRow(
-      column(width = 2, div("")),
-      column(width = 4, align = "center", b("Fix k?")), 
-      column(width = 4, align = "center", b("Value"))
-    )
-  }
+  fluidRow(column(width = 8, align = "center", b("Fixed k (optional)")))
 }
 
 
@@ -672,31 +655,19 @@ kFixedWidgetHeader <- function(sizeclasses){
 #' @details \code{kFixedWidgetRow} creates a row of the widget (input
 #'   for one size class).
 #'
-#' @param sci Numeric size class element index.
+#' @param sci name of size class element index.
 #'
 #' @export
 #'
 kFixedWidgetRow <- function(sizeclasses, sci){
-
-  nsizeclasses <- length(sizeclasses)
-  if (!is.numeric(sci)){
-    stop("sci needs to be numeric")
-  }
-  if (sci > nsizeclasses){
-    stop("sci out of range")
-  }
-
-  mvText <- paste0("kFixed_val_", sci) 
-  mynText <- paste0("kFixed_yn_", sci) 
-
-  scText <- paste0(sizeclasses[sci], ":")
+  if (! (sci %in% sizeclasses)) stop(sci, " not in sizeclasses")
+  mvText <- paste0("kFixed_val_", sci)
+  scText <- paste0(sci, ":")
   rowName <- paste0("string_", sci)
 
   rowNameStyle <- style(type = "text/css", 
                     paste0("#", rowName, " { margin-top: 10px;}"))
-  checkStyle <- style(type = "text/css", 
-                     paste0("#", mynText, " { margin-top: 5px;}"))
-  numStyle <- style(type = "text/css", 
+  numStyle <- style(type = "text/css",
                    paste0("#", mvText, " { margin-top: -15px;}"))
 
   spacerCol <- column(width = 1, div(""))
@@ -704,21 +675,16 @@ kFixedWidgetRow <- function(sizeclasses, sci){
                   div(id = rowName, b(scText)), align = "right", 
                   rowNameStyle
                 )
-  if (nsizeclasses == 1){
+  if (length(sizeclasses) == 1){
     spacerCol <- NULL
     rowNameCol <- NULL
   }
-  checkCol <- column(width = 4, align = "center", 
-                checkboxInput(mynText, ""), 
-                checkStyle
-              )
-  numCol <- column(width = 4, align = "center", 
-              numericInput(mvText, "", value = "", min = 0, max = 1, 
-                step = 0.001),
+  numCol <- column(width = 5, align = "center",
+              numericInput(mvText, "", value = "", min = 0, max = 1, step = 0.001),
               numStyle
             )
 
-  fluidRow(spacerCol, rowNameCol, checkCol, numCol)
+  fluidRow(spacerCol, rowNameCol, numCol)
 }
 
 

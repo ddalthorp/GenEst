@@ -85,7 +85,6 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 
   if (is.null(unitCol))
     unitCol <- defineUnitCol(data_CO = data_CO, data_DWP = data_DWP)
-
   # if no sizeCol is provided, then the later analysis is done without
   #   making distinctions between sizes; no error-checking here
   # if sizeCol is provided, it must be present in CO. Its levels must
@@ -98,22 +97,19 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     } else if (!all(data_CO[, sizeCol] %in% names(data_DWP))){
       stop("a size class in data_CO is missing from data_DWP")
     } else {
-      sizeclasses <- as.character(unique(data_CO[ , sizeCol]))
+      sizeclasses <- sort(as.character(unique(data_CO[ , sizeCol])))
       nsizeclass <- length(sizeclasses)
     }
   }
-
   # error-checking for match b/t DWP and CO data is done in DWPbyCarcass
   DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
            sizeCol = sizeCol, unitCol = unitCol, DWPCol = DWPCol)
-
   est <- estg(data_CO = data_CO, COdate = COdate,
       data_SS = data_SS, SSdate = SSdate,
       model_SE = model_SE, model_CP = model_CP,
       unitCol = unitCol, sizeCol = sizeCol,
       nsim = nsim, max_intervals = max_intervals,
       seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g)
-
   gDf <- est$ghat * DWP * frac
   set.seed(seed_M)
   c_out <- which(rowSums(gDf) == 0)

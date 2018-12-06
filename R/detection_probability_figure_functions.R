@@ -152,13 +152,15 @@ plot.gGenericSize <- function(x, CL = 0.90, ...){
     return(plot(x[[1]], CL = CL, ...))
   }
 
-  sizeclassNames <- names(x)
+  sizeclasses <- names(x)
 
   increm <- 1 / nsizeclass
   y1 <- seq(0, 1, by = increm)
   y1 <- y1[-length(y1)]
   y2 <- seq(0, 1, by = increm)
   y2 <- y2[-1]
+  names(y1) <- sizeclasses
+  names(y2) <- sizeclasses
   par(fig = c(0, 1, 0, 1))
   par(mar = c(3, 3, 1, 1))  
   plot(1, 1, type = "n", ylab= "", xlab = "", xaxt = "n", yaxt = "n", 
@@ -166,8 +168,7 @@ plot.gGenericSize <- function(x, CL = 0.90, ...){
   )  
   mtext(side = 2, line = 2, "Detection Probability", cex = 1)
 
-  for (sci in 1:nsizeclass){
-
+  for (sci in sizeclasses){
     par(fig = c(0, 0.9, y1[sci], y2[sci]), new = TRUE)
     ghats <- x[[sci]]$ghat
     cells <- names(ghats)
@@ -200,8 +201,8 @@ plot.gGenericSize <- function(x, CL = 0.90, ...){
 
     text(0.5, 1.15, labelText, xpd = TRUE, cex = 0.5, adj = 0)
 
-    if (!is.null(sizeclassNames[sci])){
-      text_sc <- paste("Size class: ", sizeclassNames[sci], sep = "")
+    if (!is.null(sci)){
+      text_sc <- paste("Size class: ", sci, sep = "")
       text(x = 0.5, y = 1.25, xpd = TRUE, text_sc, adj = 0, cex = 0.5)
     }
 

@@ -9,7 +9,7 @@ update_input(eventName, rv, input, session)
 \arguments{
 \item{eventName}{Character name of the event. One of "clear_all",
 "file_SE", "file_SE_clear", "file_CP", "file_CP_clear", "file_SS",
-"file_SS_clear", "file_DWP", "file_DWP_clear", "file_CO", 
+"file_SS_clear", "file_DWP", "file_DWP_clear", "file_CO",
 "file_CO_clear", "class", "obsSE", "predsSE", "run_SE", "run_SE_clear",
 "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
 "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",

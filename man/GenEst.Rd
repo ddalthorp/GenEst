@@ -237,7 +237,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{setFigH}}\cr
 \code{\link{setFigW}}\cr
 \code{\link{setkNeed}}\cr
-\code{\link{setkFix}}\cr
 \code{\link{simpleMplot}}\cr
 \code{\link{sizeCols}}\cr
 \code{\link{small}}\cr
