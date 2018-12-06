@@ -172,7 +172,6 @@ update_output <- function(eventName, rv, output){
       caption = paste0("File: ", rv$filename_SS)))
     output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
 
-
     output$data_DWP <- renderDTns(datatable(rv$data_DWP,
       caption = paste0("File: ", rv$filename_DWP)))
     output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
