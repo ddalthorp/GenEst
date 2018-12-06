@@ -21,7 +21,7 @@ as well as a number of internal functions to facilitate a simple,
 human-readable codebase underlying the app. The goal being to allow GenEst 
 to evolve as fluidly as possible at the user interface.
 
-# Execution 
+# Execution
 
 The GUI is executed locally or as a deployed app following the basic approach
 of shiny applications. For ease of implementation, we have created an overall

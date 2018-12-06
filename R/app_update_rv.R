@@ -301,7 +301,6 @@ update_rv <- function(eventName, rv, input){
   }
 
   if (grepl("load_", eventName)){
-
     toNULL <- c("data_SE", "filename_SE", "colNames_SE", "colNames_SE_preds",
                 "colNames_SE_preds0", "colNames_SE_obs", "colNames_SE_obs0",
                 "toRemove_SE_obs", "toRemove_SE_preds", "sizeclass_SE",

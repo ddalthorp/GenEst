@@ -77,7 +77,6 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
     stop("data_CO[ , COdate] values  not properly formatted as dates")
   if (t0date > min(dates_CO))
     stop("first carcass discovered before first search date")
-
   rind <- match(dates_CO, SSdat[[SSdate]])
   cind <- match(data_CO[, unitCol], names(data_SS))
   if (anyNA(rind)){
