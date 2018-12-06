@@ -4,19 +4,19 @@ Revision log
 v1.2.0
 
 * updated the .zip download buttons to no longer require an unzip utility to
-be in the path statement in Windows. 
+be in the path statement in Windows (using zip::zip rather than utils::zip). 
 
 * more robust error-checking and more informative error messages. Changes
 affect especially the functions under the "Mortality Estimation" in the GUI, 
 which have the most demanding data formatting requirements.
 
+* corrected the mortality splits results summary table to sort mortality
+quantiles numerically rather than alphabetically.
+
 * removed the requirement that GUI users both enter a value for fixedK and
 check a box indicating that a value is entered. User simply enters a value
 for fixedK or leaves the field blank, whichever is appropriate for the 
 desired analysis.
-
-* corrected the mortality splits results summary table to sort mortality
-quantiles numerically rather than alphabetically.
 
 2018.11.23
 v1.1.3
