@@ -14,7 +14,9 @@ update_rv(eventName, rv, input)
 "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
 "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
 "run_M", "run_M_clear", "split_M", "split_M_clear", "transpose_split",
-"useSSdata", "useSSinputs", "run_g", "run_g_clear", or "outgclass".}
+"useSSdata", "useSSinputs", "run_g", "run_g_clear", "outgclass", "load_RP",
+"load_RPbat", "load_cleared", "load_PV", "load_trough", "load_powerTower",
+or "load_mock"}
 
 \item{rv}{Reactive values list for the GenEst GUI, created by 
 \code{\link{initialReactiveValues}}, which calls 

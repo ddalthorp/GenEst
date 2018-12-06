@@ -144,30 +144,6 @@ setkNeed <- function(rv){
   return(renderText(textout))
 }
 
-#' @title Update the fixed k value
-#' 
-#' @description Update the value for \code{kFixed} is chosen and available
-#'
-#' @param kFixedChoice choice to fix k (1) or not (anything else)
-#'
-#' @param kFixed existing kFixed value
-#'
-#' @return new kFixed value
-#'
-#' @export
-#'
-setkFix <- function(kFixedChoice, kFixed){
-  nkFix <- length(kFixed)
-  out <- rep(NA, nkFix)
-  for (i in 1:nkFix){
-    if (kFixedChoice[i] == 1 & is.numeric(kFixed[i])){
-      out[i] <- kFixed[i]
-    }
-  }
-  names(out) <- names(kFixed)
-  out
-}
-
 #' @title Select the date columns from a data table
 #'
 #' @description Simple function to facilitate selection of date columns from
@@ -511,7 +487,7 @@ countCarcs <- function(mods){
   if (nsizeclasses > 0 & nmods > 0){
     ncarc <- rep(NA, nmods)
     counter <- 0
-    for (sci in 1:nsizeclasses){
+    for (sci in names(mods)){
       for (modi in 1:length(mods[[sci]])){
         counter <- counter + 1
         if (!grepl("Failed model fit", mods[[sci]][[modi]][1])){
@@ -520,7 +496,7 @@ countCarcs <- function(mods){
       }
     }
     ncarc <- min(na.omit(ncarc))
-  }else{
+  } else {
     ncarc <- Inf
   }
   return(ncarc)
@@ -635,7 +611,7 @@ initialReactiveValues <- function(){
 
     nsim = 1000, CL = 0.90,
 
-    sizeCol = NULL, sizeCol0 = NULL, toRemove_sizeCol = NULL,
+    sizeCol = NULL, toRemove_sizeCol = NULL,
     sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
     sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL, 
     nsizeclasses = 0,
@@ -692,7 +668,7 @@ updateSizeclasses <- function(data, sizeCol){
   if (is.null(sizeCol)){
     return("all")
   }
-  return(as.character(unique(data[ , sizeCol])))
+  return(as.character(sort(unique(data[ , sizeCol]))))
 }
 
 #' @title Locate the sizeclass selected by the inputs
@@ -741,7 +717,7 @@ updatesizeCol <- function(sizeCol, colNames_size){
     } else{
       sizeCol
     }
-  } else{
+  } else {
     NULL
   }
 }

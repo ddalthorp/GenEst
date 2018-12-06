@@ -312,9 +312,11 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   if (length(kFixed) > 0){
     if (kFixed == 0 & any(foundOn > 1)){
-      warning(
-        "User-supplied kFixed = 0. However, carcasses were found after ",
-        "being missed in previous searches, which indicates k > 0"
+      stop(
+        "User-supplied kFixed = 0. However, more than one observation column ",
+        "was supplied, and carcasses were found after being missed in previous ",
+        " searches, which indicates k > 0. Try selecting a single observation ",
+        "column."
       )
     }
   }
@@ -405,7 +407,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
            error = function(x) {NA}
          )
   if (length(MLE) == 1 && is.na(MLE)){
-    stop("Failed optimization. Consider simplifying predictors.")
+    stop("Failed optimization.")
   }
 
   convergence <- MLE$convergence
@@ -762,7 +764,7 @@ pkmSize <- function(formula_p, formula_k = NULL, data, kFixed = NULL,
     stop("sizeCol not in data set.")
   }
 
-  sizeclasses <- unique(as.character(data[ , sizeCol]))
+  sizeclasses <- sort(unique(as.character(data[ , sizeCol])))
 
   if (all(is.na(kFixed))){
     kFixed <- NULL

@@ -95,18 +95,21 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
 msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
   clearNotifications(msgs, clear)
   if (type == "SE"){
-    if (any(is.na(rv$kFixed[rv$kFixedChoice]))){
-      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
-    } else if (any(rv$kFixed[rv$kFixedChoice] > 1)){
-      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
-    } else if (any(rv$kFixed[rv$kFixedChoice] < 0)){
-      return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
-    } else if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
-      return(msgModFail(rv$mods_SE_og, "SE"))
-    } else if(any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
-      return(msgModFail(rv$mods_SE_og, "SE", "size_k"))
+    if ("error" %in% class(rv$mods_SE)){
+      return(msgModFail(rv$mods_SE, type = "SE", special = "error"))
     } else {
-      return(msgModWarning(rv$mods_SE_og, "SE", rv))
+      kfix <- which(!is.na(rv$kFixed))
+      if (length(kfix) > 0 && any(rv$kFixed[kfix] > 1)){
+        return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
+      } else if (length(kfix) > 0 && any(rv$kFixed[kfix] < 0)){
+        return(msgModFail(rv$mods_SE_og, "SE", "NA_kFixed"))
+      } else if (all(unlist(pkmSetSizeFail(rv$mods_SE_og)))){
+        return(msgModFail(rv$mods_SE_og, "SE"))
+      } else if(any(unlist(lapply(rv$mods_SE_og, pkmSetAllFail)))){
+        return(msgModFail(rv$mods_SE_og, "SE", "size_k"))
+      } else {
+        return(msgModWarning(rv$mods_SE_og, "SE", rv))
+      }
     }
   }
   if (type == "CP"){
@@ -181,7 +184,7 @@ msgModPartialFail <- function(mods, type = "SE"){
 
   nsizeclass <- length(mods)
   uniquemsgs <- NULL
-  for (sci in 1:nsizeclass){
+  for (sci in names(mods)){
     newmsgs <- NULL
     if (type == "SE"){
       failedmods <- which(pkmSetFail(mods[[sci]]))
@@ -300,6 +303,8 @@ msgModFail <- function(mods, type = "SE", special = NULL){
                 gsub("Failed model fit: ", "", unique(unlist(mods))),
                 sep = " "
              )
+    } else if (special == "error") {
+      msg <- mods
     } else if (special == "size_k"){
       msg <- "Some size classes had no successful models. Consider a fixed k."
     } else if (special == "NA_kFixed"){

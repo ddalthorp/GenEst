@@ -156,20 +156,20 @@ modelOutputPanel <- function(outType){
                      "output.CPModDone == 'OK'", 
                      "1 == 1"),
                  "MFigures" = 
-                   c("input.modelChoices_SE1 == null | 
-                       input.modelChoices_CP1 == null | 
+                   c("input.modelChoices_SE1 == null |
+                       input.modelChoices_SE1 == null |
                        output.sizeclasses_SE != output.sizeclasses_CP", 
                      "output.MModDone == null & 
-                       input.modelChoices_SE1 != null & 
+                       input.modelChoices_SE1 != null &
                        input.modelChoices_CP1 != null &
                        output.sizeclasses_SE == output.sizeclasses_CP",
                      "output.MModDone == 'OK'"),
                  "MSummary" = 
-                   c("input.modelChoices_SE1 == null | 
-                       input.modelChoices_CP1 == null | 
+                   c("input.modelChoices_SE1 == null |
+                       input.modelChoices_CP1 == null |
                        output.sizeclasses_SE != output.sizeclasses_CP", 
                      "output.MModDone == null & 
-                       input.modelChoices_SE1 != null & 
+                       input.modelChoices_SE1 != null &
                        input.modelChoices_CP1 != null &
                        output.sizeclasses_SE == output.sizeclasses_CP",
                      "output.MModDone == 'OK'"),

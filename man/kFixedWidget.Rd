@@ -16,7 +16,7 @@ kFixedWidgetRow(sizeclasses, sci)
 \item{sizeclasses}{Vector of size class names (from the reactive values 
 list).}
 
-\item{sci}{Numeric size class element index.}
+\item{sci}{name of size class element index.}
 }
 \value{
 Rendered HTML kFixed input widget.

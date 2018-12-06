@@ -813,7 +813,7 @@ cpmSize <- function(formula_l, formula_s = NULL, data, left, right,
   }
 
 
-  sizeclasses <- unique(as.character(data[ , sizeCol]))
+  sizeclasses <- sort(unique(as.character(data[ , sizeCol])))
   if (!allCombos){
     if ("list" %in% c(class(formula_l), class(formula_s), class(dist))){
       if (!("list" %in% intersect(intersect(class(formula_l), class(formula_s)), class(dist)))){

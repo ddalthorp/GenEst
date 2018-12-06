@@ -67,14 +67,17 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   if (is.null(unitCol))
     unitCol <- defineUnitCol(data_CO = data_CO, data_SS = data_SS)
   SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
+  if (any(! data_CO[, unitCol] %in% SSdat$unit))
+    stop("carcasses found (CO) at units not properly formatted (or missing) in SS")
   if (is.null(SSdate)) SSdate <- SSdat$SSdate
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
   t0date <- SSdat$date0
-  dates_CO <- checkDate(data_CO[ , COdate])
+  dates_CO <- suppressWarnings(checkDate(data_CO[ , COdate]))
   if (is.null(dates_CO))
     stop("data_CO[ , COdate] values  not properly formatted as dates")
   if (t0date > min(dates_CO))
     stop("first carcass discovered before first search date")
+
   rind <- match(dates_CO, SSdat[[SSdate]])
   cind <- match(data_CO[, unitCol], names(data_SS))
   if (anyNA(rind)){
@@ -110,7 +113,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
     }
   }
   sizeclass <- as.list(as.character(COdat[, sizeCol]))
-  sizeclasses <- unique(unlist(sizeclass))
+  sizeclasses <- sort(unique(unlist(sizeclass)))
   nsizeclass <- length(sizeclasses)
 # data pre-processing
 # create lists of arrays for SS (days) and cells (SE and CP)
@@ -125,6 +128,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       )
     }
   }
+
   preds_SE <- lapply(model_SE, function(x) x$predictors)
   preds_CP <- lapply(model_CP, function(x) x$predictors)
   preds <- mapply(function(x, y) unique(c(x, y)), preds_SE, preds_CP)
@@ -177,7 +181,9 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       }
       cells[[xi]]$CPrep <- length(days[[xi]]) - 1
     }
+
   } else {
+
     for (xi in 1:X){
       cells[[xi]] <- list()
       SEc <- SEr <- CPc <- CPr <- NULL
@@ -318,6 +324,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       }
     }
   }
+
   rownames(Aj) <- COdat[ , unitCol]
   out <- list("ghat" = ghat, "Aj" = Aj) # ordered by relevance to user
   return(out)
@@ -710,10 +717,10 @@ estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
       !all(sizeclasses_CP %in% sizeclasses_SE)){
     stop("Size classes don't match between SE and CP model sets")
   }
-  sizeclasses <- unique(c(sizeclasses_SE, sizeclasses_CP))
+  sizeclasses <- sort(unique(c(sizeclasses_SE, sizeclasses_CP)))
   nsizeclass <- length(sizeclasses)
   # check whether k is included in every model. If not, error.
-  for (sci in 1:nsizeclass){
+  for (sci in sizeclasses){
     if (modelSetSize_SE[[sci]][[modelSizeSelections_SE[sci]]]$pOnly){
      stop("k required for SE model for size = ", sci)
     }
@@ -722,10 +729,8 @@ estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
   for (sci in sizeclasses){
     if (any(unlist(lapply(modelSetSize_SE[[sci]], function(x) x$pOnly))))
       stop("No k included in SE model. Cannot estimate g")
-    model_SEsci <- modelSizeSelections_SE[[sci]]
-    model_SE <- modelSetSize_SE[[sci]][[model_SEsci]]
-    model_CPsci <- modelSizeSelections_CP[[sci]]
-    model_CP <- modelSetSize_CP[[sci]][[model_CPsci]]
+    model_SE <- modelSetSize_SE[[sci]][[modelSizeSelections_SE[[sci]]]]
+    model_CP <- modelSetSize_CP[[sci]][[modelSizeSelections_CP[[sci]]]]
     ghats[[sci]] <- estgGeneric(nsim = nsim, days = days,
       model_SE = model_SE, model_CP = model_CP,
       seed_SE = seed_SE, seed_CP = seed_CP)
@@ -878,10 +883,9 @@ summary.gGeneric <- function(object, ..., CL = 0.90){
 #'
 summary.gGenericSize <- function(object, ..., CL = 0.90){
 
-  nsizeclass <- length(object)
-  out <- vector("list", length = nsizeclass)
-  names(out) <- names(object)
-  for (sci in 1:nsizeclass){
+  sizeclasses <- names(object)
+  out <- list()
+  for (sci in sizeclasses){
     out[[sci]] <- summary(object[[sci]], ..., CL = CL)
   }
   return(out)

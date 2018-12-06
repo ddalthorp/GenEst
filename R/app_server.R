@@ -229,8 +229,29 @@ reactionMessageDone <- function(eventName){
 #' @export
 #'
 eventReaction <- function(eventName, rv, input, output, session){
-  rv <- update_rv(eventName, rv, input)
-  output <- update_output(eventName, rv, output)
-  update_input(eventName, rv, input, session)
+  if (eventName == "class"){
+    rv <- update_rv("run_SE_clear", rv, input)
+    output <- update_output("run_SE_clear", rv, output)
+    update_input("run_SE_clear", rv, input, session)
+    rv <- update_rv("run_CP_clear", rv, input)
+    output <- update_output("run_CP_clear", rv, output)
+    update_input("run_CP_clear", rv, input, session)
+    rv <- update_rv("run_M_clear", rv, input)
+    output <- update_output("run_M_clear", rv, output)
+    update_input("run_M_clear", rv, input, session)
+    rv <- update_rv("split_M_clear", rv, input)
+    output <- update_output("split_M_clear", rv, output)
+    update_input("split_M_clear", rv, input, session)
+    rv <- update_rv("run_g_clear", rv, input)
+    output <- update_output("run_g_clear", rv, output)
+    update_input("run_g_clear", rv, input, session)
+    rv <- update_rv(eventName, rv, input)
+    output <- update_output(eventName, rv, output)
+    update_input(eventName, rv, input, session)
+  } else {
+    rv <- update_rv(eventName, rv, input)
+    output <- update_output(eventName, rv, output)
+    update_input(eventName, rv, input, session)
+  }
 }
 

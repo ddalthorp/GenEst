@@ -7,7 +7,7 @@
 #'
 #' @param eventName Character name of the event. One of "clear_all",
 #'   "file_SE", "file_SE_clear", "file_CP", "file_CP_clear", "file_SS",
-#'   "file_SS_clear", "file_DWP", "file_DWP_clear", "file_CO", 
+#'   "file_SS_clear", "file_DWP", "file_DWP_clear", "file_CO",
 #'   "file_CO_clear", "class", "obsSE", "predsSE", "run_SE", "run_SE_clear",
 #'   "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
 #'   "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
@@ -43,9 +43,9 @@ update_input <- function(eventName, rv, input, session){
   if(eventName == "clear_all"){
     toReset <- c("file_SE", "predsSE", "obsSE", "outSEp", "outSEk",
                  "outSEclass", "DWPCol", "split_SS", "split_CO",
-                 "modelChoices_SE1", "outgclass","file_CP", "predsCP", "ltp", 
+                 "modelChoices_SE1", "outgclass","file_CP", "predsCP", "ltp",
                  "fta", "outCPl", "outCPs", "outCPdist", "outCPclass", 
-                 "modelChoices_CP1", "file_SS", "gSearchInterval", 
+                 "modelChoices_CP1", "file_SS", "gSearchInterval",
                  "gSearchMax", "file_DWP", "file_CO", "COdate")
     lapply(toReset, reset)
 
@@ -266,6 +266,14 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "class"){
+    toReset <- c(
+      "outCPl", "outCPs", "outCPdist", "outsizeclassCP", "modelChoices_CP1",
+      "outSEp", "outSEk", "outsizeclassSE", "modelChoices_SE1",
+      "DWPCol", "split_SS", "split_CO",
+      "gSearchInterval", "gSearchMax", "outgclass")
+
+    lapply(toReset, reset)
+
     updateSelectizeInput(session, "predsSE", choices = rv$colNames_SE_preds,
       selected = input$predsSE)
     updateSelectizeInput(session, "obsSE", choices = rv$colNames_SE_obs,
@@ -279,8 +287,7 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP,
       selected = rv$DWPCol)
     updateSelectizeInput(session, "class", choices = rv$colNames_size,
-      selected = rv$sizeCol
-    )
+      selected = rv$sizeCol)
   }
 
   if (eventName == "obsSE"){

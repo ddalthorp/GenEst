@@ -17,7 +17,7 @@ modelSelectionWidgetRow(mods, modType, sci)
 
 \item{modType}{Model type, either "SE" or "CP".}
 
-\item{sci}{Numeric size class element index.}
+\item{sci}{Name of size class element}
 }
 \value{
 Rendered HTML model selection menu widget.
