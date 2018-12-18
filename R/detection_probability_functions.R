@@ -62,6 +62,10 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
                  model_SE, model_CP, sizeCol = NULL, unitCol = NULL,
                  nsim = 1000, max_intervals = 8,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
+  i <- sapply(data_CO, is.factor)
+  data_CO[i] <- lapply(data_CO[i], as.character)
+  i <- sapply(data_SS, is.factor)
+  data_SS[i] <- lapply(data_SS[i], as.character)
 
 # error-checking
   if (is.null(unitCol))

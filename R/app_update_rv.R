@@ -779,8 +779,19 @@ update_rv <- function(eventName, rv, input){
     rv$nsim <- input$nsim
     rv$gGeneric <- list()
     for (sci in 1:length(rv$sizeclasses_g)){
+      if (is.null(input[[paste0("modelChoices_SE", sci)]])){
+        showNotification(paste0("No SE model selected for ",
+          rv$sizeclasses[sci], "...error."), type = "error")
+        return(rv)
+      }
+      if (is.null(input[[paste0("modelChoices_CP", sci)]])){
+        showNotification(paste0("No CP model selected for ",
+          rv$sizeclasses[sci], "...error."), type = "error")
+        return(rv)
+      }
       rv$SEmodToUse_g <- input[[paste0("modelChoices_SE", sci)]]
       rv$CPmodToUse_g <- input[[paste0("modelChoices_CP", sci)]]
+
       rv$SEmodToUse_g <- gsub("~ constant", "~ 1", rv$SEmodToUse_g)
       rv$CPmodToUse_g <- gsub("~ constant", "~ 1", rv$CPmodToUse_g)
 
@@ -789,6 +800,13 @@ update_rv <- function(eventName, rv, input){
       }
       rv$CPmodToUse_g <- paste("dist: ", rv$CPmodToUse_g, sep = "")
       rv$SS <- list("span" = input[["gSearchMax"]], "I" = input[["gSearchInterval"]])
+      if (is.null(rv$SS[["span"]]) || is.null(rv$SS[["I"]]) ||
+        is.na(rv$SS[["span"]]) || is.na(rv$SS[["span"]])){
+        showNotification("Enter search interval and span before estimating g",
+          type = "error")
+          return(rv)
+      }
+
       if (rv$SS[["span"]] < 2 * rv$SS[["I"]]){
         days <- c(0, rv$SS[["I"]])
       } else {
@@ -846,21 +864,30 @@ update_rv <- function(eventName, rv, input){
     rv$nsim <- input$nsim
     rv$frac <- input$frac
     if (rv$frac < 0.01 | rv$frac > 1) return(rv)
-
     rv$SEmodToUse <- rep(NA, rv$nsizeclasses)
     rv$CPmodToUse <- rep(NA, rv$nsizeclasses)
-    if (length(rv$SEmodToUse) != length(rv$CPmodToUse)) return(rv)
     names(rv$SEmodToUse) <- rv$sizeclasses
     names(rv$CPmodToUse) <- rv$sizeclasses
 
     for (sci in 1:length(rv$sizeclasses)){
+      if (is.null(input[[paste0("modelChoices_SE", sci)]])){
+        showNotification(paste0("No SE model selected for ",
+          rv$sizeclasses[sci], "...error."), type = "error")
+        return(rv)
+      }
       rv$SEmodToUse[sci] <- input[[paste0("modelChoices_SE", sci)]]
+      if (is.null(input[[paste0("modelChoices_CP", sci)]])){
+        showNotification(paste0("No CP model selected for ",
+          rv$sizeclasses[sci], "...error."), type = "error")
+        return(rv)
+      }
       rv$CPmodToUse[sci] <- input[[paste0("modelChoices_CP", sci)]]
       if (!grepl("s ~", rv$CPmodToUse[rv$sizeclasses[sci]])){
         rv$CPmodToUse[sci] <- paste(rv$CPmodToUse[rv$sizeclasses[sci]], "; NULL", sep = "")
       }
       rv$CPmodToUse[sci] <- paste("dist: ", rv$CPmodToUse[rv$sizeclasses[sci]], sep = "")
     }
+
     rv$SEmodToUse <- gsub("~ constant", "~ 1", rv$SEmodToUse)
     rv$CPmodToUse <- gsub("~ constant", "~ 1", rv$CPmodToUse)
 

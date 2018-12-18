@@ -226,6 +226,13 @@ print.corpus_frame <- function(x, ...){
 #' @export
 
 defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
+  ind <- sapply(data_SE, is.factor)
+  data_SE[ind] <- lapply(data_SE[ind], as.character)
+  ind <- sapply(data_CP, is.factor)
+  data_CP[ind] <- lapply(data_CP[ind], as.character)
+  ind <- sapply(data_DWP, is.factor)
+  data_DWP[ind] <- lapply(data_DWP[ind], as.character)
+
   if (is.null(data_CO)) stop("data_CO empty")
   if (is.null(data_SS) && is.null(data_DWP))
     stop("cannot find an unambiguous unit column in data_CO")

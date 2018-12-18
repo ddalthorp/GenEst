@@ -452,7 +452,7 @@ update_output <- function(eventName, rv, output){
     toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn",
                 "sizeclass_g1", "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    if (!is.null(rv$gGeneric[[1]])){
+    if (length(rv$gGeneric) > 0 && !is.null(rv$gGeneric[[1]])){
       summaryTab <- summary(rv$gGeneric[[1]], CL = rv$CL)
       output$table_g <- renderDataTable(summaryTab,
         caption = paste0("I = ", rv$SS[["I"]], ", span = ", rv$SS[["span"]]))

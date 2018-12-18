@@ -38,7 +38,17 @@ Probability" page (GUI).
 
 * two-dimensional transposeSplits was assigning some splits estimates to the 
 wrong splits levels because of an array ordering issue. This has been corrected
-by initial ordering of CO splits in calcSplits.
+by initial ordering of CO splits in calcSplits. (command line and GUI)
+
+* added additional error-checks for failure to select CP and SE models for all
+size classes. Previously, if models were selected for the first size class but
+no others, the "Estimate" buttons were activated for both M and genericg, but
+clicking them would crash GenEst (gray screen). Now, the buttons are still 
+activated, but a new error-check catches the problem and displays a useful
+error message in lieu of crashing. (GUI)
+
+* added code to convert dataframe "factors" to "characters" prior to performing
+calculations in pkm0, cpm0, estM, estg, 
 
 
 2018.12.06

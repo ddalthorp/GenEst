@@ -80,18 +80,6 @@ downloadgFig <- function(rv, sc){
 downloadMFig <- function(rv, split = TRUE){#, transpose = FALSE){
 
   if (split){
-#    if (transpose){
-#      downloadHandler(filename = "M_fig.png",
-#          content = function(file){
-#            png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
-#            tryCatch(
-#              plot(transposeSplits(rv$Msplit)),
-#              error = function(x){plotNA()}
-#            )
-#            dev.off()
-#          }
-#      )
-#    } else {
       downloadHandler(filename = "M_fig.png",
           content = function(file){
             png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
@@ -102,8 +90,7 @@ downloadMFig <- function(rv, split = TRUE){#, transpose = FALSE){
             dev.off()
           }
       )
-#    }
-  } else{
+  } else {
     downloadHandler(filename = "M_fig.png",
         content = function(file){
           png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
@@ -174,7 +161,7 @@ downloadData <- function(set, csvformat = NULL){
     filename = filename,
     content = function(file)  {
       tozip <- paste0(pth, "/", names(exob), "_", set, ".csv")
-      zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
+      utils::zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
     },
     contentType = "application/zip"
   )

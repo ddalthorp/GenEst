@@ -273,13 +273,13 @@ modelRunWidget <- function(modType){
                          input.modelChoices_CP1 != null &
                          output.sizeclasses_SE == output.sizeclasses_CP & 
                          output.filename_SS != null &  output.kNeed != 'yes' &
+                         input.DWPCol != null &
                          input.COdate != null",
                   "g" = "input.modelChoices_SE1 != null &
                          input.modelChoices_CP1 != null &
                          output.kNeed != 'yes' &
                          output.sizeclasses_SE == output.sizeclasses_CP")
 
-#                         input.DWPCol != null &
 
   cName <- switch(modType, 
              "SE" = "run_SE_clear",

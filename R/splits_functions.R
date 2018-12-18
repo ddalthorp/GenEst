@@ -217,6 +217,11 @@ calcTsplit <- function(rate, days, tsplit){
 calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
                        ...){
+  ind <- sapply(data_CO, is.factor)
+  data_CO[ind] <- lapply(data_CO[ind], as.character)
+  ind <- sapply(data_SS, is.factor)
+  data_SS[ind] <- lapply(data_SS[ind], as.character)
+
   ##### read data and check for errors
   if ("list" %in% class(M)){
     if (!all(c("Mhat", "Aj") %in% names(M))){

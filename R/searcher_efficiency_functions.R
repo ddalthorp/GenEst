@@ -229,7 +229,8 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
 #' @export
 pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     kFixed = NULL, kInit = 0.7, CL = 0.90, quiet = FALSE, ...){
-
+  i <- sapply(data, is.factor)
+  data[i] <- lapply(data[i], as.character)
   if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
   if (!is.null(kFixed) && !is.numeric(kFixed))
     stop("kFixed must be NULL or numeric")

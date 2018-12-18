@@ -219,6 +219,8 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     right = NULL, dist = "weibull", CL = 0.90, quiet = FALSE){
   dist <- tolower(dist)
   # initial error-checking
+  ind <- sapply(data, is.factor)
+  data[ind] <- lapply(data[ind], as.character)
   if (length(left) == 0){
     left <- "left"
     if (!"left" %in% colnames(data)){

@@ -52,7 +52,7 @@ update_input <- function(eventName, rv, input, session){
 #    if (is.null(scc)){
 #      scc <- ""
 #    }
-#    scs <- rv$sizeCol
+#    scs <- rv$sizeCol      # why would the sizeCol not be cleared when all the data sets are?
 #    if (is.null(scc)){
 #      scs <- ""
 #    }
@@ -115,7 +115,7 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "outSEk", choices = "")
     updateSelectizeInput(session, "outSEclass", choices = "")
     updateSelectizeInput(session, "outgclass", choices = "")
-#    updateSelectizeInput(session, "DWPCol", choices = "")
+    updateSelectizeInput(session, "DWPCol", choices = "")
     updateTabsetPanel(session, "LoadedDataViz", "Searcher Efficiency")
   }
 
@@ -267,12 +267,12 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "class"){
-#    toReset <- c(
-#      "outCPl", "outCPs", "outCPdist", "outsizeclassCP", "modelChoices_CP1",
-#      "outSEp", "outSEk", "outsizeclassSE", "modelChoices_SE1",
-#      "DWPCol", "split_SS", "split_CO", "outgclass")
-#
-#    lapply(toReset, reset)
+    toReset <- c(
+      "outCPl", "outCPs", "outCPdist", "outsizeclassCP", "modelChoices_CP1",
+      "outSEp", "outSEk", "outsizeclassSE", "modelChoices_SE1",
+      "DWPCol", "split_SS", "split_CO", "outgclass")
+
+    lapply(toReset, reset)
 
     updateSelectizeInput(session, "predsSE", choices = rv$colNames_SE_preds,
       selected = input$predsSE)
@@ -363,7 +363,7 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "run_SE_clear"){
-    toReset <- c("outSEp", "outSEk", "outsizeclassSE", #"DWPCol",       # reset DWPCol after run_SE_clear?
+    toReset <- c("outSEp", "outSEk", "outsizeclassSE", #DWPCol,       # reset DWPCol after run_SE_clear?
                  "split_SS", "split_CO", "modelChoices_SE1", "outgclass")
     lapply(toReset, reset)
     updateSelectizeInput(session, "modelChoices_SE1", choices = "")
@@ -381,8 +381,9 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "run_CP"){
-#    toReset <- "outgclass"#, "gSearchInterval", "gSearchMax")
-    reset("outgclass") #lapply(toReset, reset)
+    toReset <- c("outgclass", "gSearchInterval", "gSearchMax")
+    lapply(toReset, reset)
+    #reset("outgclass")
     updateTabsetPanel(session, "analyses_CP", "Model Comparison")
     updateSelectizeInput(session, "outCPl", choices = rv$modNames_CPl)
     updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)
