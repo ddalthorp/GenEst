@@ -4,7 +4,7 @@
 \alias{downloadMFig}
 \title{Download the M figure}
 \usage{
-downloadMFig(rv, split = TRUE, transpose = FALSE)
+downloadMFig(rv, split = TRUE)
 }
 \arguments{
 \item{rv}{the reactive values list}

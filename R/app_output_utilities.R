@@ -24,7 +24,8 @@ classText <- function(rv, type = "SE"){
   }
   if (type == "g"){
     if (length(rv$sizeclasses_g) > 1){
-      out <- paste0("Size class: ", rv$sizeclass_g)
+      out <- paste0("Size class: ", rv$sizeclass_g, " ........ Search schedule: I = ",
+        round(rv$SS[["I"]],1), ", span = ", rv$SS[["span"]])
     }
   }
   renderText(out)
@@ -121,8 +122,6 @@ reNULL <- function(x, toNULL){
 #' @export
 #'
 initialOutput <- function(rv, output){
-  output$SStext <- renderText(rv$SStext)
-
   output$download_RP <- downloadData("RP")
   output$download_RPbat <- downloadData("RPbat")
   output$download_cleared <- downloadData("cleared")

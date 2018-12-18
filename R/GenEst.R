@@ -20,8 +20,7 @@
 #'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
 #'   reformulate rnorm runif terms update.formula weighted.mean
 #' @importFrom survival strata
-#' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
-#'   zip
+#' @importFrom utils combn packageDescription read.csv read.csv2 write.csv zip
 #'
 
 #' @title Generalized estimation of mortality

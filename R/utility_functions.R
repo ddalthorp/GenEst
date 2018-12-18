@@ -237,7 +237,7 @@ defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
         "unit column. Cannot estimate M"
       )
     }
-    if (length(unitCol) == 1 & any(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))){
+    if (length(unitCol) == 1 && any(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))){
       ind <- which(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))
       if (length(ind) > 1)
         stop("Units ", paste0(data_CO[ind, unitCol], collapse = ", "), " are ",
@@ -246,8 +246,26 @@ defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
           "represented in data_CO but not in data_DWP. Cannot estimate M.")
     }
     if (length(unitCol) > 1){
-      stop("data_CO and data_DWP have columns ", paste0(unitCol, collapse = ", "),
-        " in common. Cannot unambiguously define a unit column")
+      badind <- NULL
+      for (ui in 1:length(unitCol)){
+        if (length(data_DWP[ , ui]) != length(unique(data_DWP[, ui]))){
+          badind <- c(badind, ui)
+          next
+        }
+        if (any(! data_CO[, ui] %in% data_DWP[ ,ui])){
+          badind <- c(badind, ui)
+          next
+        }
+      }
+      if (length(badind) > 0){
+        unitCol <- unitCol[-badind]
+      }
+      if (length(unitCol) == 0){
+        stop("No shared column in DWP and CO files meets the criteria for ",
+             "a unit column: either no common column name, or some CO ",
+             "'units' not represented in corresponding DWP 'units', or ",
+             "'units' listed in DWP are not unique.")
+      }
     }
     return(unitCol)
   }

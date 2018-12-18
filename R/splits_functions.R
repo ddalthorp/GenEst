@@ -346,6 +346,8 @@ calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
       stop("split_SS column must be categorical or dates")
     }
     SSlevel <- data_SS[[split_SS]]
+    if (length(unique(SSlevel)) == 1)
+      stop("split_SS = ", split_SS, "has only one level...nothing to split on")
     if (min(diff(match(SSlevel, unique(SSlevel)))) < 0){
       stop(
         "split_SS levels must be in contiguous blocks in data_SS.\n",

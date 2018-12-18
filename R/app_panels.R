@@ -52,30 +52,30 @@ selectedDataPanel <- function(modType){
 
   tName <- switch(modType,
                   "SE" = "Selected Data",
-                  "CP" = "Selected Data",
-                  "g" = "Schedule")
+                  "CP" = "Selected Data")#,
+#                  "g" = "Summary")
   Condition1 <- switch(modType,
                   "SE" = "input.obsSE == null",
-                  "CP" = "input.ltp == null | input.fta == null",
-                  "g" = NULL)
+                  "CP" = "input.ltp == null | input.fta == null")#,
+#                  "g" = NULL)
   Condition2 <- switch(modType,
                   "SE" = "output.filename_SE != null &
                           input.obsSE != null",
                   "CP" = "output.filename_CP != null & input.ltp != null &
-                          input.fta != null",
-                  "g" = NULL)
+                          input.fta != null")#,
+#                  "g" = NULL)
   Text1 <- switch(modType,
             "SE" = em("Select observation columns to view data"),
-            "CP" = em("Select observation columns to view data"),
-            "g" = b(u(big("Search Schedule:"))))
+            "CP" = em("Select observation columns to view data"))#,
+#            "g" = list(br(), br(), textOutput("Run 'Estimate' to view results")))
   Text2 <- switch(modType,
             "SE" = em(textOutput("filename_SE")),
-            "CP" = em(textOutput("filename_CP")),
-            "g" = list(br(), br(), textOutput("SStext")))
+            "CP" = em(textOutput("filename_CP")))#,
+#            "g" = NULL)
   Data <- switch(modType,
             "SE" = dataTableOutput("selected_SE"),
-            "CP" = dataTableOutput("selected_CP"),
-            "g" = NULL)
+            "CP" = dataTableOutput("selected_CP"))#,
+#            "g" = NULL)
 
   tabPanel(tName, br(),
     conditionalPanel(condition = Condition1, Text1), 

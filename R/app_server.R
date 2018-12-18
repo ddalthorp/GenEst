@@ -32,13 +32,11 @@
 #' @export
 #'
 GenEstServer <- function(input, output, session){
-
   rv <- initialReactiveValues()
   output <- initialOutput(rv, output)
   msgs <- msgList()
   options(htmlwidgets.TOJSON_ARGS = list(na = 'string'))
   options(DT.options = list(pageLength = 25))
-
   observeEvent(input$clear_all,  eval(reaction("clear_all")))
   observeEvent(input$file_SE, eval(reaction("file_SE")))
   observeEvent(input$file_SE_clear, eval(reaction("file_SE_clear")))
@@ -77,8 +75,6 @@ GenEstServer <- function(input, output, session){
   observeEvent(input$split_M_clear, eval(reaction("split_M_clear")))
   observeEvent(input$transpose_split, eval(reaction("transpose_split")))
 
-  observeEvent(input$useSSdata, eval(reaction("useSSdata")))
-  observeEvent(input$useSSinputs, eval(reaction("useSSinputs")))
   observeEvent(input$run_g, eval(reaction("run_g")))
   observeEvent(input$run_g_clear, eval(reaction("run_g_clear")))
   observeEvent(input$outgclass, eval(reaction("outgclass")))
@@ -109,7 +105,7 @@ GenEstServer <- function(input, output, session){
 #'   "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
 #'   "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
 #'   "run_M", "run_M_clear", "split_M", "split_M_clear", "transpose_split",
-#'   "useSSdata", "useSSinputs", "run_g", "run_g_clear", or "outgclass".
+#'   "run_g", "run_g_clear", or "outgclass".
 #'
 #' @return \code{reaction}: An object of type 
 #'  "\code{\link[base]{expression}}" returned from
@@ -128,8 +124,8 @@ reaction <- function(eventName){
                     "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP",
                     "run_CP", "run_CP_clear", "outCPclass", "outCPdist",
                     "outCPl", "outCPs", "run_M", "run_M_clear", "split_M",
-                    "split_M_clear", "transpose_split", "useSSdata",
-                    "useSSinputs", "run_g", "run_g_clear", "outgclass",
+                    "split_M_clear", "transpose_split",
+                    "run_g", "run_g_clear", "outgclass",
                     "load_RP", "load_RPbat", "load_cleared", "load_PV",
                     "load_trough", "load_powerTower", "load_mock")
 
@@ -210,12 +206,6 @@ reactionMessageDone <- function(eventName){
     reactMsg <- 'msgs$ModM <<- msgModDone(msgs, rv, "split")'
   }
 
-  if (eventName == "useSSdata"){
-    reactMsg <- 'msgs$SS <<- msgSSavgFail(msgs, rv)'
-  }
-  if (eventName == "useSSinputs"){
-    reactMsg <- 'msgs$SS <<- msgSSinputFail(msgs, rv)'
-  }
   reactMsg
 }
 
