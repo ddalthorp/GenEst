@@ -36,6 +36,10 @@ strictly a user convenience for data exploration and can be readily changed
 with no downstream consequences on results outside the specialized "Detection
 Probability" page (GUI).
 
+* two-dimensional transposeSplits was assigning some splits estimates to the 
+wrong splits levels because of an array ordering issue. This has been corrected
+by initial ordering of CO splits in calcSplits.
+
 
 2018.12.06
 v1.2.0
