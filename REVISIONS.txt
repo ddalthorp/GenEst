@@ -50,6 +50,8 @@ error message in lieu of crashing. (GUI)
 * added code to convert dataframe "factors" to "characters" prior to performing
 calculations in pkm0, cpm0, estM, estg, 
 
+* figure downloaded for estimated mortality corrected to properly reflect user's
+custom-selected CL
 
 2018.12.06
 v1.2.0

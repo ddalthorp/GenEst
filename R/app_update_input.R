@@ -381,9 +381,8 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "run_CP"){
-    toReset <- c("outgclass", "gSearchInterval", "gSearchMax")
+    toReset <- c("outgclass")#, "gSearchInterval", "gSearchMax")
     lapply(toReset, reset)
-    #reset("outgclass")
     updateTabsetPanel(session, "analyses_CP", "Model Comparison")
     updateSelectizeInput(session, "outCPl", choices = rv$modNames_CPl)
     updateSelectizeInput(session, "outCPs", choices = rv$modNames_CPs)

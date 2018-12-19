@@ -226,10 +226,10 @@ print.corpus_frame <- function(x, ...){
 #' @export
 
 defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
-  ind <- sapply(data_SE, is.factor)
-  data_SE[ind] <- lapply(data_SE[ind], as.character)
-  ind <- sapply(data_CP, is.factor)
-  data_CP[ind] <- lapply(data_CP[ind], as.character)
+  ind <- sapply(data_SS, is.factor)
+  data_SS[ind] <- lapply(data_SS[ind], as.character)
+  ind <- sapply(data_CO, is.factor)
+  data_CO[ind] <- lapply(data_CO[ind], as.character)
   ind <- sapply(data_DWP, is.factor)
   data_DWP[ind] <- lapply(data_DWP[ind], as.character)
 
