@@ -62,6 +62,10 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
                  model_SE, model_CP, sizeCol = NULL, unitCol = NULL,
                  nsim = 1000, max_intervals = 8,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
+  i <- sapply(data_CO, is.factor)
+  data_CO[i] <- lapply(data_CO[i], as.character)
+  i <- sapply(data_SS, is.factor)
+  data_SS[i] <- lapply(data_SS[i], as.character)
 
 # error-checking
   if (is.null(unitCol))
@@ -125,6 +129,10 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
         Cannot estimate variance in user-supplied pk model for size '", sc,
         "' Aborting calculation of ghat."
       )
+    }
+    if (any(unlist(lapply(model_SE, function(x) x$pOnly)))){
+      nok <- names(which(unlist(lapply(model_SE, function(x) x$pOnly))))
+      stop("valid k not provided for ", paste(nok, collapse = " "))
     }
   }
 
@@ -495,7 +503,9 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
     ghat[[celli]] <- calcg(days, param_SE, param_CP, dist)
   }  
   names(ghat) <- preds$CellNames
-  out <- list("ghat" = ghat, "predictors" = preds)
+  span <- max(days)
+  I <- span/(length(days) - 1)
+  out <- list("ghat" = ghat, "predictors" = preds, "SS" = list(span = span, I = I))
   class(out) <- c("gGeneric", "list")
   return(out)
 }
@@ -547,6 +557,13 @@ calcg <- function(days, param_SE, param_CP, dist){
   pk <- param_SE
   f0 <- mean(pk[, 1])
   k0 <- mean(pk[, 2])
+
+  if (length(days) == 2){ # then only one search, so it's easy!
+    r_sim <- as.vector(ppersist(dist = dist,
+      t_arrive0 = days[1], t_arrive1 = days[2], t_search = days[2],
+      pda = param_CP[,1], pdb = param_CP[,2]))
+    return(r_sim * pk[ , 1])
+  }
 
  ###1. setting estimation control parameters
   ind1 <- rep(1:nsearch, times = nsearch:1)

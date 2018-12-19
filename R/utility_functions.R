@@ -226,6 +226,13 @@ print.corpus_frame <- function(x, ...){
 #' @export
 
 defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
+  ind <- sapply(data_SS, is.factor)
+  data_SS[ind] <- lapply(data_SS[ind], as.character)
+  ind <- sapply(data_CO, is.factor)
+  data_CO[ind] <- lapply(data_CO[ind], as.character)
+  ind <- sapply(data_DWP, is.factor)
+  data_DWP[ind] <- lapply(data_DWP[ind], as.character)
+
   if (is.null(data_CO)) stop("data_CO empty")
   if (is.null(data_SS) && is.null(data_DWP))
     stop("cannot find an unambiguous unit column in data_CO")
@@ -237,7 +244,7 @@ defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
         "unit column. Cannot estimate M"
       )
     }
-    if (length(unitCol) == 1 & any(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))){
+    if (length(unitCol) == 1 && any(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))){
       ind <- which(!(data_CO[ , unitCol] %in% data_DWP[ , unitCol]))
       if (length(ind) > 1)
         stop("Units ", paste0(data_CO[ind, unitCol], collapse = ", "), " are ",
@@ -246,8 +253,26 @@ defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
           "represented in data_CO but not in data_DWP. Cannot estimate M.")
     }
     if (length(unitCol) > 1){
-      stop("data_CO and data_DWP have columns ", paste0(unitCol, collapse = ", "),
-        " in common. Cannot unambiguously define a unit column")
+      badind <- NULL
+      for (ui in 1:length(unitCol)){
+        if (length(data_DWP[ , ui]) != length(unique(data_DWP[, ui]))){
+          badind <- c(badind, ui)
+          next
+        }
+        if (any(! data_CO[, ui] %in% data_DWP[ ,ui])){
+          badind <- c(badind, ui)
+          next
+        }
+      }
+      if (length(badind) > 0){
+        unitCol <- unitCol[-badind]
+      }
+      if (length(unitCol) == 0){
+        stop("No shared column in DWP and CO files meets the criteria for ",
+             "a unit column: either no common column name, or some CO ",
+             "'units' not represented in corresponding DWP 'units', or ",
+             "'units' listed in DWP are not unique.")
+      }
     }
     return(unitCol)
   }

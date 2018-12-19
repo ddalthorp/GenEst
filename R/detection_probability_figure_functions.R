@@ -41,7 +41,6 @@ plot.gGeneric <- function(x, CL = 0.90, ...){
   )
   axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 1)
   mtext(side = 2, line = 2.75, "Detection Probability", cex = 1.25)
-
   axis(1, at = 1:ncell, labels = FALSE)
   ang <- 0
   offx <- NULL

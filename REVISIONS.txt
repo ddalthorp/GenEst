@@ -1,5 +1,58 @@
 Revision log
 
+2018.12.09
+v1.2.1
+
+* changed the conditional run_M and run_g buttons to use output.filename_SS
+rather than output.data_SS as a check. The check on output.data_SS required
+users who uploaded example data into the GUI to click on the "Search Schedule"
+panel before the run_M and run_g buttons could be activated. This change
+relieves an inconvenience that GUI users would have when analyzing the example
+data sets (GUI).
+
+* corrected a check on data structure that was preventing estimation of 
+mortality in some very simple data sets, namely, data with no carcass size
+distinctions, only one search occasion represented in the SE data, and using 
+a fixed k parameter (GUI). 
+
+* fixed a bug that was preventing mortality estimation in cases where there 
+was more than one size class and more than one estimate of mortality was to 
+be made in succession (GUI). 
+
+* streamlined the interface under the "Detection Probability" tab by removing 
+the requirement that, after entering new search schedule parameters, users must
+calculate the new search schedule derived from the parameters before clicking 
+"Estimate" to get the new g's based on the new search schedule. Also, added the
+search schedule to the results table's caption to make it clear which search 
+parameters the g_hat's are associated with (GUI). 
+
+* the default search schedule that is entered into the numericInput boxes under
+the "Detection Probability" calculation tab is now NULL when no data_SS is 
+loaded and averageSS when a data_SS is loaded. The new defaults are a better 
+representation (averageSS) of the uploaded data than are the previous
+one-size-fits-all parameters of I = 7, span = 364. However, the "Detection 
+Probability" tab SS parameters are not used in mortality estimation and are 
+strictly a user convenience for data exploration and can be readily changed 
+with no downstream consequences on results outside the specialized "Detection
+Probability" page (GUI).
+
+* two-dimensional transposeSplits was assigning some splits estimates to the 
+wrong splits levels because of an array ordering issue. This has been corrected
+by initial ordering of CO splits in calcSplits. (command line and GUI)
+
+* added additional error-checks for failure to select CP and SE models for all
+size classes. Previously, if models were selected for the first size class but
+no others, the "Estimate" buttons were activated for both M and genericg, but
+clicking them would crash GenEst (gray screen). Now, the buttons are still 
+activated, but a new error-check catches the problem and displays a useful
+error message in lieu of crashing. (GUI)
+
+* added code to convert dataframe "factors" to "characters" prior to performing
+calculations in pkm0, cpm0, estM, estg, 
+
+* figure downloaded for estimated mortality corrected to properly reflect user's
+custom-selected CL
+
 2018.12.06
 v1.2.0
 

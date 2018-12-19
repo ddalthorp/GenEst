@@ -74,8 +74,6 @@ test_that("Standard widget functions produce HTML", {
   expect_is(modelInputWidget("COdate"), "shiny.tag")
   expect_is(modelInputWidget("gSearchInterval"), "shiny.tag")
   expect_is(modelInputWidget("gSearchMax"), "shiny.tag")
-  expect_is(modelInputWidget("useSSinputs"), "shiny.tag")
-  expect_is(modelInputWidget("useSSdata"), "shiny.tag")
   expect_error(modelInputWidget("_NOT_RIGHT_"))
   expect_is(modelRunWidget("SE")[[1]], "shiny.tag")
   expect_is(modelRunWidget("SE")[[2]], "shiny.tag")

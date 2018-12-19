@@ -99,8 +99,8 @@ dataDownloadWidget <- function(set){
 #'
 #' @param inType Toggle control for the input type of the widget. One of 
 #'   "nsim", "CL", "class", "obsSE", "predsSE", "kFixed", "ltp", "fta", 
-#'   "predsCP", "dist", "frac", "DWPCol", "COdate", "gSearchInterval", 
-#'   "gSearchMax", "useSSinputs", or "useSSdata".  
+#'   "predsCP", "dist", "frac", "DWPCol", "COdate", "gSearchInterval", or
+#'   "gSearchMax".
 #'
 #' @return HTML for the model input widget. 
 #'
@@ -111,8 +111,7 @@ modelInputWidget <- function(inType){
   if (!inType %in% c("nsim", "CL", "class", "obsSE", "predsSE",
                      "kFixedInput", "ltp", "fta", "predsCP", "dist",
                      "frac", "DWPCol", "COdate",
-                     "gSearchInterval", "gSearchMax", "useSSinputs",
-                     "useSSdata")){
+                     "gSearchInterval", "gSearchMax")){
     stop(paste0("input inType (", inType, ") not supported"))
   }
 
@@ -132,10 +131,8 @@ modelInputWidget <- function(inType){
              "frac" = "Fraction of Facility Surveyed:", 
              "DWPCol" = "Density Weighted Proportion:", 
              "COdate" = "Date Found:",
-             "gSearchInterval" = "Generic Search Interval (days):",
-             "gSearchMax" = "Generic Final Search (day):",
-             "useSSinputs" = "Create Custom Generic Schedule",
-             "useSSdata" = "Create Average Schedule from SS Data")
+             "gSearchInterval" = "Search Interval (days):",
+             "gSearchMax" = "Total Span of Monitoring (days):")
 
   widgetFun <- switch(inType, 
                  "nsim" = "numericInput", 
@@ -152,9 +149,7 @@ modelInputWidget <- function(inType){
                  "DWPCol" = "selectizeInput", 
                  "COdate" = "selectizeInput",
                  "gSearchInterval" = "numericInput",
-                 "gSearchMax" = "numericInput",
-                 "useSSinputs" = "actionButton",
-                 "useSSdata" = "actionButton")
+                 "gSearchMax" = "numericInput")
 
   Args <- switch(inType, 
             "nsim" = list(value = 1000, min = 1, max = 10000, step = 1), 
@@ -176,10 +171,8 @@ modelInputWidget <- function(inType){
                             options = list(maxItems = 1)),
             "COdate" = list(c("No carcass data input yet"), multiple = TRUE,
                                   options = list(maxItems = 1)),
-            "gSearchInterval" = list(value = 7, min = 1, max = 400, step = 1),
-            "gSearchMax" = list(value = 364, min = 1, max = 1000, step = 1),
-            "useSSinputs" = list(NULL),
-            "useSSdata" = list(NULL))
+            "gSearchInterval" = list(value = NULL, min = 1, max = 400, step = 1),
+            "gSearchMax" =  list(value = NULL, min = 1, max = 1000, step = 1))
 
   Condition <- switch(inType, 
                  "nsim" = NULL, 
@@ -196,9 +189,7 @@ modelInputWidget <- function(inType){
                  "DWPCol" = "output.DWPNeed == 'yes'", 
                  "COdate" = NULL,
                  "gSearchInterval" = NULL,
-                 "gSearchMax" = NULL,
-                 "useSSinputs" = NULL,
-                 "useSSdata" = "output.data_SS != null")
+                 "gSearchMax" = NULL)
 
   widgetMaker(Condition, Name, widgetFun, Label, Args)
 }
@@ -281,12 +272,14 @@ modelRunWidget <- function(modType){
                   "M" = "input.modelChoices_SE1 != null &
                          input.modelChoices_CP1 != null &
                          output.sizeclasses_SE == output.sizeclasses_CP & 
-                         output.data_SS != null & output.kNeed != 'yes' &
-                         input.DWPCol != null & input.COdate != null",
+                         output.filename_SS != null &  output.kNeed != 'yes' &
+                         input.DWPCol != null &
+                         input.COdate != null",
                   "g" = "input.modelChoices_SE1 != null &
                          input.modelChoices_CP1 != null &
                          output.kNeed != 'yes' &
                          output.sizeclasses_SE == output.sizeclasses_CP")
+
 
   cName <- switch(modType, 
              "SE" = "run_SE_clear",
@@ -342,7 +335,7 @@ preTextMaker <- function(modType){
      "M" = c("input.modelChoices_SE1 == null |
              input.modelChoices_CP1 == null |
              output.sizeclasses_SE != output.sizeclasses_CP",
-             "output.data_SS == null",
+             "output.filename_SS == null",
              "input.modelChoices_SE1 != null &
              input.modelChoices_CP1 != null &
              output.sizeclasses_SE == output.sizeclasses_CP & 

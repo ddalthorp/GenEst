@@ -381,8 +381,6 @@ gSidebar <- function(){
     br(), br(),
     modelInputWidget("gSearchInterval"),
     modelInputWidget("gSearchMax"),
-    modelInputWidget("useSSinputs"),
-    modelInputWidget("useSSdata"),
     modelRunWidget("g"),
     modelOutputWidget("g")
   )
@@ -401,7 +399,7 @@ gSidebar <- function(){
 gMainPanel <- function(){
   mainPanel(
     tabsetPanel(id = "analyses_g",
-      selectedDataPanel("g"),
+#      selectedDataPanel("g"),
       modelOutputPanel("gFigures"),
       modelOutputPanel("gSummary")
     )

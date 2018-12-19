@@ -217,6 +217,11 @@ calcTsplit <- function(rate, days, tsplit){
 calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
                        split_SS = NULL, data_SS = NULL, split_time = NULL,
                        ...){
+  ind <- sapply(data_CO, is.factor)
+  data_CO[ind] <- lapply(data_CO[ind], as.character)
+  ind <- sapply(data_SS, is.factor)
+  data_SS[ind] <- lapply(data_SS[ind], as.character)
+
   ##### read data and check for errors
   if ("list" %in% class(M)){
     if (!all(c("Mhat", "Aj") %in% names(M))){
@@ -346,6 +351,8 @@ calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
       stop("split_SS column must be categorical or dates")
     }
     SSlevel <- data_SS[[split_SS]]
+    if (length(unique(SSlevel)) == 1)
+      stop("split_SS = ", split_SS, "has only one level...nothing to split on")
     if (min(diff(match(SSlevel, unique(SSlevel)))) < 0){
       stop(
         "split_SS levels must be in contiguous blocks in data_SS.\n",
@@ -380,7 +387,7 @@ calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
       split_v <- list()
       split_v[["name"]] <- ifelse(!is.null(split_h), split_CO[1], split_CO[2])
       split_v[["vals"]] <- data_CO[[split_v$name]]
-      split_v[["level"]] <- unique(split_v$vals)
+      split_v[["level"]] <- gtools::mixedsort(unique(split_v$vals))
       split_v[["nlev"]] <- length(split_v$level)
       split_v[["type"]] <- "CO"
     }
@@ -388,7 +395,7 @@ calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
       split_h <- list()
       split_h[["name"]] <- split_CO[1]
       split_h[["vals"]] <- data_CO[[split_h$name]]
-      split_h[["level"]] <- unique(split_h$vals)
+      split_h[["level"]] <- gtools::mixedsort(unique(split_h$vals))
       split_h[["nlev"]] <- length(split_h$level)
       split_h[["type"]] <- "CO"
     }
@@ -425,6 +432,7 @@ calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
         }
         splits[["X"]][li] <- length(lind)
       }
+
     } else if (split_h$type %in% c("time", "SS")){
       days <- data_SS$days
       rate <- calcRate(M, Aj, days = days, 
@@ -558,7 +566,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
       "At most two split variables are allowed."
     )
   }
-  # order the non-temporal dimensions "alphabetically"
+  # order the non-temporal dimensions "alphabetically" (done in calcSplits?)
   if (!is.null(attr(splits, "type"))){
     if (!is.list(splits$M)){
       if (attr(splits, "type") == "CO"){
@@ -613,6 +621,9 @@ ltranspose <- function(M){
   ans <- list()
   for (i in 1:adim[1]){
     ans[[i]] <- do.call("rbind", lapply(M, function(x) x[i, ]))
+#    if (attributes(M)$type)[1] == "CO"){
+#      ans[[i]] <- ans[[i]][order(names(ans[[i]]),]
+#    }
   }
   return(ans)
 }

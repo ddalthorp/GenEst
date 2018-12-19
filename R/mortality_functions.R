@@ -75,6 +75,12 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
                  DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  seed_M = NULL, nsim = 1000, max_intervals = 8){
 
+  i <- sapply(data_CO, is.factor)
+  data_CO[i] <- lapply(data_CO[i], as.character)
+  i <- sapply(data_SS, is.factor)
+  data_SS[i] <- lapply(data_SS[i], as.character)
+  i <- sapply(data_DWP, is.factor)
+  data_DWP[i] <- lapply(data_DWP[i], as.character)
 
   if (!(COdate %in% colnames(data_CO))){
     stop("COdate not found in data_CO")
