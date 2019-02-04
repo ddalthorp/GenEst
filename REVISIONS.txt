@@ -1,5 +1,15 @@
 Revision log
 
+2019.01.31
+v1.2.2
+
+* added a note for Windows users about downloading example data sets.
+
+* with data sets with only 1 unit, prepSS was not properly assigning unit
+names to rows of searches_unit array. This caused an error in prepSS and its
+dependencies (estM and estg), which was expressed in the error message: 
+"no 'dimnames' attribute for array”. This has been corrected.
+
 2018.12.09
 v1.2.1
 

@@ -3,7 +3,7 @@
     "Name": "GenEst",
     "organization": "U.S. Geological Survey",
     "description": "R package for estimating bird and bat fatalities at wind and solar power facilities",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "status": "Release Candidate",
 
  "permissions": {
@@ -44,7 +44,7 @@
     },
 
     "date": {
-      "metadataLastUpdated": "2018-12-18"
+      "metadataLastUpdated": "2019-02-04"
     }
   }    }
   }

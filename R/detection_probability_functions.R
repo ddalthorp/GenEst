@@ -985,7 +985,7 @@ prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
       stop(paste(SSdate, "is not properly formatted as dates"))
     }
   }
-  # extract units
+  # extract (potential) units  (i.e. cols w/ 0-1 data)
   unitNames <- NULL
   preds <- SSdate
   for (coli in colnames(data_SS)){
@@ -1022,6 +1022,7 @@ prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
   }
   ans$searches_unit <- t(as.matrix(data_SS[, unitNames]))
   ans$unit <- unitNames
+  rownames(ans$searches_unit) <- ans$unit
   ans$SSdate <- SSdate
   class(ans) <- c("prepSS", "list")
   return(ans)
