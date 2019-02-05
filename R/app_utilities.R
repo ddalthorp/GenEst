@@ -22,16 +22,13 @@ reVal <- function(rv, toReVal){
   }
 
   if("SS" %in% toReVal){
-    rv$SS <- seq(0, 364, 7)
+    rv$SS <- NULL #seq(0, 364, 7)
   }
   if("gSearchInterval " %in% toReVal){
-    rv$gSearchInterval  <- 7
+    rv$gSearchInterval  <- NULL#7
   }
   if("gSearchMax" %in% toReVal){
-    rv$gSearchMax <- 364
-  }
-  if("SStext" %in% toReVal){
-    rv$SStext <- paste(seq(0, 364, 7), collapse = ", ")
+    rv$gSearchMax <- NULL#364
   }
   if("figH_SE" %in% toReVal){
     rv$figH_SE <- 800
@@ -604,10 +601,10 @@ initialReactiveValues <- function(){
     colNames_ltp = NULL, colNames_ltp0 = NULL, toRemove_ltp = NULL,   
     colNames_fta = NULL, colNames_fta0 = NULL, toRemove_fta = NULL,
 
-    colNames_SS = NULL, colNames_SS_sel = NULL, colNames_SS_nosel = NULL, 
+    colNames_SS = NULL, splittable_SS = NULL,
     colNames_DWP = NULL,
     colNames_CO = NULL, colNames_COdates = NULL,
-    colNames_size = NULL,
+    colNames_size = NULL, colNames_size0 = NULL,
 
     nsim = 1000, CL = 0.90,
 
@@ -640,9 +637,8 @@ initialReactiveValues <- function(){
     split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0, 
     figH_M = 600, figW_M = 800,
 
-    SS = seq(0, 364, 7), SStext = paste(seq(0, 364, 7), collapse = ", "),
-    avgSI = NULL, SStemp = NULL, gSearchInterval = 7, gSearchMax = 364,
-    sizeclasses_g = NULL, nsizeclasses_g = NULL,
+    SS = NULL, avgSI = NULL, SStemp = NULL, gSearchInterval = NULL,
+    gSearchMax = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
     gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
     figH_g = 400, figW_g = 800,
 

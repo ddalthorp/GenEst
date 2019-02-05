@@ -12,7 +12,7 @@
 #'   "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
 #'   "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
 #'   "run_M", "run_M_clear", "split_M", "split_M_clear", "transpose_split",
-#'   "useSSdata", "useSSinputs", "run_g", "run_g_clear", or "outgclass".
+#'   "run_g", "run_g_clear", or "outgclass".
 #'
 #' @param rv Reactive values list for the GenEst GUI.
 #'
@@ -31,8 +31,8 @@ update_output <- function(eventName, rv, output){
                     "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP",
                     "run_CP", "run_CP_clear", "outCPclass", "outCPdist",
                     "outCPl", "outCPs", "run_M", "run_M_clear", "split_M",
-                    "split_M_clear", "transpose_split", "useSSdata",
-                    "useSSinputs", "run_g", "run_g_clear", "outgclass",
+                    "split_M_clear", "transpose_split",
+                    "run_g", "run_g_clear", "outgclass",
                     "load_RP", "load_RPbat", "load_cleared", "load_PV",
                     "load_trough", "load_powerTower", "load_mock")
 
@@ -156,6 +156,54 @@ update_output <- function(eventName, rv, output){
                 "text_CP_est", "fig_M", "table_M", "MModDone", "table_g",
                 "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
                 "sizeclass_g2")
+
+    output <- reNULL(output, toNULL)
+    output$kNeed <- setkNeed(rv)
+
+    output$data_SE <- renderDTns(datatable(rv$data_SE,
+      caption = paste0("File: ", rv$filename_SE)))
+    output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
+
+    output$data_CP <- renderDTns(datatable(rv$data_CP,
+      caption = paste0("File: ", rv$filename_CP)))
+    output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
+
+    output$data_SS <- renderDTns(datatable(rv$data_SS,
+      caption = paste0("File: ", rv$filename_SS)))
+    output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
+
+    output$data_DWP <- renderDTns(datatable(rv$data_DWP,
+      caption = paste0("File: ", rv$filename_DWP)))
+    output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
+
+    output$data_CO <- renderDTns(datatable(rv$data_CO,
+      caption = paste0("File: ", rv$filename_CO)))
+    output$filename_CO <- renderText(paste0("File: ", rv$filename_CO))
+
+    dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
+                     "kNeed", "MModDone", "gModDone", "sizeclass_gyn",
+                     "CPModDone", "sizeclasses_CP", "text_CP_est",
+                     "filename_SE", "filename_CP", "filename_SS",
+                     "filename_DWP", "filename_CO")
+    setNotSuspending(output, dontSuspend)
+
+  }
+
+
+  if (grepl("load_", eventName)){
+    toNULL <- c("data_SE", "data_CP", "data_SS", "data_DWP", "data_CO",
+                "filename_SE", "filename_CP", "filename_SS", "filename_CO",
+                "filename_DWP", "selected_SE", "SEModDone",
+                "DWPNeed", "AICcTab_SE", "modTab_SE", "fig_SE",
+                "sizeclasses_SE", "modelMenu_SE", "sizeclass_SE1",
+                "sizeclass_SE2", "sizeclass_SE3", "sizeclass_SEyn",
+                "text_SE_est", "selected_CP",
+                "CPModDone", "AICcTab_CP", "modTab_CP", "fig_CP",
+                "sizeclasses_CP", "modelMenu_CP", "sizeclass_CP1",
+                "sizeclass_CP2", "sizeclass_CP3", "sizeclass_CPyn",
+                "text_CP_est", "fig_M", "table_M", "MModDone", "table_g",
+                "fig_g", "gModDone", "sizeclass_gyn", "sizeclass_g1",
+                "sizeclass_g2")
     output <- reNULL(output, toNULL)
     output$kNeed <- setkNeed(rv)
 
@@ -201,6 +249,8 @@ update_output <- function(eventName, rv, output){
       selectedData <- selectData(rv$data_CP, selectedCols)
       output$selected_CP <- renderDTns(datatable(selectedData))
     }
+    output$sizeclasses_SE <- renderText(paste(rv$sizeclasses_SE, collapse = " "))
+    output$sizeclasses_CP <- renderText(paste(rv$sizeclasses_CP, collapse = " "))
     output$kFixedInput <- kFixedWidget(rv$sizeclasses_k)
   }
 
@@ -445,17 +495,15 @@ update_output <- function(eventName, rv, output){
     }
   }
 
-  if (eventName == "useSSdata" | eventName == "useSSinputs"){
-    output$SStext <- renderText(rv$SStext)
-  }
 
   if (eventName == "run_g"){
     toNULL <- c("table_g", "fig_g", "gModDone", "sizeclass_gyn",
                 "sizeclass_g1", "sizeclass_g2")
     output <- reNULL(output, toNULL)
-    if (!is.null(rv$gGeneric[[1]])){
+    if (length(rv$gGeneric) > 0 && !is.null(rv$gGeneric[[1]])){
       summaryTab <- summary(rv$gGeneric[[1]], CL = rv$CL)
-      output$table_g <- renderDataTable(summaryTab)
+      output$table_g <- renderDataTable(summaryTab,
+        caption = paste0("I = ", rv$SS[["I"]], ", span = ", rv$SS[["span"]]))
       output$fig_g <- renderPlot({
                         tryCatch(
                           plot(rv$gGeneric[[1]], CL = rv$CL),
@@ -503,9 +551,11 @@ update_output <- function(eventName, rv, output){
       output$gModDone <- renderText("OK")
       outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
 
-      preText <- paste0("Size class: ", rv$sizeclass_g)
+      preText <- paste0(
+        "Size class: ", rv$sizeclass_g, " ........ ",
+        "Search Schedule: I = ", round(rv$SS$I, 1), ", span = ", rv$SS$span)
       if (length(rv$sizeclasses_g) == 1){
-        preText <- ""
+        preText <- paste0("Search Schedule: I = ", round(rv$SS$I, 1), ", span = ", rv$SS$span)
       }
       scText <- renderText(preText)
       output$sizeclass_g1 <- scText
@@ -604,7 +654,7 @@ update_output <- function(eventName, rv, output){
                         )
                       }, height = rv$figH_M, width = rv$figW_M
                       )
-      output$dlMfig <- downloadMFig(rv, TRUE, TRUE)
+      output$dlMfig <- downloadMFig(rv, TRUE)
     }
   }
 

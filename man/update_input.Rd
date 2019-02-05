@@ -14,7 +14,7 @@ update_input(eventName, rv, input, session)
 "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
 "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
 "run_M", "run_M_clear", "split_M", "split_M_clear", "transpose_split",
-"useSSdata", "useSSinputs", "run_g", "run_g_clear", or "outgclass".}
+"run_g", "run_g_clear", or "outgclass".}
 
 \item{rv}{Reactive values list for the GenEst GUI.}
 

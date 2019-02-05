@@ -71,44 +71,28 @@ downloadgFig <- function(rv, sc){
 #'
 #' @param split logical indicator to use the split or not
 #'
-#' @param transpose logical indicator if to transpose the output or not
-#'
 #' @return a download handler function
 #'
 #' @export
 #'
-downloadMFig <- function(rv, split = TRUE, transpose = FALSE){
-
+downloadMFig <- function(rv, split = TRUE){
   if (split){
-    if (transpose){
       downloadHandler(filename = "M_fig.png",
           content = function(file){
             png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
             tryCatch(
-              plot(transposeSplits(rv$Msplit)),
+              plot(rv$Msplit, CL = rv$CL),
               error = function(x){plotNA()}
             )
             dev.off()
           }
       )
-    } else {
-      downloadHandler(filename = "M_fig.png",
-          content = function(file){
-            png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
-            tryCatch(
-              plot(rv$Msplit),
-              error = function(x){plotNA()}
-            )
-            dev.off()
-          }
-      )
-    }
-  } else{
+  } else {
     downloadHandler(filename = "M_fig.png",
         content = function(file){
           png(file, height = rv$figH_M, width = rv$figW_M, units = "px")
           tryCatch(
-            plot(rv$M),
+            plot(rv$M, CL = rv$CL),
             error = function(x){plotNA()}
           )
           dev.off()
@@ -146,7 +130,7 @@ downloadTable <- function(filename, tablename, csvformat){
 #' @description Handle the downloading of a data set
 #'
 #' @param set the name of the data set to download
-#' @param csvformat Format of .csv files to download. For comma field 
+#' @param csvformat Format of .csv files to download. For comma field
 #'  separator and period decimal separator, use \code{csvformat = NULL} or "".
 #'  For semicolon field separator and comma decimal separator, use
 #'  \code{csvformat = 2}.
@@ -155,12 +139,12 @@ downloadTable <- function(filename, tablename, csvformat){
 #' @export
 #'
 downloadData <- function(set, csvformat = NULL){
-  fpre <- switch(set, "mock" = "", 
-                      "powerTower" = "solar_", 
+  fpre <- switch(set, "mock" = "",
+                      "powerTower" = "solar_",
                       "PV" = "solar_",
-                      "trough" = "solar_", 
+                      "trough" = "solar_",
                       "cleared" = "wind_",
-                      "RP" = "wind_", 
+                      "RP" = "wind_",
                       "RPbat" = "wind_")
   filename <- paste0(fpre, set, ".zip")
   exob <- get(paste0(fpre, set))
@@ -174,10 +158,8 @@ downloadData <- function(set, csvformat = NULL){
     filename = filename,
     content = function(file)  {
       tozip <- paste0(pth, "/", names(exob), "_", set, ".csv")
-      #zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
-      zip::zip(zipfile = file, files = tozip)
+      utils::zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
     },
     contentType = "application/zip"
   )
 }
-

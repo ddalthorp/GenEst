@@ -200,7 +200,12 @@
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
     allCombos = FALSE, sizeCol = NULL,
     CL = 0.90, kInit = 0.7, quiet = FALSE){
-
+  if (!is.null(kFixed) && !is.numeric(kFixed))
+    stop("kFixed must be NULL or numeric")
+  if (any(na.omit(kFixed) < 0 | na.omit(kFixed) > 1)){
+    badk <- names(which(na.omit(kFixed) < 0 | na.omit(kFixed) > 1))
+    stop("invalid k for ", paste0(badk, collapse = ", "))
+  }
   if (is.null(allCombos) || is.na(allCombos) || !is.logical(allCombos)){
     stop("allCombos must be TRUE or FALSE")
   }
@@ -224,8 +229,14 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
 #' @export
 pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     kFixed = NULL, kInit = 0.7, CL = 0.90, quiet = FALSE, ...){
-
+  i <- sapply(data, is.factor)
+  data[i] <- lapply(data[i], as.character)
   if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
+  if (!is.null(kFixed) && !is.numeric(kFixed))
+    stop("kFixed must be NULL or numeric")
+  if (!is.null(kFixed) && (kFixed < 0 | kFixed > 1)){
+    stop("invalid fixed value for k")
+  }
   if(any(! obsCol %in% colnames(data))){
     stop("Observation column provided not in data.")
   }

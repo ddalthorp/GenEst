@@ -69,3 +69,4 @@ test_that("Check solar_trough data", {
   expect_is(solar_trough$DWP, "data.frame")
   expect_is(solar_trough$CO, "data.frame")
 })
+

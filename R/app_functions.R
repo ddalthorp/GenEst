@@ -7,10 +7,8 @@
 #' @export
 #'
 runGenEst <- function(){
-
   appDir <- system.file("app", package = "GenEst")
-  runApp(appDir)
-  
+  runApp(appDir, launch.browser = T)
 }
 
 

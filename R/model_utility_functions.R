@@ -12,6 +12,8 @@
 #' @export 
 #'
 combinePreds <- function(preds, data){
+  ind <- sapply(data, is.factor)
+  data[ind] <- lapply(data[ind], as.character)
 
   npred <- length(preds)
   if (npred == 0){
@@ -176,6 +178,10 @@ matchCells <- function(specific, modelSet){
 #' @export 
 #'
 combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
+  ind <- sapply(data_CP, is.factor)
+  data_CP[ind] <- lapply(data_CP[ind], as.character)
+  ind <- sapply(data_SE, is.factor)
+  data_SE[ind] <- lapply(data_SE[ind], as.character)
 
   preds <- unique(c(preds_SE, preds_CP))
   npred <- length(preds)
