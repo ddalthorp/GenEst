@@ -41,6 +41,7 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if(eventName == "clear_all" | grepl("load_", eventName)){
+
     toReset <- c("file_SE", "predsSE", "obsSE", "outSEp", "outSEk",
                  "outSEclass", "DWPCol", "split_SS", "split_CO",
                  "modelChoices_SE1", "outgclass","file_CP", "predsCP", "ltp",
@@ -168,6 +169,7 @@ update_input <- function(eventName, rv, input, session){
   if (eventName == "file_SS_clear"){
 
     toReset <- c("file_SS", "gSearchInterval", "gSearchMax",
+
       "split_SS", "split_CO", "outgclass")
     lapply(toReset, reset)
 

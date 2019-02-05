@@ -1,4 +1,4 @@
-#' @title Estimate mortality 
+#' @title Estimate mortality
 #'
 #' @description Given given fitted Searcher Efficiency and Carcass 
 #'   Persistence models; Search Schedule, Density Weighted Proportion,

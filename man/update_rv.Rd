@@ -17,6 +17,7 @@ update_rv(eventName, rv, input)
 "run_g", "run_g_clear", "outgclass", "load_RP", "load_RPbat",
 "load_cleared", "load_PV", "load_trough", "load_powerTower", or "load_mock"}
 
+
 \item{rv}{Reactive values list for the GenEst GUI, created by 
 \code{\link{initialReactiveValues}}, which calls 
 \code{\link[shiny]{reactiveValues}}}

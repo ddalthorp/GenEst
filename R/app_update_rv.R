@@ -110,6 +110,7 @@ update_rv <- function(eventName, rv, input){
       rv$sizeCol <- NULL
   }
 
+
   if (eventName == "file_SE_clear"){
     toNULL <- c("data_SE", "filename_SE", "colNames_SE", "colNames_SE_preds",
                 "colNames_SE_preds0", "colNames_SE_obs", "colNames_SE_obs0",
@@ -531,6 +532,7 @@ update_rv <- function(eventName, rv, input){
 
     rv$CL <- input$CL
     rv$sizeCol <- input$class
+
     rv$mods_SE <- suppressWarnings(
                     pkmSize(formula_p = rv$formula_p,
                       formula_k = rv$formula_k, data = rv$data_SE,
@@ -890,8 +892,6 @@ update_rv <- function(eventName, rv, input){
 
     rv$SEmodToUse <- gsub("~ constant", "~ 1", rv$SEmodToUse)
     rv$CPmodToUse <- gsub("~ constant", "~ 1", rv$CPmodToUse)
-
-
     rv$models_SE <- tryCatch(
                       trimSetSize(rv$mods_SE, rv$SEmodToUse),
                       error = function(x){NULL}
@@ -1011,6 +1011,7 @@ update_rv <- function(eventName, rv, input){
       rv$Msplit <- transposeSplits(rv$Msplit)
     }
   }
+
 
   return(rv)
 }
