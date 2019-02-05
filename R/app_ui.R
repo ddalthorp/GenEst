@@ -463,8 +463,9 @@ gettingStartedPanel <- function(){
 downloadsPanel<- function(){
   if (.Platform$OS.type == "windows"){
     wintxt <-
-      "If you are having trouble downloading example data sets...NOTE:
-      Downloading the zip files in Windows relies on a zip program being
+      "If you are having trouble downloading example data sets...
+
+      NOTE: Downloading the zip files in Windows relies on a zip program being
       in the Windows path statement. If no such program is present, the download
       will not be successful. However, the examples data sets can be directly
       loaded into the app by clicking \"Load Data\" and then viewed under the

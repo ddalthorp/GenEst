@@ -352,7 +352,7 @@ update_rv <- function(eventName, rv, input){
       if (max(rv$SStemp)%%rv$SStemp[2] == 0){
         rv$SS <- list("span" = max(rv$SStemp), "I" = rv$SStemp[2])
       } else {
-        rv$SS <- list("span" = rv$SStmp[2] * length(rv$SStemp), "I" = rv$SStemp[2])
+        rv$SS <- list("span" = rv$SStemp[2] * length(rv$SStemp), "I" = rv$SStemp[2])
       }
     } else {
       rv$SS <- NULL
