@@ -476,9 +476,9 @@ downloadsPanel<- function(){
           dataDownloadWidget("trough"),
           dataDownloadWidget("mock"),
           br(), br(),
-          h4("NOTE: If you are having trouble downloading the example data sets..."),
-          br(), br(),
-          h5("NOTE: Downloading the zip files in Windows relies on a zip program being
+          h5("NOTE: If you are having trouble downloading the example data sets..."),
+          br(),
+          h5("Downloading the zip files in Windows relies on a zip program being
         in the Windows path statement. If no such program is present, the download
         will not be successful. However, the examples data sets can be directly
         loaded into the app by clicking \"Load Data\" and then viewed under the
@@ -506,7 +506,7 @@ downloadsPanel<- function(){
           dataDownloadWidget("powerTower"),
           dataDownloadWidget("PV"),
           dataDownloadWidget("trough"),
-          dataDownloadWidget("mock"),
+          dataDownloadWidget("mock")
         )
       )
     )
