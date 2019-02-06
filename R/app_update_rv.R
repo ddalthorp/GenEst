@@ -892,6 +892,7 @@ update_rv <- function(eventName, rv, input){
 
     rv$SEmodToUse <- gsub("~ constant", "~ 1", rv$SEmodToUse)
     rv$CPmodToUse <- gsub("~ constant", "~ 1", rv$CPmodToUse)
+
     rv$models_SE <- tryCatch(
                       trimSetSize(rv$mods_SE, rv$SEmodToUse),
                       error = function(x){NULL}
@@ -1011,7 +1012,5 @@ update_rv <- function(eventName, rv, input){
       rv$Msplit <- transposeSplits(rv$Msplit)
     }
   }
-
-
   return(rv)
 }
