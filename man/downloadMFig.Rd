@@ -10,8 +10,6 @@ downloadMFig(rv, split = TRUE)
 \item{rv}{the reactive values list}
 
 \item{split}{logical indicator to use the split or not}
-
-\item{transpose}{logical indicator if to transpose the output or not}
 }
 \value{
 a download handler function

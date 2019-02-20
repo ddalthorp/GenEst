@@ -1,5 +1,24 @@
 Revision log
 
+2019.02.04
+v1.2.2
+
+* added a note for Windows users about downloading example data sets.
+
+* with data sets with only 1 unit, prepSS was not properly assigning unit
+names to rows of searches_unit array. This caused an error in prepSS and its
+dependencies (estM and estg), which was expressed in the error message: 
+"no 'dimnames' attribute for array”. This has been corrected.
+
+* corrected the download button for figures showing transposed mortality 
+splits (previously, the untransposed figs were downloaded)
+
+* corrected an error in calculating average SS under certain conditions,
+the error affected default values in a convenience funtion and had
+zero potential for producing erroneous or misleading results but would 
+require users to enter specific values into a input box for which reasonable
+default values should have been made available.
+
 2018.12.09
 v1.2.1
 
