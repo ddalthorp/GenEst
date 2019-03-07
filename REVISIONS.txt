@@ -1,4 +1,24 @@
 Revision log
+2019.03.07
+v1.2.3
+
+* added a error check to return a more meaningful message when there are 
+mismatches between covariate levels in CO and SE or CP. 
+Previously: "subscript out of bounds"
+Now: The offending data formatting error is identified and referenced 
+specifically and clearly in an error message.
+
+* extended the KM lines on the CP figs in cases where there are many
+right-censored data points.
+
+* an error in loop indexing in the error-checking routine for identifying the
+"unit" column inadvertently required that in cases where there were two or more
+column names in common between the CO and DWP files, the unit column in the CO
+file had to be one of the first few columns; otherwise, an error message was 
+generated and the mortality calculation could not be completed. 
+
+None of the changes affect analyses or results but all will improve user 
+experience with the software.
 
 2019.02.04
 v1.2.2
