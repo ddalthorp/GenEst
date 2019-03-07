@@ -1,4 +1,4 @@
-#' @title Estimate mortality 
+#' @title Estimate mortality
 #'
 #' @description Given given fitted Searcher Efficiency and Carcass 
 #'   Persistence models; Search Schedule, Density Weighted Proportion,
@@ -128,7 +128,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     n <- length(gDf)
     Mhat[-c_out,] <- ((cbinom::rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   }
-  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, Xtot = nrow(data_CO))
+  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, DWP = DWP, Xtot = nrow(data_CO))
   class(out) <- c("estM", "list")
   return(out)
 }

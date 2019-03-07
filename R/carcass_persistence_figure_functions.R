@@ -1,6 +1,6 @@
 #' @title Plot cell-specific decay curve for carcass persistence
 #'
-#' @description Produce the figure panel for a specific cell (factor 
+#' @description Produce the figure panel for a specific cell (factor
 #'   level combination) including the specific fitted decay curves.
 #'
 #' @param model model of class cpm
@@ -15,9 +15,9 @@
 #'
 #' @export
 #'
-cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE, 
+cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
                           axis_x = TRUE){
-
+# Juniper's original function
   dist <- model$dist
   CL <- model$CL
   cellwise <- model$cell_ab
@@ -26,7 +26,7 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
   whichCarcs <- which(model$carcCell == specificCell)
   observations <- model$observations[whichCarcs, ]
   ncarc <- nrow(observations)
-  
+
   whichSpecificCell <- which(cellNames == specificCell)
   a <- cellwise[whichSpecificCell, "pda_median"]
   b <- cellwise[whichSpecificCell, "pdb_median"]
@@ -39,7 +39,7 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
   max_x <- ceiling(max_x / 10) * 10
   pred_x <- seq(0, max_x, length.out = max_x * 10)
   pts <- pred_x[2:length(pred_x)]
-  pta0 <- rep(0, length(pts)) 
+  pta0 <- rep(0, length(pts))
   pta1 <- rep(0.000001, length(pts))
   CP <- ppersist(pda = as, pdb = bs, dist = dist,
     t_arrive0 = pta0, t_arrive1 = pta1, t_search = pts)
@@ -50,17 +50,21 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
   t1 <- observations[ , 1]
   t2 <- observations[ , 2]
   event <- rep(3, length(t1))
-  event[which(is.na(t2))] <- 0
+  event[which(!is.finite(t2))] <- 0
   event[which(t1 == t2)] <- 1
   t1[which(t1 == 0)] <- 0.0001
   survobj <- survival::Surv(t1, t2, event, "interval")
   form <- formula("survobj ~ 1")
-  smod <- survival::survfit(form, data = observations)
+  smod <- tryCatch(
+    survival::survfit(form, data = observations),
+    error = function(e) NULL,
+    warning = function(w) NULL
+  )
 
   plot(smod, ylim = c(0, 1), xlim = c(0, max_x),
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
   )
-  axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), 
+  axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10),
     labels = axis_x
   )
   axis(2, las = 1, cex.axis = 0.9, at = seq(0, 1, 0.2), labels = axis_y)
@@ -302,10 +306,9 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
   model_spec <- modelSet[[specificModel]]
   dist <- model_spec$dist
   CL <- model_spec$CL
-  cellwise_spec <- model_spec$cell_pk
-  cellNames_spec <- model_spec$cells[ , "CellNames"]
-  cells_set <- modelSetCells(modelSet)
-  cellNames_set <- cells_set[ , "CellNames"]
+#  cells_set <- modelSetCells(modelSet)
+#  cellNames_set <- cells_set[ , "CellNames"]
+  cellNames_set <- modelSetCells(modelSet)[ , "CellNames"]
   preds_set <- modelSetPredictors(modelSet)
   carcCells <- apply(data.frame(model_spec$data[ , preds_set]),
                  1, paste, collapse = "."
@@ -319,19 +322,24 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
   cellMatch_spec <- matchCells(model_spec, modelSet)
   whichSpecificCell_spec <- cellMatch_spec[cellNames_set == specificCell]
 
-  xVals <- model_spec$observations[model_spec$observations!= Inf]
+  xVals <- model_spec$observations[model_spec$observations!=Inf]
   max_x <- max(xVals, na.rm = TRUE)
   max_x <- ceiling(max_x / 10) * 10
   t1 <- observations[ , 1]
   t2 <- observations[ , 2]
   event <- rep(3, length(t1))
-  event[which(is.na(t2))] <- 0
+#  event[which(is.na(t2))] <- 0
+  event[which(!is.finite(t2))] <- 0
   event[which(t1 == t2)] <- 1
   t1[which(t1 == 0)] <- 0.0001
-  survobj <- survival::Surv(t1, t2, event, "interval")
-  form <- formula("survobj ~ 1")
-  smod <- survival::survfit(form, data = observations)
-
+#  survobj <- survival::Surv(t1, t2, event, "interval")
+#  form <- formula("survobj ~ 1")
+#  smod <- survival::survfit(form, data = observations)
+  smod <- tryCatch(
+    survival::survfit(survival::Surv(t1, t2, event, type = "interval") ~ 1),
+    error = function(e) NULL,
+    warning = function(w) NULL
+  )
   plot(smod, ylim = c(0, 1), xlim = c(0, max_x),
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
   )
@@ -584,3 +592,5 @@ c(exponential = rgb(0.80, 0.38, 0.56),
   loglogistic = rgb(0.00, 1.00, 1.00),
   lognormal = rgb(0.00, 0.41, 0.55))
 }
+
+

@@ -71,13 +71,11 @@ downloadgFig <- function(rv, sc){
 #'
 #' @param split logical indicator to use the split or not
 #'
-#' @param transpose logical indicator if to transpose the output or not
-#'
 #' @return a download handler function
 #'
 #' @export
 #'
-downloadMFig <- function(rv, split = TRUE){#, transpose = FALSE){
+downloadMFig <- function(rv, split = TRUE){
   if (split){
       downloadHandler(filename = "M_fig.png",
           content = function(file){
