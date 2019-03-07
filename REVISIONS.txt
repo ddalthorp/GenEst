@@ -15,7 +15,8 @@ right-censored data points.
 "unit" column inadvertently required that in cases where there were two or more
 column names in common between the CO and DWP files, the unit column in the CO
 file had to be one of the first few columns; otherwise, an error message was 
-generated and the mortality calculation could not be completed. 
+generated and the mortality calculation could not be completed. The error has
+been corrected.
 
 None of the changes affect analyses or results but all will improve user 
 experience with the software.
@@ -28,7 +29,7 @@ v1.2.2
 * with data sets with only 1 unit, prepSS was not properly assigning unit
 names to rows of searches_unit array. This caused an error in prepSS and its
 dependencies (estM and estg), which was expressed in the error message: 
-"no 'dimnames' attribute for arrayî. This has been corrected.
+"no 'dimnames' attribute for array‚Äù. This has been corrected.
 
 * corrected the download button for figures showing transposed mortality 
 splits (previously, the untransposed figs were downloaded)
