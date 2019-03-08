@@ -1,4 +1,25 @@
-Revision log
+﻿Revision log
+2019.03.07
+v1.2.3
+
+* added a error check to return a more meaningful message when there are 
+mismatches between covariate levels in CO and SE or CP. 
+Previously: "subscript out of bounds"
+Now: The offending data formatting error is identified and referenced 
+specifically and clearly in an error message.
+
+* extended the KM lines on the CP figs in cases where there are many
+right-censored data points.
+
+* an error in loop indexing in the error-checking routine for identifying the
+"unit" column inadvertently required that in cases where there were two or more
+column names in common between the CO and DWP files, the unit column in the CO
+file had to be one of the first few columns; otherwise, an error message was 
+generated and the mortality calculation could not be completed. The error has
+been corrected.
+
+None of the changes affect analyses or results but all will improve user 
+experience with the software.
 
 2019.02.04
 v1.2.2
@@ -8,7 +29,7 @@ v1.2.2
 * with data sets with only 1 unit, prepSS was not properly assigning unit
 names to rows of searches_unit array. This caused an error in prepSS and its
 dependencies (estM and estg), which was expressed in the error message: 
-"no 'dimnames' attribute for array�. This has been corrected.
+"no 'dimnames' attribute for array”. This has been corrected.
 
 * corrected the download button for figures showing transposed mortality 
 splits (previously, the untransposed figs were downloaded)

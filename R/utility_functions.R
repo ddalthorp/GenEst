@@ -254,7 +254,7 @@ defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
     }
     if (length(unitCol) > 1){
       badind <- NULL
-      for (ui in 1:length(unitCol)){
+      for (ui in unitCol){
         if (length(data_DWP[ , ui]) != length(unique(data_DWP[, ui]))){
           badind <- c(badind, ui)
           next
@@ -265,7 +265,7 @@ defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
         }
       }
       if (length(badind) > 0){
-        unitCol <- unitCol[-badind]
+        unitCol <- unitCol[!unitCol %in% badind]
       }
       if (length(unitCol) == 0){
         stop("No shared column in DWP and CO files meets the criteria for ",
