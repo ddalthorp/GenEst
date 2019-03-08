@@ -93,7 +93,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       "in CO...not represented in SS. Cannot estimate g or M.")
   }
   if (any(as.numeric(data_SS[cbind(rind, cind)]) == 0)){
-    stop("some carcasses (CO) were found at turbines that were not searched (SS) ",
+    stop("some carcasses (CO) were found at units that were not searched (SS) ",
          "on the the date recorded for the carcass discovery")
   }
   COdat <- data_CO # format data_CO
@@ -148,6 +148,40 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   if (length(unlist(SSpreds)) > 0 && !all(unlist(SSpreds) %in% names(SSdat))){
     stop("Model predictor missing from both CO and SS data.")
   }
+  #############################################
+  # error check for matching covariate levels
+  # SE
+  for (sc in sizeclasses){
+    if (length(preds_SE[[sc]]) > 0){
+      for (pri in preds_SE[[sc]]){
+        if (pri %in% names(data_CO)){
+          if (!all(unique(data_CO[ , pri]) %in% model_SE[[sc]]$data[, pri])){
+            badind <- which(!(unique(data_CO[ , pri]) %in% model_SE[[sc]]$data[, pri]))
+            stop(paste0(
+              pri, ' = "', paste(unique(data_CO[ , pri])[badind], collapse = '", '),
+              '" found in CO data but not present in SE data. Cannot estimate ',
+              "detection probability or mortality."))
+          }
+        }
+      }
+    }
+    if (length(preds_CP[[sc]]) > 0){
+      for (pri in preds_CP[[sc]]){
+        if (pri %in% names(data_CO)){
+          if (!all(unique(data_CO[ , pri]) %in% model_CP[[sc]]$data[, pri])){
+            badind <- which(!(unique(data_CO[ , pri]) %in% model_CP[[sc]]$data[, pri]))
+            stop(paste0(
+              pri, ' = "', paste(unique(data_CO[ , pri])[badind], collapse = '", '),
+              '" found in CO data but not present in CP data. Cannot estimate ',
+              "detection probability or mortality."))
+          }
+        }
+      }
+    }
+  }
+
+  #############################################
+
   pksim <- lapply(model_SE, function(x) rpk(nsim, x))
   names(pksim) <- names(model_SE)
 
