@@ -1,7 +1,12 @@
 Package: GenEst
 Title: Generalized Mortality Estimator
+<<<<<<< DESCRIPTION
 Version: 1.2.4
 Date: 2019-04-12
+=======
+Version: 1.2.3
+Date: 2019-02-04
+>>>>>>> DESCRIPTION
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
