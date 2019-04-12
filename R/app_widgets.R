@@ -24,11 +24,11 @@ dataInputWidget <- function(dataType){
   clab <- "Clear file"
   cstyle <- cButtonStyle()
 
-  Label <- switch(dataType, "SE" = "Searcher Efficiency Data",
-                            "CP" = "Carcass Persistence Data",
-                            "SS" = "Search Schedule Data",
-                            "DWP" = "Density Weighted Proportion Data",
-                            "CO" = "Carcass Observation Data")
+  Label <- switch(dataType, "SE" = "Searcher Efficiency (SE)",
+                            "CP" = "Carcass Persistence (CP)",
+                            "SS" = "Search Schedule (SS)",
+                            "DWP" = "Density Weighted Proportion (DWP)",
+                            "CO" = "Carcass Observation (CO)")
   ButtonName <- switch(dataType, "SE" = "file_SE",
                                  "CP" = "file_CP",
                                  "SS" = "file_SS",
@@ -70,14 +70,14 @@ dataInputWidget <- function(dataType){
 #'
 dataDownloadWidget <- function(set){
 
-  if (!set %in% c("RP", "RPbat", "cleared", "powerTower", "PV", "trough", 
+  if (!set %in% c("cleared", "RP", "RPbat", "powerTower", "PV", "trough",
                   "mock")){
     stop(paste0("input set (", set, ") not supported"))
   }
 
-  setNames <- c("RP" = "Wind---Road and pad searches, bats + birds",
+  setNames <- c("cleared" = "Wind---Cleared plots, bats + birds",
+                "RP" = "Wind---Road and pad searches, bats + birds",
                 "RPbat" = "Wind---Road and pad searches, bats",
-                "cleared" = "Wind---Cleared plots, bats + birds",
                 "powerTower" = "Solar---Power tower",
                 "PV" = "Solar---Photovoltaic (PV)",
                 "trough" = "Solar---Trough",
@@ -85,9 +85,9 @@ dataDownloadWidget <- function(set){
 
   setName <- setNames[set]
   fluidRow(
-    column(6, h4(setName)), 
+    column(6, h4(setName)),
     column(2, actionButton(paste0("load_", set), "Load Data")),
-    column(2, downloadButton(paste0("download_", set), "Download"))
+    column(2, downloadButton(paste0("download_", set), "Download .csv"))
   )
 }
 

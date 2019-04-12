@@ -58,13 +58,11 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
     if ((vartype[1] %in% c("time", "SS")) & rate) {
       hwid <- deltaT/2
       xlim <- range(times)
-      ylim <- range(matrixStats::rowQuantiles(splits[[vi]],
-        probs = c(alpha/2, 1 - alpha/2))/deltaT)
+      ylim <- range(splits[[vi]][ , -1]/deltaT)
     } else {
       hwid <- rep(0.15, nlevel_h) # half-width of boxes
       xlim <- c(1, nlevel_h) + 0.5 * c(-1, 1)
-      ylim <- range(matrixStats::rowQuantiles(splits[[vi]],
-        probs = c(alpha/2, 1 - alpha/2)))
+      ylim <- range(splits[[vi]][ , -1])
     }
     if (vi == 1 && !is.null(try(plot.new(), silent = TRUE))){
       par(mfrow = c(1,1))
@@ -82,7 +80,8 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
     for (hi in 1:nlevel_h){
       ratebars <- !(vartype[1] == "CO" || !rate)
       deno <- ifelse(ratebars, deltaT[hi], 1)
-      qtls <- quantile(splits[[vi]][hi, ], prob = probs)/deno
+#      qtls <- quantile(splits[[vi]][hi, ], prob = probs)/deno
+      qtls <- splits[[vi]][hi, -1]/deno
       polygon(xx[hi] + hwid[hi] * c(1, 1, -1, -1), qtls[c(2, 4, 4, 2)])
       lines(xx[hi] + hwid[hi] * c(1, -1), rep(qtls[3], 2), lwd = 3)
       if (alpha >= 0.5) yst <- c(3, 3) else yst <- c(2, 4)

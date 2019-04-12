@@ -391,7 +391,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   cellByCarc <- match(carcCells, cellNames)
 
-  pInitCellMean <- tapply(data0[ , obsCol[1]], INDEX = carcCells, FUN = mean)
+  pInitCellMean <- tapply(data0[ , obsCol[1]], INDEX = carcCells, FUN = mean, na.rm = TRUE)
   if (any(pInitCellMean %in% 0:1)) {
      stop("Initial search has all 0s or 1s in a cell.")
   }
@@ -414,7 +414,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
            optim(par = betaInit, fn = pkLogLik,
              hessian = TRUE, cellByCarc = cellByCarc, misses = misses,
              maxmisses = max(misses), foundOn = foundOn, cellMM = cellMM,
-             nbeta_p = nbeta_p, kFixed = kFixed,..., method = "BFGS"),
+             nbeta_p = nbeta_p, kFixed = kFixed, method = "BFGS"),
            error = function(x) {NA}
          )
   if (length(MLE) == 1 && is.na(MLE)){

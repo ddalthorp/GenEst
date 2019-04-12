@@ -47,7 +47,8 @@
 #' @param max_intervals maximum number of arrival intervals to consider
 #'  for each carcass
 #'
-#' @return list of Mhat, Aj, ghat
+#' @return list of Mhat, Aj, ghat, DWP (by carcass), and Xtot = total number of
+#'  carcasses observe
 #'
 #' @examples 
 #'  \dontrun{
@@ -128,7 +129,8 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     n <- length(gDf)
     Mhat[-c_out,] <- ((cbinom::rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   }
-  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, DWP = DWP, Xtot = nrow(data_CO))
+  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, DWP = DWP,
+    Xtot = nrow(data_CO) - length(c_out))
   class(out) <- c("estM", "list")
   return(out)
 }
