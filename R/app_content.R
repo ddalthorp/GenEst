@@ -51,10 +51,13 @@ gettingStartedContent <- function(){
             unit searched or", em("density-weighted proportion"), 
             "(DWP), and"
          ),
-         li("summary data from the carcass surveys, including numbers of 
-            carcasses observed on each search occasion (CO) and other, 
-            optional covariates")
+         li("summary data from the carcass surveys (CO), including unit and
+            search date of each carcass discovery along with values of other,
+            optional covariates or carcass characteristics")
       ),
+      p("Data sets can be uploaded under the ", code("Data Input"), " tab. ",
+        "Formats are explained in the user guide. Example data sets are available for loading into GenEst under the ",
+         code("Example Data"), " tab. "),
       br(), 
       p("Analysis involves several steps:"),
       ul(li("uploading data---click the ", code("Data Input"), "tab,"),
@@ -66,10 +69,7 @@ gettingStartedContent <- function(){
          li("estimating total mortality and splitting mortality estimate by
             various subcategories (such as species or sector or season) as 
             desired---click the ", code("Mortality Estimation"), " tab")
-      ),
-      br(),
-      p("Example data sets are available in comma-separated (.csv) files that
-        may be downloaded under the ", code("Example Data"), " tab. ")
+      )
     )
   )
 }
