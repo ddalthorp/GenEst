@@ -121,7 +121,8 @@ downloadTable <- function(filename, tablename, csvformat){
     colnames(tablename) <- gsub("\u0394", "delta", colnames(tablename))
   }
   downloadHandler(filename = filename, content = function(file){
-    get(paste0("write.csv", csvformat))(x = tablename, file = file)
+    fcn <- get(paste0("write.csv", csvformat))
+    fcn(x = tablename, file = file, row.names = FALSE)
   })
 }
 
