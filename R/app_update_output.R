@@ -279,7 +279,6 @@ update_output <- function(eventName, rv, output){
       } else{
         output$sizeclass_SEyn <- renderText("YES")
       }
-
       output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE,
                                             rv$csvformat)
       output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE,
