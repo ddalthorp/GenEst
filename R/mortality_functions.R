@@ -30,9 +30,12 @@
 #'  are recorded. Optional. If none provided, it is assumed there is no
 #'  distinctions among size classes.
 #'
-#' @param DWPCol Column name for the DWP values in the DWP table when no
-#'   size class is used and there is more than one column in \code{data_DWP}
-#'   that could be interpreted as DWP.
+#' @param data_DWP Survey unit (rows) by size (columns) density weighted
+#'   proportion table. Can include an optional \code{rep} column indicating
+#'   the bootstrapped replicate when including area correction variance. If
+#'   including the \code{rep} column, the data frame will have number of rows
+#'   equal to the number of survey units times the number of bootstrapped
+#'   replicates.
 #'
 #' @param seed_SE seed for random draws of the SE model
 #'
@@ -115,8 +118,8 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
       model_SE = model_SE, model_CP = model_CP,
       unitCol = unitCol, sizeCol = sizeCol,
       nsim = nsim, max_intervals = max_intervals,
-      seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g)
-  gDf <- est$ghat * DWP * frac
+      seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g, DWP = DWP)
+  gDf <- est$ghatDWP * frac
   set.seed(seed_M)
   c_out <- which(rowSums(gDf) == 0)
   if (length(c_out) == 0){
@@ -140,7 +143,11 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #'   they were found
 #'
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted 
-#'   proportion table 
+#'   proportion table. Can include an optional \code{rep} column indicating
+#'   the bootstrapped replicate when including area correction variance. If
+#'   including the \code{rep} column, the data frame will have number of rows
+#'   equal to the number of survey units times the number of bootstrapped
+#'   replicates. 
 #'
 #' @param data_CO Carcass observation data
 #'
@@ -161,7 +168,9 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #'  values in (0, 1], that's DWPCol. If there is not a unique column with
 #'  values in (0, 1], an error is returned.
 #'
-#' @return DWP value for each carcass 
+#' @return DWP value for each carcass. If incorporating variance in the area
+#'  correction, then a nCarcass by nSims matrix is returned, yielding nSim 
+#'  DWP values for each carcass. 
 #'
 #' @examples 
 #'  data(mock)
@@ -174,89 +183,189 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
 #'
 DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL, 
                          sizeCol = NULL, DWPCol = NULL){
-
-  if (is.null(unitCol)){
-    unitCol <- colnames(data_DWP)[colnames(data_DWP) %in% colnames(data_CO)]
-    if (length(unitCol) == 0){
-      stop("data_DWP and data_CO must have identically-named unit columns")
-    }
-    if (length(unitCol) > 1){
-      stop(paste("more than one possibility for unitCol (", unitCol, ")",
-        collapse = " "))
-    }
-  } else {
-    if (length(unitCol) > 1) stop("length(unitCol) must be 1 if provided")
-    if (!(unitCol %in% colnames(data_DWP))){
-      stop("\"", unitCol, "\" not found in data_DWP")
-    }
-  }
-  # length(unitCol) = 1 and has been found in both CO and DWP;
-  # are all units in data_CO also found in DWP?
-  if (!all(data_CO[, unitCol] %in% data_DWP[ , unitCol])){
-    stop("Some units present in carcass table not in DWP table")
-  } # error-checking on units is complete
-
-  # parse w.r.t. sizeCol arg and assign DWP to carcasses
-  if (!is.null(sizeCol)){
-    if (!(sizeCol %in% colnames(data_CO))){
-      stop("size class column not found in carcass data.")
-    }
-    if (!all(unique(data_CO[,sizeCol]) %in% colnames(data_DWP))){
-      stop("not all sizes in data_CO are represented in data_DWP.")
-    }
-    # size classes and units have been error-checked, and assigning DWP to
-    #  carcasses is a simple extraction of DWP from the appropriate row and
-    #  column for each carcass in CO.
-    # unit in CO defines the desired row in DWP:
-    rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-    # size in CO defines the desired column in DWP:
-    colind <- match(data_CO[ , sizeCol], names(data_DWP))
-    # and DWPbyCarc falls out naturally
-    DWPbyCarc <- as.numeric(data_DWP[cbind(rowind, colind)])
-    if (!is.null(DWPCol) && !is.na(DWPCol)){
-      message("\nBoth sizeCol and DWPCol were provided by user. ",
-        "Assigning DWP by size.\n")
-    }
-  } else { # assume same DWP for all sizes, so matching is by unit only
-    # which column has the DWP data?
-    if (!is.null(DWPCol)){
-      # DWPCol has been provided, but must be error-checked (as below)
-      if (length(DWPCol) > 1 || !is.character(DWPCol)){
-        stop("DWPCol must be the name of a single column in data_DWP or NULL")
+  
+  original_DWP <- data_DWP
+  repName <- "rep"  # col name hard coded for now, could become an arg
+  if (repName %in% colnames(original_DWP)){
+    long_DWP <- original_DWP
+    fullSub <- subset(long_DWP, subset = rep == 1)
+    data_DWP <- fullSub[, -which(colnames(long_DWP) == repName)]
+    rmid <- which(colnames(long_DWP) == unitCol)
+    tmp <- as.numeric(unlist(split(long_DWP[, -rmid], long_DWP$rep)))
+    array_DWP <- array(tmp, dim = c(ncol(data_DWP), nrow(data_DWP), 
+                                    length(unique(long_DWP$rep))))
+    
+    if (is.null(unitCol)){
+      unitCol <- colnames(data_DWP)[colnames(data_DWP) %in% colnames(data_CO)]
+      if (length(unitCol) == 0){
+        stop("data_DWP and data_CO must have identically-named unit columns")
       }
-      if (!(DWPCol %in% colnames(data_DWP))){
-        stop("DWPCol must be the name of column in data_DWP or NULL")
+      if (length(unitCol) > 1){
+        stop(paste("more than one possibility for unitCol (", unitCol, ")",
+                   collapse = " "))
       }
-      if (!is.numeric(data_DWP[ , DWPCol]) || anyNA(data_DWP[ , DWPCol])){
-        stop("data_DWP[, DWPCol] must be numeric with no NA's")
-      }
-      if (sum(data_DWP[, DWPCol] <= 0 | data_DWP[, DWPCol] > 1) > 0){
-        stop("data_DWP[, DWPCol] values must be in (0, 1]")
-      }
-      rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-      DWPbyCarc <- data_DWP[rowind, DWPCol]
     } else {
-      possibleNames <- colnames(data_DWP)
-      for (coli in possibleNames){
-        if (is.numeric(data_DWP[ , coli]) && !anyNA(data_DWP[ , coli]) &&
-            all(data_DWP[ , coli] <= 1) && all(data_DWP[ , coli] > 0)){
-          # candidate DWP has been discovered
-          if (is.null(DWPCol)){
-            DWPCol <- coli
-          } else { # it is the second one found => conflict
-            stop(
-              "data_DWP must have columns corresponding to data_CO sizes\n",
-              "or have a single column of DWP's to associate with units.\n",
-              "Alternatively, user may specify name of DWP column as DWPCol"
-            )
+      if (length(unitCol) > 1) stop("length(unitCol) must be 1 if provided")
+      if (!(unitCol %in% colnames(data_DWP))){
+        stop("\"", unitCol, "\" not found in data_DWP")
+      }
+    }
+    # length(unitCol) = 1 and has been found in both CO and DWP;
+    # are all units in data_CO also found in DWP?
+    if (!all(data_CO[, unitCol] %in% data_DWP[ , unitCol])){
+      stop("Some units present in carcass table not in DWP table")
+    } # error-checking on units is complete
+    
+    # parse w.r.t. sizeCol arg and assign DWP to carcasses
+    if (!is.null(sizeCol)){
+      if (!(sizeCol %in% colnames(data_CO))){
+        stop("size class column not found in carcass data.")
+      }
+      if (!all(unique(data_CO[,sizeCol]) %in% colnames(data_DWP))){
+        stop("not all sizes in data_CO are represented in data_DWP.")
+      }
+      # size classes and units have been error-checked, and assigning DWP to
+      #  carcasses is a simple extraction of DWP from the appropriate row and
+      #  column for each carcass in CO.
+      # unit in CO defines the desired row in DWP:
+      rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+      # size in CO defines the desired column in DWP:
+      colind <- match(data_CO[ , sizeCol], names(data_DWP))
+      # and DWPbyCarc falls out naturally
+      DWPbyCarc <- apply(array_DWP, 3, 
+                         function(x, ri, ci){x[ri + nrow(x) * ((ci-2))]},
+                         ri = rowind, ci = colind)
+      if (!is.null(DWPCol) && !is.na(DWPCol)){
+        message("\nBoth sizeCol and DWPCol were provided by user. ",
+                "Assigning DWP by size.\n")
+      }
+    } else { # assume same DWP for all sizes, so matching is by unit only
+      # which column has the DWP data?
+      if (!is.null(DWPCol)){
+        # DWPCol has been provided, but must be error-checked (as below)
+        if (length(DWPCol) > 1 || !is.character(DWPCol)){
+          stop("DWPCol must be the name of a single column in data_DWP or NULL")
+        }
+        if (!(DWPCol %in% colnames(data_DWP))){
+          stop("DWPCol must be the name of column in data_DWP or NULL")
+        }
+        if (!is.numeric(data_DWP[ , DWPCol]) || anyNA(data_DWP[ , DWPCol])){
+          stop("data_DWP[, DWPCol] must be numeric with no NA's")
+        }
+        if (sum(data_DWP[, DWPCol] <= 0 | data_DWP[, DWPCol] > 1) > 0){
+          stop("data_DWP[, DWPCol] values must be in (0, 1]")
+        }
+        rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+        DWPbyCarc <- array_DWP[rowind, DWPCol, ]
+      } else {
+        possibleNames <- colnames(data_DWP)
+        for (coli in possibleNames){
+          if (is.numeric(data_DWP[ , coli]) && !anyNA(data_DWP[ , coli]) &&
+              all(data_DWP[ , coli] <= 1) && all(data_DWP[ , coli] > 0)){
+            # candidate DWP has been discovered
+            if (is.null(DWPCol)){
+              DWPCol <- coli
+            } else { # it is the second one found => conflict
+              stop(
+                "data_DWP must have columns corresponding to data_CO sizes\n",
+                "or have a single column of DWP's to associate with units.\n",
+                "Alternatively, user may specify name of DWP column as DWPCol"
+              )
+            }
           }
         }
+        # DWPCol and unitCol have been error-checked, so
+        rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+        DWPbyCarc <- as.numeric(array_DWP[rowind, DWPCol, ])
       }
-      # DWPCol and unitCol have been error-checked, so
-      rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
-      DWPbyCarc <- as.numeric(data_DWP[rowind, DWPCol])
     }
-  }
+  }  # end if for the area correction variance
+  
+  if(!("rep" %in% colnames(original_DWP))){
+    data_DWP <- original_DWP
+    if (is.null(unitCol)){
+      unitCol <- colnames(data_DWP)[colnames(data_DWP) %in% colnames(data_CO)]
+      if (length(unitCol) == 0){
+        stop("data_DWP and data_CO must have identically-named unit columns")
+      }
+      if (length(unitCol) > 1){
+        stop(paste("more than one possibility for unitCol (", unitCol, ")",
+          collapse = " "))
+      }
+    } else {
+      if (length(unitCol) > 1) stop("length(unitCol) must be 1 if provided")
+      if (!(unitCol %in% colnames(data_DWP))){
+        stop("\"", unitCol, "\" not found in data_DWP")
+      }
+    }
+    # length(unitCol) = 1 and has been found in both CO and DWP;
+    # are all units in data_CO also found in DWP?
+    if (!all(data_CO[, unitCol] %in% data_DWP[ , unitCol])){
+      stop("Some units present in carcass table not in DWP table")
+    } # error-checking on units is complete
+  
+    # parse w.r.t. sizeCol arg and assign DWP to carcasses
+    if (!is.null(sizeCol)){
+      if (!(sizeCol %in% colnames(data_CO))){
+        stop("size class column not found in carcass data.")
+      }
+      if (!all(unique(data_CO[,sizeCol]) %in% colnames(data_DWP))){
+        stop("not all sizes in data_CO are represented in data_DWP.")
+      }
+      # size classes and units have been error-checked, and assigning DWP to
+      #  carcasses is a simple extraction of DWP from the appropriate row and
+      #  column for each carcass in CO.
+      # unit in CO defines the desired row in DWP:
+      rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+      # size in CO defines the desired column in DWP:
+      colind <- match(data_CO[ , sizeCol], names(data_DWP))
+      # and DWPbyCarc falls out naturally
+      DWPbyCarc <- as.numeric(data_DWP[cbind(rowind, colind)])
+      if (!is.null(DWPCol) && !is.na(DWPCol)){
+        message("\nBoth sizeCol and DWPCol were provided by user. ",
+          "Assigning DWP by size.\n")
+      }
+    } else { # assume same DWP for all sizes, so matching is by unit only
+      # which column has the DWP data?
+      if (!is.null(DWPCol)){
+        # DWPCol has been provided, but must be error-checked (as below)
+        if (length(DWPCol) > 1 || !is.character(DWPCol)){
+          stop("DWPCol must be the name of a single column in data_DWP or NULL")
+        }
+        if (!(DWPCol %in% colnames(data_DWP))){
+          stop("DWPCol must be the name of column in data_DWP or NULL")
+        }
+        if (!is.numeric(data_DWP[ , DWPCol]) || anyNA(data_DWP[ , DWPCol])){
+          stop("data_DWP[, DWPCol] must be numeric with no NA's")
+        }
+        if (sum(data_DWP[, DWPCol] <= 0 | data_DWP[, DWPCol] > 1) > 0){
+          stop("data_DWP[, DWPCol] values must be in (0, 1]")
+        }
+        rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+        DWPbyCarc <- data_DWP[rowind, DWPCol]
+      } else {
+        possibleNames <- colnames(data_DWP)
+        for (coli in possibleNames){
+          if (is.numeric(data_DWP[ , coli]) && !anyNA(data_DWP[ , coli]) &&
+              all(data_DWP[ , coli] <= 1) && all(data_DWP[ , coli] > 0)){
+            # candidate DWP has been discovered
+            if (is.null(DWPCol)){
+              DWPCol <- coli
+            } else { # it is the second one found => conflict
+              stop(
+                "data_DWP must have columns corresponding to data_CO sizes\n",
+                "or have a single column of DWP's to associate with units.\n",
+                "Alternatively, user may specify name of DWP column as DWPCol"
+              )
+            }
+          }
+        }
+        # DWPCol and unitCol have been error-checked, so
+        rowind <- match(data_CO[, unitCol], data_DWP[, unitCol])
+        DWPbyCarc <- as.numeric(data_DWP[rowind, DWPCol])
+      }
+    }
+  }  # end if for NO area correction variance
   return(DWPbyCarc)
 }
 

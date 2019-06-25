@@ -40,9 +40,16 @@
 #'   intervals can greatly increase the speed of calculations with only a 
 #'   slight reduction in accuracy in most cases.
 #'
-#' @return list of [1] g estimates (ghat) and [2] arrival interval estimates 
-#'   (Aj) for each of the carcasses. The row names of the Aj matrix are the
-#'   names of the units where each carcass was found.
+#' @param DWP Density weighted proportion values for each carcass. If
+#'   incorporating area correction variance, \code{DWP} is a matrix with
+#'   nCarcass number of rows and nSim number of columns.
+#'
+#' @return list of [1] g estimates (ghat), [2] arrival interval estimates 
+#'   (Aj) for each of the carcasses, and [3] g estimates multiplied by the
+#'   DWP values (ghatDWP) for each carcass. The row names of the Aj matrix are the
+#'   names of the units where each carcass was found. If incorportating
+#'   area correction variance, \code{ghatDWP} is a matrix nCarcass number of 
+#'   rows and nSim number of columns.
 #'
 #' @examples
 #'  data(mock)
@@ -61,7 +68,12 @@
 estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
                  model_SE, model_CP, sizeCol = NULL, unitCol = NULL,
                  nsim = 1000, max_intervals = 8,
-                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
+                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL, DWP = NULL){
+  # error check to confirm nsims and DWP mat are compatible
+  if (!(is.null(DWP)) & !(is.null(dim(DWP)))) {
+    if (ncol(DWP) != nsim) stop("number of DWP reps must equal nsim")
+  }
+  
   i <- sapply(data_CO, is.factor)
   data_CO[i] <- lapply(data_CO[i], as.character)
   i <- sapply(data_SS, is.factor)
@@ -367,7 +379,9 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   }
 
   rownames(Aj) <- COdat[ , unitCol]
-  out <- list("ghat" = ghat, "Aj" = Aj) # ordered by relevance to user
+  ghatDWP <- ghat * DWP
+  out <- list("ghat" = ghat, "Aj" = Aj, 
+              "ghatDWP" = ghatDWP)  # ordered by relevance to user
   return(out)
 }
 
