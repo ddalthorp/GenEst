@@ -9,7 +9,6 @@ addons:
     packages:
       - libgsl-dbg
       - libgsl-dev
-      - libgslldbl
 
 r_packages:
   testthat
