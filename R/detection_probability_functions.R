@@ -39,17 +39,10 @@
 #'   consider for each carcass. Optional. Limiting the number of search 
 #'   intervals can greatly increase the speed of calculations with only a 
 #'   slight reduction in accuracy in most cases.
-#'   
-#' @param DWP Density weighted proportion values for each carcass. If
-#'   incorporating area correction variance, \code{DWP} is a matrix with
-#'   nCarcass number of rows and nSim number of columns.
 #'
-#' @return list of [1] g estimates (ghat), [2] arrival interval estimates 
-#'   (Aj) for each of the carcasses, and [3] g estimates multiplied by the
-#'   DWP values (ghatAC) for each carcass. The row names of the Aj matrix are the
-#'   names of the units where each carcass was found. If incorportating
-#'   area correction variance, \code{ghatAC} is a matrix nCarcass number of 
-#'   rows and nSim number of columns.
+#' @return list of [1] g estimates (ghat) and [2] arrival interval estimates 
+#'   (Aj) for each of the carcasses. The row names of the Aj matrix are the
+#'   names of the units where each carcass was found.
 #'
 #' @examples
 #'  data(mock)
@@ -68,17 +61,13 @@
 estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
                  model_SE, model_CP, sizeCol = NULL, unitCol = NULL,
                  nsim = 1000, max_intervals = 8,
-                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL, DWP = NULL){
-  if (!(is.null(DWP)) & !(is.null(dim(DWP)))) {
-    if (ncol(DWP) != nsim) stop("number of DWP reps must equal nsim")
-  }
-  
+                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
   i <- sapply(data_CO, is.factor)
   data_CO[i] <- lapply(data_CO[i], as.character)
   i <- sapply(data_SS, is.factor)
   data_SS[i] <- lapply(data_SS[i], as.character)
-  
-  # error-checking
+
+# error-checking
   if (is.null(unitCol))
     unitCol <- defineUnitCol(data_CO = data_CO, data_SS = data_SS)
   SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
@@ -100,8 +89,8 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   }
   if (anyNA(cind)){
     stop("carcasses discovered at unit(s) ",
-         paste0(data_CO[rind, unitCol], collapse =", "),
-         "in CO...not represented in SS. Cannot estimate g or M.")
+      paste0(data_CO[rind, unitCol], collapse =", "),
+      "in CO...not represented in SS. Cannot estimate g or M.")
   }
   if (any(as.numeric(data_SS[cbind(rind, cind)]) == 0)){
     stop("some carcasses (CO) were found at units that were not searched (SS) ",
@@ -129,16 +118,16 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   sizeclass <- as.list(as.character(COdat[, sizeCol]))
   sizeclasses <- sort(unique(unlist(sizeclass)))
   nsizeclass <- length(sizeclasses)
-  # data pre-processing
-  # create lists of arrays for SS (days) and cells (SE and CP)
+# data pre-processing
+# create lists of arrays for SS (days) and cells (SE and CP)
   for (sc in sizeclasses){
     if (!("pkm" %in% class(model_SE[[sc]]))){
       stop("Invalid pk model ")
     }
     if (sum(diag(model_SE[[sc]]$varbeta) < 0) > 0){
       stop("
-           Cannot estimate variance in user-supplied pk model for size '", sc,
-           "' Aborting calculation of ghat."
+        Cannot estimate variance in user-supplied pk model for size '", sc,
+        "' Aborting calculation of ghat."
       )
     }
     if (any(unlist(lapply(model_SE, function(x) x$pOnly)))){
@@ -146,7 +135,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       stop("valid k not provided for ", paste(nok, collapse = " "))
     }
   }
-  
+
   preds_SE <- lapply(model_SE, function(x) x$predictors)
   preds_CP <- lapply(model_CP, function(x) x$predictors)
   preds <- mapply(function(x, y) unique(c(x, y)), preds_SE, preds_CP)
@@ -190,14 +179,14 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       }
     }
   }
-  
+
   #############################################
-  
+
   pksim <- lapply(model_SE, function(x) rpk(nsim, x))
   names(pksim) <- names(model_SE)
-  
+
   cpsim <- lapply(model_CP, rcp, n = nsim, type = "ppersist")
-  
+
   X <- dim(COdat)[1]
   days <- list()
   for (xi in 1:X){
@@ -211,7 +200,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
         days[[xi]] <- days[[xi]][(dlen - max_intervals):dlen]
     }
   }
-  
+
   cells <- list()
   # take care of the SS preds
   if (sum(unlist(lapply(SSpreds, length))) == 0){
@@ -233,9 +222,9 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       }
       cells[[xi]]$CPrep <- length(days[[xi]]) - 1
     }
-    
+
   } else {
-    
+
     for (xi in 1:X){
       cells[[xi]] <- list()
       SEc <- SEr <- CPc <- CPr <- NULL
@@ -253,11 +242,11 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
             ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])
             ssvec <- ssvec[-1]
             SEc <- paste(SEc, unique(ssvec),
-                         sep = ifelse(is.null(SEc), "", "."))
+              sep = ifelse(is.null(SEc), "", "."))
             SEr <- table(ssvec)[unique(ssvec)]
           } else {
             SEc <- paste(SEc, COdat[xi, predi],
-                         sep = ifelse(is.null(SEc), "", "."))
+              sep = ifelse(is.null(SEc), "", "."))
           }
         }
         cells[[xi]]$SEcell <- SEc
@@ -279,11 +268,11 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
             ssvec <- (SSdat[[predi]][which(SSdat[["days"]] %in% days[[xi]])])
             ssvec <- ssvec[-1]
             CPc <- paste(CPc, unique(ssvec),
-                         sep = ifelse(is.null(CPc), "", "."))
+              sep = ifelse(is.null(CPc), "", "."))
             CPr <- table(ssvec)[unique(ssvec)]
           } else {
             CPc <- paste(CPc, COdat[xi, predi],
-                         sep = ifelse(is.null(CPc), "", "."))
+              sep = ifelse(is.null(CPc), "", "."))
           }
         }
         cells[[xi]]$CPcell <- CPc
@@ -331,12 +320,12 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
         t_search = rep(max(days[[xi]]), length(rng))
       ))
     }
-    
+
     parrive <- diff(days[[xi]][1:(oi+1)])/days[[xi]][oi+1]
     pAjgOi <- t(pOigAj) * parrive; pAjgOi <- t(t(pAjgOi)/colSums(pAjgOi))
     Aj[xi, ] <- # sim arrival intervals (relative to cind's ss)
-      rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(nsim)) +
-      (sum(SSxi <= min(days[[xi]])))
+       rowSums(matrixStats::rowCumsums(t(pAjgOi)) < runif(nsim)) +
+         (sum(SSxi <= min(days[[xi]])))
     xuint <- unique(Aj[xi, ]) # unique xi arrival intervals (in SSxi)
     for (aj in xuint){
       # calculate simulated ghat associated with the given carcass and 
@@ -352,7 +341,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       # use an adjusted search schedule because we "know" when carcass arrived
       # which cell is "active" for the given arrival interval?
       cpi <- findInterval(aj, c(0, min(xuint) + cumsum(cells[[xi]]$CPrep)),
-                          rightmost.closed = T)
+        rightmost.closed = T)
       pda <- cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][simInd , "pda"]
       pdb <- cpsim[[sz]][[cells[[xi]]$CPcell[cpi]]][simInd , "pdb"]
       ppersu <- ppersist(
@@ -364,7 +353,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
         t_search = SSxi[(aj + 1):top]
       )
       pki <- findInterval(aj, c(0, min(xuint) + cumsum(cells[[xi]]$SErep)),
-                          rightmost.closed = T)
+        rightmost.closed = T)
       SE <- t(SEsi_right(
         top - aj,
         pksim[[sz]][[cells[[xi]]$SEcell[pki]]][simInd , ]
@@ -376,13 +365,11 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       }
     }
   }
-  
+
   rownames(Aj) <- COdat[ , unitCol]
-  ghatAC <- ghat * DWP
-  out <- list("ghat" = ghat, "Aj" = Aj, 
-              "ghatAC" = ghatAC)  # ordered by relevance to user
+  out <- list("ghat" = ghat, "Aj" = Aj) # ordered by relevance to user
   return(out)
-  }
+}
 
 #' @title Calculate conditional probability of observation at a search
 #'
@@ -522,8 +509,8 @@ SEsi_right <- function(nsi, pk){
 #' @export
 #'
 estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
-                        seed_CP = NULL){
-  
+  seed_CP = NULL){
+
   if (!is.vector(days) || !is.numeric(days))
     stop(" 'days' must be a numeric vector")
   if (!("pkm" %in% class(model_SE))) stop("Invalid pk model")
@@ -539,7 +526,7 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
   sim_SE <- rpk(n = nsim, model = model_SE)
   sim_CP <- rcp(n = nsim, model = model_CP, type = "ppersist")
   dist <- tolower(model_CP$dist)
-  
+
   ncell <- nrow(preds)
   ghat <- vector("list", ncell)
   for (celli in 1:ncell){
@@ -604,53 +591,53 @@ calcg <- function(days, param_SE, param_CP, dist){
   pk <- param_SE
   f0 <- mean(pk[, 1])
   k0 <- mean(pk[, 2])
-  
+
   if (length(days) == 2){ # then only one search, so it's easy!
     r_sim <- as.vector(ppersist(dist = dist,
-                                t_arrive0 = days[1], t_arrive1 = days[2], t_search = days[2],
-                                pda = param_CP[,1], pdb = param_CP[,2]))
+      t_arrive0 = days[1], t_arrive1 = days[2], t_search = days[2],
+      pda = param_CP[,1], pdb = param_CP[,2]))
     return(r_sim * pk[ , 1])
   }
-  
-  ###1. setting estimation control parameters
+
+ ###1. setting estimation control parameters
   ind1 <- rep(1:nsearch, times = nsearch:1)
   ind2 <- ind1 + 1
   ind3 <- unlist(lapply(1:nsearch, function(x) x:nsearch)) + 1
   schedule.index <- cbind(ind1, ind2, ind3)
   schedule <- cbind(days[ind1], days[ind2], days[ind3])
-  
+
   nmiss <- schedule.index[,3] - schedule.index[,2]
   maxmiss <- max(nmiss)
-  
+
   powk <- cumprod(c(1, rep(k0, maxmiss))) 
   notfind <- cumprod(1 - f0*powk[-length(powk)])
   nvec <- c(1, notfind) * f0
-  
+
   # conditional probability of finding a carcass on the ith search (row) after
   # arrival for given (simulated) searcher efficiency (column)
   pfind.si <- nvec * powk
-  
+
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
   ppersu <- ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[,1],
-                     t_search = intxsearch[,1] + intxsearch[,2], pda = pda0, pdb = pdb0)
+    t_search = intxsearch[,1] + intxsearch[,2], pda = pda0, pdb = pdb0)
   arrvec <- (schedule[,2] - schedule[,1]) / max(days)
   prob_obs <- numeric(dim(schedule)[1])
   for (i in 1:length(prob_obs)){
     ind <- which(
-      abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
-        abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001
-    )
+               abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+               abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001
+             )
     prob_obs[i] <- pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
   }
-  
-  ###2. estimation of g
-  # assumes uniform arrivals
+
+ ###2. estimation of g
+ # assumes uniform arrivals
   schedule <- schedule[ind2 >= ind3 - maxmiss + 1, ]
   schedule.index <- cbind(ind1, ind2, ind3)[ind2 >= ind3 - maxmiss + 1,]
   nmiss <- schedule.index[ , 3] - schedule.index[ , 2]
   maxmiss <- max(nmiss)
-  
+
   if (maxmiss == 0) {
     pfind.si <- pk[ , 1]
   } else if (maxmiss == 1){
@@ -666,25 +653,25 @@ calcg <- function(days, param_SE, param_CP, dist){
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MAR = 1)
   ppersu <- ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[ , 1],
-                     t_search = intxsearch[ , 1] + intxsearch[ , 2],
-                     pda = param_CP[ , 1], pdb = param_CP[ , 2]
-  )
+              t_search = intxsearch[ , 1] + intxsearch[ , 2],
+              pda = param_CP[ , 1], pdb = param_CP[ , 2]
+            )
   arrvec <- (schedule[ , 2] - schedule[ , 1]) / max(days)
   prob_obs <- numeric(n)
   if (maxmiss > 0){
     for (i in 1:dim(schedule)[1]){
       ind <- which(
-        abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
-          abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
+               abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+               abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
       prob_obs <- prob_obs +
-        pfind.si[ , nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
+                  pfind.si[ , nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
     }
   } else {
     for (i in 1:dim(schedule)[1]){
       ind <- which(
-        abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
-          abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
-      prob_obs <- prob_obs + pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
+               abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
+               abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001)
+     prob_obs <- prob_obs + pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
     }
   }
   return(prob_obs)
@@ -765,9 +752,9 @@ calcg <- function(days, param_SE, param_CP, dist){
 #' @export
 #'
 estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
-                            modelSizeSelections_SE, modelSizeSelections_CP,
-                            nsim = 1000, seed_SE = NULL, seed_CP = NULL){
-  
+    modelSizeSelections_SE, modelSizeSelections_CP,
+    nsim = 1000, seed_SE = NULL, seed_CP = NULL){
+
   if (!("pkmSetSize" %in% class(modelSetSize_SE))){
     stop("modelSetSize_SE must be a pkmSetSize object")
   }
@@ -785,7 +772,7 @@ estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
   # check whether k is included in every model. If not, error.
   for (sci in sizeclasses){
     if (modelSetSize_SE[[sci]][[modelSizeSelections_SE[sci]]]$pOnly){
-      stop("k required for SE model for size = ", sci)
+     stop("k required for SE model for size = ", sci)
     }
   }
   ghats <- list()
@@ -795,10 +782,10 @@ estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
     model_SE <- modelSetSize_SE[[sci]][[modelSizeSelections_SE[[sci]]]]
     model_CP <- modelSetSize_CP[[sci]][[modelSizeSelections_CP[[sci]]]]
     ghats[[sci]] <- estgGeneric(nsim = nsim, days = days,
-                                model_SE = model_SE, model_CP = model_CP,
-                                seed_SE = seed_SE, seed_CP = seed_CP)
+      model_SE = model_SE, model_CP = model_CP,
+      seed_SE = seed_SE, seed_CP = seed_CP)
   }
-  
+
   class(ghats) <- c("gGenericSize", "list")
   return(ghats)
 }
@@ -838,7 +825,7 @@ averageSS <- function(data_SS, SSdate = NULL){
   aveSS <- seq(0, max(maxdays), round(mean(maxdays/nintervals)))
   return(aveSS)
 }
-
+  
 #' @title Summarize the gGeneric list to a simple table
 #'
 #' @description methods for \code{summary} applied to a \code{gGeneric} list
@@ -874,16 +861,16 @@ summary.gGeneric <- function(object, ..., CL = 0.90){
   ncell <- length(cells)
   predsByCell <- strsplit(cells, "\\.") 
   npred <- length(predsByCell[[1]])
-  
+
   predsTab <- preds[ , -grep("CellNames", colnames(preds))]
   predsTab <- as.matrix(predsTab, ncol = npred, nrow = ncell)
   predNames <- colnames(preds)[-grep("CellNames", colnames(preds))]
   if (length(predNames) == 1 & predNames[1] == "group" & cells[1] == "all"){
     predNames <- "Group"
   }
-  
+
   tableProbs <- c((1 - CL) / 2, 0.25, 0.5, 0.75, 1 - (1 - CL) / 2)
-  
+
   colnames(predsTab) <- predNames
   gTab <- matrix(NA, ncell, 5)
   for (celli in 1:ncell){
@@ -891,7 +878,7 @@ summary.gGeneric <- function(object, ..., CL = 0.90){
     quants <- quantile(gspec, prob = tableProbs)
     gTab[celli, ] <- round(quants, 3)
   }
-  
+
   out <- data.frame(predsTab, gTab)
   colnames(out)[npred + (1:5)] <- names(quants)
   return(out)
@@ -945,7 +932,7 @@ summary.gGeneric <- function(object, ..., CL = 0.90){
 #' @export
 #'
 summary.gGenericSize <- function(object, ..., CL = 0.90){
-  
+
   sizeclasses <- names(object)
   out <- list()
   for (sci in sizeclasses){
