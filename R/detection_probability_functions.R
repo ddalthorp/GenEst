@@ -59,7 +59,7 @@
 #' @export
 #'
 estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
-                 model_SE, model_CP, sizeCol = NULL, unitCol = NULL,
+                 model_SE, model_CP, sizeCol = NULL, unitCol = NULL, IDcol = NULL,
                  nsim = 1000, max_intervals = 8,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
   i <- sapply(data_CO, is.factor)
@@ -70,6 +70,19 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
 # error-checking
   if (is.null(unitCol))
     unitCol <- defineUnitCol(data_CO = data_CO, data_SS = data_SS)
+  if (is.null(IDcol)){
+    IDcol <- names(which(
+      apply(data_CO, FUN = function(x) length(unique(x)), MAR = 2) ==
+      apply(data_CO, FUN = length, MAR = 2)))
+    if (length(IDcol) == 0){
+      stop("CO data must include unique identifier for each caracass")
+    } else if (length(IDcol) > 1) {
+      stop("Carcass ID column must be specified in CO data")
+    }
+  } else {
+    if (length(data_CO[ , IDcol]) != unique(length(data_CO[ , IDcol])))
+      stop(paste0("Carcass IDs are not unique (in CO, column ", IDcol, ")"))
+  }
   SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
   if (any(! data_CO[, unitCol] %in% SSdat$unit))
     stop("carcasses found (CO) at units not properly formatted (or missing) in SS")
@@ -367,6 +380,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   }
 
   rownames(Aj) <- COdat[ , unitCol]
+  rownames(ghat) <- COdat[ , IDcol]
   out <- list("ghat" = ghat, "Aj" = Aj) # ordered by relevance to user
   return(out)
 }

@@ -319,6 +319,7 @@ MSidebar <- function(){
   sidebarPanel(width = 3,
     b(u(big("Model Inputs:"))),
     br(), br(),
+    modelInputWidget("xID"),
     modelInputWidget("frac"),
     modelInputWidget("DWPCol"),
     modelInputWidget("COdate"),

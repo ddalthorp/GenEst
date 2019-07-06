@@ -72,7 +72,7 @@
 #'
 estM <- function(data_CO, data_SS, data_DWP, frac = 1,
                  COdate = "DateFound", model_SE, model_CP,
-                 unitCol = NULL, SSdate = NULL, sizeCol = NULL,
+                 unitCol = NULL, SSdate = NULL, sizeCol = NULL, IDcol = NULL,
                  DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  seed_M = NULL, nsim = 1000, max_intervals = 8){
 
@@ -114,7 +114,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   est <- estg(data_CO = data_CO, COdate = COdate,
       data_SS = data_SS, SSdate = SSdate,
       model_SE = model_SE, model_CP = model_CP,
-      unitCol = unitCol, sizeCol = sizeCol,
+      unitCol = unitCol, sizeCol = sizeCol, IDcol = IDcol,
       nsim = nsim, max_intervals = max_intervals,
       seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g)
   gDf <- est$ghat * DWP * frac
@@ -129,6 +129,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     n <- length(gDf)
     Mhat[-c_out,] <- ((cbinom::rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   }
+  row.names(Mhat) <- row.names(est$ghat)
   out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, DWP = DWP,
     Xtot = nrow(data_CO) - length(c_out))
   class(out) <- c("estM", "list")

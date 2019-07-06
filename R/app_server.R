@@ -74,6 +74,7 @@ GenEstServer <- function(input, output, session){
   observeEvent(input$split_M, eval(reaction("split_M")))
   observeEvent(input$split_M_clear, eval(reaction("split_M_clear")))
   observeEvent(input$transpose_split, eval(reaction("transpose_split")))
+  observeEvent(input$cscale, eval(reaction("cscale")))
 
   observeEvent(input$run_g, eval(reaction("run_g")))
   observeEvent(input$run_g_clear, eval(reaction("run_g_clear")))
@@ -127,7 +128,7 @@ reaction <- function(eventName){
                     "split_M_clear", "transpose_split",
                     "run_g", "run_g_clear", "outgclass",
                     "load_RP", "load_RPbat", "load_cleared", "load_PV",
-                    "load_trough", "load_powerTower", "load_mock")
+                    "load_trough", "load_powerTower", "load_mock", "cscale")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")
@@ -221,26 +222,26 @@ reactionMessageDone <- function(eventName){
 eventReaction <- function(eventName, rv, input, output, session){
   if (eventName == "class"){
     rv <- update_rv("run_SE_clear", rv, input)
-    output <- update_output("run_SE_clear", rv, output)
+    output <- update_output("run_SE_clear", rv, output, input)
     update_input("run_SE_clear", rv, input, session)
     rv <- update_rv("run_CP_clear", rv, input)
-    output <- update_output("run_CP_clear", rv, output)
+    output <- update_output("run_CP_clear", rv, output, input)
     update_input("run_CP_clear", rv, input, session)
     rv <- update_rv("run_M_clear", rv, input)
-    output <- update_output("run_M_clear", rv, output)
+    output <- update_output("run_M_clear", rv, output, input)
     update_input("run_M_clear", rv, input, session)
     rv <- update_rv("split_M_clear", rv, input)
-    output <- update_output("split_M_clear", rv, output)
+    output <- update_output("split_M_clear", rv, output, input)
     update_input("split_M_clear", rv, input, session)
     rv <- update_rv("run_g_clear", rv, input)
-    output <- update_output("run_g_clear", rv, output)
+    output <- update_output("run_g_clear", rv, output, input)
     update_input("run_g_clear", rv, input, session)
     rv <- update_rv(eventName, rv, input)
-    output <- update_output(eventName, rv, output)
+    output <- update_output(eventName, rv, output, input)
     update_input(eventName, rv, input, session)
   } else {
     rv <- update_rv(eventName, rv, input)
-    output <- update_output(eventName, rv, output)
+    output <- update_output(eventName, rv, output, input)
     update_input(eventName, rv, input, session)
   }
 }
