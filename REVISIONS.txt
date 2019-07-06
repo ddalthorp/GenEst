@@ -1,4 +1,19 @@
-Revision log
+﻿Revision log
+2019.04.12
+v1.2.4
+
+* an error in extracting data from splits arrays for Mhat resulted in boxplots
+that were constructed from plot.splitSummary (or the "Split Estimate" button in
+the GUI) having lower tails that were too long and having all other quantiles 
+shifted slightly downward. The error has been corrected. Users may notice the
+change in the lengths of the lower tails in the splits plots.
+
+* corrected the lower bound of the CIs shown on the histogram for Mhat 
+estimates so that it cannot exceed the number of carcasses observed after the
+first search
+
+* minor editing of some GUI labels and messages to improve readability
+
 2019.03.07
 v1.2.3
 
@@ -29,7 +44,7 @@ v1.2.2
 * with data sets with only 1 unit, prepSS was not properly assigning unit
 names to rows of searches_unit array. This caused an error in prepSS and its
 dependencies (estM and estg), which was expressed in the error message: 
-"no 'dimnames' attribute for array”. This has been corrected.
+"no 'dimnames' attribute for array". This has been corrected.
 
 * corrected the download button for figures showing transposed mortality 
 splits (previously, the untransposed figs were downloaded)

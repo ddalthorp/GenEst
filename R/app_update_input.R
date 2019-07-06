@@ -34,7 +34,7 @@ update_input <- function(eventName, rv, input, session){
                     "split_M_clear", "transpose_split",
                     "run_g", "run_g_clear", "outgclass",
                     "load_RP", "load_RPbat", "load_cleared", "load_PV",
-                    "load_trough", "load_powerTower", "load_mock")
+                    "load_trough", "load_powerTower", "load_mock", "cscale")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")
@@ -76,6 +76,7 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "outCPs", choices = "")
     updateSelectizeInput(session, "outCPdist", choices = "")
     updateSelectizeInput(session, "outCPclass", choices = "")
+    updateSelectizeInput(session, "xID", choices = "")
     updateSelectizeInput(session, "COdate", choices = "")
     updateNumericInput(session, "gSearchInterval",  value = NULL)
     updateNumericInput(session, "gSearchMax", value = NULL)
@@ -200,6 +201,8 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "file_CO"){
+    updateSelectizeInput(session, "xID", choices = rv$colNames_xID,
+      selected = rv$colNames_xID[1])
     updateSelectizeInput(session, "COdate", choices = rv$colNames_COdates)
     if (length(rv$colNames_COdates) == 1){
       updateSelectizeInput(session, "COdate", choices = rv$colNames_COdates,
@@ -238,6 +241,7 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "ltp", choices = rv$colNames_ltp)
     updateSelectizeInput(session, "fta", choices = rv$colNames_fta)
     updateSelectizeInput(session, "class", choices = rv$colNames_size)
+    updateSelectizeInput(session, "xID", choices = rv$colNames_xID, selected = rv$xIDcol)
     updateSelectizeInput(session, "DWPCol", choices = rv$colNames_DWP)
     if (length(rv$colNames_DWP) == 1){
       updateSelectizeInput(session, "DWPCol", selected = rv$colNames_DWP)
@@ -424,6 +428,7 @@ update_input <- function(eventName, rv, input, session){
   }
 
   if (eventName == "run_M"){
+    updateSelectizeInput(session, "xID", choices = rv$colNames_xID, selected = rv$xIDcol)
     updateNumericInput(session, "frac", value = rv$frac)
     updateSelectizeInput(session, "split_SS", choices = rv$splittable_SS)
     updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
@@ -444,4 +449,3 @@ update_input <- function(eventName, rv, input, session){
     updateSelectizeInput(session, "split_CO", choices = rv$colNames_CO)
   }
 }
-

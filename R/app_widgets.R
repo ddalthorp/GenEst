@@ -24,11 +24,11 @@ dataInputWidget <- function(dataType){
   clab <- "Clear file"
   cstyle <- cButtonStyle()
 
-  Label <- switch(dataType, "SE" = "Searcher Efficiency Data",
-                            "CP" = "Carcass Persistence Data",
-                            "SS" = "Search Schedule Data",
-                            "DWP" = "Density Weighted Proportion Data",
-                            "CO" = "Carcass Observation Data")
+  Label <- switch(dataType, "SE" = "Searcher Efficiency (SE)",
+                            "CP" = "Carcass Persistence (CP)",
+                            "SS" = "Search Schedule (SS)",
+                            "DWP" = "Density Weighted Proportion (DWP)",
+                            "CO" = "Carcass Observation (CO)")
   ButtonName <- switch(dataType, "SE" = "file_SE",
                                  "CP" = "file_CP",
                                  "SS" = "file_SS",
@@ -70,14 +70,14 @@ dataInputWidget <- function(dataType){
 #'
 dataDownloadWidget <- function(set){
 
-  if (!set %in% c("RP", "RPbat", "cleared", "powerTower", "PV", "trough", 
+  if (!set %in% c("cleared", "RP", "RPbat", "powerTower", "PV", "trough",
                   "mock")){
     stop(paste0("input set (", set, ") not supported"))
   }
 
-  setNames <- c("RP" = "Wind---Road and pad searches, bats + birds",
+  setNames <- c("cleared" = "Wind---Cleared plots, bats + birds",
+                "RP" = "Wind---Road and pad searches, bats + birds",
                 "RPbat" = "Wind---Road and pad searches, bats",
-                "cleared" = "Wind---Cleared plots, bats + birds",
                 "powerTower" = "Solar---Power tower",
                 "PV" = "Solar---Photovoltaic (PV)",
                 "trough" = "Solar---Trough",
@@ -85,9 +85,9 @@ dataDownloadWidget <- function(set){
 
   setName <- setNames[set]
   fluidRow(
-    column(6, h4(setName)), 
+    column(6, h4(setName)),
     column(2, actionButton(paste0("load_", set), "Load Data")),
-    column(2, downloadButton(paste0("download_", set), "Download"))
+    column(2, downloadButton(paste0("download_", set), "Download .csv"))
   )
 }
 
@@ -99,7 +99,7 @@ dataDownloadWidget <- function(set){
 #'
 #' @param inType Toggle control for the input type of the widget. One of 
 #'   "nsim", "CL", "class", "obsSE", "predsSE", "kFixed", "ltp", "fta", 
-#'   "predsCP", "dist", "frac", "DWPCol", "COdate", "gSearchInterval", or
+#'   "predsCP", "dist", "xID", "frac", "DWPCol", "COdate", "gSearchInterval", or
 #'   "gSearchMax".
 #'
 #' @return HTML for the model input widget. 
@@ -110,7 +110,7 @@ modelInputWidget <- function(inType){
 
   if (!inType %in% c("nsim", "CL", "class", "obsSE", "predsSE",
                      "kFixedInput", "ltp", "fta", "predsCP", "dist",
-                     "frac", "DWPCol", "COdate",
+                     "xID", "frac", "DWPCol", "COdate",
                      "gSearchInterval", "gSearchMax")){
     stop(paste0("input inType (", inType, ") not supported"))
   }
@@ -118,7 +118,7 @@ modelInputWidget <- function(inType){
   Name <- inType
 
   Label <- switch(inType, 
-             "nsim" = "Number of Iterations:", 
+             "nsim" = "Number of Iterations:",
              "CL" = "Confidence Level:", 
              "class" = "Size Class Column (optional):",
              "obsSE" = "Observations:", 
@@ -128,14 +128,15 @@ modelInputWidget <- function(inType){
              "fta" = "First Time Absent:", 
              "predsCP" = "Predictor Variables:", 
              "dist" = "Distributions to Include",
-             "frac" = "Fraction of Facility Surveyed:", 
-             "DWPCol" = "Density Weighted Proportion:", 
+             "xID" = "Carcass ID Column (CO)",
+             "frac" = "Fraction of Facility Surveyed:",
+             "DWPCol" = "Density Weighted Proportion:",
              "COdate" = "Date Found:",
              "gSearchInterval" = "Search Interval (days):",
              "gSearchMax" = "Total Span of Monitoring (days):")
 
   widgetFun <- switch(inType, 
-                 "nsim" = "numericInput", 
+                 "nsim" = "numericInput",
                  "CL" = "numericInput", 
                  "class" = "selectizeInput",
                  "obsSE" = "selectizeInput", 
@@ -145,15 +146,16 @@ modelInputWidget <- function(inType){
                  "fta" = "selectizeInput", 
                  "predsCP" = "selectizeInput", 
                  "dist" = "checkboxGroupInput",
-                 "frac" = "numericInput", 
-                 "DWPCol" = "selectizeInput", 
+                 "xID" = "selectizeInput",
+                 "frac" = "numericInput",
+                 "DWPCol" = "selectizeInput",
                  "COdate" = "selectizeInput",
                  "gSearchInterval" = "numericInput",
                  "gSearchMax" = "numericInput")
 
   Args <- switch(inType, 
-            "nsim" = list(value = 1000, min = 1, max = 10000, step = 1), 
-            "CL" = list(value = 0.90, min = 0, max = 1, step = 0.001), 
+            "nsim" = list(value = 1000, min = 1, max = 10000, step = 1),
+            "CL" = list(value = 0.90, min = 0, max = 0.999, step = 0.001),
             "class" = list(c("No data input yet"), multiple = TRUE,
                                options = list(maxItems = 1)), 
             "obsSE" = list(c("No SE data input yet"), multiple = TRUE), 
@@ -166,8 +168,10 @@ modelInputWidget <- function(inType){
             "predsCP" = list(c("No CP data input yet"), multiple = TRUE),
             "dist" = list(choices = CPdistOptions(),
                         selected = unlist(CPdistOptions()), inline = TRUE),
+            "xID" =  list(c("No carcass data input yet"), multiple = TRUE,
+                            options = list(maxItems = 1)),
             "frac" = list(value = 1.0, min = 0.01, max = 1.0, step = 0.01),
-            "DWPCol" = list(c("No DWP data input yet"), multiple = TRUE, 
+            "DWPCol" = list(c("No DWP data input yet"), multiple = TRUE,
                             options = list(maxItems = 1)),
             "COdate" = list(c("No carcass data input yet"), multiple = TRUE,
                                   options = list(maxItems = 1)),
@@ -185,8 +189,9 @@ modelInputWidget <- function(inType){
                  "fta" = NULL, 
                  "predsCP" = NULL, 
                  "dist" = NULL,
-                 "frac" = NULL, 
-                 "DWPCol" = "output.DWPNeed == 'yes'", 
+                 "xID" = NULL,
+                 "frac" = NULL,
+                 "DWPCol" = "output.DWPNeed == 'yes'",
                  "COdate" = NULL,
                  "gSearchInterval" = NULL,
                  "gSearchMax" = NULL)
@@ -199,7 +204,7 @@ modelInputWidget <- function(inType){
 #'
 #' @description Basic generalized function for creating an input widget based
 #'   on the condition of the widget being presented, the name of the widget, 
-#'   the function used to create it, it's label on the UI, and any additional 
+#'   the function used to create it, its label on the UI, and any additional
 #'   arguments. 
 #'
 #' @param Condition Condition under which the widget is present to the user. 
@@ -332,7 +337,8 @@ preTextMaker <- function(modType){
   Condition <- switch(modType, 
      "SE" = "input.obsSE == null",
      "CP" = "input.ltp == null | input.fta == null",
-     "M" = c("input.modelChoices_SE1 == null |
+     "M" = c("input.xID == null",
+              "input.modelChoices_SE1 == null |
              input.modelChoices_CP1 == null |
              output.sizeclasses_SE != output.sizeclasses_CP",
              "output.filename_SS == null",
@@ -340,7 +346,7 @@ preTextMaker <- function(modType){
              input.modelChoices_CP1 != null &
              output.sizeclasses_SE == output.sizeclasses_CP & 
              (input.DWPCol == null | input.COdate == null)",
-             "output.kNeed == 'yes' & 
+             "output.kNeed == 'yes' &
              input.modelChoices_SE1 != null"),
      "g" = c("input.modelChoices_SE1 == null |
              input.modelChoices_CP1 == null |
@@ -352,11 +358,12 @@ preTextMaker <- function(modType){
   Text <- switch(modType, 
              "SE" = "Select observation columns to run model",
              "CP" = "Select observation columns to run model",
-             "M" = c("Select SE and CP models fit to matching size classes to 
+             "M" = c("Select carcass ID column to run model",
+                      "Select SE and CP models fit to matching size classes to
                       run model",
                      "Input Search Schedule data to run model",
                      "Select input columns to run model",
-                     "A value for k is required to estimate mortality. 
+                     "A value for k is required to estimate mortality.
                       Return to Search Efficiency tab and fix k."),
              "g" = c("Select SE and CP models fit to matching size
                      classes to run model",
@@ -366,8 +373,7 @@ preTextMaker <- function(modType){
 
   out <- vector("list", length(Condition))
   for (i in 1:length(Condition)){
-    out[[i]] <- conditionalPanel(condition = Condition[i], 
-                                 br(), center(em(Text[i]))) 
+    out[[i]] <- conditionalPanel(condition = Condition[i], br(), center(em(Text[i])))
   }
   out
 }

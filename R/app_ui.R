@@ -319,6 +319,7 @@ MSidebar <- function(){
   sidebarPanel(width = 3,
     b(u(big("Model Inputs:"))),
     br(), br(),
+    modelInputWidget("xID"),
     modelInputWidget("frac"),
     modelInputWidget("DWPCol"),
     modelInputWidget("COdate"),
@@ -461,7 +462,7 @@ gettingStartedPanel <- function(){
 #' @export
   #'
 downloadsPanel<- function(){
-  if (.Platform$OS.type == "windows"){
+    if (.Platform$OS.type == "windows"){
     tabPanel("Example Data",
       mainPanel(
         column(10, offset = 0,
@@ -486,7 +487,7 @@ downloadsPanel<- function(){
         formatting the data are also included in the appendices in the User Guide.
         If you need the .csv's for some other purpose, you can download them via
         the command line in R. For example, enter
-        write.csv(\"mock$SE\", file = \"NameOfFileToCreate.csv\", row.names = FALSE)
+        write.csv(\"mock$SE\", file = \"NameOfFileToCreate.csv\", row.names = F, as.is = T)
         to download the SE file for the 'mock' data set. For more information
         about downloadable example data files, enter ?GenEst from the R command
         line.")
