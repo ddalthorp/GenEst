@@ -462,20 +462,21 @@ gettingStartedPanel <- function(){
 #' @export
   #'
 downloadsPanel<- function(){
-  tabPanel("Example Data",
-    mainPanel(
-      column(10, offset = 0,
-        br(),
-        h3("Example data sets"),
-        br(),
-        dataDownloadWidget("cleared"),
-        dataDownloadWidget("RP"),
-        dataDownloadWidget("RPbat"),
-        dataDownloadWidget("powerTower"),
-        dataDownloadWidget("PV"),
-        dataDownloadWidget("trough"),
-        dataDownloadWidget("mock"),
-             br(), br(),
+    if (.Platform$OS.type == "windows"){
+    tabPanel("Example Data",
+      mainPanel(
+        column(10, offset = 0,
+          br(),
+          h3("Example data sets"),
+          br(),
+          dataDownloadWidget("RP"),
+          dataDownloadWidget("RPbat"),
+          dataDownloadWidget("cleared"),
+          dataDownloadWidget("powerTower"),
+          dataDownloadWidget("PV"),
+          dataDownloadWidget("trough"),
+          dataDownloadWidget("mock"),
+          br(), br(),
           h5("NOTE: If you are having trouble downloading the example data sets..."),
           br(),
           h5("Downloading the zip files in Windows relies on a zip program being
@@ -486,13 +487,31 @@ downloadsPanel<- function(){
         formatting the data are also included in the appendices in the User Guide.
         If you need the .csv's for some other purpose, you can download them via
         the command line in R. For example, enter
-        write.csv(\"mock$SE\", file = \"NameOfFileToCreate.csv\", row.names = F, as.is = T)
+        write.csv(\"mock$SE\", file = \"NameOfFileToCreate.csv\", row.names = FALSE)
         to download the SE file for the 'mock' data set. For more information
         about downloadable example data files, enter ?GenEst from the R command
         line.")
+        )
       )
     )
-  )
+  } else {
+    tabPanel("Example Data",
+      mainPanel(
+        column(10, offset = 0,
+          br(),
+          h3("Example data sets"),
+          br(),
+          dataDownloadWidget("RP"),
+          dataDownloadWidget("RPbat"),
+          dataDownloadWidget("cleared"),
+          dataDownloadWidget("powerTower"),
+          dataDownloadWidget("PV"),
+          dataDownloadWidget("trough"),
+          dataDownloadWidget("mock")
+        )
+      )
+    )
+  }
 }
 
 #' @rdname GenEstUI
