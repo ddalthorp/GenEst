@@ -487,7 +487,7 @@ downloadsPanel<- function(){
         formatting the data are also included in the appendices in the User Guide.
         If you need the .csv's for some other purpose, you can download them via
         the command line in R. For example, enter
-        write.csv(\"mock$SE\", file = \"NameOfFileToCreate.csv\", row.names = FALSE)
+        write.csv(\"mock$SE\", file = \"NameOfFileToCreate.csv\", row.names = F, as.is = T)
         to download the SE file for the 'mock' data set. For more information
         about downloadable example data files, enter ?GenEst from the R command
         line.")
