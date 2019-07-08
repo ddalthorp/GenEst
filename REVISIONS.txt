@@ -1,4 +1,21 @@
 ﻿Revision log
+2019.07.08
+v1.3.0
+
+* more informative data downloads with more useful default file names (GUI)
+
+* option to plot multiple 'splits' graphics panels on the same y-axis scale (GUI)
+
+* unique carcass ID used as row names in the Mhat element of estM objects. 
+This will help facilitate the performing of complicated, custom mortality splits
+from the command-line.
+
+* new placeholder functions for accommodating the incorporation of a DWP 
+module sometime in the not-to-distant future. Functions are accessible from the
+command-line and can accommodate data structures that account for the uncertainty 
+in DWP, but currently there are no models for actually calculating the 
+uncertainties using GenEst.
+
 2019.04.12
 v1.2.4
 
