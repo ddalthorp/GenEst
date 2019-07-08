@@ -268,6 +268,7 @@ modelOutputPanel <- function(outType){
                       conditionalPanel(
                         condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
                         br(), br(),
+
                         radioButtons("cscale", "Common scale for y-axes?",
                           choices = c("Yes", "No"),
                           selected = "No")

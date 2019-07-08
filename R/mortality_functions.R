@@ -74,6 +74,7 @@
 #'
 #' @export 
 #'
+
 estM <- function(data_CO, data_SS, data_DWP = NULL, frac = 1,
                  COdate = "DateFound", model_SE, model_CP, model_DWP = NULL,
                  unitCol = NULL, SSdate = NULL, sizeCol = NULL, IDcol = NULL,
