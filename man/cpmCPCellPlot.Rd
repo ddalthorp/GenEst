@@ -18,6 +18,6 @@ cpmCPCellPlot(model, specificCell, col, axis_y = TRUE, axis_x = TRUE)
 \item{axis_x}{logical of whether or not to plot the x axis}
 }
 \description{
-Produce the figure panel for a specific cell (factor 
+Produce the figure panel for a specific cell (factor
   level combination) including the specific fitted decay curves.
 }

@@ -7,9 +7,8 @@ addons:
   apt:
     update: true
     packages:
-      - libgsl0-dbg
-      - libgsl0-dev
-      - libgsl0ldbl
+      - libgsl-dbg
+      - libgsl-dev
 
 r_packages:
   testthat

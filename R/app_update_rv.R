@@ -265,8 +265,8 @@ update_rv <- function(eventName, rv, input){
     rv$data_CO <- readCSV(input$file_CO$datapath)
     rv$filename_CO <- input$file_CO$name
     rv$colNames_xID <- names(which(
-      apply(rv$data_CO, FUN = function(x) length(unique(x)), MAR = 2) ==
-      apply(rv$data_CO, FUN = length, MAR = 2)))
+      apply(rv$data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
+      apply(rv$data_CO, FUN = length, MARGIN = 2)))
     rv$colNames_CO <- colnames(rv$data_CO)
     rv$colNames_COdates <- dateCols(rv$data_CO)
     rv$colNames_size0 <- updateColNames_size(rv)
@@ -401,8 +401,8 @@ update_rv <- function(eventName, rv, input){
     rv$colNames_size0 <- updateColNames_size(rv)
     rv$colNames_size <- rv$colNames_size0
     rv$colNames_xID <- names(which(
-      apply(rv$data_CO, FUN = function(x) length(unique(x)), MAR = 2) ==
-      apply(rv$data_CO, FUN = length, MAR = 2)))
+      apply(rv$data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
+      apply(rv$data_CO, FUN = length, MARGIN = 2)))
     rv$xIDcol <- rv$colNames_xID[1]
     rv$sizeCol <- NULL
   }

@@ -22,6 +22,10 @@
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
 #'
+#' @param model_DWP fitted dwp model (optional)
+#'
+#' @param IDcol column with unique carcass (CO) identifier
+#'
 #' @param unitCol Column name for the unit indicator (optional)
 #'
 #' @param SSdate Column name for the date searched data
@@ -70,8 +74,8 @@
 #'
 #' @export 
 #'
-estM <- function(data_CO, data_SS, data_DWP, frac = 1,
-                 COdate = "DateFound", model_SE, model_CP,
+estM <- function(data_CO, data_SS, data_DWP = NULL, frac = 1,
+                 COdate = "DateFound", model_SE, model_CP, model_DWP = NULL,
                  unitCol = NULL, SSdate = NULL, sizeCol = NULL, IDcol = NULL,
                  DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
                  seed_M = NULL, nsim = 1000, max_intervals = 8){
@@ -80,9 +84,10 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
   data_CO[i] <- lapply(data_CO[i], as.character)
   i <- sapply(data_SS, is.factor)
   data_SS[i] <- lapply(data_SS[i], as.character)
-  i <- sapply(data_DWP, is.factor)
-  data_DWP[i] <- lapply(data_DWP[i], as.character)
-
+  if (!is.null(data_DWP) && "data.frame" %in% class(data_DWP)){
+    i <- sapply(data_DWP, is.factor)
+    data_DWP[i] <- lapply(data_DWP[i], as.character)
+  }
   if (!(COdate %in% colnames(data_CO))){
     stop("COdate not found in data_CO")
   }
@@ -109,15 +114,26 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     }
   }
   # error-checking for match b/t DWP and CO data is done in DWPbyCarcass
-  DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
-           sizeCol = sizeCol, unitCol = unitCol, DWPCol = DWPCol)
+  if (!is.null(data_DWP) && !is.null(model_DWP))
+    stop("provide either data_DWP or model_DWP, not both")
+  if (is.null(data_DWP) && is.null(model_DWP)){
+    model_DWP <- dwpm(data_DWP = NULL)
+  }
+  if (!is.null(data_DWP)){
+      model_DWP <- dwpm(data_DWP = data_DWP, type = "data", unitCol = unitCol,
+          dwpCols = DWPCol)
+  }
+  if (!"dwpm" %in% class(model_DWP)) stop("fitted DWP model required")
+#    DWP <- DWPbyCarcass(data_DWP = data_DWP, data_CO = data_CO,
+#           sizeCol = sizeCol, unitCol = unitCol, DWPCol = DWPCol)
+#
   est <- estg(data_CO = data_CO, COdate = COdate,
       data_SS = data_SS, SSdate = SSdate,
-      model_SE = model_SE, model_CP = model_CP,
+      model_SE = model_SE, model_CP = model_CP, model_DWP = model_DWP,
       unitCol = unitCol, sizeCol = sizeCol, IDcol = IDcol,
       nsim = nsim, max_intervals = max_intervals,
       seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g)
-  gDf <- est$ghat * DWP * frac
+  gDf <- est$ghat * est$DWP * frac
   set.seed(seed_M)
   c_out <- which(rowSums(gDf) == 0)
   if (length(c_out) == 0){
@@ -130,7 +146,7 @@ estM <- function(data_CO, data_SS, data_DWP, frac = 1,
     Mhat[-c_out,] <- ((cbinom::rcbinom(n, 1/gDf, gDf)) - (Ecbinom(gDf) - 1))/gDf
   }
   row.names(Mhat) <- row.names(est$ghat)
-  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, DWP = DWP,
+  out <- list(Mhat = Mhat, Aj = est$Aj, ghat = est$ghat, DWP = est$DWP,
     Xtot = nrow(data_CO) - length(c_out))
   class(out) <- c("estM", "list")
   return(out)

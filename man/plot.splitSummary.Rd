@@ -4,7 +4,7 @@
 \alias{plot.splitSummary}
 \title{Plot summary statistics for splits of mortality estimates}
 \usage{
-\method{plot}{splitSummary}(x, rate = FALSE, ...)
+\method{plot}{splitSummary}(x, rate = FALSE, commonScale = FALSE, ...)
 }
 \arguments{
 \item{x}{A \code{splitSummary} object (result of \code{\link{calcSplits}})
@@ -16,6 +16,10 @@ plotted as number of fatalities per split category (\code{rate = TRUE}) or
 fatality rates per unit time (\code{rate = TRUE}). If the splits do not
 include either a \code{split_SS} or \code{split_time} variable, the
 \code{rate} arg is ignored.}
+
+\item{commonScale}{boolean to indicate whether to plot separate splits panels
+with a common scale on their y-axes (or have y-axes scaled to fit each graph
+separately)}
 
 \item{...}{additional arguments to be passed down}
 }

@@ -24,6 +24,10 @@
 #'  include either a \code{split_SS} or \code{split_time} variable, the
 #'  \code{rate} arg is ignored.
 #'
+#' @param commonScale boolean to indicate whether to plot separate splits panels
+#'  with a common scale on their y-axes (or have y-axes scaled to fit each graph
+#'  separately)
+#'
 #' @param ... additional arguments to be passed down
 #'
 #' @export

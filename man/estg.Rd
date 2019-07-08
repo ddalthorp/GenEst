@@ -5,8 +5,9 @@
 \title{Estimate all carcass-level detection rates and arrival intervals}
 \usage{
 estg(data_CO, COdate, data_SS, SSdate = NULL, model_SE, model_CP,
-  sizeCol = NULL, unitCol = NULL, nsim = 1000, max_intervals = 8,
-  seed_SE = NULL, seed_CP = NULL, seed_g = NULL)
+  model_DWP = NULL, sizeCol = NULL, unitCol = NULL, IDcol = NULL,
+  nsim = 1000, max_intervals = 8, seed_SE = NULL, seed_CP = NULL,
+  seed_g = NULL)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}
@@ -25,12 +26,17 @@ multiple size classes)}
 \item{model_CP}{Carcass Persistence model (or list of models if there are
 multiple size classes)}
 
+\item{model_DWP}{Density weighted proportion model (or list of models if
+there are multiple size classes)}
+
 \item{sizeCol}{Name of column in \code{data_CO} where the size classes
 are recorded. Optional. If not provided, no distinctions are made among
 sizes. \code{sizeCol} not only identifies what the name of the size
 segregating class}
 
 \item{unitCol}{Column name for the unit indicator}
+
+\item{IDcol}{Column name for unique carcass IDs (required)}
 
 \item{nsim}{the number of simulation draws}
 
