@@ -120,7 +120,7 @@ modelInputWidget <- function(inType){
   Label <- switch(inType, 
              "nsim" = "Number of Iterations:",
              "CL" = "Confidence Level:", 
-             "class" = "Size Class Column (optional):",
+             "class" = "Carcass Class Column (optional):",
              "obsSE" = "Observations:", 
              "predsSE" = "Predictor Variables:", 
              "kFixedInput" = NULL, 

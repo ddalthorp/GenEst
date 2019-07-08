@@ -9,7 +9,7 @@ modelInputWidget(inType)
 \arguments{
 \item{inType}{Toggle control for the input type of the widget. One of 
 "nsim", "CL", "class", "obsSE", "predsSE", "kFixed", "ltp", "fta", 
-"predsCP", "dist", "frac", "DWPCol", "COdate", "gSearchInterval", or
+"predsCP", "dist", "xID", "frac", "DWPCol", "COdate", "gSearchInterval", or
 "gSearchMax".}
 }
 \value{

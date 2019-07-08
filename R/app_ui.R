@@ -462,21 +462,20 @@ gettingStartedPanel <- function(){
 #' @export
   #'
 downloadsPanel<- function(){
-    if (.Platform$OS.type == "windows"){
-    tabPanel("Example Data",
-      mainPanel(
-        column(10, offset = 0,
-          br(),
-          h3("Example data sets"),
-          br(),
-          dataDownloadWidget("RP"),
-          dataDownloadWidget("RPbat"),
-          dataDownloadWidget("cleared"),
-          dataDownloadWidget("powerTower"),
-          dataDownloadWidget("PV"),
-          dataDownloadWidget("trough"),
-          dataDownloadWidget("mock"),
-          br(), br(),
+  tabPanel("Example Data",
+    mainPanel(
+      column(10, offset = 0,
+        br(),
+        h3("Example data sets"),
+        br(),
+        dataDownloadWidget("cleared"),
+        dataDownloadWidget("RP"),
+        dataDownloadWidget("RPbat"),
+        dataDownloadWidget("powerTower"),
+        dataDownloadWidget("PV"),
+        dataDownloadWidget("trough"),
+        dataDownloadWidget("mock"),
+             br(), br(),
           h5("NOTE: If you are having trouble downloading the example data sets..."),
           br(),
           h5("Downloading the zip files in Windows relies on a zip program being
@@ -491,27 +490,9 @@ downloadsPanel<- function(){
         to download the SE file for the 'mock' data set. For more information
         about downloadable example data files, enter ?GenEst from the R command
         line.")
-        )
       )
     )
-  } else {
-    tabPanel("Example Data",
-      mainPanel(
-        column(10, offset = 0,
-          br(),
-          h3("Example data sets"),
-          br(),
-          dataDownloadWidget("RP"),
-          dataDownloadWidget("RPbat"),
-          dataDownloadWidget("cleared"),
-          dataDownloadWidget("powerTower"),
-          dataDownloadWidget("PV"),
-          dataDownloadWidget("trough"),
-          dataDownloadWidget("mock")
-        )
-      )
-    )
-  }
+  )
 }
 
 #' @rdname GenEstUI

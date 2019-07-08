@@ -18,6 +18,8 @@
 #'
 #' @param output \code{output} list for the GenEst GUI.
 #'
+#' @param input \code{input} lisst for the GenEst GUI
+#'
 #' @return Updated \code{output} list.
 #'
 #' @export

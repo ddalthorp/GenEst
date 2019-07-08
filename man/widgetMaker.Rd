@@ -24,6 +24,6 @@ HTML for the widget.
 \description{
 Basic generalized function for creating an input widget based
   on the condition of the widget being presented, the name of the widget, 
-  the function used to create it, it's label on the UI, and any additional 
+  the function used to create it, its label on the UI, and any additional
   arguments.
 }
