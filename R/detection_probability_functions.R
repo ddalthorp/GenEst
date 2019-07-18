@@ -78,7 +78,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
     unitCol <- defineUnitCol(data_CO = data_CO, data_SS = data_SS)
   if (is.null(IDcol)){
     IDcol <- names(which(
-      apply(data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
+      apply(data_CO, FUN = function(x) length(unique(x)), MARGIN = 2)
       apply(data_CO, FUN = length, MARGIN = 2)))
     if (length(IDcol) == 0){
       stop("CO data must include unique identifier for each caracass")
