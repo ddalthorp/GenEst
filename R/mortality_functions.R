@@ -12,7 +12,8 @@
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted
 #'   proportion table
 #'
-#' @param frac fraction of facility (by units or by area) surveyed
+#' @param frac fraction carcasses on ground that was surveyed but not accounted
+#'  for in DWP
 #'
 #' @param COdate Column name for the date found data
 #'
@@ -24,8 +25,6 @@
 #'
 #' @param model_DWP fitted dwp model (optional)
 #'
-#' @param IDcol column with unique carcass (CO) identifier
-#'
 #' @param unitCol Column name for the unit indicator (optional)
 #'
 #' @param SSdate Column name for the date searched data
@@ -33,6 +32,8 @@
 #' @param sizeCol Name of colum in \code{data_CO} where the size classes
 #'  are recorded. Optional. If none provided, it is assumed there is no
 #'  distinctions among size classes.
+#'
+#' @param IDcol column with unique carcass (CO) identifier
 #'
 #' @param DWPCol Column name for the DWP values in the DWP table when no
 #'   size class is used and there is more than one column in \code{data_DWP}
@@ -74,7 +75,6 @@
 #'
 #' @export 
 #'
-
 estM <- function(data_CO, data_SS, data_DWP = NULL, frac = 1,
                  COdate = "DateFound", model_SE, model_CP, model_DWP = NULL,
                  unitCol = NULL, SSdate = NULL, sizeCol = NULL, IDcol = NULL,
@@ -157,7 +157,7 @@ estM <- function(data_CO, data_SS, data_DWP = NULL, frac = 1,
 #'
 #' @description Expand the density weighted proportion table to a value for 
 #'   each carcass (across multiple classes if desired) based on the unit where 
-#'   they were found
+#'   they were found. (Deprecated. See CO_DWP.)
 #'
 #' @param data_DWP Survey unit (rows) by size (columns) density weighted 
 #'   proportion table 
@@ -224,7 +224,7 @@ DWPbyCarcass <- function(data_DWP, data_CO, unitCol = NULL,
     if (!all(unique(data_CO[,sizeCol]) %in% colnames(data_DWP))){
       stop("not all sizes in data_CO are represented in data_DWP.")
     }
-    # size classes and units have been error-checked, and assigning DWP to
+    # size classes and units have been error-eschecked, and assigning DWP to
     #  carcasses is a simple extraction of DWP from the appropriate row and
     #  column for each carcass in CO.
     # unit in CO defines the desired row in DWP:
@@ -300,4 +300,3 @@ summary.estM <- function(object, ..., CL = 0.90){
   names(out) <- c("median", paste0(100*c(alpha/2, 1- alpha/2), "%"))
   return(out)
 }
-

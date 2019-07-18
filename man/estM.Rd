@@ -18,7 +18,8 @@ estM(data_CO, data_SS, data_DWP = NULL, frac = 1,
 \item{data_DWP}{Survey unit (rows) by size (columns) density weighted
 proportion table}
 
-\item{frac}{fraction of facility (by units or by area) surveyed}
+\item{frac}{fraction carcasses on ground that was surveyed but not accounted
+for in DWP}
 
 \item{COdate}{Column name for the date found data}
 

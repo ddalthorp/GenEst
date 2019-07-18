@@ -14,7 +14,8 @@ if pre-simulated data with variation are provided, then a 2-d array (if one
 carcass class) or a list of 2-d arrays (if more than one carcass class). See
 "Details" for details.}
 
-\item{type}{model type may be \code{rings}, \code{glm}, \code{WL}, or
+\item{type}{model type may be \code{rings}, \code{glm}, \code{TWL}, or
+
 \code{data}. Currently, only the \code{data} type is supported.}
 
 \item{unitCol}{name of the column with the units, which must be non-numeric}
@@ -57,6 +58,6 @@ The fraction of carcasses falling in the area searched at a turbine
  at each unit; if distinctions are made among sizes, then \code{data_DWP} would
  be a data frame with a unit column and a DWP column for each size class. If
  the DWP estimates incorporate uncertainties, then \code{data_DWP} should be
- an array with \code{n_unit * nsim} rows and with colunms for unit, DWPs for
- each carcass class, and "rep", which is an index to mark simulation reps.
-}
+ an array with \code{n_unit * nsim} rows and with colunms for units and DWPs for
+ each carcass class.
+
