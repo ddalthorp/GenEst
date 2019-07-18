@@ -16,7 +16,6 @@ available is a null model that simply reads DWP data that was generated outside
 GenEst. The models (including the null model) can accomodate uncertainties
 in the estimation of DWP.
 
-
 2019.04.12
 v1.2.4
 

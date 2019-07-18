@@ -15,7 +15,6 @@ carcass class) or a list of 2-d arrays (if more than one carcass class). See
 "Details" for details.}
 
 \item{type}{model type may be \code{rings}, \code{glm}, \code{TWL}, or
-
 \code{data}. Currently, only the \code{data} type is supported.}
 
 \item{unitCol}{name of the column with the units, which must be non-numeric}
@@ -60,4 +59,4 @@ The fraction of carcasses falling in the area searched at a turbine
  the DWP estimates incorporate uncertainties, then \code{data_DWP} should be
  an array with \code{n_unit * nsim} rows and with colunms for units and DWPs for
  each carcass class.
-
+}

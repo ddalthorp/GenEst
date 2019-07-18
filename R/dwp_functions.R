@@ -85,7 +85,6 @@ dwpm <- function(data_DWP, type = "data", unitCol = NULL, dwpCols = NULL){
 #          stop("All units must be represented exactly once in each rep")
 #      }
     } else { # identify the unitCol when user has not provided ore
-
       if (length(names(data_DWP)) > length(numericColumns) + 1){
         stop("more than one potential unitCol in data_DWP = ",
           deparse(substitute(data_DWP)), ". A unique unitCol must be provided.")
@@ -105,7 +104,6 @@ dwpm <- function(data_DWP, type = "data", unitCol = NULL, dwpCols = NULL){
 #        if (!all(table(data_DWP[ , c("rep", unitCol)]) == 1))
 #          stop("No suitable unit column found")
 #      }
-
     }
 
     unitNames <- unique(data_DWP[ , unitCol])
