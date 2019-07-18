@@ -27,8 +27,8 @@
 #'  at each unit; if distinctions are made among sizes, then \code{data_DWP} would
 #'  be a data frame with a unit column and a DWP column for each size class. If
 #'  the DWP estimates incorporate uncertainties, then \code{data_DWP} should be
-#'  an array with \code{n_unit * nsim} rows and with colunms for unit, DWPs for
-#'  each carcass class, and "rep", which is an index to mark simulation reps.
+#'  an array with \code{n_unit * nsim} rows and with colunms for units and DWPs for
+#'  each carcass class.
 #'
 #' @param data_DWP data frame with structure depending on model
 #'  type. In general, \code{data_DWP} would be a data frame if a model is to be
@@ -37,7 +37,7 @@
 #'  carcass class) or a list of 2-d arrays (if more than one carcass class). See
 #'  "Details" for details.
 #'
-#' @param type model type may be \code{rings}, \code{glm}, \code{WL}, or
+#' @param type model type may be \code{rings}, \code{glm}, \code{TWL}, or
 #'  \code{data}. Currently, only the \code{data} type is supported.
 #'
 #' @param unitCol name of the column with the units, which must be non-numeric
@@ -77,13 +77,13 @@ dwpm <- function(data_DWP, type = "data", unitCol = NULL, dwpCols = NULL){
       if (length(unique(unittab)) > 1)
         stop("Each unit in unitCol must have the same number of reps")
       nsim <- unittab[1]
-      if (nsim > 1 & !"rep" %in% names(data_DWP))
-        stop("data_DWP must have 'rep' column if units are represented more than once ")
-      if (nsim > 1){
-        if (!all(table(data_DWP[ , c("rep", unitCol)]) == 1))
-          stop("All units must be represented exactly once in each rep")
-      }
-    } else { # identify the unitCol
+#      if (nsim > 1 & !"rep" %in% names(data_DWP))
+#        stop("data_DWP must have 'rep' column if units are represented more than once ")
+#      if (nsim > 1){
+#        if (!all(table(data_DWP[ , c("rep", unitCol)]) == 1))
+#          stop("All units must be represented exactly once in each rep")
+#      }
+    } else { # identify the unitCol when user has not provided ore
       if (length(names(data_DWP)) > length(numericColumns) + 1){
         stop("more than one potential unitCol in data_DWP = ",
           deparse(substitute(data_DWP)), ". A unique unitCol must be provided.")
@@ -94,14 +94,15 @@ dwpm <- function(data_DWP, type = "data", unitCol = NULL, dwpCols = NULL){
       }
       unittab <- table(data_DWP[ , unitCol])
       if (length(unique(unittab)) > 1)
-        stop("unitCol = NULL and no suitable unit column found in data_DWP")
+        stop("unitCol = NULL but no suitable unit column found in data_DWP ",
+            "(all units must have the same number of reps)")
       nsim <- unittab[1]
-      if (nsim > 1 & !"rep" %in% names(data_DWP))
-        stop("data_DWP must have 'rep' column if units are represented more than once ")
-      if (nsim > 1){
-        if (!all(table(data_DWP[ , c("rep", unitCol)]) == 1))
-          stop("No suitable unit column found")
-      }
+#      if (nsim > 1 & !"rep" %in% names(data_DWP))   # not really necessary to have a "rep" column
+#        stop("data_DWP must have 'rep' column if units are represented more than once ")
+#      if (nsim > 1){ # a check to ensure that each unit is represented in each rep...not necessary
+#        if (!all(table(data_DWP[ , c("rep", unitCol)]) == 1))
+#          stop("No suitable unit column found")
+#      }
     }
 
     unitNames <- unique(data_DWP[ , unitCol])

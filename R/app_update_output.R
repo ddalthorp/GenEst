@@ -123,7 +123,7 @@ update_output <- function(eventName, rv, output, input){
     toNULL <- c("filename_DWP", "data_DWP", "fig_M", "table_M", "MModDone")
     output <- reNULL(output, toNULL)
     if (eventName == "file_DWP"){
-      output$data_DWP <- renderDTns(datatable(rv$data_DWP,
+      output$data_DWP <- renderDataTable(datatable(rv$data_DWP,
         caption = paste0("File: ", rv$filename_DWP)))
       output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
     }
