@@ -1111,4 +1111,5 @@ prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
   }
   if (grepl("-",paste(unitNames, collapse = ''))){
     stop("Unit names must not contain hyphens ( - )")
+  }
 }
