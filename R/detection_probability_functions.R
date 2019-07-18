@@ -1134,4 +1134,5 @@ prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
   ans$SSdate <- SSdate
   class(ans) <- c("prepSS", "list")
   return(ans)
+
 }
