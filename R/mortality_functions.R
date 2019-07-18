@@ -300,3 +300,4 @@ summary.estM <- function(object, ..., CL = 0.90){
   names(out) <- c("median", paste0(100*c(alpha/2, 1- alpha/2), "%"))
   return(out)
 }
+
