@@ -38,6 +38,7 @@
 #'  "Details" for details.
 #'
 #' @param type model type may be \code{rings}, \code{glm}, \code{TWL}, or
+#'
 #'  \code{data}. Currently, only the \code{data} type is supported.
 #'
 #' @param unitCol name of the column with the units, which must be non-numeric
