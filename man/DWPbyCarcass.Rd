@@ -36,7 +36,7 @@ DWP value for each carcass
 \description{
 Expand the density weighted proportion table to a value for 
   each carcass (across multiple classes if desired) based on the unit where 
-  they were found
+  they were found. (Deprecated. See CO_DWP.)
 }
 \examples{
  data(mock)

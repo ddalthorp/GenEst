@@ -14,6 +14,9 @@
 #' @export
 #'
 reVal <- function(rv, toReVal){
+  if("xID" %in% toReVal){
+    rv$colnames_xID  <- NULL
+  }
   if("nsplit_CO" %in% toReVal){
     rv$nsplit_CO <- 0
   }
@@ -571,6 +574,7 @@ plotNA <- function(type = "model"){
     badText <- "Selected model was not fit successfully."
   } 
   if (type == "split"){
+cat("in plotNA...\n")
     badText <- "Second split too fine for plotting. Consider transposing."
   }
   plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "", 
@@ -610,11 +614,11 @@ initialReactiveValues <- function(){
 
     sizeCol = NULL, toRemove_sizeCol = NULL,
     sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
-    sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL, 
+    sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL,
     nsizeclasses = 0,
 
     obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL, 
-    formula_p = NULL, formula_k = NULL, kFixedChoice = NULL, kFixed = NULL, 
+    formula_p = NULL, formula_k = NULL, kFixed = NULL,
     mods_SE = NULL, mods_SE_og = NULL, sizeclasses_SE = NULL, 
     outSEpk = NULL, AICcTab_SE = NULL, modOrder_SE = NULL, modNames_SE = NULL,
     modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
@@ -631,8 +635,8 @@ initialReactiveValues <- function(){
     best_CP = NULL, modTab_CP = NULL, modTabPretty_CP = NULL, 
     modTabDL_CP = NULL, figH_CP = 700, figW_CP = 800,
 
-    M = NULL, Msplit = NULL, unitCol = NULL, frac = 1, 
-    sizeCol_M = NULL, DWPCol = NULL, COdate = NULL,
+    M = NULL, Msplit = NULL, unitCol = NULL, colNames_xID = NULL, xIDcol = NULL,
+    frac = 1, sizeCol_M = NULL, DWPCol = NULL, COdate = NULL,
     SEmodToUse = NULL, CPmodToUse = NULL,
     split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0, 
     figH_M = 600, figW_M = 800,

@@ -35,7 +35,7 @@ update_rv <- function(eventName, rv, input){
                     "split_M_clear", "transpose_split",
                     "run_g", "run_g_clear", "outgclass",
                     "load_RP", "load_RPbat", "load_cleared", "load_PV",
-                    "load_trough", "load_powerTower", "load_mock")
+                    "load_trough", "load_powerTower", "load_mock", "cscale")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")
@@ -257,13 +257,16 @@ update_rv <- function(eventName, rv, input){
 
   if (eventName == "file_CO"){
     toNULL <- c("data_CO", "filename_CO", "colNames_CO", "colNames_COdates",
-      "M", "Msplit", "unitCol", "sizeCol_M", "SEmodToUse", "split_CO",
+      "M", "Msplit", "xID", "unitCol", "sizeCol_M", "SEmodToUse", "split_CO",
       "split_SS")
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
     rv <- reVal(rv, toReVal)
     rv$data_CO <- readCSV(input$file_CO$datapath)
     rv$filename_CO <- input$file_CO$name
+    rv$colNames_xID <- names(which(
+      apply(rv$data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
+      apply(rv$data_CO, FUN = length, MARGIN = 2)))
     rv$colNames_CO <- colnames(rv$data_CO)
     rv$colNames_COdates <- dateCols(rv$data_CO)
     rv$colNames_size0 <- updateColNames_size(rv)
@@ -397,6 +400,10 @@ update_rv <- function(eventName, rv, input){
 
     rv$colNames_size0 <- updateColNames_size(rv)
     rv$colNames_size <- rv$colNames_size0
+    rv$colNames_xID <- names(which(
+      apply(rv$data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
+      apply(rv$data_CO, FUN = length, MARGIN = 2)))
+    rv$xIDcol <- rv$colNames_xID[1]
     rv$sizeCol <- NULL
   }
   if (eventName == "class"){
@@ -548,8 +555,7 @@ update_rv <- function(eventName, rv, input){
       rv$sizeclasses_SE <- sort(rv$sizeclasses)
       rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outSEclass)
       rv$sizeclass_SE <- rv$sizeclass
-      rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, 
-                                            app = TRUE)
+      rv$AICcTab_SE <- aicc(rv$mods_SE[[rv$sizeclass_SE]], quiet = TRUE, app = TRUE)
       rv$modOrder_SE <- as.numeric(row.names(rv$AICcTab_SE))
       rv$modNames_SE <- names(rv$mods_SE[[rv$sizeclass_SE]])[rv$modOrder_SE]
       rv$modNames_SEp <- modNameSplit(rv$modNames_SE, 1)
@@ -864,6 +870,7 @@ update_rv <- function(eventName, rv, input){
     }
     rv$COdate <- input$COdate
     rv$nsim <- input$nsim
+    rv$xIDcol <- input$xID
     rv$frac <- input$frac
     if (rv$frac < 0.01 | rv$frac > 1) return(rv)
     rv$SEmodToUse <- rep(NA, rv$nsizeclasses)

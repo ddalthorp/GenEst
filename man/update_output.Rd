@@ -4,7 +4,7 @@
 \alias{update_output}
 \title{Update the outputs when an event occurs}
 \usage{
-update_output(eventName, rv, output)
+update_output(eventName, rv, output, input)
 }
 \arguments{
 \item{eventName}{Character name of the event. One of "clear_all",
@@ -19,6 +19,8 @@ update_output(eventName, rv, output)
 \item{rv}{Reactive values list for the GenEst GUI.}
 
 \item{output}{\code{output} list for the GenEst GUI.}
+
+\item{input}{\code{input} lisst for the GenEst GUI}
 }
 \value{
 Updated \code{output} list.

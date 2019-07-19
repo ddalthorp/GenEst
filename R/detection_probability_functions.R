@@ -15,7 +15,12 @@
 #' @param model_CP Carcass Persistence model (or list of models if there are
 #'   multiple size classes)
 #'
+#' @param model_DWP Density weighted proportion model (or list of models if
+#'  there are multiple size classes)
+#'
 #' @param unitCol Column name for the unit indicator
+#'
+#' @param IDcol Column name for unique carcass IDs (required)
 #'
 #' @param SSdate Column name for the date searched data. Optional.
 #'   If not provided, \code{estg} will try to find the SSdate among
@@ -59,7 +64,8 @@
 #' @export
 #'
 estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
-                 model_SE, model_CP, sizeCol = NULL, unitCol = NULL,
+                 model_SE, model_CP, model_DWP = NULL,
+                 sizeCol = NULL, unitCol = NULL, IDcol = NULL,
                  nsim = 1000, max_intervals = 8,
                  seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
   i <- sapply(data_CO, is.factor)
@@ -70,6 +76,19 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
 # error-checking
   if (is.null(unitCol))
     unitCol <- defineUnitCol(data_CO = data_CO, data_SS = data_SS)
+  if (is.null(IDcol)){
+    IDcol <- names(which(
+      apply(data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
+      apply(data_CO, FUN = length, MARGIN = 2)))
+    if (length(IDcol) == 0){
+      stop("CO data must include unique identifier for each caracass")
+    } else if (length(IDcol) > 1) {
+      stop("Carcass ID column must be specified in CO data")
+    }
+  } else {
+    if (length(data_CO[ , IDcol]) != unique(length(data_CO[ , IDcol])))
+      stop(paste0("Carcass IDs are not unique (in CO, column ", IDcol, ")"))
+  }
   SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
   if (any(! data_CO[, unitCol] %in% SSdat$unit))
     stop("carcasses found (CO) at units not properly formatted (or missing) in SS")
@@ -365,12 +384,67 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       }
     }
   }
-
+  if (is.null(model_DWP)) {
+    DWP <- 1
+  } else {
+    dwpsim <- rdwp(n = nsim, model = model_DWP)
+    if (length(dwpsim) == 1){
+      DWP <- 1
+    } else {
+      DWP <- CO_DWP(dwpsim = dwpsim, data_CO = data_CO, unitCol = unitCol, sizeCol = sizeCol)
+    }
+  }
   rownames(Aj) <- COdat[ , unitCol]
-  out <- list("ghat" = ghat, "Aj" = Aj) # ordered by relevance to user
+  rownames(ghat) <- COdat[ , IDcol]
+  out <- list("ghat" = ghat, "Aj" = Aj, "DWP" = DWP) # ordered by relevance to user
   return(out)
 }
 
+#' @title Associate CO carcasses with appropriate DWP values (by unit and carcass class)
+#'
+#' @description Calculate the conditional probability of observing a carcass
+#'   at search oi as a function arrival interval (assuming carcass is not
+#'   removed by scavengers before the time of the final search)
+#'
+#' @param dwpsim \code{rdwp} object
+#'
+#' @param data_CO data frame with results from carcass surveys
+#'
+#' @param unitCol name of the unit column in data_CO (required)
+#'
+#' @param sizeCol name of the size column in data_CO (optional).
+#'
+#' @return numeric DWP array
+#'
+#' @export
+#'
+CO_DWP <- function(dwpsim, data_CO, unitCol, sizeCol = NULL){
+  if (!"rdwp" %in% class(dwpsim))
+    stop("dwpsim must be of class 'rdwp'")
+  if (!unitCol %in% names(data_CO))
+    stop("unitCol must be the name of a valid unit column in data_CO")
+  if (length(unitCol) > 1)
+    stop("unitCol must be the name of a unique, valid unit column in data_CO")
+
+  if (is.null(sizeCol) || sizeCol == "placeholder"){
+    if (is.list(dwpsim))
+      stop("dwpsim should be an array rather than a list when no sizeCol is provided")
+    if (!all(data_CO[ , unitCol] %in% row.names(dwpsim)))
+      stop("some units in data_CO not represented in dwpsim")
+    DWP <- dwpsim[match(data_CO[, unitCol], row.names(dwpsim)), ]
+  } else {
+    if (!sizeCol %in% names(data_CO))
+      stop("sizeCol not in data_CO")
+    if (!is.list(dwpsim) || !all(data_CO[ , sizeCol] %in% names(dwpsim)))
+      stop("dwpsim must be a list to match sizes in data_CO[ , sizeCol]")
+    DWP <- array(dim = c(nrow(data_CO), ncol(dwpsim[[1]])))
+    for (ci in 1:nrow(data_CO)){
+      DWP[ci, ] <- dwpsim[[data_CO[ci, sizeCol]]][data_CO[ci, unitCol], ]
+    }
+  }
+  if (NCOL(DWP) == 1) DWP <- as.vector(DWP)
+  return(DWP)
+}
 #' @title Calculate conditional probability of observation at a search
 #'
 #' @description Calculate the conditional probability of observing a carcass 
@@ -618,7 +692,7 @@ calcg <- function(days, param_SE, param_CP, dist){
   pfind.si <- nvec * powk
 
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
-  intxsearch <- unique(diffs, MAR = 1)
+  intxsearch <- unique(diffs, MARGIN = 1)
   ppersu <- ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[,1],
     t_search = intxsearch[,1] + intxsearch[,2], pda = pda0, pdb = pdb0)
   arrvec <- (schedule[,2] - schedule[,1]) / max(days)
@@ -651,7 +725,7 @@ calcg <- function(days, param_SE, param_CP, dist){
     pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), matrixStats::rowCumprods(val))
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
-  intxsearch <- unique(diffs, MAR = 1)
+  intxsearch <- unique(diffs, MARGIN = 1)
   ppersu <- ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[ , 1],
               t_search = intxsearch[ , 1] + intxsearch[ , 2],
               pda = param_CP[ , 1], pdb = param_CP[ , 2]

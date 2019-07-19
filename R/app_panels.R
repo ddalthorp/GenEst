@@ -216,7 +216,9 @@ modelOutputPanel <- function(outType){
                "SEModSelection" = 
                  list(
                    em("Run models to select models"), 
-                   list(htmlOutput("modelMenu_SE")),
+                   list(htmlOutput("modelMenu_SE"),  br(),
+                     downloadButton("dlSEmod", "Download")
+                   ),
                    NULL
                  ),
                "CPFigures" = 
@@ -248,9 +250,10 @@ modelOutputPanel <- function(outType){
                    NULL
                  ), 
                "CPModSelection" = 
-                 list(
+                  list(
                    em("Run models to select models"),
-                   list(htmlOutput("modelMenu_CP")),
+                   list(htmlOutput("modelMenu_CP"),  br(),
+                     downloadButton("dlCPmod", "Download")),
                    NULL
                  ),
                "MFigures" = 
@@ -261,7 +264,14 @@ modelOutputPanel <- function(outType){
                      Carcass Persistence."),
                    em("Run estimate to view figure"),
                    list(plotOutput("fig_M", inline = TRUE), br(), br(),
-                      downloadButton("dlMfig", "Download")
+                      downloadButton("dlMfig", "Download"),
+                      conditionalPanel(
+                        condition = "output.MSplitDone == 'OK' & output.nMSplits > 1",
+                        br(), br(),
+                        radioButtons("cscale", "Common scale for y-axes?",
+                          choices = c("Yes", "No"),
+                          selected = "No")
+                      )
                    )
                  ),
                "MSummary" = 
@@ -270,7 +280,7 @@ modelOutputPanel <- function(outType){
                          classes to run model"), 
                    em("Run estimate to view summary"),
                    list(br(), dataTableOutput("table_M"), br(),
-                     downloadButton("dlMtab", "Download")
+                     downloadButton("dlMres", "Download")
                    )
                  ),
                "gFigures" = 

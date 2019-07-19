@@ -24,11 +24,15 @@
 #'  include either a \code{split_SS} or \code{split_time} variable, the
 #'  \code{rate} arg is ignored.
 #'
+#' @param commonScale boolean to indicate whether to plot separate splits panels
+#'  with a common scale on their y-axes (or have y-axes scaled to fit each graph
+#'  separately)
+#'
 #' @param ... additional arguments to be passed down
 #'
 #' @export
 #'
-plot.splitSummary <- function(x, rate = FALSE, ...){
+plot.splitSummary <- function(x, rate = FALSE, commonScale = FALSE, ...){
   splits <- x
   nvar <- length(attr(splits, "vars"))
   vartype <- attr(splits, "type")
@@ -54,6 +58,12 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
   nlevel_v <- length(splits)
   par(mfrow = c(nlevel_v, 1))
   cex.axis <- 1*(nlevel_v == 1) + (nlevel_v == 2)/0.83 + (nlevel_v > 2)/0.66
+  if (!rate & commonScale & nvar == 2){
+    ylim  <- c(0, 0)
+    for (vi in 1:nlevel_v){
+      ylim <- range(ylim, splits[[vi]][ , -1])
+    }
+  }
   for (vi in 1:nlevel_v){
     if ((vartype[1] %in% c("time", "SS")) & rate) {
       hwid <- deltaT/2
@@ -62,7 +72,7 @@ plot.splitSummary <- function(x, rate = FALSE, ...){
     } else {
       hwid <- rep(0.15, nlevel_h) # half-width of boxes
       xlim <- c(1, nlevel_h) + 0.5 * c(-1, 1)
-      ylim <- range(splits[[vi]][ , -1])
+      if (!commonScale) ylim <- range(splits[[vi]][ , -1])
     }
     if (vi == 1 && !is.null(try(plot.new(), silent = TRUE))){
       par(mfrow = c(1,1))
@@ -168,7 +178,7 @@ plot.splitFull <- function(x, rate = FALSE, CL = 0.90, ...){
     simpleMplot(x, ..., CL = CL)
   } else{
     splitSum <- summary(x, CL)
-    if(!is.null(plot(splitSum, rate))){
+    if(!is.null(plot(splitSum, rate, CL = CL))){
       stop("Second split too fine for plotting. Consider transposing.")
     }
   }

@@ -4,8 +4,9 @@
 \alias{estM}
 \title{Estimate mortality}
 \usage{
-estM(data_CO, data_SS, data_DWP, frac = 1, COdate = "DateFound",
-  model_SE, model_CP, unitCol = NULL, SSdate = NULL, sizeCol = NULL,
+estM(data_CO, data_SS, data_DWP = NULL, frac = 1,
+  COdate = "DateFound", model_SE, model_CP, model_DWP = NULL,
+  unitCol = NULL, SSdate = NULL, sizeCol = NULL, IDcol = NULL,
   DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
   seed_M = NULL, nsim = 1000, max_intervals = 8)
 }
@@ -17,7 +18,8 @@ estM(data_CO, data_SS, data_DWP, frac = 1, COdate = "DateFound",
 \item{data_DWP}{Survey unit (rows) by size (columns) density weighted
 proportion table}
 
-\item{frac}{fraction of facility (by units or by area) surveyed}
+\item{frac}{fraction carcasses on ground that was surveyed but not accounted
+for in DWP}
 
 \item{COdate}{Column name for the date found data}
 
@@ -27,6 +29,8 @@ multiple size classes)}
 \item{model_CP}{Carcass Persistence model (or list of models if there are
 multiple size classes)}
 
+\item{model_DWP}{fitted dwp model (optional)}
+
 \item{unitCol}{Column name for the unit indicator (optional)}
 
 \item{SSdate}{Column name for the date searched data}
@@ -34,6 +38,8 @@ multiple size classes)}
 \item{sizeCol}{Name of colum in \code{data_CO} where the size classes
 are recorded. Optional. If none provided, it is assumed there is no
 distinctions among size classes.}
+
+\item{IDcol}{column with unique carcass (CO) identifier}
 
 \item{DWPCol}{Column name for the DWP values in the DWP table when no
 size class is used and there is more than one column in \code{data_DWP}
@@ -53,7 +59,8 @@ that could be interpreted as DWP.}
 for each carcass}
 }
 \value{
-list of Mhat, Aj, ghat
+list of Mhat, Aj, ghat, DWP (by carcass), and Xtot = total number of
+ carcasses observe
 }
 \description{
 Given given fitted Searcher Efficiency and Carcass 

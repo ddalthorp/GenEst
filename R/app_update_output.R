@@ -18,11 +18,13 @@
 #'
 #' @param output \code{output} list for the GenEst GUI.
 #'
+#' @param input \code{input} lisst for the GenEst GUI
+#'
 #' @return Updated \code{output} list.
 #'
 #' @export
 #'
-update_output <- function(eventName, rv, output){
+update_output <- function(eventName, rv, output, input){
 
     eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
                     "file_CP_clear", "file_SS", "file_SS_clear", "file_DWP",
@@ -34,7 +36,7 @@ update_output <- function(eventName, rv, output){
                     "split_M_clear", "transpose_split",
                     "run_g", "run_g_clear", "outgclass",
                     "load_RP", "load_RPbat", "load_cleared", "load_PV",
-                    "load_trough", "load_powerTower", "load_mock")
+                    "load_trough", "load_powerTower", "load_mock", "cscale")
 
   if (missing(eventName) || (eventName %in% eventOptions) == FALSE){
     stop("eventName missing or not in list of available eventNames")
@@ -121,7 +123,7 @@ update_output <- function(eventName, rv, output){
     toNULL <- c("filename_DWP", "data_DWP", "fig_M", "table_M", "MModDone")
     output <- reNULL(output, toNULL)
     if (eventName == "file_DWP"){
-      output$data_DWP <- renderDTns(datatable(rv$data_DWP,
+      output$data_DWP <- renderDataTable(datatable(rv$data_DWP,
         caption = paste0("File: ", rv$filename_DWP)))
       output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
     }
@@ -279,12 +281,12 @@ update_output <- function(eventName, rv, output){
       } else{
         output$sizeclass_SEyn <- renderText("YES")
       }
-
       output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE,
                                             rv$csvformat)
       output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE,
                                             rv$csvformat)
       output$dlSEfig <- downloadSEFig(rv)
+      output$dlSEmod <- downloadSEmod(rv, input)
     }
     dontSuspend <- c("text_SE_est", "MModDone", "gModDone", "sizeclass_gyn",
                      "SEModDone", "kNeed", "DWPNeed", "sizeclasses_SE",
@@ -313,9 +315,8 @@ update_output <- function(eventName, rv, output){
       output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
       output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
       output$fig_SE <- renderPlot({
-                         plot(rv$modSet_SE, specificModel = rv$best_SE,
-                           app = TRUE)
-                       }, height = rv$figH_SE, width = rv$figW_SE)
+        plot(rv$modSet_SE, specificModel = rv$best_SE, app = TRUE)
+      }, height = rv$figH_SE, width = rv$figW_SE)
 
       output$sizeclass_SE1 <- classText(rv, "SE")
       output$sizeclass_SE2 <- classText(rv, "SE")
@@ -326,6 +327,7 @@ update_output <- function(eventName, rv, output){
       output$dlSEAICc <- downloadTable("SE_AICc.csv", rv$AICcTab_SE,
                                             rv$csvformat)
       output$dlSEfig <- downloadSEFig(rv)
+      output$dlSEmod <- downloadSEmod(rv, input)
     }
   }
 
@@ -339,6 +341,7 @@ update_output <- function(eventName, rv, output){
                          )
                        }, height = rv$figH_SE, width = rv$figW_SE)
       output$dlSEfig <- downloadSEFig(rv)
+      output$dlSEmod <- downloadSEmod(rv, input)
       if (!is.null(rv$modTab_SE)){
         output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
         output$dlSEest <- downloadTable("SE_estimates.csv", rv$modTabDL_SE,
@@ -384,6 +387,7 @@ update_output <- function(eventName, rv, output){
       output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP,
                                             rv$csvformat)
       output$dlCPfig <- downloadCPFig(rv)
+      output$dlCPmod <- downloadCPmod(rv, input)
     }
     dontSuspend <- c("CPModDone", "sizeclasses_CP", "sizeclass_CPyn",
                      "text_CP_est", "MModDone", "gModDone", "sizeclass_gyn")
@@ -422,6 +426,7 @@ update_output <- function(eventName, rv, output){
       output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP,
                                             rv$csvformat)
       output$dlCPfig <- downloadCPFig(rv)
+      output$dlCPmod <- downloadCPmod(rv, input)
     }
   }
 
@@ -438,7 +443,7 @@ update_output <- function(eventName, rv, output){
       output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
                                              rv$csvformat)
       output$dlCPfig <- downloadCPFig(rv)
-
+      output$dlCPmod <- downloadCPmod(rv, input)
       if (!is.null(rv$modTab_CP)){
         output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
         output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
@@ -513,8 +518,7 @@ update_output <- function(eventName, rv, output){
       output$sizeclass_g1 <- scText
       output$sizeclass_g2 <- scText
 
-      output$dlgtab <- downloadTable("g_estimates.csv", summaryTab,
-                                             rv$csvformat)
+      output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, rv$csvformat)
       output$dlgfig <- downloadgFig(rv, rv$sizeclass_g)
     }
   }
@@ -524,13 +528,13 @@ update_output <- function(eventName, rv, output){
     output <- reNULL(output, toNULL)
     if (!is.null(rv$Msplit)){
       output$MModDone <- renderText("OK")
-      output$fig_M <- renderPlot({plot(rv$Msplit, CL = rv$CL)},
-                        height = rv$figH_M, width = rv$figW_M
-                      )
+      output$fig_M <- renderPlot({
+        plot(rv$Msplit, CL = rv$CL,)}, height = rv$figH_M, width = rv$figW_M)
       summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
       output$table_M <- renderDataTable(datatable(summaryTab))
-      output$dlMtab <- downloadTable("M_table.csv", summaryTab, rv$csvformat)
+      #output$dlMtab <- downloadTable("M_table.csv", summaryTab, rv$csvformat)
       output$dlMfig <- downloadMFig(rv)
+      output$dlMres <- downloadMres(rv, input)
     }
     outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
   }
@@ -542,7 +546,6 @@ update_output <- function(eventName, rv, output){
   }
 
   if (eventName == "split_M"){
-
     if (is.null(rv$Msplit)){
       output$fig_M <- renderPlot({
                         tryCatch(plot(rv$M, CL = rv$CL),
@@ -551,13 +554,12 @@ update_output <- function(eventName, rv, output){
                       }, height = rv$figH_M, width = rv$figW_M)
       output$dlMfig <- downloadMFig(rv, split = FALSE)
 
-    } else{
+    } else {
       output$fig_M <- renderPlot({
-                        tryCatch(plot(rv$Msplit, CL = rv$CL),
-                          error = function(x){plotNA("split")}
-                        )
-                      }, height = rv$figH_M, width = rv$figW_M
-                      )
+        tryCatch(plot(summary(rv$Msplit), CL = rv$CL, commonScale = input$cscale == "Yes"),
+          error = function(x){plotNA("split")}
+        )
+      }, height = rv$figH_M, width = rv$figW_M)
       tmp <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
       summaryTab <- data.frame(tmp, stringsAsFactors = FALSE)
       names(summaryTab) <- colnames(tmp)
@@ -566,9 +568,9 @@ update_output <- function(eventName, rv, output){
         if (!anyNA(testcol)) summaryTab[, sti] <- testcol
       }
       output$table_M <- renderDataTable(datatable(summaryTab))
-      output$dlMtab <- downloadTable("M_table.csv", summaryTab,
-                                             rv$csvformat)
+      #output$dlMtab <- downloadTable("M_table.csv", summaryTab, rv$csvformat)
       output$dlMfig <- downloadMFig(rv)
+      output$dlMres <- downloadMres(rv, input)
     }
     output$MSplitDone <- renderText("OK")
     output$nMSplits <- renderText(
@@ -576,9 +578,13 @@ update_output <- function(eventName, rv, output){
     outputOptions(output, "nMSplits", suspendWhenHidden = FALSE)
     outputOptions(output, "MSplitDone", suspendWhenHidden = FALSE)
   }
-
+  if (eventName == "cscale"){
+    commonScale <- input$cscale == "Yes"
+    output$fig_M <- renderPlot({
+      plot(summary(rv$Msplit), CL = rv$CL, commonScale = commonScale)},
+        height = rv$figH_M, width = rv$figW_M)
+  }
   if (eventName == "split_M_clear"){
-
     if (!is.null(rv$Msplit)){
       output$MModDone <- renderText("OK")
       outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
@@ -588,8 +594,9 @@ update_output <- function(eventName, rv, output){
                       )
       summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
       output$table_M <- renderDataTable(datatable(summaryTab))
-      output$dlMtab <- downloadTable("M_table.csv", summaryTab, rv$csvformat)
+      #output$dlMtab <- downloadTable("M_table.csv", summaryTab, rv$csvformat)
       output$dlMfig <- downloadMFig(rv)
+      output$dlMres <- downloadMres(rv, input)
     }
 
     output$MSplitDone <- NULL
@@ -601,11 +608,11 @@ update_output <- function(eventName, rv, output){
   if (eventName == "transpose_split"){
     if (!is.null(rv$Msplit)){
       output$fig_M <- renderPlot({
-                        tryCatch(plot(rv$Msplit, CL = rv$CL),
-                          error = function(x){plotNA("split")}
-                        )
-                      }, height = rv$figH_M, width = rv$figW_M
-                      )
+        tryCatch(
+          plot(summary(rv$Msplit), CL = rv$CL, commonScale = input$cscale == "Yes"),
+          error = function(x){plotNA("split")}
+        )
+      }, height = rv$figH_M, width = rv$figW_M)
       output$dlMfig <- downloadMFig(rv, TRUE)
     }
   }
