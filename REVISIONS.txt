@@ -1,4 +1,19 @@
 Revision log
+2019.08.22
+v1.3.1
+12345678901234567890123456789012345678901234567890123456789012345678901234567890
+* adjustment to pk models to allow fitting in the uncommon scenarios where all
+field trial carcasses are found are are missed in a cell. Data from offending
+cells are duplicated but with one carcass having opposite fate from the others.
+Result is that p_hat in the offending cell = 1/(2n), with variance structure
+that closely approximates a Bayesian posterior of p based on p ~ beta with a 
+uniform prior. The revised pk model is identical to the previous version except
+that it as adapted to fitting a wider array of data scenarios.
+
+* simple correction to reset kFixed to null when a pk model is cleared (GUI).
+
+* 
+
 2019.07.17
 v1.3.0
 
