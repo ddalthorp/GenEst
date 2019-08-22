@@ -1,7 +1,7 @@
 Revision log
 2019.08.22
 v1.3.1
-12345678901234567890123456789012345678901234567890123456789012345678901234567890
+
 * adjustment to pk models to allow fitting in the uncommon scenarios where all
 field trial carcasses are found are are missed in a cell. Data from offending
 cells are duplicated but with one carcass having opposite fate from the others.
@@ -12,7 +12,10 @@ that it as adapted to fitting a wider array of data scenarios.
 
 * simple correction to reset kFixed to null when a pk model is cleared (GUI).
 
-* 
+* replaced the bias-corrected cbinom(x/g, g) bootstrap for xtilde with the more 
+efficient bias-corrected binom(round(x/g), g) bootstrap. Users are unlikely to
+notice any differences in results but will notice faster computation times
+for the estimating M.
 
 2019.07.17
 v1.3.0
