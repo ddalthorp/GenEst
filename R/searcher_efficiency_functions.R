@@ -439,7 +439,6 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   cellByCarc <- match(carcCells, cellNames)
   pInitCellMean <- tapply(data0[ , obsCol[1]], INDEX = carcCells, FUN = mean, na.rm = TRUE)
 
-
   pInit <- as.vector(pInitCellMean[match(carcCells, names(pInitCellMean))])
   pInit[which(pInit < 0.1)] <- 0.1
   pInit[which(pInit > 0.9)] <- 0.9
