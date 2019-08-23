@@ -17,7 +17,6 @@ knitr::opts_chunk$set(
 ```{r set-options, echo=FALSE, cache=FALSE}
 options(width = 120)
 ```
-```
 
 ```{r, include=FALSE}
 library(GenEst)
@@ -26,7 +25,7 @@ today <- Sys.Date()
 ```
 ## Introduction: Tutorial with Examples
 This tutorial provides an introduction to the array of command line tools
-**GenEst** provides for estimating carcass arrivals and detection
+**GenEst** (`r vers`) provides for estimating carcass arrivals and detection
 probabilities. The approach is to walk through analyses of realistic but 
 fictitious data sets representing studies of bird and bat mortality at a
 wind power facility.

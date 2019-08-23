@@ -34,6 +34,26 @@
 #'   occasion. Additional columns with values for categorical covariates
 #'   (e.g., visibility = E, M, or D) may also be included.
 #'
+#'  When all trial carcasses are either found on the first search or
+#'  are missed on the first search after carcass placement, an adjustment to the
+#'  model is necessary for accuracy; otherwise, the model cannot determine the
+#'  uncertainty and substantially over-estimates the variance of the parameter
+#'  estimates, giving \code{p_hat} essentially equal to 0 or 1 with
+#'  approximately equal probability. The adjustment is to fit the model on an
+#'  adjusted data set with duplicated copies of the original data (\code{2n}
+#'  observations) but with one carcass having the opposite fate of the others.
+#'  For example, in field trials with very high searcher efficiency and
+#'  \code{n = 10} carcasses, all of which are found in the first search after
+#'  carcass placement, the original data set would have a carcass observation
+#'  column consisting of 1s (\code{rep(1, 10)}). The adjusted data set would
+#'  have an observation column consisting of \code{2n - 1} 1s and one 0. In this
+#'  case, \code{p} is estimated as \code{1/(2n)} with distribution that closely
+#'  resembles the Bayesian posterior distributions of \code{p} with a uniform
+#'  or a Jeffreys prior. The adjustment is applied on a cellwise basis in full
+#'  cell models (e.g., 1, A, B, A * B). In the additive model with two predictors
+#'  (A + B), the adjustment is made only when a full level of covariate A or B
+#'  is all 0s or 1s.
+#'
 #' @param formula_p Formula for p; an object of class \code{\link{formula}}
 #'   (or one that can be coerced to that class): a symbolic description of
 #'   the model to be fitted. Details of model specification are given under
@@ -171,7 +191,13 @@
 #'  \item{\code{pOnly}}{a logical value telling whether \code{k} is included in
 #'    the model. \code{pOnly = TRUE} if and only if \code{length(obsCol) == 1)}
 #'    and \code{kFixed = NULL}}.
-#'}
+#'  \item{\code{data_adj}}{\code{data0} as adjusted for the 2n fix to accommodate
+#'    scenarios in which all trial carcasses are either found or all are not
+#'    found on the first search occasion (uncommon)}
+#'  \item{\code{fixBadCells}}{vector giving the names of cells adjusted for the
+#'    2n fix}
+#' }
+#'
 #' @section Advanced:
 #'  \code{pkmSize} may also be used to fit a single model for each size class if
 #'  \code{allCombos = FALSE}. To do so, \code{formula_p} and \code{formula_k}
@@ -228,7 +254,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
 #' @rdname pkm
 #' @export
 pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
-    kFixed = NULL, kInit = 0.7, CL = 0.90, quiet = FALSE, ...){
+    kFixed = NULL, kInit = 0.7, CL = 0.90, quiet = FALSE){
   i <- sapply(data, is.factor)
   data[i] <- lapply(data[i], as.character)
   if (!is.null(kFixed) && is.na(kFixed)) kFixed <- NULL
@@ -303,34 +329,9 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   # remove rows that are all NAs
   onlyNA <- (rowSums(is.na(obsData)) == nsearch)
   obsData <- as.matrix(obsData[!onlyNA, ], ncol = nsearch)
-  data0 <- data[!onlyNA, ]
-
-  if (nrow(data0) == 0){
-    stop("No non-missing data present in user-provided data.")
-  }
-  if (any(rowSums(obsData, na.rm = TRUE) > 1)){
-    stop("Carcasses observed more than once. Check data.")
-  }
+  data00 <- data[!onlyNA, ]
+  data0 <- data00 # may be modified later to adjust for bad cells
   ncarc <- nrow(obsData)
-  # simplified and vectorized calculations of
-  #1. number of times each carcass was missed in searches, and
-  #2. which search carcasses were found on (0 if not found)
-  misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
-  foundOn <- matrixStats::rowMaxs(
-    obsData * matrixStats::rowCumsums(1 * !is.na(obsData)), na.rm = T)
-  if (any(misses >= foundOn & foundOn > 0)){
-    stop("Searches continue after carcass discovery? Check data.")
-  }
-  if (length(kFixed) > 0){
-    if (kFixed == 0 & any(foundOn > 1)){
-      stop(
-        "User-supplied kFixed = 0. However, more than one observation column ",
-        "was supplied, and carcasses were found after being missed in previous ",
-        " searches, which indicates k > 0. Try selecting a single observation ",
-        "column."
-      )
-    }
-  }
 
   preds_p <- all.vars(formula_p[[3]])
   if (length(preds_p) > 0){
@@ -360,24 +361,70 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   preds <- unique(c(preds_p, preds_k))
-  if (grepl("[-.]", paste0(preds, collapse = ''))){
-    stop("Hyphen ( - ) and dot ( . ) not allowed in predictor names")
-  }
-  for (pri in preds){
-    if (grepl("[-.]", paste0(data[, pri], collapse = '')))
-      stop("Hyphen ( - ) and dot ( . ) not allowed in predictor levels")
-  }
-
   cells <- combinePreds(preds, data0)
   ncell <- nrow(cells)
   cellNames <- cells$CellNames
+  cellMM_p <- model.matrix(formulaRHS_p, cells)
+  cellMM_k <- model.matrix(formulaRHS_k, cells)
+  cellMM <- cbind(cellMM_p, cellMM_k)
+
+  if (length(preds) == 0){
+    carcCells0 <- rep("all", ncarc)
+  } else if (length(preds) == 1){
+    carcCells0 <- data0[ , preds]
+  } else if (length(preds) > 1){
+    carcCells0 <- do.call(paste, c(data0[ , preds], sep = '.'))
+  }
+  pInitCellMean <- tapply(data0[ , obsCol[1]], INDEX = carcCells0, FUN = mean, na.rm = TRUE)
+  fixBadCells <- NULL
+  if (NCOL(cellMM_p) == prod(unlist(lapply(levels_p, length))) & # full cell model
+      any(pInitCellMean %in% 0:1)){# ...with bad cells
+    # employ the 2n fix for bad cells:
+    if (length(preds_p) == 0){ # no predictors
+      if (all(data0[ , obsCol[1]] == 1) || all(data0[ , obsCol[1]] == 0)){
+        data0 <- rbind(data0, data0) # use 2n
+        data0[1, obsCol[1]] <- 1 - data0[1, obsCol[1]]
+        if (length(obsCol) > 1 && data0[1, obsCol[1]] == 1){
+          data0[1, obsCol[-1]]  <- NA
+        }
+        fixBadCells <- "all"
+      }
+    } else {
+      fixBadCells <- names(pInitCellMean)[pInitCellMean %in% 0:1]
+      bcList <- strsplit(fixBadCells, "[.]")
+      for (bci in 1:length(bcList)){
+        cellind <- rep(TRUE, dim(data0)[1])
+        for (i in 1:length(preds_p)){
+           cellind <- cellind & (data0[ , preds_p[i]] == bcList[[bci]][i])
+        }
+        data0 <- rbind(data0, data0[cellind, ]) # the 2n fix
+        data0[1, obsCol[1]] <- 1 - data0[1, obsCol[1]]
+        if (data0[1, obsCol[1]] == 1 & length(obsCol) > 1){
+          data0[1, obsCol[-1]] <- NA
+        }
+      }
+    }
+  } else if (length(preds_p) == 2 &  # two predictors
+        NCOL(cellMM_p) < prod(unlist(lapply(levels_p, length)))){# "+" model
+    for (predi in names(levels_p)){
+      for (li in levels_p[[predi]]){
+        cellind  <- which(data0[ , predi] == li)
+        if (all(data0[cellind, obsCol[1]] == 0) |
+            all(data0[cellind, obsCol[1]] == 1))
+          stop("Initial search has all 0s or 1s for ", preds_p[1], " = ", li,
+             " in additive model.")
+      }
+    }
+  }
+
+  obsData <- as.matrix(data0[ , obsCol])
+  misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
+  foundOn <- matrixStats::rowMaxs(
+      obsData * matrixStats::rowCumsums(1 * !is.na(obsData)), na.rm = T)
 
   dataMM_p <- model.matrix(formulaRHS_p, data0)
   dataMM_k <- model.matrix(formulaRHS_k, data0)
   dataMM <- t(cbind(dataMM_p, dataMM_k))
-  cellMM_p <- model.matrix(formulaRHS_p, cells)
-  cellMM_k <- model.matrix(formulaRHS_k, cells)
-  cellMM <- cbind(cellMM_p, cellMM_k)
 
   nbeta_k <- ncol(dataMM_k)
   nbeta_p <- ncol(dataMM_p)
@@ -387,14 +434,10 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   } else if (length(preds) == 1){
     carcCells <- data0[ , preds]
   } else if (length(preds) > 1){
-    carcCells <- do.call(paste, c(data0[,preds], sep = '.'))
+    carcCells <- do.call(paste, c(data0[ , preds], sep = '.'))
   }
   cellByCarc <- match(carcCells, cellNames)
-
   pInitCellMean <- tapply(data0[ , obsCol[1]], INDEX = carcCells, FUN = mean, na.rm = TRUE)
-  if (any(pInitCellMean %in% 0:1)) {
-     stop("Initial search has all 0s or 1s in a cell.")
-  }
 
   pInit <- as.vector(pInitCellMean[match(carcCells, names(pInitCellMean))])
   pInit[which(pInit < 0.1)] <- 0.1
@@ -417,10 +460,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
              nbeta_p = nbeta_p, kFixed = kFixed, method = "BFGS"),
            error = function(x) {NA}
          )
-  if (length(MLE) == 1 && is.na(MLE)){
-    stop("Failed optimization.")
-  }
-
+  if (length(MLE) == 1 && is.na(MLE)) stop("Failed optimization.")
   convergence <- MLE$convergence
   betahat <- MLE$par
   betaHessian <- MLE$hessian
@@ -463,14 +503,14 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   probs <- list(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2)
   cellTable_p <- lapply(probs, qnorm, mean = cellMean_p, sd = cellSD_p)
   cellTable_p <- matrix(unlist(cellTable_p), ncol = 3)
-  cellTable_p <- round(alogit(cellTable_p), 3)
+  cellTable_p <- round(alogit(cellTable_p), 6)
   colnames(cellTable_p) <- c("p_median", "p_lower", "p_upper")
-  cell_n <- as.numeric(table(carcCells)[cellNames])
+  cell_n <- as.numeric(table(carcCells0)[cellNames])
   names(cell_n) <- NULL
   if (!pOnly){
     cellTable_k <- lapply(probs, qnorm, mean = cellMean_k, sd = cellSD_k)
     cellTable_k <- matrix(unlist(cellTable_k), nrow = ncell, ncol = 3)
-    cellTable_k <- round(alogit(cellTable_k), 3)
+    cellTable_k <- round(alogit(cellTable_k), 6)
     colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
     cellTable <- data.frame(cell = cellNames, n = cell_n, cellTable_p, cellTable_k)
   } else {
@@ -480,7 +520,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output <- list()
   output$call <- match.call()
   output$data <- data
-  output$data0 <- data0
+  output$data0 <- data00
   output$formula_p <- formula_p
   if (!pOnly) output$formula_k <- formula_k
   output$predictors <- preds
@@ -507,11 +547,14 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output$carcCells <- carcCells
   output$loglik <- llik
   output$pOnly <- pOnly
+  if (is.null(fixBadCells)) data_adj <- NULL
+  output$data_adj <- data0
+  output$fixBadCells <- fixBadCells
   class(output) <- c("pkm", "list")
   attr(output, "hidden") <- c("data", "data0", "predictors_p", "predictors_k",
     "kFixed", "betahat_p", "betahat_k", "cellMM_p", "cellMM_k", "nbeta_p",
     "nbeta_k", "varbeta", "levels_p", "levels_k", "carcCells", "AIC", "cells",
-    "ncell", "observations", "loglik", "pOnly")
+    "ncell", "observations", "loglik", "pOnly", "data_adj", "fixBadCells")
   return(output)
 }
 #' @title Print a \code{\link{pkm}} model object
