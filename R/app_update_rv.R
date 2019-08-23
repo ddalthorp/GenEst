@@ -573,7 +573,7 @@ update_rv <- function(eventName, rv, input){
 
 
   if (eventName == "run_SE_clear"){
-    toNULL <- c("predictors_SE", "formula_p", "formula_k", "outSEpk",
+    toNULL <- c("predictors_SE", "formula_p", "formula_k", "kFixed", "outSEpk",
                 "mods_SE", "mods_SE_og", "sizeclasses_SE", "AICcTab_SE",
                 "modOrder_SE", "modNames_SE", "modNames_SEp", "modNames_SEk",
                 "modSet_SE", "best_SE", "modTab_SE", "modTabPretty_SE",

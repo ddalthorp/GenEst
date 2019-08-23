@@ -12,7 +12,7 @@ pkm(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
   quiet = FALSE)
 
 pkm0(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
-  kInit = 0.7, CL = 0.9, quiet = FALSE, ...)
+  kInit = 0.7, CL = 0.9, quiet = FALSE)
 
 pkmSet(formula_p, formula_k = NULL, data, obsCol = NULL,
   kFixed = NULL, kInit = 0.7, CL = 0.9, quiet = FALSE)
@@ -140,6 +140,26 @@ The probability of finding a carcass that is present at the time of
   removed by  scavengers, or was not searched for) on the given search
   occasion. Additional columns with values for categorical covariates
   (e.g., visibility = E, M, or D) may also be included.
+
+ When all trial carcasses are either found on the first search or
+ are missed on the first search after carcass placement, an adjustment to the
+ model is necessary for accuracy; otherwise, the model cannot determine the
+ uncertainty and substantially over-estimates the variance of the parameter
+ estimates, giving \code{p_hat} essentially equal to 0 or 1 with
+ approximately equal probability. The adjustment is to fit the model on an
+ adjusted data set with duplicated copies of the original data (\code{2n}
+ observations) but with one carcass having the opposite fate of the others.
+ For example, in field trials with very high searcher efficiency and
+ \code{n = 10} carcasses, all of which are found in the first search after
+ carcass placement, the original data set would have a carcass observation
+ column consisting of 1s (\code{rep(1, 10)}). The adjusted data set would
+ have an observation column consisting of \code{2n - 1} 1s and one 0. In this
+ case, \code{p} is estimated as \code{1/(2n)} with distribution that closely
+ resembles the Bayesian posterior distributions of \code{p} with a uniform
+ or a Jeffreys prior. The adjustment is applied on a cellwise basis in full
+ cell models (e.g., 1, A, B, A * B). In the additive model with two predictors
+ (A + B), the adjustment is made only when a full level of covariate A or B
+ is all 0s or 1s.
 }
 \section{\code{pkm} Components}{
 
@@ -197,6 +217,11 @@ via the \code{$} operator:
  \item{\code{pOnly}}{a logical value telling whether \code{k} is included in
    the model. \code{pOnly = TRUE} if and only if \code{length(obsCol) == 1)}
    and \code{kFixed = NULL}}.
+ \item{\code{data_adj}}{\code{data0} as adjusted for the 2n fix to accommodate
+   scenarios in which all trial carcasses are either found or all are not
+   found on the first search occasion (uncommon)}
+ \item{\code{fixBadCells}}{vector giving the names of cells adjusted for the
+   2n fix}
 }
 }
 
