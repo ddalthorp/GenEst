@@ -430,7 +430,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   nbeta_p <- ncol(dataMM_p)
   nbeta <- nbeta_p + nbeta_k
   if (length(preds) == 0){
-    carcCells <- rep("all", ncarc)
+    carcCells <- rep("all", dim(data0)[1])
   } else if (length(preds) == 1){
     carcCells <- data0[ , preds]
   } else if (length(preds) > 1){

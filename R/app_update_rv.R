@@ -928,7 +928,7 @@ update_rv <- function(eventName, rv, input){
                 frac = rv$frac, model_SE = rv$models_SE,
                 model_CP = rv$models_CP,
                 COdate = rv$COdate, DWPCol = dwpcol,
-                sizeCol = rv$sizeCol_M, nsim = rv$nsim,
+                sizeCol = rv$sizeCol_M, nsim = rv$nsim, IDcol = rv$xIDcol,
                 max_intervals = 8
               ), error = function(e) e)
     if (!("error" %in% class(rv$M))){

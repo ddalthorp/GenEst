@@ -1,4 +1,15 @@
 Revision log
+2019.09.05
+v1.3.2.0
+
+* correction of bug that incorrectly caused a pk model error when all carcasses
+were either found or not found on the first search in SE field trials with no
+covariates (GUI and command line). 
+
+* correction of bug in error-checking for carcass ID column selection (GUI).
+GUI users may notice better software stability in the "Estimate" button under 
+the "Mortality Estimation" tab.
+
 2019.08.22
 v1.3.1
 
