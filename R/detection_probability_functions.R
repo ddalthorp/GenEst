@@ -1135,7 +1135,6 @@ prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
   class(ans) <- c("prepSS", "list")
   return(ans)
 
-  ====
 #' @title Estimate all carcass-level detection rates and arrival intervals
 #'
 #' @description Estimate g values and arrival intervals for a set of carcasses
