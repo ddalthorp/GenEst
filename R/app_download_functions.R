@@ -346,7 +346,7 @@ downloadTable <- function(filename, tablename, csvformat){
   }
   downloadHandler(filename = filename, content = function(file){
     fcn <- get(paste0("write.csv", csvformat))
-    fcn(x = tablename, file = file, row.names = FALSE)
+    fcn(x = tablename, file = file, row.names = TRUE)
   })
 }
 
