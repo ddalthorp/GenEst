@@ -27,53 +27,6 @@ alogit <- function(x) {
   1 / (1 + exp(-x))
 }
 
-#' @title Get the length of real (non-NA) things
-#'
-#' @description Length of non-missing (non-\code{NA}) values in a vector.
-#'
-#' @param x Vector of values, some of which many be \code{NA}.
-#'
-#' @return Integer count of how many non-\code{NA} values in \code{x}.
-#'
-#' @examples
-#'   x <- c(1, 2, NA, 3)
-#'   length(x)
-#'   trueLength(x)
-#'
-#' @export
-#'
-trueLength <- function(x){
- length(which(!is.na(x)))
-}
-
-#' @title Is a vector never decreasing?
-#'
-#' @description Check if a vector is never decreasing.
-#'
-#' @param x Vector of numeric values.
-#'
-#' @param tiesOK Logical indicator if ties are ok or not.
-#'
-#' @param na.rm Logical indicator if NAs are to be removed or not.
-#'
-#' @return Logical value.
-#'
-#' @export
-#'
-isNeverDecreasing <- function(x, tiesOK = TRUE, na.rm = TRUE){
-  if (na.rm == TRUE){
-    x <- na.omit(x)
-  }
-  diffs <- diff(x)
-  if (tiesOK == TRUE){
-    out <- all(diffs >= 0)
-  }
-  if (tiesOK == FALSE){
-    out <- all(diffs > 0)
-  }
-  return(out)
-}
-
 #' @title Calculate day of study from calendar date
 #'
 #' @description Convert calendar date to integer day from a reference date
@@ -147,25 +100,6 @@ checkDate <- function(testdate){
   canForm <- canForm[!is.na(canForm)]
   if (length(canForm) > 1) return(NULL)
   return(canDate[[canForm]])
-}
-
-
-#' @title Expected value of a continuous binomial with size = 1/g
-#'
-#' @description Calculates the expected value of a continuous binomial random
-#'  variable with size = 1/g. Uses internal-only data.
-#'
-#' @param prob Vector of probabilities.
-#'
-#' @return Mean value of the probabilities.
-#'
-#' @export 
-#'
-Ecbinom <- function(prob){
-  X <- EcbinomXY$X
-  Y <- EcbinomXY$Y
-  interp <- approxfun(x = X, y = Y)
-  interp(prob)
 }
 
 #' @title Generic S3 function for summarizing AICc

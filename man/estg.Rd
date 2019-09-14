@@ -21,15 +21,15 @@ If not provided, \code{estg} will try to find the SSdate among
 the columns in data_SS. See \code{\link{prepSS}}.}
 
 \item{model_SE}{Searcher Efficiency model (or list of models if there are
-multiple size classes)}
+multiple carcass classes)}
 
 \item{model_CP}{Carcass Persistence model (or list of models if there are
-multiple size classes)}
+multiple carcass classes)}
 
 \item{model_DWP}{Density weighted proportion model (or list of models if
-there are multiple size classes)}
+there are multiple carcass classes)}
 
-\item{sizeCol}{Name of column in \code{data_CO} where the size classes
+\item{sizeCol}{Name of column in \code{data_CO} where the carcass classes
 are recorded. Optional. If not provided, no distinctions are made among
 sizes. \code{sizeCol} not only identifies what the name of the size
 segregating class}

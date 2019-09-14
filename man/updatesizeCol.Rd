@@ -2,12 +2,12 @@
 % Please edit documentation in R/app_utilities.R
 \name{updatesizeCol}
 \alias{updatesizeCol}
-\title{Update the name of the size class column based on available names}
+\title{Update the name of the carcass class column based on available names}
 \usage{
 updatesizeCol(sizeCol, colNames_size)
 }
 \arguments{
-\item{sizeCol}{current size class column name}
+\item{sizeCol}{current carcass class column name}
 
 \item{colNames_size}{updated vector of size column names in all needed 
 tables}
@@ -16,7 +16,7 @@ tables}
 updated sizeCol
 }
 \description{
-Update the size class column name based on the available
-  options. If the existing size class column name is no longer in the
+Update the carcass class column name based on the available
+  options. If the existing carcass class column name is no longer in the
   set of available names, a NULL is returned to reset the column name.
 }

@@ -197,7 +197,7 @@ cpm <- function(formula_l, formula_s = NULL, data, left, right,
   if (is.null(allCombos) || is.na(allCombos) || !is.logical(allCombos)){
     stop("allCombos must be TRUE or FALSE")
   }
-  if (is.null(sizeCol) || is.na(sizeCol)){
+  if (is.null(sizeCol) || is.na(sizeCol) || sizeCol == F){
     if (!allCombos){ # single model
       out <- cpm0(formula_l = formula_l, formula_s = formula_s, data = data,
         left = left, right = right, dist = dist, CL = CL, quiet = quiet)
@@ -430,7 +430,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
     }
     if (dist == "weibull"){
-      cellTable_a <- round(1 / cellTable_s, 3)
+      cellTable_a <- round(1/cellTable_s, 3)
       colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
       cellTable_b <- round(exp(cellTable_l), 3)
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
@@ -442,7 +442,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
     }
     if (dist == "loglogistic"){
-      cellTable_a <- round(1 / cellTable_s, 3)
+      cellTable_a <- round(1/cellTable_s, 3)
       colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
       cellTable_b <- round(exp(cellTable_l), 3)
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
@@ -566,7 +566,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       cellSD_s <- sqrt(diag(cellVar_s))
     }
 
-    probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
+    probs <- data.frame(c(0.5, (1 - CL)/2, 1 - (1 - CL)/2))
     cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
     cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
     colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
@@ -582,7 +582,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
     }
     if (dist == "weibull"){
-      cellTable_a <- round(1 / cellTable_s, 3)
+      cellTable_a <- round(1/cellTable_s, 3)
       colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
       cellTable_b <- round(exp(cellTable_l), 3)
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
@@ -594,12 +594,12 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
     }
     if (dist == "loglogistic"){
-      cellTable_a <- round(1 / cellTable_s, 3)
+      cellTable_a <- round(1/cellTable_s, 3)
       colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
       cellTable_b <- round(exp(cellTable_l), 3)
       colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
     }
-    cellTable_ab <- data.frame(cell = cellNames, cellTable_a, cellTable_b)
+    cellTable_ab <- data.frame(cell = cellNames, n = cell_n, cellTable_a, cellTable_b)
 
 
     if (dist == "exponential"){
@@ -658,8 +658,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   }
   output$cell_desc <- data.frame(cell_desc)
   output$cell_desc[ , "cell"] <- cellNames
-
-  class(output) <- c("cpm", "list")
+   class(output) <- c("cpm", "list")
   attr(output, "hidden") <- c("data", "predictors_l", "predictors_s",
     "betahat_l", "betahat_s", "cellMM_l", "cellMM_s", "nbeta_l", "nbeta_s",
     "varbeta", "levels_l", "levels_s", "carcCells", "AIC", "cells", "ncell",
@@ -823,13 +822,13 @@ cpmSize <- function(formula_l, formula_s = NULL, data, left, right,
              "formula_l and formula_s must be 'scalars'")
       } else {
       # parallel lists of formulas and distributions
-      # fit one model for each size class
+      # fit one model for each carcass class
       # then fit the specific models for each formula and corresponding size
         if (!setequal(names(formula_l), names(formula_s)) ||
             !setequal(names(formula_l), sizeclasses) ||
             !setequal(names(formula_l), names(dist))){
           stop("l and s formula names and list of distributions names ",
-              "must match size classes")
+              "must match carcass classes")
         }
         out <- list()
         for (szi in sizeclasses){
@@ -1259,7 +1258,7 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
   }
   return(probs)
 }
-1
+
 #' @title Check if a CP model is well-fit
 #'
 #' @description Run a check the arg is a well-fit cpm object
@@ -1346,4 +1345,98 @@ aicc.cpmSize <- function(x, ... ){
     class(y) <- c("cpm", "list")
     aicc(y)
   }))
+}
+
+#' @title Descriptive statistics for a fitted CP model
+#'
+#' @description Given a cpm object, calculate convenient descriptive statistics,
+#'  including the median and specified rI statistics along with estimated CIs.
+#'
+#' @details The CIs for the r statistics (and the medianCP for the Weibull) ara
+#'  based on simulation of the \code{pda} and \code{pdb} parameters, calculation
+#'  of the statistics, and taking the empirical distribution of the simulated
+#'  values.
+#'
+#'  NOTE: rI is the probability that a carcass that arrives at a uniform random
+#'  time in an interval of I days will persist until the first search after
+#'  arrival.
+#'
+#' @param model_CP A fitted CP model (cpm object)
+#'
+#' @param Ir The intervals for which to calculate the r statistics
+#'
+#' @param CL The confidence level for the CIs.
+#'
+#' @param nsim Number of simulation draws for estimating CIs
+#'
+#' @return Matrix of point and interval estimates for the median CP and the r
+#'  statistics for the specified intervals. The matrix is assigned to class
+#'  \code{descCP} that is simply a matrix with dimensions
+#'  \code{ncell x 1 + 3*(1 + length(Ir))}, column names that give the number of
+#'  observations in each cell, statistic name and upper and lower bounds
+#'`(in triplets), and row names giving the names of the cells.
+#'
+#' @seealso \code{\link{cpm}}, \code{\link{rcp}}, \code{\link{ppersist}}
+#'
+#' @export
+#'
+desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
+  if (!"cpm" %in% class(model_CP)) stop("model_CP must be a cpm object.")
+  # set up summary table
+  t0 <- numeric(length(Ir))
+  t1 <- Ir
+  tf <- t1
+  Irv <- paste0("r", Ir)
+  cell_desc <- matrix(nrow = model_CP$ncell, ncol = 1 + 3 * (1 + length(Ir)))
+  Irvec <- gtools::mixedsort(c(Irv, paste0(Irv, "_lwr"), paste0(Irv, "_upr")))
+  colnames(cell_desc) <- c("n", "medianCP", "CP_lwr", "CP_upr", Irvec)
+  rownames(cell_desc) <- model_CP$cells$CellNames
+  cell_desc[ , "n"] <- model_CP$cell_ab$n
+  # fill in the MLE's as the point estimates
+  pda <- model_CP$cell_ab[ , "pda_median"]
+  pdb <- model_CP$cell_ab[ , "pdb_median"]
+  if (model_CP$distribution == "weibull"){
+    cell_desc[ , "medianCP"] <- pdb * log(2)^(1/pda)
+  } else if (model_CP$distribution == "lognormal"){
+    cell_desc[ , "medianCP"] <- exp(pdb)
+  } else if (model_CP$distribution == "loglogistic"){
+    cell_desc[ , "medianCP"] <- pdb
+  } else if (model_CP$distribution == "exponential"){
+    cell_desc[ , "medianCP"] <- log(2) * pdb
+  }
+  cell_desc[ , Irv] <- t(ppersist(pda = pda, pdb = pdb,
+    dist = model_CP$distribution, t_arrive0 = t0, t_arrive1 = t1, t_search = tf))
+  # simulate pda, pdb for estimating CIs
+  absim <- rcp(n = nsim, model = model_CP, type = "ppersist")
+  # calculate r statistics
+  rstat <- lapply(absim, function(xx){
+    ppersist(xx[,1], xx[,2], dist = model_CP$distribution,
+      t_arrive0 = t0, t_arrive1 = t1, t_search = tf)
+  })
+  ci_lu <- c((1 - CL)/2, 1 - (1 - CL)/2)
+  rsum <- lapply(rstat, function(xx)
+    matrixStats::rowQuantiles(xx, probs = ci_lu))
+  for (ci in rownames(cell_desc)){
+    cell_desc[ci, gtools::mixedsort(c(paste0(Irv, "_lwr"), paste0(Irv, "_upr")))]  <-
+      t(rsum[[ci]])
+  }
+  # calculate cp statistics
+  if (model_CP$distribution == "weibull"){
+    mstat <- t(array(unlist(lapply(absim, function(xx)
+        quantile(xx[, "pdb"] * log(2)^(1/xx[ , "pda"]), probs = ci_lu))),
+        dim = c(2, model_CP$ncell)
+    ))
+  } else if (model_CP$distribution == "lognormal"){
+    mstat <- exp(model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")])
+  } else if (model_CP$distribution == "loglogistic"){
+    mstat <- model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")]
+  } else if (model_CP$distribution == "exponential"){
+    mstat <- log(2) * model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")]
+  } else {
+    stop("invalid CP distribution")
+  }
+  # write results into a table
+  cell_desc[ , c("CP_lwr", "CP_upr")] <- mstat
+  class(cell_desc) <- c("descCP", class(cell_desc))
+  return(cell_desc)
 }

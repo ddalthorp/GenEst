@@ -306,7 +306,7 @@ msgModFail <- function(mods, type = "SE", special = NULL){
     } else if (special == "error") {
       msg <- mods
     } else if (special == "size_k"){
-      msg <- "Some size classes had no successful models. Consider a fixed k."
+      msg <- "Some carcass classes had no successful models. Consider a fixed k."
     } else if (special == "NA_kFixed"){
       msg <- "invalid value entered for fixed k"
     }

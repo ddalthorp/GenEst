@@ -75,8 +75,8 @@ update_output <- function(eventName, rv, output, input){
     output <- reNULL(output, toNULL)
     output$kNeed <- setkNeed(rv)
     if (eventName == "file_SE"){
-      output$data_SE <- renderDTns(datatable(rv$data_SE,
-        caption = paste0("File: ", rv$filename_SE)))
+      output$data_SE <- DT::renderDataTable(datatable(rv$data_SE,
+        caption = paste0("File: ", rv$filename_SE)), server = FALSE)
       output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
     }
     dontSuspend <- c("SEModDone", "sizeclasses_SE", "filename_SE",
@@ -95,8 +95,8 @@ update_output <- function(eventName, rv, output, input){
                 "sizeclass_g2")
     output <- reNULL(output, toNULL)
     if (eventName == "file_CP"){
-      output$data_CP <- renderDTns(datatable(rv$data_CP,
-        caption = paste0("File: ", rv$filename_CP)))
+      output$data_CP <- DT::renderDataTable(datatable(rv$data_CP,
+        caption = paste0("File: ", rv$filename_CP)), server = FALSE)
       output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
     }
     dontSuspend <- c("CPModDone", "sizeclasses_CP", "filename_CP",
@@ -111,8 +111,8 @@ update_output <- function(eventName, rv, output, input){
                 "sizeclass_g2", "filename_SS")
     output <- reNULL(output, toNULL)
     if (eventName == "file_SS"){
-      output$data_SS <- renderDTns(datatable(rv$data_SS, caption = paste0(
-        "File: ", rv$filename_SS)))
+      output$data_SS <- DT::renderDataTable(datatable(rv$data_SS, caption = paste0(
+        "File: ", rv$filename_SS)), server = FALSE)
       output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
     }
     dontSuspend <- c("filename_SS", "MModDone", "gModDone", "sizeclass_gyn")
@@ -123,7 +123,7 @@ update_output <- function(eventName, rv, output, input){
     toNULL <- c("filename_DWP", "data_DWP", "fig_M", "table_M", "MModDone")
     output <- reNULL(output, toNULL)
     if (eventName == "file_DWP"){
-      output$data_DWP <- renderDataTable(datatable(rv$data_DWP,
+      output$data_DWP <- DT::renderDataTable(datatable(rv$data_DWP,
         caption = paste0("File: ", rv$filename_DWP)))
       output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
     }
@@ -135,8 +135,8 @@ update_output <- function(eventName, rv, output, input){
     toNULL <- c("data_CO", "filename_CO", "fig_M", "table_M", "MModDone")
     output <- reNULL(output, toNULL)
     if (eventName == "file_CO"){
-      output$data_CO <- renderDTns(datatable(rv$data_CO,
-        caption = paste0("File: ", rv$filename_CO)))
+      output$data_CO <- DT::renderDataTable(datatable(rv$data_CO,
+        caption = paste0("File: ", rv$filename_CO)), server = FALSE)
       output$filename_CO <- renderText(paste0("File: ", rv$filename_CO))
     }
     dontSuspend <- c("filename_CO", "MModDone")
@@ -162,24 +162,24 @@ update_output <- function(eventName, rv, output, input){
     output <- reNULL(output, toNULL)
     output$kNeed <- setkNeed(rv)
 
-    output$data_SE <- renderDTns(datatable(rv$data_SE,
-      caption = paste0("File: ", rv$filename_SE)))
+    output$data_SE <- DT::renderDataTable(datatable(rv$data_SE,
+      caption = paste0("File: ", rv$filename_SE)), server = FALSE)
     output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
 
-    output$data_CP <- renderDTns(datatable(rv$data_CP,
-      caption = paste0("File: ", rv$filename_CP)))
+    output$data_CP <- DT::renderDataTable(datatable(rv$data_CP,
+      caption = paste0("File: ", rv$filename_CP)), server = FALSE)
     output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
 
-    output$data_SS <- renderDTns(datatable(rv$data_SS,
-      caption = paste0("File: ", rv$filename_SS)))
+    output$data_SS <- DT::renderDataTable(datatable(rv$data_SS,
+      caption = paste0("File: ", rv$filename_SS)), server = FALSE)
     output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
 
-    output$data_DWP <- renderDTns(datatable(rv$data_DWP,
-      caption = paste0("File: ", rv$filename_DWP)))
+    output$data_DWP <- DT::renderDataTable(datatable(rv$data_DWP,
+      caption = paste0("File: ", rv$filename_DWP)), server = FALSE)
     output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
 
-    output$data_CO <- renderDTns(datatable(rv$data_CO,
-      caption = paste0("File: ", rv$filename_CO)))
+    output$data_CO <- DT::renderDataTable(datatable(rv$data_CO,
+      caption = paste0("File: ", rv$filename_CO)), server = FALSE)
     output$filename_CO <- renderText(paste0("File: ", rv$filename_CO))
 
     dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
@@ -195,13 +195,13 @@ update_output <- function(eventName, rv, output, input){
     if (!is.null(rv$obsCols_SE)){
       selectedCols <- c(rv$obsCols_SE, rv$sizeCol, rv$preds_SE)
       selectedData <- selectData(rv$data_SE, selectedCols)
-      output$selected_SE <- renderDTns(datatable(selectedData))
+      output$selected_SE <- DT::renderDataTable(datatable(selectedData), server = FALSE)
     }
     if (!is.null(c(rv$ltp, rv$fta))){
       obsColsSelected <- c(rv$ltp, rv$fta)
       selectedCols <- c(obsColsSelected, rv$sizeCol, rv$preds_CP)
       selectedData <- selectData(rv$data_CP, selectedCols)
-      output$selected_CP <- renderDTns(datatable(selectedData))
+      output$selected_CP <- DT::renderDataTable(datatable(selectedData), server = FALSE)
     }
     output$sizeclasses_SE <- renderText(paste(rv$sizeclasses_SE, collapse = " "))
     output$sizeclasses_CP <- renderText(paste(rv$sizeclasses_CP, collapse = " "))
@@ -212,7 +212,7 @@ update_output <- function(eventName, rv, output, input){
     selectedCols <- c(rv$obsCols_SE, rv$sizeCol, rv$preds_SE)
     if (!is.null(rv$data_SE)){
       selectedData <- selectData(rv$data_SE, selectedCols)
-      output$selected_SE <- renderDTns(datatable(selectedData))
+      output$selected_SE <- DT::renderDataTable(datatable(selectedData), server = FALSE)
     }
   }
 
@@ -220,26 +220,26 @@ update_output <- function(eventName, rv, output, input){
     selectedCols <- c(rv$obsCols_SE, rv$sizeCol, rv$preds_SE)
     if (!is.null(rv$data_SE)){
       selectedData <- selectData(rv$data_SE, selectedCols)
-      output$selected_SE <- renderDTns(datatable(selectedData))
+      output$selected_SE <- DT::renderDataTable(datatable(selectedData), server = FALSE)
     }
   }
 
   if (eventName == "fta"){
     selectedCols <- c(rv$ltp, rv$fta, rv$sizeCol, rv$preds_CP)
     selectedData <- selectData(rv$data_CP, selectedCols)
-    output$selected_CP <- renderDTns(datatable(selectedData))
+    output$selected_CP <- DT::renderDataTable(datatable(selectedData), server = FALSE)
   }
 
   if (eventName == "ltp"){
     selectedCols <- c(rv$ltp, rv$fta, rv$sizeCol, rv$preds_CP)
     selectedData <- selectData(rv$data_CP, selectedCols)
-    output$selected_CP <- renderDTns(datatable(selectedData))
+    output$selected_CP <- DT::renderDataTable(datatable(selectedData), server = FALSE)
   }
 
   if (eventName == "predsCP"){
     selectedCols <- c(rv$ltp, rv$fta, rv$sizeCol, rv$preds_CP)
     selectedData <- selectData(rv$data_CP, selectedCols)
-    output$selected_CP <- renderDTns(datatable(selectedData))
+    output$selected_CP <- DT::renderDataTable(datatable(selectedData), server = FALSE)
   }
 
   if (eventName == "run_SE"){
@@ -362,7 +362,7 @@ update_output <- function(eventName, rv, output, input){
     if (!all(unlist(cpmSetSizeFail(rv$mods_CP)))){
       output$CPModDone <- renderText("OK")
       output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})
-      output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
+      output$modTab_CP <- renderDataTable({prettyModTabCP(rv$modTab_CP)})
       output$fig_CP <- renderPlot({
                          plot(rv$modSet_CP, specificModel = rv$best_CP,
                            app = TRUE)
@@ -382,7 +382,7 @@ update_output <- function(eventName, rv, output, input){
         output$sizeclass_CPyn <- renderText("YES")
       }
 
-      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTab_CP,
                                             rv$csvformat)
       output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP,
                                             rv$csvformat)
@@ -410,18 +410,18 @@ update_output <- function(eventName, rv, output, input){
 
   if (eventName == "outCPclass"){
     if (length(rv$mods_CP) > 0){
-      output$modTab_CP <- renderDTns(datatable(rv$modTabPretty_CP))
+      output$modTab_CP <- DT::renderDataTable(datatable(prettyModTabCP(rv$modTab_CP)))
       output$fig_CP <- renderPlot({
                          plot(rv$modSet_CP, specificModel = rv$best_CP,
                            app = TRUE)
                        }, height = rv$figH_CP, width = rv$figW_CP)
 
-      preText <- paste0("Size class: ", rv$sizeclass_CP)
+      preText <- paste0("Carcass class: ", rv$sizeclass_CP)
       output$sizeclass_CP1 <- classText(rv, "CP")
       output$sizeclass_CP2 <- classText(rv, "CP")
       output$sizeclass_CP3 <- classText(rv, "CP")
 
-      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTab_CP,
                                             rv$csvformat)
       output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP,
                                             rv$csvformat)
@@ -432,7 +432,7 @@ update_output <- function(eventName, rv, output, input){
 
   if (eventName %in% c("outCPdist", "outCPl", "outCPs")){
     if (length(rv$mods_CP) > 0){
-      output$modTab_CP <- renderDTns(datatable(rv$modTabPretty_CP))
+      output$modTab_CP <- DT::renderDataTable(datatable(prettyModTabCP(rv$modTab_CP)))
       output$fig_CP <- renderPlot({
                        tryCatch(
                          plot(rv$modSet_CP, specificModel = rv$outCPdlsfig,
@@ -440,13 +440,13 @@ update_output <- function(eventName, rv, output, input){
                          error = function(x){plotNA()}
                        )
                        }, height = rv$figH_CP, width = rv$figW_CP)
-      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+      output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTab_CP,
                                              rv$csvformat)
       output$dlCPfig <- downloadCPFig(rv)
       output$dlCPmod <- downloadCPmod(rv, input)
       if (!is.null(rv$modTab_CP)){
-        output$modTab_CP <- renderDataTable({rv$modTabPretty_CP})
-        output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTabDL_CP,
+        output$modTab_CP <- renderDataTable({prettyModTabCP(rv$modTab_CP)})
+        output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTab_CP,
                                              rv$csvformat)
       }
     }
@@ -509,7 +509,7 @@ update_output <- function(eventName, rv, output, input){
       outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
 
       preText <- paste0(
-        "Size class: ", rv$sizeclass_g, " ........ ",
+        "Carcass class: ", rv$sizeclass_g, " ........ ",
         "Search Schedule: I = ", round(rv$SS$I, 1), ", span = ", rv$SS$span)
       if (length(rv$sizeclasses_g) == 1){
         preText <- paste0("Search Schedule: I = ", round(rv$SS$I, 1), ", span = ", rv$SS$span)

@@ -14,17 +14,17 @@ classText <- function(rv, type = "SE"){
   out <- ""
   if (type == "SE"){
     if (length(rv$sizeclasses_SE) > 1){
-      out <- paste0("Size class: ", rv$sizeclass_SE)
+      out <- paste0("Carcass class: ", rv$sizeclass_SE)
     }        
   }
   if (type == "CP"){
     if (length(rv$sizeclasses_CP) > 1){
-      out <- paste0("Size class: ", rv$sizeclass_CP)
+      out <- paste0("Carcass class: ", rv$sizeclass_CP)
     }    
   }
   if (type == "g"){
     if (length(rv$sizeclasses_g) > 1){
-      out <- paste0("Size class: ", rv$sizeclass_g, " ........ Search schedule: I = ",
+      out <- paste0("Carcass class: ", rv$sizeclass_g, " ........ Search schedule: I = ",
         round(rv$SS[["I"]],1), ", span = ", rv$SS[["span"]])
     }
   }
@@ -51,24 +51,9 @@ estText <- function(rv, type = "SE"){
   }
   if (type == "CP"){
     out <- paste0("Table shows median estimates and ", 100 * rv$CL,  
-             "% confidence intervals for location and scale")
+             "% confidence intervals for median persistence and r statistics")
   }
   renderText(out)
-}
-
-#' @title Render a data table without server-side processing
-#'
-#' @description Simply render the data table without server-side processing.
-#'
-#' @param x HTML \code{datatable} widget output from 
-#'   \code{\link[DT]{datatable}}.
-#'
-#' @return Rendered \code{x}.
-#'
-#' @export
-#'
-renderDTns <- function(x){
-  renderDataTable(x, server = FALSE)
 }
 
 #' @title (Re)set outputOptions to not suspending for given elements

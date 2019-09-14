@@ -276,7 +276,7 @@ modelOutputPanel <- function(outType){
                  ),
                "MSummary" = 
                  list(
-                   em("Select SE and CP models fit to matching size 
+                   em("Select SE and CP models fit to matching carcass
                          classes to run model"), 
                    em("Run estimate to view summary"),
                    list(br(), dataTableOutput("table_M"), br(),

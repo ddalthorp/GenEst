@@ -54,7 +54,8 @@ This package is designed to analyze searcher efficiency,
    from \code{\link{pkm}}, \code{\link[=pkm]{pkmSet}}, 
    \code{\link[=pkm]{pkmSize}}, \code{\link[=pkm]{pkmSetSize}}, 
    \code{\link{cpm}}, \code{\link[=cpm]{cpmSet}},
-   \code{\link[=cpm]{cpmSize}}, and \code{\link[=cpm]{cpmSetSize}} objects}
+   \code{\link[=cpm]{cpmSize}}, and \code{\link[=cpm]{cpmSetSize}} objects},
+   \code{\link{desc}}
   \item{\code{\link{estgGeneric}}, \code{\link{estgGenericSize}}}{estimate
    detection probability (g) for given searcher efficiency and carcass
    persistence model}
@@ -68,7 +69,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{estg}}, \code{\link{calcg}}\cr
 \code{\link{ppersist}}, \code{\link{SEsi}}\cr
 \code{\link{alogit}}, \code{\link{logit}}\cr
-\code{\link{Ecbinom}}\cr
 \code{\link{pkLogLik}}, \code{\link{cpLogLik}}\cr
 \code{\link{calcRate}}, \code{\link{calcTsplit}}, 
 \code{\link{ltranspose}}\cr
@@ -81,7 +81,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{trimSetSize}}\cr
 \code{\link{combinePreds}}\cr
 \code{\link{combinePredsAcrossModels}}\cr
-\code{\link{DWPbyCarcass}}\cr
 \code{\link{pkmSetSizeFailRemove}}\cr
 \code{\link{pkmSetFailRemove}}\cr
 \code{\link{cpmSetSizeFailRemove}}\cr
@@ -128,7 +127,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{disclaimersPanel}}\cr
 \code{\link{disclaimerUSGS}}\cr
 \code{\link{disclaimerWEST}}\cr
-\code{\link{dlModTabCP}}\cr
 \code{\link{dlModTabSE}}\cr
 \code{\link{downloadCPFig}}\cr
 \code{\link{downloadData}}\cr
@@ -156,7 +154,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{gSidebar}}\cr
 \code{\link{helpPanel}}\cr
 \code{\link{initialOutput}}\cr
-\code{\link{isNeverDecreasing}}\cr
 \code{\link{kFixedWidget}}\cr
 \code{\link{kFixedWidgetHeader}}\cr
 \code{\link{kFixedWidgetRow}}\cr
@@ -243,7 +240,6 @@ This package is designed to analyze searcher efficiency,
 \code{\link{splitButtonWidget}}\cr
 \code{\link{style}}\cr
 \code{\link{trimSetSize}}\cr
-\code{\link{trueLength}}\cr
 \code{\link{u}}\cr
 \code{\link{ul}}\cr
 \code{\link{update_input}}\cr
