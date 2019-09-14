@@ -15,7 +15,8 @@ because we no longer use cbinom
 
 * changed output table for CP model summary to show point estimates and CIs for
 medianCP and r statistics rather than showing point estimates and CIs for 
-location and scale parameters and just point estimates for medianCP and r statistics (GUI)
+location and scale parameters and just point estimates for medianCP and r 
+statistics (GUI)
 
 * added a function [desc(model_CP,...)] to calculate medianCP and r statistics 
 (with CIs) for user-specified intervals (command-line). This function is used 
@@ -23,10 +24,14 @@ internally in the GUI for producing display tables for CP models.
 
 * simplified the code flow for writing CP summary tables:
 (1) eliminated the superfluous data structures rv$modTabPretty_CP and 
-rv$modTabDL_CP, instead storing the table of summary statistics for a selected CP model in rv$modTab_CP. Previously, there were three extremely 
-similar sets of data stored under different names. Now there is only one. 
+rv$modTabDL_CP, instead storing the table of summary statistics for a selected 
+CP model in rv$modTab_CP. Previously, there were three extremely similar sets of 
+data stored under different names. Now there is only one.
+(2) create "pretty" data table for GUI rendering in one function call and only
+when needed
 
-* removed the function "renderDTns", which simply called an existing function [renderDataTable(...)] with arg "server = FALSE" and was superfluous.
+* removed the function "renderDTns", which simply called an existing function 
+[renderDataTable(...)] with arg "server = FALSE" and was superfluous.
 
 * added DT:: prefixes to calls to renderDataTable to disambiguate the functions
 in 'shiny' and 'DT'
