@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_utilities.R
 \name{sizeCols}
 \alias{sizeCols}
-\title{Select the potential size class columns from a data table}
+\title{Select the potential carcass class columns from a data table}
 \usage{
 sizeCols(data)
 }
@@ -10,9 +10,9 @@ sizeCols(data)
 \item{data}{data table}
 }
 \value{
-column names of columns that can be size class values
+column names of columns that can be carcass class values
 }
 \description{
 Simple function to facilitate selection of columns that could
-  be size class values from a data table
+  be carcass class values from a data table
 }

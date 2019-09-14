@@ -13,21 +13,21 @@ kFixedWidgetHeader(sizeclasses)
 kFixedWidgetRow(sizeclasses, sci)
 }
 \arguments{
-\item{sizeclasses}{Vector of size class names (from the reactive values 
+\item{sizeclasses}{Vector of carcass class names (from the reactive values
 list).}
 
-\item{sci}{name of size class element index.}
+\item{sci}{name of carcass class element index.}
 }
 \value{
 Rendered HTML kFixed input widget.
 }
 \description{
-Produce a kFixed input widget based on the size classes.
+Produce a kFixed input widget based on the carcass classes.
 }
 \details{
 \code{kFixedWidgetHeader} creates the widget header based on
-  the number of size classes.
+  the number of carcass classes.
 
 \code{kFixedWidgetRow} creates a row of the widget (input
-  for one size class).
+  for one carcass class).
 }

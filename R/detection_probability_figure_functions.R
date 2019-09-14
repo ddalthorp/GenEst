@@ -201,7 +201,7 @@ plot.gGenericSize <- function(x, CL = 0.90, ...){
     text(0.5, 1.15, labelText, xpd = TRUE, cex = 0.5, adj = 0)
 
     if (!is.null(sci)){
-      text_sc <- paste("Size class: ", sci, sep = "")
+      text_sc <- paste("Carcass class: ", sci, sep = "")
       text(x = 0.5, y = 1.25, xpd = TRUE, text_sc, adj = 0, cex = 0.5)
     }
 

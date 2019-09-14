@@ -25,12 +25,12 @@ prettyModTabSE <- function(modTab, CL = 0.90){
   ncell <- nrow(out)
 
   for (celli in 1:ncell){
-    p_m <- modTab[celli, "p_median"]
-    p_l <- modTab[celli, "p_lower"]
-    p_u <- modTab[celli, "p_upper"]
-    k_m <- modTab[celli, "k_median"]
-    k_l <- modTab[celli, "k_lower"]
-    k_u <- modTab[celli, "k_upper"]
+    p_m <- round(modTab[celli, "p_median"], 3)
+    p_l <- round(modTab[celli, "p_lower"], 3)
+    p_u <- round(modTab[celli, "p_upper"], 3)
+    k_m <- round(modTab[celli, "k_median"], 3)
+    k_l <- round(modTab[celli, "k_lower"], 3)
+    k_u <- round(modTab[celli, "k_upper"], 3)
     out[celli, "p_median"] <- paste0(p_m, " [", p_l, ", ", p_u, "]")
 
     if (is.na(k_m)){
@@ -67,9 +67,6 @@ dlModTabSE <- function(modTab, CL = 0.90){
   }
 
   out <- modTab
-#  lo <- 100 * (1 - CL) / 2
-#  up <- 100 - 100 * (1 - CL) / 2
-#  coltypes <- c("Median", paste0(lo, "%"), paste0(up, "%"))
   coltypes <- c("Median", (1 - CL)/2, 1 - (1 - CL)/2)
   colnames(out) <- c("Cell", "n", paste0("p_", coltypes),
                      paste0("k_", coltypes))
@@ -79,84 +76,36 @@ dlModTabSE <- function(modTab, CL = 0.90){
 #' @title Create the pretty version of the Carcass Persistence model table
 #'
 #' @description Format a reader-friendly version of the parameter table from
-#'   a Carcass Persistence model, based on confidence level of interest
+#'  a carcass persistence model showing CIs for medianCP and for rI's for
+#'  intervals of Ir
 #'
-#' @param modTabs model tables
+#' @param table_CP \code{descCP} object or NULL
 #'
-#' @param CL Confidence level
-#'
-#' @return pretty version of the CP model table
-#'
-#' @export
-#'
-prettyModTabCP <- function(modTabs, CL = 0.90){
-  modTab <- modTabs[["ls"]]
-  modTab_d <- modTabs[["desc"]]
-  out <- modTab[ , c("cell", "n", "l_median", "s_median")]
-  ncell <- nrow(out)
-
-  for (celli in 1:ncell){
-    l_m <- modTab[celli, "l_median"]
-    l_l <- modTab[celli, "l_lower"]
-    l_u <- modTab[celli, "l_upper"]
-    s_m <- modTab[celli, "s_median"]
-    s_l <- modTab[celli, "s_lower"]
-    s_u <- modTab[celli, "s_upper"]
-    out[celli, "l_median"] <- paste0(l_m, " [", l_l, ", ", l_u, "]")
-
-    if (s_m == s_l & s_m == s_u & s_m == 1){
-      out[celli, "s_median"] <- "1"
-    } else{
-      out[celli, "s_median"] <- paste0(s_m, " [", s_l, ", ", s_u, "]")
-    }
-  }
-
-  colnames(out) <- c("Cell", "n", c("Location", "Scale"))
-  cellCol <- which(colnames(modTab_d) == "cell")
-  out_d <- modTab_d[ , -cellCol]
-  for (celli in 1:ncell){
-    cellMatch <- which(out$Cell == modTab_d$cell[celli])
-    out_d[celli, ] <- round(modTab_d[cellMatch, -cellCol], 2)
-  }
-  colnames(out_d)[which(colnames(out_d) == "median")] <- "Median CP"
-  out <- cbind(out, out_d)
-  return(out)
-}
-
-#' @title Create the download version of the Carcass Persistence model table
-#'
-#' @description Format a user-friendly version of the parameter table from
-#'   a Carcass Persistence model, based on confidence level of interest
-#'
-#' @param modTabs model tables
-#'
-#' @param CL Confidence level
-#'
-#' @return download version of the SE model table
+#' @return pretty version of the CP model table in a data frame with point
+#'  and interval estimates for medianCP and rI statistics. Output table is
+#'  ready for rendering in shiny and posting in the GUI
 #'
 #' @export
 #'
-dlModTabCP <- function(modTabs, CL = 0.90){
-  modTab <- modTabs[["ls"]]
-  modTab_d <- modTabs[["desc"]]
-  ncell <- nrow(modTab)
-  out <- modTab
-#  lo <- 100 * (1 - CL) / 2
-#  up <- 100 - 100 * (1 - CL) / 2
-  coltypes <- c("Median",(1 - CL)/2, 1 - (1 - CL)/2)
-#  coltypes <- c("Median", paste0(lo, "%"), paste0(up, "%"))
-  colnames(out) <- c("Cell", "n", paste0("l_", coltypes),
-                     paste0("s_", coltypes))
-  cellCol <- which(colnames(modTab_d) == "cell")
-  out_d <- modTab_d[ , -cellCol]
-  for (celli in 1:ncell){
-    cellMatch <- which(out$Cell == modTab_d$cell[celli])
-    out_d[celli, ] <- round(modTab_d[cellMatch, -cellCol], 2)
+
+prettyModTabCP <- function(table_CP){
+  if(is.null(table_CP))
+    return(data.frame(msg = "Selected model was not successfully fit."))
+  if (!"descCP" %in% class(table_CP)) stop("table_CP must be a descCP object")
+  # descCP objects are matrices with have 3n named columns and ncell named rows
+
+  modTab <- round(table_CP, 3)
+  out <- data.frame(array(dim = 0:1 + (dim(table_CP) - 0:1)/c(1, 3)))
+  names(out) <- c("n", colnames(table_CP)[which((1:dim(table_CP)[2])%%3 == 2)])
+  rownames(out) <- row.names(modTab)
+  out$n <- table_CP[ , "n"]
+  for (i in 2:ncol(out)){
+    out[ , i] <- paste0(modTab[, 2 + 3*(i - 2)],
+      "  [", modTab[ , 3 + 3*(i - 2)], ", ", modTab[ , 4 + 3*(i - 2)], "]")
   }
-  colnames(out_d)[which(colnames(out_d) == "median")] <- "Median_CP"
-  out <- cbind(out, out_d)
   return(out)
 }
+
 
 #' @title Create the pretty version of the split summary table
 #'

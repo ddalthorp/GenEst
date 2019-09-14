@@ -15,7 +15,7 @@ estM(data_CO, data_SS, data_DWP = NULL, frac = 1,
 
 \item{data_SS}{Search Schedule data}
 
-\item{data_DWP}{Survey unit (rows) by size (columns) density weighted
+\item{data_DWP}{Survey unit (rows) by carcass class (columns) density weighted
 proportion table}
 
 \item{frac}{fraction carcasses on ground that was surveyed but not accounted
@@ -24,10 +24,10 @@ for in DWP}
 \item{COdate}{Column name for the date found data}
 
 \item{model_SE}{Searcher Efficiency model (or list of models if there are
-multiple size classes)}
+multiple carcass classes)}
 
 \item{model_CP}{Carcass Persistence model (or list of models if there are
-multiple size classes)}
+multiple carcass classes)}
 
 \item{model_DWP}{fitted dwp model (optional)}
 
@@ -35,14 +35,14 @@ multiple size classes)}
 
 \item{SSdate}{Column name for the date searched data}
 
-\item{sizeCol}{Name of colum in \code{data_CO} where the size classes
+\item{sizeCol}{Name of colum in \code{data_CO} where the carcass classes
 are recorded. Optional. If none provided, it is assumed there is no
-distinctions among size classes.}
+distinctions among carcass classes.}
 
 \item{IDcol}{column with unique carcass (CO) identifier}
 
 \item{DWPCol}{Column name for the DWP values in the DWP table when no
-size class is used and there is more than one column in \code{data_DWP}
+carcass class is used and there is more than one column in \code{data_DWP}
 that could be interpreted as DWP.}
 
 \item{seed_SE}{seed for random draws of the SE model}
