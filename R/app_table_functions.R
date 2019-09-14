@@ -106,7 +106,6 @@ prettyModTabCP <- function(table_CP){
   return(out)
 }
 
-
 #' @title Create the pretty version of the split summary table
 #'
 #' @description Format a reader-friendly version of the split summary table
