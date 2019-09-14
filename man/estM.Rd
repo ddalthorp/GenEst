@@ -31,6 +31,8 @@ multiple carcass classes)}
 
 \item{model_DWP}{fitted dwp model (optional)}
 
+\item{model_DWP}{fitted dwp model (optional)}
+
 \item{unitCol}{Column name for the unit indicator (optional)}
 
 \item{SSdate}{Column name for the date searched data}
@@ -38,6 +40,8 @@ multiple carcass classes)}
 \item{sizeCol}{Name of colum in \code{data_CO} where the carcass classes
 are recorded. Optional. If none provided, it is assumed there is no
 distinctions among carcass classes.}
+
+\item{IDcol}{column with unique carcass (CO) identifier}
 
 \item{IDcol}{column with unique carcass (CO) identifier}
 

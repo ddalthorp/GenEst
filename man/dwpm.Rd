@@ -46,6 +46,7 @@ The fraction of carcasses falling in the area searched at a turbine
  and columns giving (at a minimum) unique carcass IDs, turbine ID, distance
  from turbine, and fraction of area searched at the given distance at the
  given turbine. Optional columns may include carcass class, covariates that may
+
  influence detection probability (e.g., visibility class), and direction.
  If covariates are to be included in the model, then the fraction of area
  column would give the fraction of the area in the given covariate level at
