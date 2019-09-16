@@ -430,8 +430,6 @@ update_rv <- function(eventName, rv, input){
       c(rv$preds_CP, rv$ltp, rv$sizeCol))
 
     if (!is.null(rv$sizeCol)){
-#      sizeclasses <- sort(unique(
-#        c(rv$data_SE[ , rv$sizeCol], rv$data_CP[ , rv$sizeCol])))
       rv$sizeclasses <- sort(unique(
         c(rv$data_SE[ , rv$sizeCol], rv$data_CP[ , rv$sizeCol])))
       rv$sizeclasses_k <- sort(unique(rv$data_SE[ , rv$sizeCol]))
@@ -679,12 +677,7 @@ update_rv <- function(eventName, rv, input){
       rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
       rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
-      rv$modTab_CP <- list(
-           ls = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cell_ls,
-           desc = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cell_desc
-                       )
-      rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
-      rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+      rv$modTab_CP <- desc(rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]], rv$CL)
       rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
       rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
       rv$figW_CP <- setFigW(rv$modSet_CP)
@@ -723,12 +716,7 @@ update_rv <- function(eventName, rv, input){
       rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
       rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
-      rv$modTab_CP <- list(
-           ls = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cell_ls,
-           desc = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]]$cell_desc
-                       )
-      rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
-      rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+      rv$modTab_CP <- desc(rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]], CL = rv$CL)
       rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
       rv$figW_CP <- setFigW(rv$modSet_CP)
       rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
@@ -743,16 +731,9 @@ update_rv <- function(eventName, rv, input){
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
 
       if (rv$outCPdlstab %in% names(rv$modSet_CP)){
-        rv$modTab_CP <- list(ls = rv$modSet_CP[[rv$outCPdlstab]]$cell_ls,
-                         desc = rv$modSet_CP[[rv$outCPdlstab]]$cell_desc
-                         )
-        rv$modTabPretty_CP <- prettyModTabCP(rv$modTab_CP, rv$CL)
-        rv$modTabDL_CP <- dlModTabCP(rv$modTab_CP, rv$CL)
+        rv$modTab_CP <- desc(rv$modSet_CP[[rv$outCPdlstab]], CL = rv$CL)
       } else {
         rv$modTab_CP <- NULL
-        holder <- data.frame(msg = "Selected model was not successfully fit.")
-        rv$modTabPretty_CP <- holder
-        rv$modTabDL_CP <- holder
       }
     }
   }
@@ -928,7 +909,7 @@ update_rv <- function(eventName, rv, input){
                 frac = rv$frac, model_SE = rv$models_SE,
                 model_CP = rv$models_CP,
                 COdate = rv$COdate, DWPCol = dwpcol,
-                sizeCol = rv$sizeCol_M, nsim = rv$nsim,
+                sizeCol = rv$sizeCol_M, nsim = rv$nsim, IDcol = rv$xIDcol,
                 max_intervals = 8
               ), error = function(e) e)
     if (!("error" %in% class(rv$M))){

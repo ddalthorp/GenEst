@@ -65,7 +65,7 @@ the assumption that the \code{k} parameter is fixed and known to be
  single model.}
 
 \item{sizeCol}{character string. The name of the column in \code{data} that
-gives the size class of the carcasses in the field trials. If
+gives the carcass class of the carcasses in the field trials. If
 \code{sizeCol = NULL}, then models are not segregated by size. If a
 \code{sizeCol} is provided, then separate models are fit for the \code{data}
 subsetted by \code{sizeCol}.}
@@ -227,7 +227,7 @@ via the \code{$} operator:
 
 \section{Advanced}{
 
- \code{pkmSize} may also be used to fit a single model for each size class if
+ \code{pkmSize} may also be used to fit a single model for each carcass class if
  \code{allCombos = FALSE}. To do so, \code{formula_p} and \code{formula_k}
  must be a named list of formulas with names matching the sizes listed in
  \code{unique(data[, sizeCol])}. The return value is then a list of

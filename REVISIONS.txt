@@ -1,4 +1,65 @@
 Revision log
+
+2019.09.13
+v1.3.2
+
+* correction of bug that incorrectly caused a pk model error when all carcasses
+were either found or not found on the first search in SE field trials with no
+covariates (GUI and command line). 
+
+* correction of bug in error-checking for carcass ID column selection (GUI).
+GUI users may notice better software stability in the "Estimate" button under 
+the "Mortality Estimation" tab.
+
+* removed dependency on cbinom and removed supporting functions for cbinom 
+because we no longer use cbinom
+
+* changed output table for CP model summary to show point estimates and CIs for
+medianCP and r statistics rather than showing point estimates and CIs for 
+location and scale parameters and just point estimates for medianCP and r 
+statistics (GUI)
+
+* added a function [desc(model_CP,...)] to calculate medianCP and r statistics 
+(with CIs) for user-specified intervals (command-line). This function is used 
+internally in the GUI for producing display tables for CP models.
+
+* simplified the code flow for writing CP summary tables:
+(1) eliminated the superfluous data structures rv$modTabPretty_CP and 
+rv$modTabDL_CP, instead storing the table of summary statistics for a selected 
+CP model in rv$modTab_CP. Previously, there were three extremely similar sets of 
+data stored under different names. Now there is only one.
+(2) create "pretty" data table for GUI rendering in one function call and only
+when needed
+
+* removed the function "renderDTns", which simply called an existing function 
+[renderDataTable(...)] with arg "server = FALSE" and was superfluous.
+
+* added DT:: prefixes to calls to renderDataTable to disambiguate the functions
+in 'shiny' and 'DT'
+
+* other superfluous functions were removed: trueLength, isNeverDecreasing, 
+Ecbinom, cbmean, DWPbyCarcass
+
+* the .rda was removed because it had data strictly for processing cbinom bias
+corrections
+
+* corrected an error that led to omission of the $n column in the $cell_ab table
+in cpm objects that were fit with scale parameter modeled as an additive
+function of two predictors or a function of more than two predictors. 
+
+* changed the display and help name for "size" to "class" to reflect broader
+interpretation of carcass types beyond just size. In the underlying code, the 
+word "size" is preserved to maintain robustness and to be compatible with legacy
+code that command-line users may have developed for analyses or explorations.
+
+* changed pk model summary statistics output table to show only 3 digits instead
+of 6 (GUI).
+
+* moved the cell names from the first column of the descriptive statistics for 
+CP model into the row names instead. This makes it easier to work with the data
+sets because they are all numeric rather than being a mix of names and numeric.
+modes
+
 2019.08.22
 v1.3.1
 

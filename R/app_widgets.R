@@ -122,11 +122,11 @@ modelInputWidget <- function(inType){
              "CL" = "Confidence Level:", 
              "class" = "Carcass Class Column (optional):",
              "obsSE" = "Observations:", 
-             "predsSE" = "Predictor Variables:", 
+             "predsSE" = "Predictor Variables (optional):",
              "kFixedInput" = NULL, 
              "ltp" = "Last Time Present:", 
              "fta" = "First Time Absent:", 
-             "predsCP" = "Predictor Variables:", 
+             "predsCP" = "Predictor Variables (optional):",
              "dist" = "Distributions to Include",
              "xID" = "Carcass ID Column (CO)",
              "frac" = "Fraction of Facility Surveyed:",
@@ -359,7 +359,7 @@ preTextMaker <- function(modType){
              "SE" = "Select observation columns to run model",
              "CP" = "Select observation columns to run model",
              "M" = c("Select carcass ID column to run model",
-                      "Select SE and CP models fit to matching size classes to
+                      "Select SE and CP models fit to matching carcass classes to
                       run model",
                      "Input Search Schedule data to run model",
                      "Select input columns to run model",
@@ -425,12 +425,12 @@ modelOutputWidget <- function(modType){
              "g" = "outgclass")
 
   sLabel <- switch(modType,
-              "SE" = c("Size Class:", "p Model:", "k Model:"),
-              "CP" = c("Size Class:", "Distribution:", "Location:", 
+              "SE" = c("Carcass Class:", "p Model:", "k Model:"),
+              "CP" = c("Carcass Class:", "Distribution:", "Location:",
                        "Scale:"),
               "M" = c("Search Schedule (SS) Variable:",
                       "Carcass Observation (CO) Variable:"),
-              "g" = "Size Class:")
+              "g" = "Carcass Class:")
 
   sArgs <- switch(modType,
               "SE" = list(list(choices = " ", multiple = FALSE),
@@ -496,7 +496,7 @@ splitButtonWidget <- function(){
 
 #' @title Make a Model Selection Widget
 #'
-#' @description Produce a Size-Class-based model selection widget based 
+#' @description Produce a Carcass-Class-based model selection widget based
 #'   on the model inputs. 
 #'
 #' @param mods Model Set Size object (from the reactive values list).
@@ -530,7 +530,7 @@ modelSelectionWidget <- function(mods, modType){
 #' @rdname modelSelectionWidget
 #'
 #' @details \code{modelSelectionWidgetHeader} creates header text depending on
-#'   if there is one size class or more than one.
+#'   if there is one carcass class or more than one.
 #'
 #' @export
 #'
@@ -561,9 +561,9 @@ modelSelectionWidgetHeader <- function(mods){
 #' @rdname modelSelectionWidget
 #'
 #' @details \code{modelSelectionWidgetRow} creates a row of the widget (input
-#'   for one size class).
+#'   for one carcass class).
 #'
-#' @param sci Name of size class element
+#' @param sci Name of carcass class element
 #'
 #' @export
 #'
@@ -577,7 +577,7 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
   }
   sizeclasses <- names(mods)
   nsizeclasses <- length(mods)
-  if (! sci %in% sizeclasses) stop(sci, "not in size classes")
+  if (! sci %in% sizeclasses) stop(sci, "not in carcass classes")
   if (modType == "SE"){
     AICcTab <- aicc(mods[[sci]], quiet = TRUE)
   }
@@ -616,9 +616,9 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
 
 #' @title Make a kFixed Widget
 #'
-#' @description Produce a kFixed input widget based on the size classes. 
+#' @description Produce a kFixed input widget based on the carcass classes.
 #'
-#' @param sizeclasses Vector of size class names (from the reactive values 
+#' @param sizeclasses Vector of carcass class names (from the reactive values
 #'   list).
 #'
 #' @return Rendered HTML kFixed input widget.
@@ -639,7 +639,7 @@ kFixedWidget <- function(sizeclasses){
 #' @rdname kFixedWidget
 #'
 #' @details \code{kFixedWidgetHeader} creates the widget header based on
-#'   the number of size classes.
+#'   the number of carcass classes.
 #'
 #' @export
 #'
@@ -652,9 +652,9 @@ kFixedWidgetHeader <- function(sizeclasses){
 #' @rdname kFixedWidget
 #'
 #' @details \code{kFixedWidgetRow} creates a row of the widget (input
-#'   for one size class).
+#'   for one carcass class).
 #'
-#' @param sci name of size class element index.
+#' @param sci name of carcass class element index.
 #'
 #' @export
 #'

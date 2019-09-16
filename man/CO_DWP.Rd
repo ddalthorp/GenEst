@@ -13,7 +13,7 @@ CO_DWP(dwpsim, data_CO, unitCol, sizeCol = NULL)
 
 \item{unitCol}{name of the unit column in data_CO (required)}
 
-\item{sizeCol}{name of the size column in data_CO (optional).}
+\item{sizeCol}{name of the carcass class column in data_CO (optional).}
 }
 \value{
 numeric DWP array

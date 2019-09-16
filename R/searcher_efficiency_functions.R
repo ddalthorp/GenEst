@@ -97,7 +97,7 @@
 #'  single model.
 #'
 #' @param sizeCol character string. The name of the column in \code{data} that
-#'  gives the size class of the carcasses in the field trials. If
+#'  gives the carcass class of the carcasses in the field trials. If
 #'  \code{sizeCol = NULL}, then models are not segregated by size. If a
 #'  \code{sizeCol} is provided, then separate models are fit for the \code{data}
 #'  subsetted by \code{sizeCol}.
@@ -199,7 +199,7 @@
 #' }
 #'
 #' @section Advanced:
-#'  \code{pkmSize} may also be used to fit a single model for each size class if
+#'  \code{pkmSize} may also be used to fit a single model for each carcass class if
 #'  \code{allCombos = FALSE}. To do so, \code{formula_p} and \code{formula_k}
 #'  must be a named list of formulas with names matching the sizes listed in
 #'  \code{unique(data[, sizeCol])}. The return value is then a list of
@@ -243,7 +243,7 @@ pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
       out <- pkmSet(formula_p = formula_p, formula_k = formula_k, data = data,
         obsCol = obsCol, kFixed = kFixed, kInit = kInit, CL = CL, quiet = quiet)
     }
-  } else { # specified formula for p and k, split by size class
+  } else { # specified formula for p and k, split by carcass class
     out <- pkmSize(formula_p = formula_p, formula_k = formula_k, data = data,
       obsCol = obsCol, kFixed = kFixed, sizeCol = sizeCol, allCombos = allCombos,
       CL = CL, kInit = kInit, quiet = quiet)
@@ -430,7 +430,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   nbeta_p <- ncol(dataMM_p)
   nbeta <- nbeta_p + nbeta_k
   if (length(preds) == 0){
-    carcCells <- rep("all", ncarc)
+    carcCells <- rep("all", dim(data0)[1])
   } else if (length(preds) == 1){
     carcCells <- data0[ , preds]
   } else if (length(preds) > 1){
@@ -840,7 +840,7 @@ pkmSize <- function(formula_p, formula_k = NULL, data, kFixed = NULL,
       }
     } else {
       if (is.null(names(kFixed)) || !all(names(kFixed) %in% sizeclasses)){
-        stop("kFixed names must be names of size classes.")
+        stop("kFixed names must be names of carcass classes.")
       }
     }
   }
@@ -849,7 +849,7 @@ pkmSize <- function(formula_p, formula_k = NULL, data, kFixed = NULL,
       # then fit the specific models for each formula and corresponding size
       if (!setequal(names(formula_p), names(formula_k)) ||
           !setequal(names(formula_p), unique(data[ , sizeCol]))){
-        stop("p and k formula names must match size classes")
+        stop("p and k formula names must match carcass classes")
       }
       formlist <- TRUE
     } else {

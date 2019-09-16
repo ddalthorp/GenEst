@@ -251,14 +251,14 @@ combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
 
 #' @title Trim a Model-Set-Size Complex to a Single Model Per Size
 #'
-#' @description Select a single model from each size class (based on the model
+#' @description Select a single model from each carcass class (based on the model
 #'   names).
 #'
 #' @param modSetSize modSetSize complex (cpm or pkm)
 #'
-#' @param mods named (according to size classes) vector of model names to use
+#' @param mods named (according to carcass classes) vector of model names to use
 #'
-#' @return modSetSize reduced to a single model per size class
+#' @return modSetSize reduced to a single model per carcass class
 #'
 #' @export
 #'
