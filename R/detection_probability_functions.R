@@ -10,13 +10,13 @@
 #' @param COdate Column name for the date found data
 #'
 #' @param model_SE Searcher Efficiency model (or list of models if there are
-#'   multiple size classes)
+#'   multiple carcass classes)
 #'
 #' @param model_CP Carcass Persistence model (or list of models if there are
-#'   multiple size classes)
+#'   multiple carcass classes)
 #'
 #' @param model_DWP Density weighted proportion model (or list of models if
-#'  there are multiple size classes)
+#'  there are multiple carcass classes)
 #'
 #' @param unitCol Column name for the unit indicator
 #'
@@ -26,7 +26,7 @@
 #'   If not provided, \code{estg} will try to find the SSdate among
 #'   the columns in data_SS. See \code{\link{prepSS}}.
 #'
-#' @param sizeCol Name of column in \code{data_CO} where the size classes
+#' @param sizeCol Name of column in \code{data_CO} where the carcass classes
 #'   are recorded. Optional. If not provided, no distinctions are made among
 #'   sizes. \code{sizeCol} not only identifies what the name of the size
 #    column is, it also identifies that the model should include size as a 
@@ -125,13 +125,13 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
     model_CP <- list("value" = model_CP)
   } else {
     if (!(sizeCol %in% colnames(COdat))){
-      stop("size class column not in carcass data.")
+      stop("carcass class column not in carcass data.")
     }
     if (length(setdiff(names(model_SE), names(model_CP))) > 0) {
-      stop("model_SE and model_CP must encompass the same size classes")
+      stop("model_SE and model_CP must encompass the same carcass classes")
     }
     if (!all(COdat[, sizeCol] %in% names(model_SE))){
-      stop("no SE model for some size class represented in data_CO")
+      stop("no SE model for some carcass class represented in data_CO")
     }
   }
   sizeclass <- as.list(as.character(COdat[, sizeCol]))
@@ -145,7 +145,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
     }
     if (sum(diag(model_SE[[sc]]$varbeta) < 0) > 0){
       stop("
-        Cannot estimate variance in user-supplied pk model for size '", sc,
+        Cannot estimate variance in user-supplied pk model for carcass class '", sc,
         "' Aborting calculation of ghat."
       )
     }
@@ -162,7 +162,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   COpreds <- lapply(preds, function(x) x[x %in% names(COdat)])
   SSpreds <- lapply(preds, function(x) x[!(x %in% names(COdat))])
   if (max(unlist(lapply(SSpreds, length))) > 1){
-    stop("At most 1 SS predictor is allowed per size class.")
+    stop("At most 1 SS predictor is allowed per carcass class.")
   }
   if (length(unlist(SSpreds)) > 0 && !all(unlist(SSpreds) %in% names(SSdat))){
     stop("Model predictor missing from both CO and SS data.")
@@ -412,7 +412,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
 #'
 #' @param unitCol name of the unit column in data_CO (required)
 #'
-#' @param sizeCol name of the size column in data_CO (optional).
+#' @param sizeCol name of the carcass class column in data_CO (optional).
 #'
 #' @return numeric DWP array
 #'
@@ -751,7 +751,7 @@ calcg <- function(days, param_SE, param_CP, dist){
   return(prob_obs)
 }
 
-#' @title Estimate generic detection probability for multiple size classes
+#' @title Estimate generic detection probability for multiple carcass classes
 #'
 #' @description Generic g estimation for a combination of SE model and CP
 #'   model under a given search schedule
@@ -839,14 +839,14 @@ estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
   sizeclasses_CP <- names(modelSetSize_CP)
   if (!all(sizeclasses_SE %in% sizeclasses_CP) ||
       !all(sizeclasses_CP %in% sizeclasses_SE)){
-    stop("Size classes don't match between SE and CP model sets")
+    stop("Carcass classes don't match between SE and CP model sets")
   }
   sizeclasses <- sort(unique(c(sizeclasses_SE, sizeclasses_CP)))
   nsizeclass <- length(sizeclasses)
   # check whether k is included in every model. If not, error.
   for (sci in sizeclasses){
     if (modelSetSize_SE[[sci]][[modelSizeSelections_SE[sci]]]$pOnly){
-     stop("k required for SE model for size = ", sci)
+     stop("k required for SE model for carcass class = ", sci)
     }
   }
   ghats <- list()

@@ -55,7 +55,7 @@ downloadCPmod <- function(rv, input){
         }
         if (!is.null(modChoices[[sci]])){
           suppressWarnings(write.table(rv$mods_CP[[sci]][[selected_mods[[sci]]]]$cell_ls,
-            row.names = FALSE, file = file, quote = FALSE, append = TRUE))
+            row.names = TRUE, file = file, quote = FALSE, append = TRUE))
         }
         cat("\n", file = file, append = TRUE)
       }
@@ -346,7 +346,7 @@ downloadTable <- function(filename, tablename, csvformat){
   }
   downloadHandler(filename = filename, content = function(file){
     fcn <- get(paste0("write.csv", csvformat))
-    fcn(x = tablename, file = file, row.names = FALSE)
+    fcn(x = tablename, file = file, row.names = TRUE)
   })
 }
 

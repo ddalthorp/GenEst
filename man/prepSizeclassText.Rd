@@ -2,16 +2,16 @@
 % Please edit documentation in R/app_utilities.R
 \name{prepSizeclassText}
 \alias{prepSizeclassText}
-\title{Prepare text for size classes}
+\title{Prepare text for carcass classes}
 \usage{
 prepSizeclassText(sizeclasses)
 }
 \arguments{
-\item{sizeclasses}{names of the size classes}
+\item{sizeclasses}{names of the carcass classes}
 }
 \value{
 prepared and render name text
 }
 \description{
-Prepare and render text of the size class names
+Prepare and render text of the carcass class names
 }

@@ -171,14 +171,14 @@ dateCols <- function(data){
   return(out)
 }
 
-#' @title Select the potential size class columns from a data table
+#' @title Select the potential carcass class columns from a data table
 #'
 #' @description Simple function to facilitate selection of columns that could
-#'   be size class values from a data table
+#'   be carcass class values from a data table
 #'
 #' @param data data table
 #'
-#' @return column names of columns that can be size class values
+#' @return column names of columns that can be carcass class values
 #'
 #' @export
 #'
@@ -502,11 +502,11 @@ countCarcs <- function(mods){
   return(ncarc)
 }
 
-#' @title Prepare text for size classes 
+#' @title Prepare text for carcass classes
 #'
-#' @description Prepare and render text of the size class names
+#' @description Prepare and render text of the carcass class names
 #'
-#' @param sizeclasses names of the size classes
+#' @param sizeclasses names of the carcass classes
 #'
 #' @return prepared and render name text
 #'
@@ -632,8 +632,7 @@ initialReactiveValues <- function(){
     outCPdlstab = NULL, sizeclasses_CP = NULL, AICcTab_CP = NULL, 
     modOrder_CP = NULL, modNames_CP = NULL, modNames_CPdist = NULL, 
     modNames_CPl = NULL, modNames_CPs = NULL, modSet_CP = NULL, 
-    best_CP = NULL, modTab_CP = NULL, modTabPretty_CP = NULL, 
-    modTabDL_CP = NULL, figH_CP = 700, figW_CP = 800,
+    best_CP = NULL, modTab_CP = NULL, figH_CP = 700, figW_CP = 800,
 
     M = NULL, Msplit = NULL, unitCol = NULL, colNames_xID = NULL, xIDcol = NULL,
     frac = 1, sizeCol_M = NULL, DWPCol = NULL, COdate = NULL,
@@ -650,17 +649,17 @@ initialReactiveValues <- function(){
   )
 }
 
-#' @title Update the size classes
+#' @title Update the carcass classes
 #'
-#' @description Determine the options for size classes, based on a data table
-#'   and column name, returning \code{NULL} if no size class column is
+#' @description Determine the options for carcass classes, based on a data table
+#'   and column name, returning \code{NULL} if no carcass class column is
 #'   provided
 #'
 #' @param data data table to draw sizes from
 #'
-#' @param sizeCol size class column name
+#' @param sizeCol carcass class column name
 #'
-#' @return unique size classes
+#' @return unique carcass classes
 #'
 #' @export
 #'
@@ -673,15 +672,15 @@ updateSizeclasses <- function(data, sizeCol){
 
 #' @title Locate the sizeclass selected by the inputs
 #'
-#' @description Locate the selection of a size class from the size class 
-#'   column, retuning the first option from the size classes if the selection
+#' @description Locate the selection of a carcass class from the carcass class
+#'   column, retuning the first option from the carcass classes if the selection
 #'   is not available. 
 #'
-#' @param sizeclasses size class options
+#' @param sizeclasses carcass class options
 #'
-#' @param choice size class chosen
+#' @param choice carcass class chosen
 #'
-#' @return location of the size class chosen
+#' @return location of the carcass class chosen
 #'
 #' @export
 #'
@@ -695,13 +694,13 @@ pickSizeclass <- function(sizeclasses, choice){
   return(sizeclass)
 }
 
-#' @title Update the name of the size class column based on available names
+#' @title Update the name of the carcass class column based on available names
 #'
-#' @description Update the size class column name based on the available
-#'   options. If the existing size class column name is no longer in the
+#' @description Update the carcass class column name based on the available
+#'   options. If the existing carcass class column name is no longer in the
 #'   set of available names, a NULL is returned to reset the column name.
 #'
-#' @param sizeCol current size class column name
+#' @param sizeCol current carcass class column name
 #'
 #' @param colNames_size updated vector of size column names in all needed 
 #'   tables

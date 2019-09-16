@@ -45,7 +45,7 @@ The fraction of carcasses falling in the area searched at a turbine
  To fit a model, \code{data_DWP} should be a data frame with a row for each carcass
  and columns giving (at a minimum) unique carcass IDs, turbine ID, distance
  from turbine, and fraction of area searched at the given distance at the
- given turbine. Optional columns may include size class, covariates that may
+ given turbine. Optional columns may include carcass class, covariates that may
  influence detection probability (e.g., visibility class), and direction.
  If covariates are to be included in the model, then the fraction of area
  column would give the fraction of the area in the given covariate level at
@@ -54,8 +54,8 @@ The fraction of carcasses falling in the area searched at a turbine
  point estimates only are provided. In that case, if there are no distinctions
  among carcass classes (e.g., size), then \code{data_DWP} should be a dataframe
  with one column giving the unit (e.g., turbine) and one column with the DWP
- at each unit; if distinctions are made among sizes, then \code{data_DWP} would
- be a data frame with a unit column and a DWP column for each size class. If
+ at each unit; if distinctions are made among carcass classes, then \code{data_DWP} would
+ be a data frame with a unit column and a DWP column for each carcass class. If
  the DWP estimates incorporate uncertainties, then \code{data_DWP} should be
  an array with \code{n_unit * nsim} rows and with colunms for units and DWPs for
  each carcass class.

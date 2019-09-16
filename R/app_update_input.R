@@ -48,14 +48,6 @@ update_input <- function(eventName, rv, input, session){
                  "modelChoices_CP1", "file_SS", "file_DWP", "file_CO", "COdate",
                  "sizeCol")
     lapply(toReset, reset)
-#    scc <- rv$colNames_size
-#    if (is.null(scc)){
-#      scc <- ""
-#    }
-#    scs <- rv$sizeCol      # why would the sizeCol not be cleared when all the data sets are?
-#    if (is.null(scc)){
-#      scs <- ""
-#    }
     updateSelectizeInput(session, "predsSE", choices = "")
     updateSelectizeInput(session, "obsSE", choices = "")
 #    updateSelectizeInput(session, "class", choices = scc, selected = scs)

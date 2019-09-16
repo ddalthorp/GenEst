@@ -17,19 +17,19 @@ modelSelectionWidgetRow(mods, modType, sci)
 
 \item{modType}{Model type, either "SE" or "CP".}
 
-\item{sci}{Name of size class element}
+\item{sci}{Name of carcass class element}
 }
 \value{
 Rendered HTML model selection menu widget.
 }
 \description{
-Produce a Size-Class-based model selection widget based 
+Produce a Carcass-Class-based model selection widget based
   on the model inputs.
 }
 \details{
 \code{modelSelectionWidgetHeader} creates header text depending on
-  if there is one size class or more than one.
+  if there is one carcass class or more than one.
 
 \code{modelSelectionWidgetRow} creates a row of the widget (input
-  for one size class).
+  for one carcass class).
 }

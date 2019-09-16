@@ -2,20 +2,20 @@
 % Please edit documentation in R/app_utilities.R
 \name{updateSizeclasses}
 \alias{updateSizeclasses}
-\title{Update the size classes}
+\title{Update the carcass classes}
 \usage{
 updateSizeclasses(data, sizeCol)
 }
 \arguments{
 \item{data}{data table to draw sizes from}
 
-\item{sizeCol}{size class column name}
+\item{sizeCol}{carcass class column name}
 }
 \value{
-unique size classes
+unique carcass classes
 }
 \description{
-Determine the options for size classes, based on a data table
-  and column name, returning \code{NULL} if no size class column is
+Determine the options for carcass classes, based on a data table
+  and column name, returning \code{NULL} if no carcass class column is
   provided
 }

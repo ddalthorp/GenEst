@@ -160,7 +160,7 @@ This suite of functions create the HTML code underlying the
 
 \code{GeneralInputSidebar}: 
   Analysis panel's General Inputs sidebar (where the Number of Iterations,
-  Confidence Level, and Size Class Column are selected). Calls 
+  Confidence Level, and Carcass Class Column are selected). Calls
   \code{\link{modelInputWidget}} for each input.
 
 \code{SEPanel}: Analysis panel's Searcher Efficiency panel.
@@ -168,7 +168,7 @@ This suite of functions create the HTML code underlying the
 
 \code{SESidebar}: Analysis panel's Searcher Efficiency panel's
   sidebar (where the Observation Columns, Predictor Columns, and fixed-k 
-  values are input and where the Size Class, p formula, and k formula are 
+  values are input and where the Carcass Class, p formula, and k formula are
   selected for the outputs). Calls \code{\link{modelInputWidget}} for each 
   input, \code{\link{modelRunWidget}} for running the model button, and 
   \code{\link{modelOutputWidget}} for output controls.
@@ -184,7 +184,7 @@ This suite of functions create the HTML code underlying the
 
 \code{CPSidebar}: Analysis panel's Carcass Persistence
   panel's sidebar (where the Observation Columns, Predictor Columns, and
-  Distributions are input and where the Size Class, location formula,
+  Distributions are input and where the Carcass Class, location formula,
   and scale formula are selected for the outputs). Calls
   \code{\link{modelInputWidget}} for each input, 
   \code{\link{modelRunWidget}} for running the model button, and 
@@ -201,7 +201,7 @@ This suite of functions create the HTML code underlying the
 
 \code{MSidebar}: Analysis panel's Mortality Estimation panel's
   sidebar (where the assummed k (if needed), Fraction of Facility Sampled,
-  DWP Column, and Date Found Column are input and the Size Class is
+  DWP Column, and Date Found Column are input and the Carcass Class is
   selected for the outputs). Calls 
   \code{\link{modelInputWidget}} for each input,
   \code{\link{modelRunWidget}} for running the model button, and 
@@ -216,7 +216,7 @@ This suite of functions create the HTML code underlying the
 
 \code{gSidebar}: Analysis panel's Detection Probability 
   panel's sidebar (where the Search Schedule and assummed k (if needed) are
-  input and the Size Class, is selected for the outputs). Calls 
+  input and the Carcass Class, is selected for the outputs). Calls
   \code{\link{modelInputWidget}} for each input, 
   \code{\link{modelRunWidget}} for running the model button, and 
   \code{\link{modelOutputWidget}} for the output controls.

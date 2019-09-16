@@ -9,12 +9,12 @@ trimSetSize(modSetSize, mods)
 \arguments{
 \item{modSetSize}{modSetSize complex (cpm or pkm)}
 
-\item{mods}{named (according to size classes) vector of model names to use}
+\item{mods}{named (according to carcass classes) vector of model names to use}
 }
 \value{
-modSetSize reduced to a single model per size class
+modSetSize reduced to a single model per carcass class
 }
 \description{
-Select a single model from each size class (based on the model
+Select a single model from each carcass class (based on the model
   names).
 }

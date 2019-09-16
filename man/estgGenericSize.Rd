@@ -2,7 +2,7 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{estgGenericSize}
 \alias{estgGenericSize}
-\title{Estimate generic detection probability for multiple size classes}
+\title{Estimate generic detection probability for multiple carcass classes}
 \usage{
 estgGenericSize(days, modelSetSize_SE, modelSetSize_CP,
   modelSizeSelections_SE, modelSizeSelections_CP, nsim = 1000,

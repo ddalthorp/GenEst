@@ -7,15 +7,15 @@
 pickSizeclass(sizeclasses, choice)
 }
 \arguments{
-\item{sizeclasses}{size class options}
+\item{sizeclasses}{carcass class options}
 
-\item{choice}{size class chosen}
+\item{choice}{carcass class chosen}
 }
 \value{
-location of the size class chosen
+location of the carcass class chosen
 }
 \description{
-Locate the selection of a size class from the size class 
-  column, retuning the first option from the size classes if the selection
+Locate the selection of a carcass class from the carcass class
+  column, retuning the first option from the carcass classes if the selection
   is not available.
 }

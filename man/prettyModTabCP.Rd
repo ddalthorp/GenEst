@@ -4,17 +4,18 @@
 \alias{prettyModTabCP}
 \title{Create the pretty version of the Carcass Persistence model table}
 \usage{
-prettyModTabCP(modTabs, CL = 0.9)
+prettyModTabCP(table_CP)
 }
 \arguments{
-\item{modTabs}{model tables}
-
-\item{CL}{Confidence level}
+\item{table_CP}{\code{descCP} object or NULL}
 }
 \value{
-pretty version of the CP model table
+pretty version of the CP model table in a data frame with point
+ and interval estimates for medianCP and rI statistics. Output table is
+ ready for rendering in shiny and posting in the GUI
 }
 \description{
 Format a reader-friendly version of the parameter table from
-  a Carcass Persistence model, based on confidence level of interest
+ a carcass persistence model showing CIs for medianCP and for rI's for
+ intervals of Ir
 }
