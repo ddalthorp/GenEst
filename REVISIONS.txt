@@ -1,4 +1,25 @@
 Revision log
+2019.09.18
+
+v1.3.3
+* corrected a data frame subsetting function that returned a data frame rather
+than the expected vector. This was causing a the output matrix for CP model 
+fits to be reconstructed as a list, which was causing gray screen crashes when
+CP output to the screen was for models other than the Weibull (GUI only). The
+error has been corrected.
+
+* An error in array indexing for the "2n fix" (added in v1.3.1) to allow 
+estimation of searcher efficiency when all SE trial carcasses in a cell are 
+either found or not found on the first search essentially nullified the fix
+in most cases. Data sets that require the "2n fix" are not common, and the 
+error would be limited to scenarios where formula_p has 1 predictor and an 
+offending cell that is not the first cell in the data or formula_p has is
+the interaction model with an offending cell that is not the first cell in
+the data and the GenEst version is v1.3.1 or v1.3.2. Earlier versions would 
+throw an error and abort the calculation rather than apply the "2n fix". The
+error has been corrected in development version v1.3.3.1 and all subsequent
+production versions (>=1.3.3). 
+
 2019.09.13
 v1.3.2
 
