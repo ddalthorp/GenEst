@@ -1427,11 +1427,11 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
         dim = c(2, model_CP$ncell)
     ))
   } else if (model_CP$distribution == "lognormal"){
-    mstat <- exp(model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")])
+    mstat <- unlist(exp(model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")]))
   } else if (model_CP$distribution == "loglogistic"){
-    mstat <- model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")]
+    mstat <- unlist(model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")])
   } else if (model_CP$distribution == "exponential"){
-    mstat <- log(2) * model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")]
+    mstat <- unlist(log(2) * model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")])
   } else {
     stop("invalid CP distribution")
   }

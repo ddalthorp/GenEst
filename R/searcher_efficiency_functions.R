@@ -397,7 +397,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
         for (i in 1:length(preds_p)){
            cellind <- cellind & (data0[ , preds_p[i]] == bcList[[bci]][i])
         }
-        data0 <- rbind(data0, data0[cellind, ]) # the 2n fix
+        data0 <- rbind(data0[cellind, ], data0) # the 2n fix
         data0[1, obsCol[1]] <- 1 - data0[1, obsCol[1]]
         if (data0[1, obsCol[1]] == 1 & length(obsCol) > 1){
           data0[1, obsCol[-1]] <- NA
