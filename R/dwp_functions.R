@@ -77,12 +77,6 @@ dwpm <- function(data_DWP, type = "data", unitCol = NULL, dwpCols = NULL){
       if (length(unique(unittab)) > 1)
         stop("Each unit in unitCol must have the same number of reps")
       nsim <- unittab[1]
-#      if (nsim > 1 & !"rep" %in% names(data_DWP))
-#        stop("data_DWP must have 'rep' column if units are represented more than once ")
-#      if (nsim > 1){
-#        if (!all(table(data_DWP[ , c("rep", unitCol)]) == 1))
-#          stop("All units must be represented exactly once in each rep")
-#      }
     } else { # identify the unitCol when user has not provided ore
       if (length(names(data_DWP)) > length(numericColumns) + 1){
         stop("more than one potential unitCol in data_DWP = ",
@@ -97,12 +91,6 @@ dwpm <- function(data_DWP, type = "data", unitCol = NULL, dwpCols = NULL){
         stop("unitCol = NULL but no suitable unit column found in data_DWP ",
             "(all units must have the same number of reps)")
       nsim <- unittab[1]
-#      if (nsim > 1 & !"rep" %in% names(data_DWP))   # not really necessary to have a "rep" column
-#        stop("data_DWP must have 'rep' column if units are represented more than once ")
-#      if (nsim > 1){ # a check to ensure that each unit is represented in each rep...not necessary
-#        if (!all(table(data_DWP[ , c("rep", unitCol)]) == 1))
-#          stop("No suitable unit column found")
-#      }
     }
 
     unitNames <- unique(data_DWP[ , unitCol])

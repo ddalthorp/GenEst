@@ -1,7 +1,8 @@
-#' @title Create the pretty version of the Searcher Efficiency model table
+#' @title Create the pretty versions of model and summary tables
 #'
-#' @description Format a reader-friendly version of the parameter table from
-#'   a Searcher Efficiency model, based on confidence level of interest
+#' @description Format reader-friendly versions of results summary tables for
+#'  searcher efficiency (GUI display and download), carcass persistence, and
+#'  splits.
 #'
 #' @param modTab model table
 #'
@@ -17,8 +18,8 @@ prettyModTabSE <- function(modTab, CL = 0.90){
   
   if (!kFit){
     modTab$k_median <- NA
-    modTab$k_lower <- NA
-    modTab$k_upper <- NA
+    modTab$k_lwr <- NA
+    modTab$k_upr <- NA
   }
 
   out <- modTab[ , c("cell", "n", "p_median", "k_median")]
@@ -26,11 +27,11 @@ prettyModTabSE <- function(modTab, CL = 0.90){
 
   for (celli in 1:ncell){
     p_m <- round(modTab[celli, "p_median"], 3)
-    p_l <- round(modTab[celli, "p_lower"], 3)
-    p_u <- round(modTab[celli, "p_upper"], 3)
+    p_l <- round(modTab[celli, "p_lwr"], 3)
+    p_u <- round(modTab[celli, "p_upr"], 3)
     k_m <- round(modTab[celli, "k_median"], 3)
-    k_l <- round(modTab[celli, "k_lower"], 3)
-    k_u <- round(modTab[celli, "k_upper"], 3)
+    k_l <- round(modTab[celli, "k_lwr"], 3)
+    k_u <- round(modTab[celli, "k_upr"], 3)
     out[celli, "p_median"] <- paste0(p_m, " [", p_l, ", ", p_u, "]")
 
     if (is.na(k_m)){
@@ -62,8 +63,8 @@ dlModTabSE <- function(modTab, CL = 0.90){
   kFit <- any(grepl("k_median", colnames(modTab)))
   if (!kFit){
     modTab$k_median <- NA
-    modTab$k_lower <- NA
-    modTab$k_upper <- NA
+    modTab$k_lwr <- NA
+    modTab$k_upr <- NA
   }
 
   out <- modTab
@@ -79,7 +80,7 @@ dlModTabSE <- function(modTab, CL = 0.90){
 #'  a carcass persistence model showing CIs for medianCP and for rI's for
 #'  intervals of Ir
 #'
-#' @param table_CP \code{descCP} object or NULL
+#' @param modTab \code{descCP} object or NULL
 #'
 #' @return pretty version of the CP model table in a data frame with point
 #'  and interval estimates for medianCP and rI statistics. Output table is
@@ -87,16 +88,19 @@ dlModTabSE <- function(modTab, CL = 0.90){
 #'
 #' @export
 #'
-
-prettyModTabCP <- function(table_CP){
+prettyModTabCP <- function(modTab){
+  table_CP <- modTab
   if(is.null(table_CP))
     return(data.frame(msg = "Selected model was not successfully fit."))
   if (!"descCP" %in% class(table_CP)) stop("table_CP must be a descCP object")
   # descCP objects are matrices with have 3n named columns and ncell named rows
 
   modTab <- round(table_CP, 3)
-  out <- data.frame(array(dim = 0:1 + (dim(table_CP) - 0:1)/c(1, 3)))
-  names(out) <- c("n", colnames(table_CP)[which((1:dim(table_CP)[2])%%3 == 2)])
+  rcols <- grep("^r\\d", colnames(table_CP)) # indices for columns for r statistics
+  rcols_abb <- rcols[!rcols %in% grep("_", colnames(table_CP))] # r1, r3, etc.
+  cpcols <- grep("CP", colnames(table_CP))
+  out <- data.frame(array(dim = c(nrow(table_CP), 2 + length(rcols_abb))))
+  names(out) <- c("n", "medianCP", colnames(table_CP)[rcols_abb])
   rownames(out) <- row.names(modTab)
   out$n <- table_CP[ , "n"]
   for (i in 2:ncol(out)){

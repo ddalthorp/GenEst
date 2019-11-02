@@ -1,26 +1,34 @@
-#' @title Produce the message list
+#' @title GenEst App Messages
 #'
-#' @description Produce the message list, currently restricted to a NULL value
-#'   starting for each value
+#' @description lists of messages used in the app
 #'
-#' @return list of message elements
+#' @param msgs message list
 #'
-#' @export
+#' @param clear logical indicator if clearing should happen.
+#'
+#' @param modelType "SE", "CP", "g", or "M"
+#'
+#' @param rv reactive values list
+#'
+#' @param type "SE", "CP", "M", "split", or "g"
+#'
+#' @param mods Set Size list of models
+#'
+#' @param special indicator of a special type of message
+#'
+#' @param fracNote the note regarding the input
+#'
+#' @name app_msg_functions
+NULL
+
+#' @rdname app_msg_functions
+#'
 #'
 msgList <- function(){
   list(ModSE = NULL, ModCP = NULL, ModM = NULL, SS = NULL, Modg = NULL)
 }
 
-#' @title Clear all notifications
-#' 
-#' @description Clear all messages in the message list
-#'
-#' @param msgs message list
-#'
-#' @param clear logical indicator if clearing should happen. 
-#'
-#' @export
-#'
+#' @rdname app_msg_functions
 #'
 clearNotifications <- function(msgs = msgList(), clear = TRUE){
   if(clear){
@@ -42,19 +50,7 @@ clearNotifications <- function(msgs = msgList(), clear = TRUE){
   }
 }
 
-#' @title Create a model running message
-#'
-#' @description Produces a model-running notification
-#'
-#' @param msgs message list
-#'
-#' @param modelType "SE", "CP", "g", or "M"
-#'
-#' @param clear if all notifications should be cleared or not
-#'
-#' @return a model running message
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgModRun <- function(msgs, modelType, clear = TRUE){
   clearNotifications(msgs, clear)
@@ -76,21 +72,7 @@ msgModRun <- function(msgs, modelType, clear = TRUE){
   }
 }
 
-#' @title Create a model done message
-#'
-#' @description Produces a model-done notification
-#'
-#' @param msgs message list
-#'
-#' @param rv reactive values list
-#'
-#' @param type "SE", "CP", "M", "split", or "g"
-#'
-#' @param clear if all notifications should be cleared or not
-#'
-#' @return an SE model done message
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
   clearNotifications(msgs, clear)
@@ -152,19 +134,7 @@ msgModDone <- function(msgs, rv, type = "SE", clear = TRUE){
   NULL
 }
 
-#' @title Create the warning message text for when only some models are fit 
-#'   successfully
-#'
-#' @description Produces text for a notification for partial model failure
-#'
-#' @param mods Set Size list of models
-#'
-#' @param type "SE" or "CP"
-#'
-#' @return a partial model fail warning text
-#'
-#' @export
-#'
+#' @rdname app_msg_functions
 msgModPartialFail <- function(mods, type = "SE"){
 
   anyFail <- FALSE
@@ -212,15 +182,7 @@ msgModPartialFail <- function(mods, type = "SE"){
   )
 }
 
-#' @title Create the warning message text for small sample sizes
-#'
-#' @description Produces text for a notification for small sample sizes
-#'
-#' @param mods Set Size list of models
-#'
-#' @return small sample sizes warning text (if needed)
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgSampleSize <- function(mods){
   cellCounts <- countCarcs(mods)
@@ -236,19 +198,7 @@ msgSampleSize <- function(mods){
   NULL
 }
 
-#' @title Create the warning message for a model run (if needed)
-#'
-#' @description Produces a notification for partial model failures if needed
-#'
-#' @param mods Set Size list of models
-#'
-#' @param type "SE" or "CP"
-#'
-#' @param rv reactive values list
-#'
-#' @return a partial model warning (if needed)
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgModWarning <- function(mods, type = "SE", rv = NULL){
   msg <- paste(msgModPartialFail(mods, type), msgSampleSize(mods), sep = " ")
@@ -261,15 +211,7 @@ msgModWarning <- function(mods, type = "SE", rv = NULL){
   NULL
 }
 
-#' @title Create the SE data size notification 
-#'
-#' @description Produces a notification for SE data sizes (associated with k)
-#'
-#' @param rv reactive values list
-#'
-#' @return data size message
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgModSENobs <- function(rv){
   if (length(rv$obsCols_SE) == 1){
@@ -281,19 +223,7 @@ msgModSENobs <- function(rv){
 }
 
 
-#' @title Create the error message for when no models are fit successfully
-#'
-#' @description Produces a notification for complete model failure
-#'
-#' @param mods (fully failed) model object
-#'
-#' @param type "SE", "CP", "M", or "g"
-#'
-#' @param special indicator of a special type of message
-#'
-#' @return a model fail error message
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgModFail <- function(mods, type = "SE", special = NULL){
   if (type %in% c("SE", "CP")){
@@ -322,20 +252,7 @@ msgModFail <- function(mods, type = "SE", special = NULL){
   }
 }
 
-#' @title Create the warning message for when the SS average doesn't work
-#'
-#' @description Produces a notification for when an average search schedule
-#'   can't be created
-#'
-#' @param msgs message list
-#'
-#' @param rv reactive values list
-#'
-#' @param clear if all notifications should be cleared or not
-#'
-#' @return an average SS fail warning
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgSSavgFail <- function(msgs, rv, clear = TRUE){
   if (clear){
@@ -348,21 +265,7 @@ msgSSavgFail <- function(msgs, rv, clear = TRUE){
   NULL
 }
 
-#' @title Create the warning message for when the SS based on inputs doesn't 
-#'   work
-#'
-#' @description Produces a notification for when an input-based search 
-#'   schedule can't be created
-#'
-#' @param msgs message list
-#'
-#' @param rv reactive values list
-#'
-#' @param clear if all notifications should be cleared or not
-#'
-#' @return an average SS fail warning
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgSSinputFail <- function(msgs, rv, clear = TRUE){
   if (clear){
@@ -375,15 +278,7 @@ msgSSinputFail <- function(msgs, rv, clear = TRUE){
   NULL
 }
 
-#' @title Create the fail message for when splits aren't done correctly
-#'
-#' @description Produces a notification for failed mortality splits
-#'
-#' @param type "setup" or "run"
-#'
-#' @return a split fail warning
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgSplitFail <- function(type = NULL){
 
@@ -402,17 +297,7 @@ msgSplitFail <- function(type = NULL){
   return(showNotification(msg, type = "error", duration = NULL))
 }
 
-
-#' @title Create the message for when an incorrect FFS is input
-#'
-#' @description Produces a notification for improper input for fraction 
-#'   facility surveyed
-#'
-#' @param fracNote the note regarding the input
-#'
-#' @return a message regarding the input issue
-#'
-#' @export
+#' @rdname app_msg_functions
 #'
 msgFracNote <- function(fracNote){
   return(showNotification(fracNote, type = "warning", duration = NULL))

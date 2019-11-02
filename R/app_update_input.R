@@ -20,8 +20,6 @@
 #'
 #' @param session Environment for the GenEst GUI.
 #'
-#' @export
-#'
 update_input <- function(eventName, rv, input, session){
 
     eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",

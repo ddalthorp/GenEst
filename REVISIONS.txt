@@ -1,12 +1,85 @@
 Revision log
-2019.09.18
+2019.10.30
 
 v1.3.3
+
 * corrected a data frame subsetting function that returned a data frame rather
 than the expected vector. This was causing a the output matrix for CP model 
-fits to be reconstructed as a list, which was causing gray screen crashes when
+fits to be reconstructed as a list, which was causing gray-screen crashes when
 CP output to the screen was for models other than the Weibull (GUI only). The
 error has been corrected.
+
+* an error in formatting data for displaying tables of summary statistics
+for exponential CP models was preventing the tables from appearing under
+the "Estimates" tab for CP models in the GUI. This bug has been fixed.
+
+* labels were not properly matched to pk figures in the GUI when there were
+two covariates and a fig for a "*" model for p was drawn after a fig for a "+"
+model was drawn. Cell labels are now correctly matched to cell figs.
+
+* an error in the function for downloading a comprehensive set of summary 
+statistics for estimated mortality (including names of all data sets used, 
+names and summary statistics for selected SE and CP models, AIC tables used  
+for model selection, summary statistics for M_hat and splits) made it so only
+the CP table was downloaded. The error has been corrected so that all the 
+intended data is downloaded.
+
+* An error in the calculation of extreme tail probabilities of loglogistic 
+persistence distributions has been corrected. This bug would only be a problem
+in estimating g (and M) when the CP distribution was loglogistic with very
+short persistence times relative to the search intervals. The user would have
+seen a cryptic error message when trying to estimate M or a gray screen (GUI)
+when trying to estimate g.
+
+* removed the "seed" arguments seed_SE, seed_CP, seed_g, and seed_M, in estg, 
+estgGeneric, and estM. The utility of providing these seeds in the arg lists 
+would be for minute management of creating strictly reprodicible results in 
+command-line analyses. However, this purpose can normally be just as readily 
+and more safely accomplished by management of seeds outside the function calls, 
+as, e.g., set.seed(1234); estM(...) rather than estM(..., seed = 1234). In 
+addition, ensuring that the internal seeds maintain their expected behavior 
+after software updates unnecessarily complicates GenEst code maintenance.
+
+* the old plot.gGeneric function determined covariate cells by parsing the 
+short form cell names by splitting the names by ".". This precludes having "."
+in the name of any covariate level. No other functions have this restriction.
+The new plot.gGeneric extracts the cells from x$predictors
+
+* SE figures have been amended to correct several problems:
+-- labels for cellwise plots showing summaries of data and fitted models have
+   been corrected (under certain combinations of selected p and k formulas 
+   with 2 predictors, some of the labels were incorrect)
+-- illegibly small font sizes have been increased
+-- figures produced from command-line using plot.pkm have been substantially
+   prettified
+-- labels for cellwise p and k summaries and summaries of data with fitted 
+   values were changed from cell names in the panel corners to margin labels
+   that show both the predictor name and the levels
+-- the superfluous "app" arg in plot.pkm and plot.pkmSet has been removed
+-- functions plotSEFigure, pkmParamPlot, pkmSECellPlot, plotSEHeader, 
+   plotSEBoxPlots, pkmSetSpecParamPlot, plotSEBoxTemplate, plotSECells, 
+   pkmSetSpecSECellPlot, and SEcols have been replaced with a modified version
+   of plotSEFigure, which calls two new functions (SEpanel and SEboxes) that
+   are not exported but called by plot.pkm and plot.pkmSet
+
+* added pda & pdb and location & scale to the download file for CP (GUI)
+
+* in the $cell_ab table of descriptive stastistics for CP models with
+loglogistic or Weibull distributions, the lower and upper bounds of the CIs
+for the pda parameter were transposed (in cpm objects on the command-line). 
+The error has been corrected.
+* an internal database (sysdata.rda) of parameters used by the GUI has been 
+created to store, e.g., default colors and other graphics settings.
+
+* quantiles of the marginal distributions of p_hat and k_hat were calculated 
+by simulation, which is slow and relatively inaccurate; v1.3.3 introduces a 
+new function "qpk" to return the quantiles directly from the estimated means
+and variances that were previously used to simulate data for calculating the 
+quantiles empirically from the simulated data.
+
+* functions that are only used internally are no longer exported, following 
+best practices as outlined in Wickham (2015) 
+[http://r-pkgs.had.co.nz/namespace.html]
 
 * An error in array indexing for the "2n fix" (added in v1.3.1) to allow 
 estimation of searcher efficiency when all SE trial carcasses in a cell are 
@@ -19,6 +92,7 @@ the data and the GenEst version is v1.3.1 or v1.3.2. Earlier versions would
 throw an error and abort the calculation rather than apply the "2n fix". The
 error has been corrected in development version v1.3.3.1 and all subsequent
 production versions (>=1.3.3). 
+
 
 2019.09.13
 v1.3.2

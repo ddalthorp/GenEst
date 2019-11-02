@@ -7,7 +7,7 @@
 desc(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000)
 }
 \arguments{
-\item{model_CP}{A fitted CP model (cpm object)}
+\item{model_CP}{A fitted CP model (\code{cpm} object)}
 
 \item{Ir}{The intervals for which to calculate the r statistics}
 
@@ -19,22 +19,29 @@ desc(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000)
 Matrix of point and interval estimates for the median CP and the r
  statistics for the specified intervals. The matrix is assigned to class
  \code{descCP} that is simply a matrix with dimensions
- \code{ncell x 1 + 3*(1 + length(Ir))}, column names that give the number of
+ \code{ncell x (1 + 3*(5 + length(Ir)))}, column names that give the number of
  observations in each cell, statistic name and upper and lower bounds
-`(in triplets), and row names giving the names of the cells.
+(in triplets), and row names giving the names of the cells. \code{CL}, \code{nsim},
+ and the name of the fitted model (\code{model_CP}) are included as object
+ attributes.
 }
 \description{
-Given a cpm object, calculate convenient descriptive statistics,
- including the median and specified rI statistics along with estimated CIs.
+Given a \code{cpm} object, calculate convenient descriptive statistics,
+ including the median CP, specified \code{rI} statistics, and \code{pda}
+ and \code{pdb} statistics for the fitted model (EoA parameterization), and
+ location and scale parameters for the fitted model (\code{survival} package
+ parameterization) along with estimated CIs.
 }
 \details{
 The CIs for the r statistics (and the medianCP for the Weibull) ara
  based on simulation of the \code{pda} and \code{pdb} parameters, calculation
  of the statistics, and taking the empirical distribution of the simulated
- values.
+ values. Other CIs are based on the assumed bivariate normal distributions of
+ the appropriately transformed \code{l} and \code{s} parameters in the fitted
+ model using \code{beta_hat} and \code{varbeta}.
 
- NOTE: rI is the probability that a carcass that arrives at a uniform random
- time in an interval of I days will persist until the first search after
+ NOTE: \code{rI} is the probability that a carcass that arrives at a uniform random
+ time in an interval of \code{I} days will persist until the first search after
  arrival.
 }
 \seealso{

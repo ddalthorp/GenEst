@@ -18,5 +18,5 @@ models}
 a template box plot
 }
 \description{
-Plot template box plot
+Plot template box plot (soon to be deprecated)
 }

@@ -4,12 +4,14 @@
 \alias{plot.pkm}
 \title{Plot results of a single pk model}
 \usage{
-\method{plot}{pkm}(x, col = "black", ...)
+\method{plot}{pkm}(x, col = NULL, CL = NULL, ...)
 }
 \arguments{
 \item{x}{model of class pkm}
 
 \item{col}{color to use}
+
+\item{CL}{confidence level to show in boxplots and confidence bounds}
 
 \item{...}{arguments to be passed to sub functions}
 }

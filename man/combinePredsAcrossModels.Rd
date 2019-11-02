@@ -19,6 +19,6 @@ combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
 Factor combination table.
 }
 \description{
-Create the factor combination table for a set of searcher 
+Create the factor combination table for a set of searcher
  efficiency and carcass persistence analyses.
 }

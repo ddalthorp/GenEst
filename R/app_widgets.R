@@ -1,4 +1,4 @@
-#' @title Create a Data Input Widget for the GenEst User Interface HTML
+#' @title Create and manage widgets for data input, function execution, data output
 #'
 #' @description This is a generalized function for creating a data input 
 #'   widget used in the GenEst GUI, based on the data type (\code{dataType}).
@@ -9,10 +9,37 @@
 #' @param dataType Toggle control for the model type of the widget. One of 
 #'   "SE", "CP", "SS", "DWP", or "CO".  
 #'
-#' @return HTML for the data input widget. 
+#' @param set Name of data set. One of "RP", "RPbat", "cleared", "powerTower",
+#'   "PV", "trough", "mock"
 #'
-#' @export
+#' @param inType Toggle control for the input type of the widget. One of
+#'   "nsim", "CL", "class", "obsSE", "predsSE", "kFixed", "ltp", "fta",
+#'   "predsCP", "dist", "xID", "frac", "DWPCol", "COdate", "gSearchInterval", or
+#'   "gSearchMax".
 #'
+#' @param Name Name (id) of the widget created.
+#'
+#' @param Fun Function name (as character) used to create the widget.
+#'
+#' @param Label Label presented to the user in the UI for the widget.
+#'
+#' @param Args List of any additional arguments to be passed to the widget
+#'   creating function.
+#'
+#' @param modType Toggle control for the model type of the widget. One of
+#'   "SE", "CP", "M", or "g".
+#'
+#' @param Condition Condition under which the widget is present to the user.
+#'
+#' @param mods Model Set Size object (from the reactive values list).
+#'
+#' @param sci Name of carcass class element
+#'
+#' @param sizeclasses Vector of carcass class names (from the reactive values
+#'   list).
+#'
+#' @return HTML for the data input widget.
+#' @name app_widgets
 dataInputWidget <- function(dataType){
 
   if (!dataType %in% c("SE", "CP", "SS", "DWP", "CO")){
@@ -55,18 +82,7 @@ dataInputWidget <- function(dataType){
   )
 }
 
-#' @title Create a Data Download Widget for the GenEst User Interface HTML
-#'
-#' @description This is a generalized function for creating a data download 
-#'   widget (fluid row with name and button) used in the GenEst GUI, based on 
-#'   the data set (\code{set}).
-#'
-#' @param set Name of data set. One of "RP", "RPbat", "cleared", "powerTower",
-#'   "PV", "trough", "mock"
-#'
-#' @return HTML for the data download widget
-#'
-#' @export
+#' @rdname app_widgets
 #'
 dataDownloadWidget <- function(set){
 
@@ -92,19 +108,7 @@ dataDownloadWidget <- function(set){
 }
 
 
-#' @title Create a Model Input Widget for the GenEst User Interface HTML
-#'
-#' @description This is a generalized function for creating a model input 
-#'   widget used in the GenEst GUI, based on the input type (\code{inType}).
-#'
-#' @param inType Toggle control for the input type of the widget. One of 
-#'   "nsim", "CL", "class", "obsSE", "predsSE", "kFixed", "ltp", "fta", 
-#'   "predsCP", "dist", "xID", "frac", "DWPCol", "COdate", "gSearchInterval", or
-#'   "gSearchMax".
-#'
-#' @return HTML for the model input widget. 
-#'
-#' @export
+#' @rdname app_widgets
 #'
 modelInputWidget <- function(inType){
 
@@ -200,27 +204,7 @@ modelInputWidget <- function(inType){
 }
 
 
-#' @title Input Widget Maker
-#'
-#' @description Basic generalized function for creating an input widget based
-#'   on the condition of the widget being presented, the name of the widget, 
-#'   the function used to create it, its label on the UI, and any additional
-#'   arguments. 
-#'
-#' @param Condition Condition under which the widget is present to the user. 
-#'
-#' @param Name Name (id) of the widget created.
-#'
-#' @param Fun Function name (as character) used to create the widget.
-#'
-#' @param Label Label presented to the user in the UI for the widget.
-#'
-#' @param Args List of any additional arguments to be passed to the widget 
-#'   creating function.
-#'
-#' @return HTML for the widget. 
-#'
-#' @export
+#' @rdname app_widgets
 #'
 widgetMaker <- function(Condition, Name, Fun, Label, Args){
   allArgs <- Args
@@ -239,21 +223,7 @@ widgetMaker <- function(Condition, Name, Fun, Label, Args){
   }
 }
 
-
-#' @title Create a Model Run Widget for the GenEst User Interface HTML
-#'
-#' @description This is a generalized function for creating a model run 
-#'   widget used in the GenEst GUI, based on the model type (\code{modType}).
-#'   The widget includes the model run button, the model clear button 
-#'   (once the model has finished running), and any text displayed prior to
-#'   model running being allowed.
-#'
-#' @param modType Toggle control for the model type of the widget. One of 
-#'   "SE", "CP", "M", or "g". 
-#'
-#' @return HTML for the model run widget. 
-#'
-#' @export
+#' @rdname app_widgets
 #'
 modelRunWidget <- function(modType){
 
@@ -319,14 +289,7 @@ modelRunWidget <- function(modType){
 }
 
 
-#' @rdname modelRunWidget
-#'
-#' @details \code{preTextMaker} creates pre-model-run text depending on
-#'   the model type.
-#'
-#' @return HTML for the model run widget pre-run text. 
-#'
-#' @export
+#' @rdname app_widgets
 #'
 preTextMaker <- function(modType){
 
@@ -377,21 +340,7 @@ preTextMaker <- function(modType){
   }
   out
 }
-
-
-
-#' @title Create a Model Output Widget for the GenEst User Interface HTML
-#'
-#' @description This is a generalized function for creating a widget used in 
-#'   the GenEst GUI to control the outputs based on the model type
-#'   (\code{modType}).
-#'
-#' @param modType Toggle control for the model type of the widget. One of 
-#'   "SE", "CP", "M", or "g". 
-#'
-#' @return HTML for the model run widget. 
-#'
-#' @export
+#' @rdname app_widgets
 #'
 modelOutputWidget <- function(modType){
 
@@ -468,13 +417,7 @@ modelOutputWidget <- function(modType){
   )
 }
 
-#' @rdname modelOutputWidget 
-#'
-#' @details \code{splitButtonWidget} creates the set of buttons to handle the
-#'   splitting of mortality estimates (splitting, transposing the split, and
-#'   clearing the split).
-#'
-#' @export
+#' @rdname app_widgets
 #'
 splitButtonWidget <- function(){
   list(
@@ -494,18 +437,7 @@ splitButtonWidget <- function(){
 }
 
 
-#' @title Make a Model Selection Widget
-#'
-#' @description Produce a Carcass-Class-based model selection widget based
-#'   on the model inputs. 
-#'
-#' @param mods Model Set Size object (from the reactive values list).
-#'
-#' @param modType Model type, either "SE" or "CP".
-#'
-#' @return Rendered HTML model selection menu widget.
-#'
-#' @export
+#' @rdname app_widgets
 #'
 modelSelectionWidget <- function(mods, modType){
 
@@ -527,12 +459,7 @@ modelSelectionWidget <- function(mods, modType){
   return(renderUI({HTML(modelMenu)}))
 }
 
-#' @rdname modelSelectionWidget
-#'
-#' @details \code{modelSelectionWidgetHeader} creates header text depending on
-#'   if there is one carcass class or more than one.
-#'
-#' @export
+#' @rdname app_widgets
 #'
 modelSelectionWidgetHeader <- function(mods){
 
@@ -558,14 +485,7 @@ modelSelectionWidgetHeader <- function(mods){
   paste(menuHeader, menuBreak)
 }
 
-#' @rdname modelSelectionWidget
-#'
-#' @details \code{modelSelectionWidgetRow} creates a row of the widget (input
-#'   for one carcass class).
-#'
-#' @param sci Name of carcass class element
-#'
-#' @export
+#' @rdname app_widgets
 #'
 modelSelectionWidgetRow <- function(mods, modType, sci){
 
@@ -614,16 +534,7 @@ modelSelectionWidgetRow <- function(mods, modType, sci){
    )
 }
 
-#' @title Make a kFixed Widget
-#'
-#' @description Produce a kFixed input widget based on the carcass classes.
-#'
-#' @param sizeclasses Vector of carcass class names (from the reactive values
-#'   list).
-#'
-#' @return Rendered HTML kFixed input widget.
-#'
-#' @export
+#' @rdname app_widgets
 #'
 kFixedWidget <- function(sizeclasses){
   widgetHeader <- kFixedWidgetHeader(sizeclasses)
@@ -636,12 +547,7 @@ kFixedWidget <- function(sizeclasses){
   renderUI({HTML(kFixedMenu)})
 }
 
-#' @rdname kFixedWidget
-#'
-#' @details \code{kFixedWidgetHeader} creates the widget header based on
-#'   the number of carcass classes.
-#'
-#' @export
+#' @rdname app_widgets
 #'
 kFixedWidgetHeader <- function(sizeclasses){
   nsizeclasses <- length(sizeclasses)
@@ -649,14 +555,7 @@ kFixedWidgetHeader <- function(sizeclasses){
 }
 
 
-#' @rdname kFixedWidget
-#'
-#' @details \code{kFixedWidgetRow} creates a row of the widget (input
-#'   for one carcass class).
-#'
-#' @param sci name of carcass class element index.
-#'
-#' @export
+#' @rdname app_widgets
 #'
 kFixedWidgetRow <- function(sizeclasses, sci){
   if (! (sci %in% sizeclasses)) stop(sci, " not in sizeclasses")

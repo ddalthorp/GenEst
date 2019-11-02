@@ -1,14 +1,29 @@
-#' @title Prepare class text header
-#'
-#' @description Depending on the classes, prepare the header text. 
+#' @title app utilities for formatting text, tables, figs, etc. for display
 #'
 #' @param rv Reactive values list for the GenEst GUI.
 #'
 #' @param type Model type, either "SE" or "CP" or "g".
 #'
-#' @return Rendered text ready for export to \code{output} list.
+#' @param output \code{output} list to have elements \code{dontSuspend}
+#'   (re)set to having \code{suspendWhenHidden = FALSE}.
 #'
-#' @export
+#' @param dontSuspend Names of elements in \code{output} to (re)set to
+#'   having \code{suspendWhenHidden = FALSE}.
+#'
+#' @param x \code{list} object to have elements \code{toNULL} reset to
+#'   \code{NULL}.
+#'
+#' @param toNULL Names of elements in \code{x} to reset to \code{NULL}.
+#'
+#' @param modelSet Model set of class \code{cpmSet} or \code{pkmSet}.
+#'
+#' @param modType "SE" or "CP"
+#'
+#' @name app_output_utilities
+NULL
+
+#' @rdname app_output_utilities
+#'
 #'
 classText <- function(rv, type = "SE"){
   out <- ""
@@ -31,17 +46,7 @@ classText <- function(rv, type = "SE"){
   renderText(out)
 }
 
-#' @title Prepare the text for the estimation table
-#'
-#' @description Depending on the model type and CL, prepare the header text.
-#'
-#' @param rv Reactive values list for the GenEst GUI.
-#'
-#' @param type Model type, either "SE" or "CP".
-#'
-#' @return Rendered text ready for export to \code{output} list.
-#'
-#' @export
+#' @rdname app_output_utilities
 #'
 estText <- function(rv, type = "SE"){
   out <- NULL
@@ -56,37 +61,14 @@ estText <- function(rv, type = "SE"){
   renderText(out)
 }
 
-#' @title (Re)set outputOptions to not suspending for given elements
-#'
-#' @description Utility function for clearing and setting purposes.
-#'
-#' @param output \code{output} list to have elements \code{dontSuspend} 
-#'   (re)set to having \code{suspendWhenHidden = FALSE}.
-#'
-#' @param dontSuspend Names of elements in \code{output} to (re)set to 
-#'   having \code{suspendWhenHidden = FALSE}.
-#'
-#' @export
-#'
+#' @rdname app_output_utilities
 setNotSuspending <- function(output, dontSuspend){
   for(i in 1:length(dontSuspend)){
     outputOptions(output, dontSuspend[i], suspendWhenHidden = FALSE)
   }
 }
 
-#' @title Reset values of a list to NULL
-#'
-#' @description Utility function for clearing and setting purposes.
-#'
-#' @param x \code{list} object to have elements \code{toNULL} reset to 
-#'   \code{NULL}.
-#'
-#' @param toNULL Names of elements in \code{x} to reset to \code{NULL}.
-#'
-#' @return Updated \code{x}.
-#'
-#' @export
-#'
+#' @rdname app_output_utilities
 reNULL <- function(x, toNULL){
   for(i in 1:length(toNULL)){
     x[[toNULL[i]]] <- NULL
@@ -94,17 +76,7 @@ reNULL <- function(x, toNULL){
   x
 }
 
-#' @title Update the output list upon initiation of the app
-#'
-#' @description Update the output list when the app is initialized.
-#'
-#' @param rv Reactive values list for the GenEst GUI.
-#'
-#' @param output \code{output} list for the GenEst GUI.
-#'
-#' @return Updated \code{output} list.
-#'
-#' @export
+#' @rdname app_output_utilities
 #'
 initialOutput <- function(rv, output){
   output$download_RP <- downloadData("RP")
@@ -119,15 +91,7 @@ initialOutput <- function(rv, output){
 
   return(output)
 }
-#' @title Set Figure width and height based on the number of cells
-#'
-#' @description Convenience functions for determining the needed figure sizes.
-#'
-#' @param modelSet Model set of class \code{cpmSet} or \code{pkmSet}.
-#'
-#' @return \code{setFigW}: Figure width.
-#'
-#' @export
+#' @rdname app_output_utilities
 #'
 setFigW <- function(modelSet){
   if (!any(attr(modelSet, "class") %in% c("cpmSet", "pkmSet"))){
@@ -141,13 +105,7 @@ setFigW <- function(modelSet){
   }
 }
 
-#' @rdname setFigW
-#'
-#' @param modType "SE" or "CP"
-#'
-#' @return \code{setFigH}: Figure height.
-#'
-#' @export
+#' @rdname app_output_utilities
 #'
 setFigH <- function(modelSet, modType = "SE"){
   if (!any(attr(modelSet, "class") %in% c("cpmSet", "pkmSet"))){

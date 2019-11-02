@@ -22,8 +22,6 @@
 #'
 #' @return Updated \code{rv} list.
 #'
-#' @export
-#'
 update_rv <- function(eventName, rv, input){
   eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
                     "file_CP_clear", "file_SS", "file_SS_clear", "file_DWP",
@@ -408,13 +406,11 @@ update_rv <- function(eventName, rv, input){
   }
   if (eventName == "class"){
     rv$sizeCol <- input$class
-##############
     rv$obsCols_SE <- input$obsSE
     rv$preds_SE <- input$predsSE
     rv$ltp <- input$ltp
     rv$fta <- input$fta
     rv$preds_CP <- input$predsCP
-##############
     #remove sizeCol from list of possibilities for SE_preds and SE_obs
     rv$colNames_SE_preds <- removeCols(rv$colNames_SE_preds0,
       c(rv$obsCols_SE, rv$sizeCol))
@@ -563,8 +559,11 @@ update_rv <- function(eventName, rv, input){
       rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cell_pk
       rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
       rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
-      rv$figH_SE <- setFigH(rv$modSet_SE)
-      rv$figW_SE <- setFigW(rv$modSet_SE)
+      cells_set <- modelSetCells(rv$modSet_SE)
+      n_col <- length(unique(cells_set[ , 1]))
+      n_row <- nrow(cells_set)/n_col
+      rv$figH_SE <- .res * (.header + .box_H + .buffer +  n_row * .panel_H + .footer)
+      rv$figW_SE <- min(1200, .res * .panel_W * max(2, n_col))
     }
     rv$outSEpk <- modNamePaste(c(input$outSEp, input$outSEk))
   }
@@ -603,8 +602,11 @@ update_rv <- function(eventName, rv, input){
       rv$modTab_SE <- rv$mods_SE[[rv$sizeclass_SE]][[rv$best_SE]]$cell_pk
       rv$modTabPretty_SE <- prettyModTabSE(rv$modTab_SE, rv$CL)
       rv$modTabDL_SE <- dlModTabSE(rv$modTab_SE, rv$CL)
-      rv$figH_SE <- setFigH(rv$modSet_SE)
-      rv$figW_SE <- setFigW(rv$modSet_SE)
+      cells_set <- modelSetCells(rv$modSet_SE)
+      n_col <- length(unique(cells_set[ , 1]))
+      n_row <- nrow(cells_set)/n_col
+      rv$figH_SE <- .res * (.header + .box_H + .buffer +  n_row * .panel_H + .footer)
+      rv$figW_SE <- min(1200, .res * .panel_W * max(2, n_col))
     }
   }
 

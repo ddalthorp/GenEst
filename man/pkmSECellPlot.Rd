@@ -9,7 +9,7 @@ pkmSECellPlot(model, specificCell, col, axis_y = TRUE, axis_x = TRUE)
 \arguments{
 \item{model}{model of class pkm}
 
-\item{specificCell}{name of the specific cell to plot}
+\item{specificCell}{name of the specific cell to plot (soon to be deprecated)}
 
 \item{col}{color to use}
 

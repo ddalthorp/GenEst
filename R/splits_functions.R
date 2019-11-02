@@ -621,9 +621,6 @@ ltranspose <- function(M){
   ans <- list()
   for (i in 1:adim[1]){
     ans[[i]] <- do.call("rbind", lapply(M, function(x) x[i, ]))
-#    if (attributes(M)$type)[1] == "CO"){
-#      ans[[i]] <- ans[[i]][order(names(ans[[i]]),]
-#    }
   }
   return(ans)
 }

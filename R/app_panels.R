@@ -1,16 +1,22 @@
+#' @title app panel utility functions
+#'
+#' @description functions for formatting and displaying app panels
+#'
+#' @param dataType Toggle control for the model type of the panel. One of
+#'   "SE", "CP", "SS", "DWP", or "CO".
+#'
+#' @param modType Toggle control for the model type of the panel. One of
+#'   "SE", "CP", or "g".
+#'
+#' @param outType Toggle control for the model type of the panel. One of
+#'   "SEFigures", "SEEstimates", "SEModComparison", "SEModSelection",
+#'   "CPFigures", "CPEstimates", "CPModComparison", "CPModSelection",
+#'   "gFigures", or "gSummary".
+#'
+#' @name app_panels
+NULL
 
-#' @title Create a Data Tab Panel for the GenEst User Interface HTML
-#'
-#' @description This is a generalized function for creating a data input 
-#'   visualization panel used in the GenEst GUI, based on the data type 
-#'   (\code{dataType}).
-#'
-#' @param dataType Toggle control for the model type of the panel. One of 
-#'   "SE", "CP", "SS", "DWP", or "CO".  
-#'
-#' @return HTML for the panel
-#'
-#' @export
+#' @name app_panels
 #'
 dataTabPanel <- function(dataType){
 
@@ -31,18 +37,7 @@ dataTabPanel <- function(dataType){
   tabPanel(Label, br(), dataTableOutput(TableName))
 }
 
-#' @title Create a Selected Data Tab Panel for the GenEst User Interface HTML
-#'
-#' @description This is a generalized function for creating a data input 
-#'   visualization panel used in the GenEst GUI, based on the data type 
-#'   (\code{dataType}).
-#'
-#' @param modType Toggle control for the model type of the panel. One of 
-#'   "SE", "CP", or "g".  
-#'
-#' @return HTML for the panel
-#'
-#' @export
+#' @name app_panels
 #'
 selectedDataPanel <- function(modType){
 
@@ -84,20 +79,7 @@ selectedDataPanel <- function(modType){
 
 }
 
-#' @title Create a Model Output Tab Panel for the GenEst User Interface HTML
-#'
-#' @description This is a generalized function for creating a model output 
-#'   panel used in the GenEst GUI, based on the output type 
-#'   (\code{outType}).
-#'
-#' @param outType Toggle control for the model type of the panel. One of 
-#'   "SEFigures", "SEEstimates", "SEModComparison", "SEModSelection",
-#'   "CPFigures", "CPEstimates", "CPModComparison", "CPModSelection",
-#'   "gFigures", or "gSummary".
-#'
-#' @return HTML for the panel
-#'
-#' @export
+#' @name app_panels
 #'
 modelOutputPanel <- function(outType){
 

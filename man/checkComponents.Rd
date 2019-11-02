@@ -13,7 +13,7 @@ checkComponents(formula)
 a logical regarding complete set of terms and interactions
 }
 \description{
-Check if all component terms and interactions are 
-  included in a formula. Terms are automatically alphabatized within 
+Check if all component terms and interactions are
+  included in a formula. Terms are automatically alphabatized within
   interactions.
 }

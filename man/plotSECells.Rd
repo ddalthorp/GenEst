@@ -19,5 +19,5 @@ a plot
 }
 \description{
 Produce a set of cellwise figures for a specific SE model, as
-  fit by \code{\link{pkmSet}}
+  fit by \code{\link{pkmSet}} (soon to be deprecated)
 }

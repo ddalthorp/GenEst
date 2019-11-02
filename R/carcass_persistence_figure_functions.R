@@ -62,7 +62,7 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
   )
 
   plot(smod, ylim = c(0, 1), xlim = c(0, max_x),
-    xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
+    xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "o", lwd = c(2, 1, 1)
   )
   axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10),
     labels = axis_x
@@ -306,8 +306,6 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
   model_spec <- modelSet[[specificModel]]
   dist <- model_spec$dist
   CL <- model_spec$CL
-#  cells_set <- modelSetCells(modelSet)
-#  cellNames_set <- cells_set[ , "CellNames"]
   cellNames_set <- modelSetCells(modelSet)[ , "CellNames"]
   preds_set <- modelSetPredictors(modelSet)
   carcCells <- apply(data.frame(model_spec$data[ , preds_set]),
@@ -328,20 +326,17 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
   t1 <- observations[ , 1]
   t2 <- observations[ , 2]
   event <- rep(3, length(t1))
-#  event[which(is.na(t2))] <- 0
   event[which(!is.finite(t2))] <- 0
   event[which(t1 == t2)] <- 1
   t1[which(t1 == 0)] <- 0.0001
-#  survobj <- survival::Surv(t1, t2, event, "interval")
-#  form <- formula("survobj ~ 1")
-#  smod <- survival::survfit(form, data = observations)
+
   smod <- tryCatch(
     survival::survfit(survival::Surv(t1, t2, event, type = "interval") ~ 1),
     error = function(e) NULL,
     warning = function(w) NULL
   )
   plot(smod, ylim = c(0, 1), xlim = c(0, max_x),
-    xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "L", lwd = c(2, 1, 1)
+    xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "o", lwd = c(2, 1, 1)
   )
   axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), 
     labels = axes["x"]

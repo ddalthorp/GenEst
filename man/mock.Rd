@@ -20,6 +20,6 @@ mock
 }
 \description{
 A template dataset used for testing purposes.  Dataset containing SE, CP, SS,
- DWP, and CO data.
+ DWP, and CO data. Data are mostly random without patterns.
 }
 \keyword{datasets}

@@ -25,3 +25,6 @@ Simulate parameters from a \code{\link{pkm}} model object
   rpk(n = 10, model = mod)
 
 }
+\seealso{
+\code{\link{rpk}}, \code{\link{pkm}}
+}

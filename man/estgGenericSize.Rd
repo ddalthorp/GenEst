@@ -5,8 +5,7 @@
 \title{Estimate generic detection probability for multiple carcass classes}
 \usage{
 estgGenericSize(days, modelSetSize_SE, modelSetSize_CP,
-  modelSizeSelections_SE, modelSizeSelections_CP, nsim = 1000,
-  seed_SE = NULL, seed_CP = NULL)
+  modelSizeSelections_SE, modelSizeSelections_CP, nsim = 1000)
 }
 \arguments{
 \item{days}{Search schedule data as a vector of days searched}
@@ -28,10 +27,6 @@ must be in \code{names(modelSizeSelections_SE)[["lrg"]]}.}
 \item{modelSizeSelections_CP}{vector of CP models to use, one for each size}
 
 \item{nsim}{the number of simulation draws}
-
-\item{seed_SE}{seed for random draws of the SE model}
-
-\item{seed_CP}{seed for random draws of the CP model}
 }
 \value{
 list of g estimates, with one element in the list corresponding

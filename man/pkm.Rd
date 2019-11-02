@@ -33,25 +33,36 @@ model to be fitted. Details of model specification are given under
 "Details".}
 
 \item{data}{Data frame with results from searcher efficiency trials and any
-covariates included in \code{formula_p} or {formula_k} (required).}
+covariates included in \code{formula_p} or \code{formula_k} (required).}
 
 \item{obsCol}{Vector of names of columns in \code{data} where results
- for each search occasion are stored (optional). If \code{obsCol} is not
- provided, \code{pkm} uses as \code{obsCol} all columns with names that
- begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
- "s2", "s3", etc. This option is included as a convenience for the user,
- but care must be taken that other data are not stored in columns with
- names matching that pattern. Alternatively, \code{obsCol} may be
- entered as a vector of names, like \code{c("s1", "s2", "s3")},
- \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch",
- "lastSearch")}. The columns must be in chronological order, that is, it is
+for each search occasion are stored (optional). If \code{obsCol} is not
+provided, \code{pkm} uses as \code{obsCol} all columns with names that
+begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
+"s2", "s3", etc. This option is included as a convenience for the user,
+but care must be taken that other data are not stored in columns with
+names matching that pattern. Alternatively, \code{obsCol} may be
+entered as a vector of names, like \code{c("s1", "s2", "s3")},
+\code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch",
+"lastSearch")}. The columns must be in chronological order, that is, it is
 assumed that the first column is for the first search after carcass arrival,
 the second column is for the second search, etc.}
 
 \item{kFixed}{Parameter for user-specified \code{k} value (optional). If a
 value is provided, \code{formula_k} is ignored and the model is fit under
 the assumption that the \code{k} parameter is fixed and known to be
-\code{kFixed}.}
+\code{kFixed} \eqn{\in [0, 1]}. If a \code{sizeCol} is provided, \code{kFixed}
+may either be \code{NULL}, a single number in [0, 1], or a vector with
+\code{kFixed} values for two or more of the carcass size classes. For
+example, if there are three sizes (\code{S}, \code{M}, and \code{L}),
+\code{kFixed} could be \code{c(S = 0.3, M = 0.8, L = 1.0)} to assign fixed
+\code{k} values to each size. To fit \code{k} for size \code{S} and to assign
+values of 0.8 and 1.0 to sizes \code{M} and \code{L}, resp., use
+\code{kFixed = c(S = 0.3, M = 0.8, L = 1.0)}. If there are more than one size
+classes and \code{kFixed} is a scalar, then all size classes are assigned the
+same \code{kFixed} value (unless \code{kFixed} is named, e.g.,
+\code{kFixed = c(S = 0.5)}, in which case only the named size is assigned the
+\code{kFixed}).}
 
 \item{allCombos}{logical. If \code{allCombos = FALSE}, then the single model
  expressed by \code{formula_p} and \code{formula_k} is fit using a call to
@@ -125,8 +136,8 @@ The probability of finding a carcass that is present at the time of
   (\code{formula_p} and \code{formula_k}) may be entered for each. The
   models are entered as they would be in the familiar \code{lm} or
   \code{glm} functions in R. For example, \code{p} might vary with
-  \code{A}, \code{B}, and \code{C}, while \code{k} varies
-  only with \code{A}. A user might then enter \code{p ~ A + B + C}
+  \code{A} and \code{B}, while \code{k} varies
+  only with \code{A}. A user might then enter \code{p ~ A + B}
   for \code{formula_p} and \code{k ~ A} for
   \code{formula_k}. Other R conventions for defining formulas may also be
   used, with \code{A:B} for the interaction between covariates
@@ -142,24 +153,24 @@ The probability of finding a carcass that is present at the time of
   (e.g., visibility = E, M, or D) may also be included.
 
  When all trial carcasses are either found on the first search or
- are missed on the first search after carcass placement, an adjustment to the
- model is necessary for accuracy; otherwise, the model cannot determine the
- uncertainty and substantially over-estimates the variance of the parameter
- estimates, giving \code{p_hat} essentially equal to 0 or 1 with
- approximately equal probability. The adjustment is to fit the model on an
- adjusted data set with duplicated copies of the original data (\code{2n}
- observations) but with one carcass having the opposite fate of the others.
- For example, in field trials with very high searcher efficiency and
+ are missed on the first search after carcass placement, pkm effects a
+ necessary adjustment to the for accuracy; otherwise, the model would not be
+ able to determine the uncertainty and would substantially over-estimate the
+ variance of the parameter estimates, giving \eqn{\hat{p}} essentially equal
+ to 0 or 1 with approximately equal probability. The adjustment is to fit the
+ model on an adjusted data set with duplicated copies of the original data
+ (\code{2n} observations) but with one carcass having the opposite fate of the
+ others. For example, in field trials with very high searcher efficiency and
  \code{n = 10} carcasses, all of which are found in the first search after
  carcass placement, the original data set would have a carcass observation
  column consisting of 1s (\code{rep(1, 10)}). The adjusted data set would
  have an observation column consisting of \code{2n - 1} 1s and one 0. In this
- case, \code{p} is estimated as \code{1/(2n)} with distribution that closely
- resembles the Bayesian posterior distributions of \code{p} with a uniform
- or a Jeffreys prior. The adjustment is applied on a cellwise basis in full
- cell models (e.g., 1, A, B, A * B). In the additive model with two predictors
- (A + B), the adjustment is made only when a full level of covariate A or B
- is all 0s or 1s.
+ case, the point estimate of \code{p} is \code{1/(2n)} with distribution that
+ closely resembling the Bayesian posterior distributions of \code{p} with a
+ uniform or a Jeffreys prior. The adjustment is applied on a cellwise basis
+ in full cell models (e.g., 1, A, B, A * B). In the additive model with two
+ predictors (A + B), the adjustment is made only when a full level of
+ covariate A or B is all 0s or 1s.
 }
 \section{\code{pkm} Components}{
 
@@ -250,4 +261,8 @@ via the \code{$} operator:
  class(mod3[[1]])
  class(mod3[[1]][[1]])
 
+}
+\seealso{
+\code{\link{rpk}}, \code{\link{qpk}}, \code{\link{aicc}},
+ \code{\link{plot.pkm}}
 }

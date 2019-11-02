@@ -8,7 +8,7 @@
 pkmSetSpecSECellPlot(modelSet, specificModel, specificCell, cols, axes)
 }
 \arguments{
-\item{modelSet}{modelSet of class pkmSet}
+\item{modelSet}{modelSet of class pkmSet (soon to be deprecated)}
 
 \item{specificModel}{name of the specific submodel to plot}
 

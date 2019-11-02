@@ -90,7 +90,6 @@ plot.splitSummary <- function(x, rate = FALSE, commonScale = FALSE, ...){
     for (hi in 1:nlevel_h){
       ratebars <- !(vartype[1] == "CO" || !rate)
       deno <- ifelse(ratebars, deltaT[hi], 1)
-#      qtls <- quantile(splits[[vi]][hi, ], prob = probs)/deno
       qtls <- splits[[vi]][hi, -1]/deno
       polygon(xx[hi] + hwid[hi] * c(1, 1, -1, -1), qtls[c(2, 4, 4, 2)])
       lines(xx[hi] + hwid[hi] * c(1, -1), rep(qtls[3], 2), lwd = 3)

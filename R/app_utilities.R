@@ -1,17 +1,100 @@
-#' @title Reset values of a reactive values list
+#' @title app utilities
 #'
-#' @description Utility function for clearing and setting purposes.
+#' @description utility functions for simple app rv management
 #'
-#' @param rv Reactive values list for the GenEst GUI, created by 
-#'   \code{\link{initialReactiveValues}}, which calls 
+#' @param rv Reactive values list for the GenEst GUI, created by
+#'   \code{\link{initialReactiveValues}}, which calls
 #'   \code{\link[shiny]{reactiveValues}}
 #'
-#' @param toReVal Names of elements in \code{rv} to reset to their factory 
+#' @param toReVal Names of elements in \code{rv} to reset to their factory
 #'   setting (as defined by \code{\link{initialReactiveValues}}).
 #'
-#' @return Updated \code{rv}.
+#' @param colNames column names from which some could be removed
 #'
-#' @export
+#' @param cols column names to select
+#'
+#' @param modNames names of the model to be split off
+#'
+#' @param pos position in the name to split off
+#'
+#' @param sizeclasses names of the carcass classes
+#'
+#' @param parts the component parts of the model's name
+#'
+#' @param type "SE" or "CP"
+#'
+#' @param tab logical for if it's the table output for CP
+#'
+#' @param sizeCol carcass class column name
+#'
+#' @param choice carcass class chosen
+#'
+#' @param colNames_size updated vector of size column names in all needed
+#'  tables
+#'
+#' @name app_utilities
+#'
+NULL
+#' @rdname app_utilities
+initialReactiveValues <- function(){
+  reactiveValues(
+    data_SE = NULL, data_CP = NULL, data_SS = NULL, data_DWP = NULL,
+    data_CO = NULL,
+    filename_SE = NULL, filename_CP = NULL, filename_SS = NULL,
+    filename_DWP = NULL, filename_CO = NULL,
+    colNames_SE = NULL, colNames_SE_preds = NULL, colNames_SE_preds0 = NULL,
+    toRemove_SE_obs = NULL, toRemove_SE_preds = NULL,
+    colNames_SE_obs = NULL, colNames_SE_obs0 = NULL,
+    colNames_CP = NULL, colNames_CP_preds = NULL, colNames_CP_preds0 = NULL,
+    toRemove_CP_preds = NULL,
+    colNames_ltp = NULL, colNames_ltp0 = NULL, toRemove_ltp = NULL,
+    colNames_fta = NULL, colNames_fta0 = NULL, toRemove_fta = NULL,
+
+    colNames_SS = NULL, splittable_SS = NULL,
+    colNames_DWP = NULL,
+    colNames_CO = NULL, colNames_COdates = NULL,
+    colNames_size = NULL, colNames_size0 = NULL,
+
+    nsim = 1000, CL = 0.90,
+
+    sizeCol = NULL, toRemove_sizeCol = NULL,
+    sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
+    sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL,
+    nsizeclasses = 0,
+
+    obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL,
+    formula_p = NULL, formula_k = NULL, kFixed = NULL,
+    mods_SE = NULL, mods_SE_og = NULL, sizeclasses_SE = NULL,
+    outSEpk = NULL, AICcTab_SE = NULL, modOrder_SE = NULL, modNames_SE = NULL,
+    modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
+    best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
+    modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
+    sizeclasses_k = NULL, nsizeclasses_k = NULL, cols_SE = .cols_SE,
+
+    ltp = NULL, fta = NULL, preds_CP = NULL, dist = NULL,
+    predictors_CP = NULL, formula_l = NULL, formula_s = NULL,
+    mods_CP = NULL, mods_CP_og = NULL, CPdls = NULL, outCPdlsfig = NULL,
+    outCPdlstab = NULL, sizeclasses_CP = NULL, AICcTab_CP = NULL,
+    modOrder_CP = NULL, modNames_CP = NULL, modNames_CPdist = NULL,
+    modNames_CPl = NULL, modNames_CPs = NULL, modSet_CP = NULL,
+    best_CP = NULL, modTab_CP = NULL, figH_CP = 700, figW_CP = 800,
+
+    M = NULL, Msplit = NULL, unitCol = NULL, colNames_xID = NULL, xIDcol = NULL,
+    frac = 1, sizeCol_M = NULL, DWPCol = NULL, COdate = NULL,
+    SEmodToUse = NULL, CPmodToUse = NULL,
+    split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0,
+    figH_M = 600, figW_M = 800,
+
+    SS = NULL, avgSI = NULL, SStemp = NULL, gSearchInterval = NULL,
+    gSearchMax = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
+    gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
+    figH_g = 400, figW_g = 800,
+
+    kCheck = NA, kCheck_g = NA, csvformat = ""
+  )
+}
+
+#' @rdname app_utilities
 #'
 reVal <- function(rv, toReVal){
   if("xID" %in% toReVal){
@@ -59,7 +142,6 @@ reVal <- function(rv, toReVal){
   }
   rv
 }
-
 
 #' @title Read in csv files in either format
 #'
@@ -125,16 +207,7 @@ prepPredictors <- function(preds = NULL){
  return(out)
 }
 
-#' @title Create the kNeed text
-#'
-#' @description Based on the number of observation columns, create text output
-#'   of "yes" or "no"
-#'
-#' @param rv reactive value list
-#'
-#' @return kNeed character of "yes" or "no"
-#'
-#' @export
+#' @rdname app_utilities
 #'
 setkNeed <- function(rv){
   textout <- "no"
@@ -372,16 +445,7 @@ removeCols <- function(colNames, selCols){
   return(out)
 }
 
-#' @title Update the string of column names that are in all the needed tables
-#'
-#' @description Determine the overlap between the column names in the SE, CP,
-#'    and CO data tables.
-#'
-#' @param rv reactive values list
-#'
-#' @return possible column names
-#'
-#' @export
+#' @rdname app_utilities
 #'
 updateColNames_size <- function(rv){
 
@@ -415,18 +479,7 @@ updateColNames_size <- function(rv){
   return(SECPCO)
 }
 
-#' @title Select particular columns from a data set
-#'
-#' @description Convenience function for selecting specific columns from a 
-#'   data table
-#'
-#' @param data data table to select from
-#'
-#' @param cols column names to select
-#'
-#' @return selected data
-#'
-#' @export
+#' @rdname app_utilities
 #'
 selectData <- function(data, cols){
   if (is.null(data)){
@@ -442,19 +495,7 @@ selectData <- function(data, cols){
   return(selectedDF)
 }
 
-#' @title Split model names into their components and remove only a desired 
-#'   one
-#'
-#' @description Split a model name to return a specific component. Splitting 
-#'   is done based on the semicolon in the name
-#'
-#' @param modNames names of the model to be split off
-#'
-#' @param pos position in the name to split off
-#'
-#' @return vector of split-off model names
-#'
-#' @export
+#' @rdname app_utilities
 #'
 modNameSplit <- function(modNames, pos){
   modNames_split <- modNames
@@ -502,34 +543,13 @@ countCarcs <- function(mods){
   return(ncarc)
 }
 
-#' @title Prepare text for carcass classes
-#'
-#' @description Prepare and render text of the carcass class names
-#'
-#' @param sizeclasses names of the carcass classes
-#'
-#' @return prepared and render name text
-#'
-#' @export
+#' @rdname app_utilities
 #'
 prepSizeclassText <- function(sizeclasses){
   return(renderText(paste(sizeclasses, collapse = " ")))
 }
 
-#' @title Paste the parts of a model's name back together
-#'
-#' @description Paste the component parts of a model's name back together
-#'   for presentation
-#'
-#' @param parts the component parts of the model's name
-#'
-#' @param type "SE" or "CP"
-#'
-#' @param tab logical for if it's the table output for CP
-#'
-#' @return the pasted name
-#'
-#' @export
+#' @rdname app_utilities
 #'
 modNamePaste <- function(parts, type = "SE", tab = FALSE){
   if (tab & parts[1] == " exponential"){
@@ -549,7 +569,7 @@ modNamePaste <- function(parts, type = "SE", tab = FALSE){
 #' @description Simply make the named list for the disributions in the CP
 #'   model
 #'
-#' @return list with named elements of the distributions 
+#' @return list with named elements of the distributions
 #'
 #' @export
 #'
@@ -559,22 +579,13 @@ CPdistOptions <- function(){
   )
 }
 
-#' @title Produce a blank plot for unsucessful fits
-#'
-#' @description Simply make a blank plot with descriptive text
-#'
-#' @param type "model" or "split"
-#'
-#' @return dummy plot
-#'
-#' @export
+#' @rdname app_utilities
 #'
 plotNA <- function(type = "model"){
   if (type == "model"){
     badText <- "Selected model was not fit successfully."
   } 
   if (type == "split"){
-cat("in plotNA...\n")
     badText <- "Second split too fine for plotting. Consider transposing."
   }
   plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "", 
@@ -582,86 +593,7 @@ cat("in plotNA...\n")
   text(0.01, 0.9, badText, adj = 0)
 }
 
-#' @title Create the main reactive value list for GenEst 
-#'
-#' @description Create a list of reactive values as used across the components
-#'   of the GenEst application
-#'
-#' @return a reactive values list
-#'
-#' @export
-#'
-initialReactiveValues <- function(){
-  reactiveValues(
-    data_SE = NULL, data_CP = NULL, data_SS = NULL, data_DWP = NULL, 
-    data_CO = NULL,
-    filename_SE = NULL, filename_CP = NULL, filename_SS = NULL,
-    filename_DWP = NULL, filename_CO = NULL,
-    colNames_SE = NULL, colNames_SE_preds = NULL, colNames_SE_preds0 = NULL,
-    toRemove_SE_obs = NULL, toRemove_SE_preds = NULL,
-    colNames_SE_obs = NULL, colNames_SE_obs0 = NULL, 
-    colNames_CP = NULL, colNames_CP_preds = NULL, colNames_CP_preds0 = NULL, 
-    toRemove_CP_preds = NULL,
-    colNames_ltp = NULL, colNames_ltp0 = NULL, toRemove_ltp = NULL,   
-    colNames_fta = NULL, colNames_fta0 = NULL, toRemove_fta = NULL,
-
-    colNames_SS = NULL, splittable_SS = NULL,
-    colNames_DWP = NULL,
-    colNames_CO = NULL, colNames_COdates = NULL,
-    colNames_size = NULL, colNames_size0 = NULL,
-
-    nsim = 1000, CL = 0.90,
-
-    sizeCol = NULL, toRemove_sizeCol = NULL,
-    sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
-    sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL,
-    nsizeclasses = 0,
-
-    obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL, 
-    formula_p = NULL, formula_k = NULL, kFixed = NULL,
-    mods_SE = NULL, mods_SE_og = NULL, sizeclasses_SE = NULL, 
-    outSEpk = NULL, AICcTab_SE = NULL, modOrder_SE = NULL, modNames_SE = NULL,
-    modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
-    best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
-    modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
-    sizeclasses_k = NULL, nsizeclasses_k = NULL, 
-
-    ltp = NULL, fta = NULL, preds_CP = NULL, dist = NULL,
-    predictors_CP = NULL, formula_l = NULL, formula_s = NULL, 
-    mods_CP = NULL, mods_CP_og = NULL, CPdls = NULL, outCPdlsfig = NULL, 
-    outCPdlstab = NULL, sizeclasses_CP = NULL, AICcTab_CP = NULL, 
-    modOrder_CP = NULL, modNames_CP = NULL, modNames_CPdist = NULL, 
-    modNames_CPl = NULL, modNames_CPs = NULL, modSet_CP = NULL, 
-    best_CP = NULL, modTab_CP = NULL, figH_CP = 700, figW_CP = 800,
-
-    M = NULL, Msplit = NULL, unitCol = NULL, colNames_xID = NULL, xIDcol = NULL,
-    frac = 1, sizeCol_M = NULL, DWPCol = NULL, COdate = NULL,
-    SEmodToUse = NULL, CPmodToUse = NULL,
-    split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0, 
-    figH_M = 600, figW_M = 800,
-
-    SS = NULL, avgSI = NULL, SStemp = NULL, gSearchInterval = NULL,
-    gSearchMax = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
-    gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
-    figH_g = 400, figW_g = 800,
-
-    kCheck = NA, kCheck_g = NA, csvformat = ""
-  )
-}
-
-#' @title Update the carcass classes
-#'
-#' @description Determine the options for carcass classes, based on a data table
-#'   and column name, returning \code{NULL} if no carcass class column is
-#'   provided
-#'
-#' @param data data table to draw sizes from
-#'
-#' @param sizeCol carcass class column name
-#'
-#' @return unique carcass classes
-#'
-#' @export
+#' @rdname app_utilities
 #'
 updateSizeclasses <- function(data, sizeCol){
   if (is.null(sizeCol)){
@@ -670,19 +602,7 @@ updateSizeclasses <- function(data, sizeCol){
   return(as.character(sort(unique(data[ , sizeCol]))))
 }
 
-#' @title Locate the sizeclass selected by the inputs
-#'
-#' @description Locate the selection of a carcass class from the carcass class
-#'   column, retuning the first option from the carcass classes if the selection
-#'   is not available. 
-#'
-#' @param sizeclasses carcass class options
-#'
-#' @param choice carcass class chosen
-#'
-#' @return location of the carcass class chosen
-#'
-#' @export
+#' @rdname app_utilities
 #'
 pickSizeclass <- function(sizeclasses, choice){
 
@@ -694,20 +614,7 @@ pickSizeclass <- function(sizeclasses, choice){
   return(sizeclass)
 }
 
-#' @title Update the name of the carcass class column based on available names
-#'
-#' @description Update the carcass class column name based on the available
-#'   options. If the existing carcass class column name is no longer in the
-#'   set of available names, a NULL is returned to reset the column name.
-#'
-#' @param sizeCol current carcass class column name
-#'
-#' @param colNames_size updated vector of size column names in all needed 
-#'   tables
-#'
-#' @return updated sizeCol
-#'
-#' @export
+#' @rdname app_utilities
 #'
 updatesizeCol <- function(sizeCol, colNames_size){
   if (!is.null(sizeCol)){

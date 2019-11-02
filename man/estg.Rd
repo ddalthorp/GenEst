@@ -6,8 +6,7 @@
 \usage{
 estg(data_CO, COdate, data_SS, SSdate = NULL, model_SE, model_CP,
   model_DWP = NULL, sizeCol = NULL, unitCol = NULL, IDcol = NULL,
-  nsim = 1000, max_intervals = 8, seed_SE = NULL, seed_CP = NULL,
-  seed_g = NULL)
+  nsim = 1000, max_intervals = 8)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}
@@ -44,17 +43,12 @@ segregating class}
 consider for each carcass. Optional. Limiting the number of search 
 intervals can greatly increase the speed of calculations with only a 
 slight reduction in accuracy in most cases.}
-
-\item{seed_SE}{seed for random draws of the SE model}
-
-\item{seed_CP}{seed for random draws of the CP model}
-
-\item{seed_g}{seed for random draws of the gs}
 }
 \value{
-list of [1] g estimates (ghat) and [2] arrival interval estimates 
-  (Aj) for each of the carcasses. The row names of the Aj matrix are the
-  names of the units where each carcass was found.
+list of [1] g estimates (\code{ghat}) and [2] arrival interval
+ estimates (\code{Aj}) for each of the carcasses. The row names of the
+ \code{Aj} matrix are the units at which carcasses were found. Row names of
+ \code{ghat} are the carcass IDs (in \code{data_CO}).
 }
 \description{
 Estimate g values and arrival intervals for a set of carcasses

@@ -4,10 +4,10 @@
 \alias{prettyModTabCP}
 \title{Create the pretty version of the Carcass Persistence model table}
 \usage{
-prettyModTabCP(table_CP)
+prettyModTabCP(modTab)
 }
 \arguments{
-\item{table_CP}{\code{descCP} object or NULL}
+\item{modTab}{\code{descCP} object or NULL}
 }
 \value{
 pretty version of the CP model table in a data frame with point

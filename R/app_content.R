@@ -1,12 +1,17 @@
-#' @title Create the version text for GenEst 
+#' @title GenEst Information
 #'
-#' @description Create a text string of the version number and date
+#' @description HTML generators for app information and content
 #'
 #' @param type "Full" or "Short" or "Name" or "NameDate"
 #'
-#' @return version text
+#' @param appType "base" (for local version) or "deploy" (for hosted version)
 #'
-#' @export
+#' @return Panels and text for displaying general information about GenEst
+#'
+#' @name app_content
+NULL
+
+#' @rdname app_content
 #'
 createvtext <- function(type = "Full"){
   vnumber <- packageDescription("GenEst", fields = "Version")
@@ -26,15 +31,7 @@ createvtext <- function(type = "Full"){
   return(vtext)
 }
 
-#' @title Create the Content for the Getting Started Pabel
-#'
-#' @description Create the HTML code for the Help Getting Started main panel,
-#'   which describes basic usage of the app and directs users to additional
-#'   documentation. 
-#'
-#' @return HTML for the Help Getting Started main panel.
-#'
-#' @export
+#' @rdname app_content
 #'
 gettingStartedContent <- function(){
   mainPanel(
@@ -75,18 +72,7 @@ gettingStartedContent <- function(){
 }
 
 
-#' @title Create the Content for the About Pabel
-#'
-#' @description This set of functions create the HTML code for the Help About 
-#'   main panel, which gives information about the product and project. \cr
-#'   \cr \code{aboutContent} collates the authors (\code{GenEstAuthors} and
-#'   \code{GenEstGUIAuthors}), license (\code{GenEstLicense}), 
-#'   acknowledgements (\code{GenEstAcknowledgements}), and logo 
-#'   (\code{GenEstLogos}) contents. 
-#'
-#' @return HTML for the Help About main panel.
-#'
-#' @export
+#' @rdname app_content
 #'
 aboutContent <- function(){
   mainPanel(
@@ -102,14 +88,7 @@ aboutContent <- function(){
   )
 }
 
-#' @rdname aboutContent
-#'
-#' @description \code{GenEstAuthors} creates the HTML code for the Authors
-#'   section.
-#'
-#' @return \code{GenEstAuthors}: HTML for the Help About panel Author text.
-#'
-#' @export
+#' @rdname app_content
 #'
 GenEstAuthors <- function(){
   HTML(
@@ -139,15 +118,7 @@ GenEstAuthors <- function(){
   )
 }
 
-#' @rdname aboutContent
-#'
-#' @description \code{GenEstGUIauthors} creates the HTML code for the GUI
-#'   Authors section.
-#'
-#' @return \code{GenEstGUIauthors}: HTML for the Help About panel GUI Author
-#'   text.
-#'
-#' @export
+#' @rdname app_content
 #'
 GenEstGUIauthors <- function(){
   HTML(
@@ -155,22 +126,16 @@ GenEstGUIauthors <- function(){
       b("Web Design and Graphics User Interface Programming:"), 
       " Juniper Simonis ",
       a("(DAPPER Stats)", href = "http://www.dapperstats.com", 
-        target = "_blank"
+        target = "_blank",
+      "Daniel Dalthorp ",
+      a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
       ), 
       "."
     )
   )
 }
 
-#' @rdname aboutContent
-#'
-#' @description \code{GenEstLicense} creates the HTML code for the License
-#'   section.
-#'
-#' @return \code{GenEstLicense}: HTML for the Help About panel License text.
-#'
-#' @export
-#'
+#' @rdname app_content
 GenEstLicense <- function(){
   HTML(
     paste0(br(), br(),
@@ -183,15 +148,7 @@ GenEstLicense <- function(){
   )
 }
 
-#' @rdname aboutContent
-#'
-#' @description \code{GenEstAcknowledgements} creates the HTML code for the
-#'   Acknowledgements section.
-#'
-#' @return \code{GenEstAcknowledgements}: HTML for the Help About panel 
-#'   Acknowledgements text.
-#'
-#' @export
+#' @rdname app_content
 #'
 GenEstAcknowledgements <- function(){
   HTML(
@@ -233,14 +190,7 @@ GenEstAcknowledgements <- function(){
   )
 }
 
-#' @rdname aboutContent
-#'
-#' @description \code{GenEstLogos} creates the HTML code for the Logos
-#'   section.
-#'
-#' @return \code{GenEstLogos}: HTML for the Help About panel logos.
-#'
-#' @export
+#' @rdname app_content
 #'
 GenEstLogos <- function(){
   HTML(
@@ -282,19 +232,7 @@ GenEstLogos <- function(){
   )
 }
 
-#' @title Create the Content for the Disclaimers Pabel
-#'
-#' @description Create the HTML code for the Help Disclaimers main panel,
-#'   which gives the required legal disclaimers for using the application,
-#'   based on \code{appType}. \cr \cr \code{disclaimersContent} collates the
-#'   USGS (\code{disclaimerUSGS} and WEST, Inc. \code{disclaimerWEST})
-#'   disclaimers.
-#'
-#' @param appType "base" (for local version) or "deploy" (for hosted version)
-#'
-#' @return HTML for the Help Disclaimers main panel.
-#'
-#' @export
+#' @rdname app_content
 #'
 disclaimersContent <- function(appType = "base"){
   if (!appType %in% c("base", "deploy")){
@@ -313,12 +251,10 @@ disclaimersContent <- function(appType = "base"){
 }
 
 
-#' @rdname disclaimersContent
+#' @rdname app_content
 #'
-#' @description \code{disclaimerUSGS} creates the text for the USGS 
+#' @description \code{disclaimerUSGS} creates the text for the USGS
 #'   disclaimer.
-#'
-#' @return \code{disclaimerUSGS}: text for the USGS disclaimer.
 #'
 #' @export
 #'
@@ -346,12 +282,7 @@ disclaimerUSGS <- function(){
 #  unauthorized use."
 }
 
-#' @rdname disclaimersContent
-#'
-#' @description \code{disclaimerWEST} creates the text for the WEST, Inc.  
-#'   disclaimer.
-#'
-#' @return \code{disclaimerWEST}: text for the WEST, Inc. disclaimer.
+#' @rdname app_content
 #'
 #' @export
 #'

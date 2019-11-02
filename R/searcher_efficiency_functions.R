@@ -18,8 +18,8 @@
 #'   (\code{formula_p} and \code{formula_k}) may be entered for each. The
 #'   models are entered as they would be in the familiar \code{lm} or
 #'   \code{glm} functions in R. For example, \code{p} might vary with
-#'   \code{A}, \code{B}, and \code{C}, while \code{k} varies
-#'   only with \code{A}. A user might then enter \code{p ~ A + B + C}
+#'   \code{A} and \code{B}, while \code{k} varies
+#'   only with \code{A}. A user might then enter \code{p ~ A + B}
 #'   for \code{formula_p} and \code{k ~ A} for
 #'   \code{formula_k}. Other R conventions for defining formulas may also be
 #'   used, with \code{A:B} for the interaction between covariates
@@ -35,24 +35,24 @@
 #'   (e.g., visibility = E, M, or D) may also be included.
 #'
 #'  When all trial carcasses are either found on the first search or
-#'  are missed on the first search after carcass placement, an adjustment to the
-#'  model is necessary for accuracy; otherwise, the model cannot determine the
-#'  uncertainty and substantially over-estimates the variance of the parameter
-#'  estimates, giving \code{p_hat} essentially equal to 0 or 1 with
-#'  approximately equal probability. The adjustment is to fit the model on an
-#'  adjusted data set with duplicated copies of the original data (\code{2n}
-#'  observations) but with one carcass having the opposite fate of the others.
-#'  For example, in field trials with very high searcher efficiency and
+#'  are missed on the first search after carcass placement, pkm effects a
+#'  necessary adjustment to the for accuracy; otherwise, the model would not be
+#'  able to determine the uncertainty and would substantially over-estimate the
+#'  variance of the parameter estimates, giving \eqn{\hat{p}} essentially equal
+#'  to 0 or 1 with approximately equal probability. The adjustment is to fit the
+#'  model on an adjusted data set with duplicated copies of the original data
+#'  (\code{2n} observations) but with one carcass having the opposite fate of the
+#'  others. For example, in field trials with very high searcher efficiency and
 #'  \code{n = 10} carcasses, all of which are found in the first search after
 #'  carcass placement, the original data set would have a carcass observation
 #'  column consisting of 1s (\code{rep(1, 10)}). The adjusted data set would
 #'  have an observation column consisting of \code{2n - 1} 1s and one 0. In this
-#'  case, \code{p} is estimated as \code{1/(2n)} with distribution that closely
-#'  resembles the Bayesian posterior distributions of \code{p} with a uniform
-#'  or a Jeffreys prior. The adjustment is applied on a cellwise basis in full
-#'  cell models (e.g., 1, A, B, A * B). In the additive model with two predictors
-#'  (A + B), the adjustment is made only when a full level of covariate A or B
-#'  is all 0s or 1s.
+#'  case, the point estimate of \code{p} is \code{1/(2n)} with distribution that
+#'  closely resembling the Bayesian posterior distributions of \code{p} with a
+#'  uniform or a Jeffreys prior. The adjustment is applied on a cellwise basis
+#'  in full cell models (e.g., 1, A, B, A * B). In the additive model with two
+#'  predictors (A + B), the adjustment is made only when a full level of
+#'  covariate A or B is all 0s or 1s.
 #'
 #' @param formula_p Formula for p; an object of class \code{\link{formula}}
 #'   (or one that can be coerced to that class): a symbolic description of
@@ -65,25 +65,36 @@
 #'   "Details".
 #'
 #' @param data Data frame with results from searcher efficiency trials and any
-#' covariates included in \code{formula_p} or {formula_k} (required).
+#' covariates included in \code{formula_p} or \code{formula_k} (required).
 #'
 #' @param obsCol Vector of names of columns in \code{data} where results
-#'   for each search occasion are stored (optional). If \code{obsCol} is not
-#'   provided, \code{pkm} uses as \code{obsCol} all columns with names that
-#'   begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
-#'   "s2", "s3", etc. This option is included as a convenience for the user,
-#'   but care must be taken that other data are not stored in columns with
-#'   names matching that pattern. Alternatively, \code{obsCol} may be
-#'   entered as a vector of names, like \code{c("s1", "s2", "s3")},
-#'   \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch",
-#'   "lastSearch")}. The columns must be in chronological order, that is, it is
+#'  for each search occasion are stored (optional). If \code{obsCol} is not
+#'  provided, \code{pkm} uses as \code{obsCol} all columns with names that
+#'  begin with an \code{"s"} or \code{"S"} and end with a number, e.g., "s1",
+#'  "s2", "s3", etc. This option is included as a convenience for the user,
+#'  but care must be taken that other data are not stored in columns with
+#'  names matching that pattern. Alternatively, \code{obsCol} may be
+#'  entered as a vector of names, like \code{c("s1", "s2", "s3")},
+#'  \code{paste0("s", 1:3)}, or \code{c("initialSearch", "anotherSearch",
+#'  "lastSearch")}. The columns must be in chronological order, that is, it is
 #'  assumed that the first column is for the first search after carcass arrival,
 #'  the second column is for the second search, etc.
 #'
 #' @param kFixed Parameter for user-specified \code{k} value (optional). If a
 #'   value is provided, \code{formula_k} is ignored and the model is fit under
 #'   the assumption that the \code{k} parameter is fixed and known to be
-#'   \code{kFixed}.
+#'   \code{kFixed} \eqn{\in [0, 1]}. If a \code{sizeCol} is provided, \code{kFixed}
+#'   may either be \code{NULL}, a single number in [0, 1], or a vector with
+#'   \code{kFixed} values for two or more of the carcass size classes. For
+#'   example, if there are three sizes (\code{S}, \code{M}, and \code{L}),
+#'   \code{kFixed} could be \code{c(S = 0.3, M = 0.8, L = 1.0)} to assign fixed
+#'   \code{k} values to each size. To fit \code{k} for size \code{S} and to assign
+#'   values of 0.8 and 1.0 to sizes \code{M} and \code{L}, resp., use
+#'   \code{kFixed = c(S = 0.3, M = 0.8, L = 1.0)}. If there are more than one size
+#'   classes and \code{kFixed} is a scalar, then all size classes are assigned the
+#'   same \code{kFixed} value (unless \code{kFixed} is named, e.g.,
+#'   \code{kFixed = c(S = 0.5)}, in which case only the named size is assigned the
+#'   \code{kFixed}).
 #'
 #' @param allCombos logical. If \code{allCombos = FALSE}, then the single model
 #'  expressed by \code{formula_p} and \code{formula_k} is fit using a call to
@@ -204,6 +215,9 @@
 #'  must be a named list of formulas with names matching the sizes listed in
 #'  \code{unique(data[, sizeCol])}. The return value is then a list of
 #'  \code{pkm} objects, one for each size.
+#'
+#' @seealso \code{\link{rpk}}, \code{\link{qpk}}, \code{\link{aicc}},
+#'  \code{\link{plot.pkm}}
 #'
 #' @examples
 #'  head(data(wind_RP))
@@ -334,22 +348,12 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   ncarc <- nrow(obsData)
 
   preds_p <- all.vars(formula_p[[3]])
-  if (length(preds_p) > 0){
-    for (predi in 1:length(preds_p)){
-      data0[ , preds_p[predi]] <- as.character(data0[ , preds_p[predi]])
-    }
-  }
   formulaRHS_p <- formula(delete.response(terms(formula_p)))
   levels_p <- .getXlevels(terms(formulaRHS_p), data0)
 
   preds_k <- character(0)
   if (is.language(formula_k)){
     preds_k <- all.vars(formula_k[[3]])
-    if (length(preds_k) > 0){
-      for (predi in 1:length(preds_k)){
-        data0[ , preds_k[predi]] <- as.character(data0[ , preds_k[predi]])
-      }
-    }
     formulaRHS_k <- formula(delete.response(terms(formula_k)))
     levels_k <- .getXlevels(terms(formulaRHS_k), data0)
   }
@@ -361,6 +365,8 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   preds <- unique(c(preds_p, preds_k))
+  for (pri in preds)
+    if (is.numeric(data0[ , pri])) data0[ , pri] <- paste0("_", data0[ , pri])
   cells <- combinePreds(preds, data0)
   ncell <- nrow(cells)
   cellNames <- cells$CellNames
@@ -418,6 +424,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
 
   obsData <- as.matrix(data0[ , obsCol])
+  colnames(obsData) <- obsCol
   misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
   foundOn <- matrixStats::rowMaxs(
       obsData * matrixStats::rowCumsums(1 * !is.na(obsData)), na.rm = T)
@@ -504,15 +511,19 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   cellTable_p <- lapply(probs, qnorm, mean = cellMean_p, sd = cellSD_p)
   cellTable_p <- matrix(unlist(cellTable_p), ncol = 3)
   cellTable_p <- round(alogit(cellTable_p), 6)
-  colnames(cellTable_p) <- c("p_median", "p_lower", "p_upper")
+  colnames(cellTable_p) <- c("p_median", "p_lwr", "p_upr")
   cell_n <- as.numeric(table(carcCells0)[cellNames])
   names(cell_n) <- NULL
   if (!pOnly){
     cellTable_k <- lapply(probs, qnorm, mean = cellMean_k, sd = cellSD_k)
     cellTable_k <- matrix(unlist(cellTable_k), nrow = ncell, ncol = 3)
     cellTable_k <- round(alogit(cellTable_k), 6)
-    colnames(cellTable_k) <- c("k_median", "k_lower", "k_upper")
-    cellTable <- data.frame(cell = cellNames, n = cell_n, cellTable_p, cellTable_k)
+    colnames(cellTable_k) <- c("k_median", "k_lwr", "k_upr")
+    cellTable <- data.frame(
+      cell = cellNames,
+      n = cell_n,
+      cellTable_p,
+      cellTable_k)
   } else {
     cellTable <- data.frame(cell = cellNames, n = cell_n, cellTable_p)
   }
@@ -520,7 +531,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output <- list()
   output$call <- match.call()
   output$data <- data
-  output$data0 <- data00
+  output$data0 <- data0
   output$formula_p <- formula_p
   if (!pOnly) output$formula_k <- formula_k
   output$predictors <- preds
@@ -1042,9 +1053,10 @@ aicc.pkmSize <- function(x, ... ){
 #' @param model A \code{\link{pkm}} object (which is returned from 
 #'   \code{pkm()})
 #'
-#'
 #' @return list of pairs of matrices of \code{n} simulated \code{p} and
 #'  \code{k} for cells defined by the \code{model} object.
+#'
+#' @seealso \code{\link{rpk}}, \code{\link{pkm}}
 #'
 #' @examples
 #'   data(wind_RP)
@@ -1061,36 +1073,92 @@ rpk <- function(n, model){
   if (model$pOnly){
    stop("k not included in 'model'. Cannot simulate pk.")
   } else {
-    nbeta_k <- model$nbeta_k
     which_beta_k <- (model$nbeta_p + 1):(model$nbeta_p + model$nbeta_k)
-    cellMM_k <- model$cellMM_k
-    betahat_k <- model$betahat_k
   }
-  nbeta_p <- model$nbeta_p 
-  cellMM_p <- model$cellMM_p
-  ncell <- model$ncell
-  cellNames <- model$cells[ , "CellNames"]
 
-  meanbeta <- c(model$betahat_p, betahat_k)
-  varbeta <- model$varbeta
-  method <-  "svd"
+  sim_beta <- mvtnorm::rmvnorm(n,
+    mean = c(model$betahat_p, model$betahat_k),
+    sigma = model$varbeta,
+    method =  "svd")
+  sim_p <- as.matrix(alogit(sim_beta[ , 1:model$nbeta_p] %*% t(model$cellMM_p)))
+  colnames(sim_p) <- model$cells$CellNames
 
-  sim_beta <- mvtnorm::rmvnorm(n, mean = meanbeta, sigma = varbeta,
-     method =  method)
-  sim_p <- as.matrix(alogit(sim_beta[ , 1:nbeta_p] %*% t(cellMM_p)))
-  colnames(sim_p) <- cellNames
-
-  if (length(model$kFixed) == 0 || is.na(model$kFixed)){
-    sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(cellMM_k)))
+  if (is.null(model$kFixed) || is.na(model$kFixed)){
+    sim_k <- as.matrix(alogit(sim_beta[ , which_beta_k] %*% t(model$cellMM_k)))
   } else {
-    sim_k <- matrix(model$kFixed, ncol = ncell, nrow = n)
+    sim_k <- matrix(model$kFixed, ncol = model$ncell, nrow = n)
   }
-  colnames(sim_k) <- cellNames
-
-  output <- lapply(cellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
-  names(output) <- cellNames
+  colnames(sim_k) <- model$cells$CellNames
+  output <- lapply(model$cells$CellNames, function(x) cbind(p = sim_p[, x], k = sim_k[, x]))
+  names(output) <- model$cells$CellNames
 
   return(output)
+}
+
+#' @title Quantiles of marginal distributions of \eqn{\hat{p}} and \eqn{\hat{k}}
+#'
+#' @description Calculate quantiles of marginal distributions of \eqn{\hat{p}}
+#'  and \eqn{\hat{k}} for a \code{\link{pkm}} model object
+#'
+#' @param p vector of probabilities
+#'
+#' @param model A \code{\link{pkm}} object (which is returned from
+#'   \code{pkm()})
+#'
+#' @return either a list of \code{ncell} \eqn{\times} \code{length(p)} matrices
+#'  of quantiles for \code{$p} and \code{$k} for cells defined by the
+#'  \code{model} object (if \code{model$pOnly == FALSE}) or a \code{ncell}
+#'  \eqn{\times} \code{length(p)} matrix of quantiles for \code{p}
+#'
+#' @seealso \code{\link{rpk}}, \code{\link{pkm}}
+#'
+#' @examples
+#'  # 90% confidence intervals for \code{p} and \code{k}
+#'   mod <- pkm(formula_p = p ~ Visibility * Season, formula_k = k ~ Season,
+#'    data = wind_cleared$SE)
+#'   qpk(p = c(0.05, 0.95), model = mod)
+#'
+#' @export
+#'
+qpk <- function(p, model){
+  if (!"pkm" %in% class(model)) stop("model not of class pkm")
+  if (!is.numeric(p) || !is.vector(p)) stop("p must be a numeric vector")
+  if (any(is.na(p))) stop("p must be numeric with no NA")
+  if (max(p) >= 1 | min(p) <= 0) stop("p must be in (0, 1)")
+  qp <- with(model, {
+    varbeta_p <- varbeta[1:nbeta_p, 1:nbeta_p]
+    cellMean_p <- cellMM_p %*% betahat_p
+    cellVar_p <- cellMM_p %*% varbeta_p %*% t(cellMM_p)
+    cellSD_p <- suppressWarnings(sqrt(diag(cellVar_p)))
+    probs <- list(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2)
+    lapply(lapply(p, qnorm, mean = cellMean_p, sd = cellSD_p), alogit)
+  })
+  if (!model$pOnly){
+    qk <- with(model, {
+      if (!exists("kFixed") || is.null(kFixed) || is.na(kFixed)){
+        which_k <- (nbeta_p + 1):(nbeta_p + nbeta_k)
+        varbeta_k <- varbeta[which_k, which_k]
+        cellMean_k <- cellMM_k %*% betahat_k
+        cellVar_k <- cellMM_k %*% varbeta_k %*% t(cellMM_k)
+        cellSD_k <- suppressWarnings(sqrt(diag(cellVar_k)))
+      } else {
+        cellMean_k <- rep(logit(kFixed), ncell)
+        cellSD_k <- rep(0, ncell)
+      }
+      lapply(lapply(p, qnorm, mean = cellMean_k, sd = cellSD_k), alogit)
+    })
+    out <- list(
+      p = matrix(unlist(qp), nrow = model$ncell),
+      k = matrix(unlist(qk), nrow = model$ncell))
+    rownames(out[["p"]]) <- rownames(out[["k"]]) <- model$cells$CellNames
+    colnames(out[["p"]]) <- colnames(out[["k"]]) <- paste0("q", p)
+    return(out)
+  } else {
+    qp <- matrix(unlist(qp), nrow = model$ncell)
+    rownames(qp) <- model$cells$CellNames
+    colnames(qp) <- paste0("q", p)
+    return(qp)
+  }
 }
 
 #' @title Check if a pk model is well-fit

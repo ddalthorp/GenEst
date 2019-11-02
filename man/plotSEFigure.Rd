@@ -21,5 +21,5 @@ a plot
 }
 \description{
 Produce a figures for a specific SE model, as fit by
-  \code{\link{pkmSet}}
+  \code{\link{pkmSet}} (soon to be deprecated)
 }

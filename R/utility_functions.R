@@ -27,6 +27,30 @@ alogit <- function(x) {
   1 / (1 + exp(-x))
 }
 
+#' @title The CDF of the loglogistic distribution
+#'
+#' @param q a numeric vector of quantiles
+#'
+#' @param pda the \eqn{\alpha} parameter
+#'
+#' @param pdb the \eqn{\beta} parameter
+#'
+#' @details There are several common parameterizations of the loglogistic
+#'  distribution. The one used here gives the following:
+#'  \describe{
+#'    \item{CDF}{\code{Pr(X <= x) = 1/(1 + (x/}\eqn{\beta})^-\eqn{\alpha}\code{)}}}
+#'    \item{PDF}{\code{Pr(X = x) = (}\eqn{\alpha}/\eqn{\beta}\code{) * (x/}\eqn{\beta})^(\eqn{\alpha}\code{ - 1)/(1 + (x/}\eqn{\beta})^\eqn{\alpha}\code{)^2}}}
+#'   }
+#' @return \code{Pr(X <= q | pda, pdb)}
+#'
+#' @export
+#'
+pllogis <- function(q, pda, pdb){
+  if (!is.numeric(q) || any(q < 0)) stop("q must be non-negative")
+  if (!is.numeric(pda) || any(pda <= 0)) stop("pda must be positive")
+  if (!is.numeric(pdb) || any(pdb <= 0)) stop("pdb must be positive")
+  return(1/(1 + (q/pdb)^-pda))
+}
 #' @title Calculate day of study from calendar date
 #'
 #' @description Convert calendar date to integer day from a reference date

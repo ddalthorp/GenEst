@@ -1,11 +1,18 @@
-#' @title Create the HTML for the navigation bar UI element 
+#' @title HTML parameters
 #'
-#' @description create the HTML code for the navigation bar in the GenEst app.
+#' @description utility functions for simple HTML tasks
 #'
-#' @return HTML for the navbar element
+#' @param ... attributes and children of the element
 #'
-#' @export
+#' @param text text to wrap in the tag
 #'
+#' @param buttonType "single" (for clearing a single component) or "all" (for
+#'   clearing everything).
+#'
+#' @name app_ui_utilities
+#'
+NULL
+#' @rdname app_ui_utilities
 navbar <- function(){
   div(
     div(
@@ -17,111 +24,61 @@ navbar <- function(){
   )
 }
 
-#' @title HTML tag functions
-#'
-#' @description This suite of functions are used for producing specific
-#'   HTML tags, in complement to those imported from the htmltools package.
-#'   \cr \cr \code{style}: in-line style.
-#'
-#' @param ... attributes and children of the element
-#'
-#' @return HTML tagged elements
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 style <- function(...){
   tags$style(...)
 }
 
-#' @rdname style
-#'
-#' @description \code{ol}: ordered list.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 ol <- function(...){
   tags$ol(...)
 }
 
-#' @rdname style
-#'
-#' @description \code{ul}: unordered list.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 ul <- function(...){
   tags$ul(...)
 }
 
-#' @rdname style
-#'
-#' @description \code{li}: list element.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 li <- function(...){
   tags$li(...)
 }
 
-#' @rdname style
-#'
-#' @description \code{b}: bolded text.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 b <- function(...){
   tags$b(...)
 }
 
-#' @rdname style
-#'
-#' @description \code{u}: underlined text.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 u <- function(...){
   tags$u(...)
 }
 
-#' @rdname style
-#'
-#' @description \code{small}: small text.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 small <- function(...){
   tags$small(...)
 }
 
-#' @rdname style
-#'
-#' @description \code{big}: big text.
-#'
-#' @param text text to wrap in the tag
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 big <- function(text = NULL){
   HTML(paste0("<big>", text, "</big>"))
 }
 
-#' @rdname style
-#'
-#' @description \code{center}: center-justified text.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 center <- function(text = NULL){
   HTML(paste0("<center>", text, "</center>"))
 }
 
-#' @title Generate the Inline CSS Definition
-#'
-#' @description Defines the inline CSS code for the GenEst app.
-#'
-#' @param ... Arguments to be passed down to \code{\link[shinyjs]{inlineCSS}}.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 GenEstInlineCSS <- function(...){
   inlineCSS(
@@ -161,31 +118,13 @@ GenEstInlineCSS <- function(...){
   )
 }
 
-#' @title Shiny Java Script (via shinyjs) Enabler
-#'
-#' @description Enable the use of the \code{shinyjs} package within GenEst.
-#'   This function is a simple wrapper to bring 
-#'   \code{\link[shinyjs]{useShinyjs}} into the namespace.
-#'
-#' @param ... Arguments to be passed down to 
-#'   \code{\link[shinyjs]{useShinyjs}}.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 GenEstShinyJS <- function(...){
   useShinyjs(...)
 }
 
-#' @title Define Clear Button Style
-#'
-#' @description Define the style tag for clear buttons used throughout GenEst.
-#'
-#' @param buttonType "single" (for clearing a single component) or "all" (for
-#'   clearing everything).
-#'
-#' @return Character element defining the style.
-#'
-#' @export
+#' @rdname app_ui_utilities
 #'
 cButtonStyle <- function(buttonType = "single"){
 

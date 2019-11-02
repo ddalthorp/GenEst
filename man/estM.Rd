@@ -7,8 +7,7 @@
 estM(data_CO, data_SS, data_DWP = NULL, frac = 1,
   COdate = "DateFound", model_SE, model_CP, model_DWP = NULL,
   unitCol = NULL, SSdate = NULL, sizeCol = NULL, IDcol = NULL,
-  DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-  seed_M = NULL, nsim = 1000, max_intervals = 8)
+  DWPCol = NULL, nsim = 1000, max_intervals = 8)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}
@@ -44,14 +43,6 @@ distinctions among carcass classes.}
 \item{DWPCol}{Column name for the DWP values in the DWP table when no
 carcass class is used and there is more than one column in \code{data_DWP}
 that could be interpreted as DWP.}
-
-\item{seed_SE}{seed for random draws of the SE model}
-
-\item{seed_CP}{seed for random draws of the CP model}
-
-\item{seed_g}{seed for random draws of the gs}
-
-\item{seed_M}{seed for the random draws of the Mhats}
 
 \item{nsim}{the number of simulation draws}
 

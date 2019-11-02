@@ -20,5 +20,5 @@ models}
 a plot
 }
 \description{
-Produce the header for an SE plot
+Produce the header for an SE plot (soon to be deprecated)
 }

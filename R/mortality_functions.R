@@ -39,14 +39,6 @@
 #'   carcass class is used and there is more than one column in \code{data_DWP}
 #'   that could be interpreted as DWP.
 #'
-#' @param seed_SE seed for random draws of the SE model
-#'
-#' @param seed_CP seed for random draws of the CP model
-#'
-#' @param seed_g seed for random draws of the gs
-#'
-#' @param seed_M seed for the random draws of the Mhats
-#'
 #' @param nsim the number of simulation draws
 #'
 #' @param max_intervals maximum number of arrival intervals to consider
@@ -78,8 +70,7 @@
 estM <- function(data_CO, data_SS, data_DWP = NULL, frac = 1,
                  COdate = "DateFound", model_SE, model_CP, model_DWP = NULL,
                  unitCol = NULL, SSdate = NULL, sizeCol = NULL, IDcol = NULL,
-                 DWPCol = NULL, seed_SE = NULL, seed_CP = NULL, seed_g = NULL,
-                 seed_M = NULL, nsim = 1000, max_intervals = 8){
+                 DWPCol = NULL, nsim = 1000, max_intervals = 8){
 
   i <- sapply(data_CO, is.factor)
   data_CO[i] <- lapply(data_CO[i], as.character)
@@ -130,10 +121,9 @@ estM <- function(data_CO, data_SS, data_DWP = NULL, frac = 1,
       data_SS = data_SS, SSdate = SSdate,
       model_SE = model_SE, model_CP = model_CP, model_DWP = model_DWP,
       unitCol = unitCol, sizeCol = sizeCol, IDcol = IDcol,
-      nsim = nsim, max_intervals = max_intervals,
-      seed_SE = seed_SE, seed_CP = seed_CP, seed_g = seed_g)
+      nsim = nsim, max_intervals = max_intervals)
   gDf <- est$ghat * est$DWP * frac
-  set.seed(seed_M)
+
   c_out <- which(rowSums(gDf) == 0)
   if (length(c_out) == 0){
     n <- length(gDf)

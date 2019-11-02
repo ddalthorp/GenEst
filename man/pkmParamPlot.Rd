@@ -17,5 +17,5 @@ pkmParamPlot(model, pk = "p", col)
 a parameter plot panel
 }
 \description{
-Plot parameter box plots for each cell for either p or k
+Boxplot for pk model cells (soon to be deprecated)
 }

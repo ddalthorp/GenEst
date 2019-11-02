@@ -22,8 +22,6 @@
 #'
 #' @return Updated \code{output} list.
 #'
-#' @export
-#'
 update_output <- function(eventName, rv, output, input){
 
     eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
@@ -263,10 +261,10 @@ update_output <- function(eventName, rv, output, input){
       }
       output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
       output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
-      output$fig_SE <- renderPlot({
-                         plot(rv$modSet_SE, specificModel = rv$best_SE,
-                           app = TRUE)
-                       }, height = rv$figH_SE, width = rv$figW_SE)
+      output$fig_SE <- renderPlot(
+        plot(rv$modSet_SE, specificModel = rv$best_SE), 
+          height = rv$figH_SE, width = rv$figW_SE,
+          pointsize = .pointsize, res = .res)
 
       output$sizeclasses_SE <- renderText(paste(rv$sizeclasses_SE, collapse = " "))
       output$modelMenu_SE <- modelSelectionWidget(rv$mods_SE, "SE")
@@ -314,9 +312,10 @@ update_output <- function(eventName, rv, output, input){
     if (length(rv$mods_SE) > 0){
       output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
       output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
-      output$fig_SE <- renderPlot({
-        plot(rv$modSet_SE, specificModel = rv$best_SE, app = TRUE)
-      }, height = rv$figH_SE, width = rv$figW_SE)
+      output$fig_SE <- renderPlot(
+        plot(rv$modSet_SE, specificModel = rv$best_SE),
+        height = rv$figH_SE, width = rv$figW_SE,
+        pointsize = .pointsize, res = .res)
 
       output$sizeclass_SE1 <- classText(rv, "SE")
       output$sizeclass_SE2 <- classText(rv, "SE")
@@ -335,11 +334,11 @@ update_output <- function(eventName, rv, output, input){
     if (length(rv$mods_SE) > 0){
       output$fig_SE <- renderPlot({
                          tryCatch(
-                           plot(rv$modSet_SE, specificModel = rv$outSEpk,
-                             app = TRUE),
+                           plot(rv$modSet_SE, specificModel = rv$outSEpk),
                            error = function(x){plotNA()}
                          )
-                       }, height = rv$figH_SE, width = rv$figW_SE)
+                       },
+        height = rv$figH_SE, width = rv$figW_SE, res = .res, pointsize = .pointsize)
       output$dlSEfig <- downloadSEFig(rv)
       output$dlSEmod <- downloadSEmod(rv, input)
       if (!is.null(rv$modTab_SE)){
@@ -364,9 +363,8 @@ update_output <- function(eventName, rv, output, input){
       output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})
       output$modTab_CP <- renderDataTable({prettyModTabCP(rv$modTab_CP)})
       output$fig_CP <- renderPlot({
-                         plot(rv$modSet_CP, specificModel = rv$best_CP,
-                           app = TRUE)
-                       }, height = rv$figH_CP, width = rv$figW_CP)
+        plot(rv$modSet_CP, specificModel = rv$best_CP, app = TRUE)},
+        height = rv$figH_CP, width = rv$figW_CP)
 
       output$sizeclasses_CP <- renderText(paste(rv$sizeclasses_CP, collapse = " "))
       output$modelMenu_CP <- modelSelectionWidget(rv$mods_CP, "CP")
@@ -381,6 +379,7 @@ update_output <- function(eventName, rv, output, input){
       } else{
         output$sizeclass_CPyn <- renderText("YES")
       }
+#      tmp <- cbind(rv$modTab_CP,
       output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTab_CP,
                                             rv$csvformat)
       output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP,

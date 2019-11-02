@@ -4,8 +4,7 @@
 \alias{estgGeneric}
 \title{Estimate generic g}
 \usage{
-estgGeneric(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
-  seed_CP = NULL)
+estgGeneric(days, model_SE, model_CP, nsim = 1000)
 }
 \arguments{
 \item{days}{Search schedule data as a vector of days searched}
@@ -15,10 +14,6 @@ estgGeneric(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
 \item{model_CP}{Carcass Persistence model (\code{cpm} object)}
 
 \item{nsim}{the number of simulation draws}
-
-\item{seed_SE}{seed for random draws of the SE model}
-
-\item{seed_CP}{seed for random draws of the CP model}
 }
 \value{
 \code{gGeneric} object that is a list of [1] a list of g estimates,

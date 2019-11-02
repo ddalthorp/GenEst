@@ -32,12 +32,6 @@
 #    column is, it also identifies that the model should include size as a 
 #'   segregating class
 #'
-#' @param seed_SE seed for random draws of the SE model
-#'
-#' @param seed_CP seed for random draws of the CP model
-#'
-#' @param seed_g seed for random draws of the gs
-#'
 #' @param nsim the number of simulation draws
 #'
 #' @param max_intervals maximum number of arrival interval intervals to 
@@ -45,9 +39,10 @@
 #'   intervals can greatly increase the speed of calculations with only a 
 #'   slight reduction in accuracy in most cases.
 #'
-#' @return list of [1] g estimates (ghat) and [2] arrival interval estimates 
-#'   (Aj) for each of the carcasses. The row names of the Aj matrix are the
-#'   names of the units where each carcass was found.
+#' @return list of [1] g estimates (\code{ghat}) and [2] arrival interval
+#'  estimates (\code{Aj}) for each of the carcasses. The row names of the
+#'  \code{Aj} matrix are the units at which carcasses were found. Row names of
+#'  \code{ghat} are the carcass IDs (in \code{data_CO}).
 #'
 #' @examples
 #'  data(mock)
@@ -66,8 +61,7 @@
 estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
                  model_SE, model_CP, model_DWP = NULL,
                  sizeCol = NULL, unitCol = NULL, IDcol = NULL,
-                 nsim = 1000, max_intervals = 8,
-                 seed_SE = NULL, seed_CP = NULL, seed_g = NULL){
+                 nsim = 1000, max_intervals = 8){
   i <- sapply(data_CO, is.factor)
   data_CO[i] <- lapply(data_CO[i], as.character)
   i <- sapply(data_SS, is.factor)
@@ -79,11 +73,15 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   if (is.null(IDcol)){
     IDcol <- names(which(
       apply(data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
-      apply(data_CO, FUN = length, MARGIN = 2)))
+        apply(data_CO, FUN = length, MARGIN = 2)))
+    IDcol <- IDcol[!IDcol %in% COdate]
     if (length(IDcol) == 0){
       stop("CO data must include unique identifier for each caracass")
     } else if (length(IDcol) > 1) {
-      stop("Carcass ID column must be specified in CO data")
+      warning(paste(
+        "No carcass ID column was provided. Taking ", IDcol[1], "as carcass ID"))
+      IDcol <- IDcol[1]
+#      stop("Carcass ID column must be specified in CO data")
     }
   } else {
     if (length(data_CO[ , IDcol]) != unique(length(data_CO[ , IDcol])))
@@ -306,7 +304,6 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   # the calculation
   ghat <- matrix(0, nrow = X, ncol = nsim)
   Aj <- matrix(0, nrow = X, ncol = nsim)
-  set.seed(seed_g)
   for (xi in 1:X){
     if (COdat$day[xi] == 0) next # cleanout: leaves initial 0s in ghat and Aj
     SSxi <- SSdat$searches_unit[COdat[xi, unitCol], ] * SSdat$days
@@ -560,10 +557,6 @@ SEsi_right <- function(nsi, pk){
 #'
 #' @param model_CP Carcass Persistence model (\code{cpm} object)
 #'
-#' @param seed_SE seed for random draws of the SE model
-#'
-#' @param seed_CP seed for random draws of the CP model
-#'
 #' @return \code{gGeneric} object that is a list of [1] a list of g estimates,
 #'    with one element in the list corresponding to each of the cells from the
 #'    cross-model combination and [2] a table of predictors and cell names 
@@ -582,24 +575,20 @@ SEsi_right <- function(nsi, pk){
 #'
 #' @export
 #'
-estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
-  seed_CP = NULL){
+estgGeneric <- function(days, model_SE, model_CP, nsim = 1000){
 
   if (!is.vector(days) || !is.numeric(days))
     stop(" 'days' must be a numeric vector")
   if (!("pkm" %in% class(model_SE))) stop("Invalid pk model")
-  vbhat <- diag(model_SE$varbeta)
-  if (anyNA(vbhat) || sum(vbhat < 0) > 0)
+  if (anyNA(diag(model_SE$varbeta)) || sum(diag(model_SE$varbeta) < 0) > 0)
     stop("Cannot estimate variance for model_SE. Aborting estimation.")
   preds_SE <- model_SE$predictors
   preds_CP <- model_CP$predictors
   data_SE <- model_SE$data
   data_CP <- model_CP$data
   preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
-  set.seed(seed_SE)
   sim_SE <- rpk(n = nsim, model = model_SE)
   sim_CP <- rcp(n = nsim, model = model_CP, type = "ppersist")
-  dist <- tolower(model_CP$dist)
 
   ncell <- nrow(preds)
   ghat <- vector("list", ncell)
@@ -608,7 +597,7 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
     cell_CP <- preds$CellNames_CP[celli]
     param_SE <- sim_SE[[cell_SE]]
     param_CP <- sim_CP[[cell_CP]]
-    ghat[[celli]] <- calcg(days, param_SE, param_CP, dist)
+    ghat[[celli]] <- calcg(days, param_SE, param_CP, model_CP$dist)
   }  
   names(ghat) <- preds$CellNames
   span <- max(days)
@@ -644,6 +633,7 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000, seed_SE = NULL,
 #' @export
 #'
 calcg <- function(days, param_SE, param_CP, dist){
+  dist <- tolower(dist)
   samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
   nsearch <- length(days) - 1
   n <- nrow(param_SE)
@@ -787,10 +777,6 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 #' @param modelSizeSelections_CP vector of CP models to use, one for each size
 #'
-#' @param seed_SE seed for random draws of the SE model
-#'
-#' @param seed_CP seed for random draws of the CP model
-#'
 #' @return list of g estimates, with one element in the list corresponding
 #'    to each of the cells from the cross-model combination
 #'
@@ -827,7 +813,7 @@ calcg <- function(days, param_SE, param_CP, dist){
 #'
 estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
     modelSizeSelections_SE, modelSizeSelections_CP,
-    nsim = 1000, seed_SE = NULL, seed_CP = NULL){
+    nsim = 1000){
 
   if (!("pkmSetSize" %in% class(modelSetSize_SE))){
     stop("modelSetSize_SE must be a pkmSetSize object")
@@ -856,8 +842,7 @@ estgGenericSize <- function(days, modelSetSize_SE, modelSetSize_CP,
     model_SE <- modelSetSize_SE[[sci]][[modelSizeSelections_SE[[sci]]]]
     model_CP <- modelSetSize_CP[[sci]][[modelSizeSelections_CP[[sci]]]]
     ghats[[sci]] <- estgGeneric(nsim = nsim, days = days,
-      model_SE = model_SE, model_CP = model_CP,
-      seed_SE = seed_SE, seed_CP = seed_CP)
+      model_SE = model_SE, model_CP = model_CP)
   }
 
   class(ghats) <- c("gGenericSize", "list")
@@ -922,8 +907,7 @@ averageSS <- function(data_SS, SSdate = NULL){
 #'                 data = mock$CP, left = "LastPresentDecimalDays", 
 #'                 right = "FirstAbsentDecimalDays")
 #'   avgSS <- averageSS(mock$SS)
-#'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
-#'                     seed_SE = 1, seed_CP = 1)
+#'   ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP)
 #'   summary(ghatsGeneric)
 #'
 #' @export

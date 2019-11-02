@@ -28,16 +28,15 @@ plot.gGeneric <- function(x, CL = 0.90, ...){
   ghats <- x$ghat
   cells <- names(ghats)
   ncell <- length(cells)
-  predsByCell <- strsplit(cells, "\\.")
-  npred <- length(predsByCell[[1]])
   colNames <- colnames(x$predictors)
   predNames <- colNames[-grep("CellNames", colNames)]
+  npred <- length(predNames)
   labelText <- paste("Labels = ", paste(predNames, collapse = "."))
 
-  par(mar = c(5, 4, 4, 1))  
+  par(mar = c(5, 4, 4, 1))
   par(fig = c(0, 0.9, 0, 1))
   plot (1, 1, type = "n", xlab = "", ylab = "", xaxt = "n", yaxt = "n", 
-    bty = "L", xlim = c(0.5, ncell + 0.5), ylim = c(0, 1)
+    bty = "o", xlim = c(0.5, ncell + 0.5), ylim = c(0, 1)
   )
   axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 1)
   mtext(side = 2, line = 2.75, "Detection Probability", cex = 1.25)
@@ -180,7 +179,7 @@ plot.gGenericSize <- function(x, CL = 0.90, ...){
 
     par(mar = c(3, 4, 3, 1))  
     plot (1, 1, type = "n", xlab = "", ylab = "", xaxt = "n", yaxt = "n", 
-      bty = "L", xlim = c(0.5, ncell + 0.5), ylim = c(0, 1)
+      bty = "o", xlim = c(0.5, ncell + 0.5), ylim = c(0, 1)
     )
     axis(2, at = seq(0, 1, 0.25), las = 1, cex.axis = 0.5)
     axis(1, at = 1:ncell, labels = FALSE, tck = -0.05)

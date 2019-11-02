@@ -15,6 +15,6 @@ combinePreds(preds, data)
 Predictor combination table.
 }
 \description{
-Create the predictor combination table for a searcher 
+Create the predictor combination table for a searcher
  efficiency or carcass persistence analysis.
 }

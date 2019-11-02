@@ -29,8 +29,7 @@ methods for \code{summary} applied to a \code{gGeneric} list
                 data = mock$CP, left = "LastPresentDecimalDays", 
                 right = "FirstAbsentDecimalDays")
   avgSS <- averageSS(mock$SS)
-  ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP,
-                    seed_SE = 1, seed_CP = 1)
+  ghatsGeneric <- estgGeneric(nsim = 1000, avgSS, model_SE, model_CP)
   summary(ghatsGeneric)
 
 }

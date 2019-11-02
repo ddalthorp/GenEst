@@ -417,35 +417,41 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     cell_n <- as.numeric(table(carcCells)[cellNames])
     cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
     cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
-    colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
+    colnames(cellTable_l) <- c("l_median", "l_lwr", "l_upr")
     cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
     cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
-    colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
+    colnames(cellTable_s) <- c("s_median", "s_lwr", "s_upr")
     cellTable_ls <- data.frame(cell = cellNames, n = cell_n,
       cellTable_l, cellTable_s)
     if (dist == "exponential"){
       cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
-      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
       cellTable_b <- round(exp(cellTable_l), 3)
-      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     if (dist == "weibull"){
-      cellTable_a <- round(1/cellTable_s, 3)
-      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_a <- round(1/cellTable_s, 3)[ , c(1, 3, 2)]
+      dim(cellTable_a) <- dim(cellTable_s)
+      #note: taking the reciprocal swaps the positions of the lwr and upr values
+      colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
       cellTable_b <- round(exp(cellTable_l), 3)
-      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+      dim(cellTable_b) <- dim(cellTable_l)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     if (dist == "lognormal"){
       cellTable_a <- round(cellTable_s^2, 3)
-      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
       cellTable_b <- round(cellTable_l, 3)
-      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     if (dist == "loglogistic"){
-      cellTable_a <- round(1/cellTable_s, 3)
-      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      cellTable_a <- round(1/cellTable_s, 3)[ , c(1, 3, 2)]
+      dim(cellTable_a) <- dim(cellTable_s)
+      #note: taking the reciprocal swaps the positions of the lwr and upr values
+      colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
       cellTable_b <- round(exp(cellTable_l), 3)
-      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+      dim(cellTable_b) <- dim(cellTable_l)
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     cellTable_ab <- data.frame(cell = cellNames, n = cell_n,
       cellTable_a, cellTable_b)
@@ -569,35 +575,35 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     probs <- data.frame(c(0.5, (1 - CL)/2, 1 - (1 - CL)/2))
     cellTable_l <- apply(probs, 1, qnorm, mean = cellMean_l, sd = cellSD_l)
     cellTable_l <- round(matrix(cellTable_l, nrow = ncell, ncol = 3), 3)
-    colnames(cellTable_l) <- c("l_median", "l_lower", "l_upper")
+    colnames(cellTable_l) <- c("l_median", "l_lwr", "l_upr")
     cellTable_s <- exp(apply(probs, 1, qnorm, mean = cellMean_s, sd = cellSD_s))
     cellTable_s <- round(matrix(cellTable_s, nrow = ncell, ncol = 3), 3)
-    colnames(cellTable_s) <- c("s_median", "s_lower", "s_upper")
+    colnames(cellTable_s) <- c("s_median", "s_lwr", "s_upr")
     cellTable_ls <- data.frame(cell = cellNames, n = cell_n, cellTable_l, cellTable_s)
 
     if (dist == "exponential"){
       cellTable_a <- matrix("-", nrow = ncell, ncol = 3)
-      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
       cellTable_b <- round(exp(cellTable_l), 3)
-      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     if (dist == "weibull"){
       cellTable_a <- round(1/cellTable_s, 3)
-      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
       cellTable_b <- round(exp(cellTable_l), 3)
-      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     if (dist == "lognormal"){
       cellTable_a <- round(cellTable_s^2, 3)
-      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
       cellTable_b <- round(cellTable_l, 3)
-      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     if (dist == "loglogistic"){
       cellTable_a <- round(1/cellTable_s, 3)
-      colnames(cellTable_a) <- c("pda_median", "pda_lower", "pda_upper")
+      colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
       cellTable_b <- round(exp(cellTable_l), 3)
-      colnames(cellTable_b) <- c("pdb_median", "pdb_lower", "pdb_upper")
+      colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     cellTable_ab <- data.frame(cell = cellNames, n = cell_n, cellTable_a, cellTable_b)
 
@@ -1255,6 +1261,11 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     part0 <- t0 / t(1 + tob^pda) *
                t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
+    # correction for overflow errors
+    probs[which(pllogis(
+      q = rep(t1, length(pda)),
+      pda = rep(pda, each = length(t1)),
+      pdb = rep(pdb, each = length(t1))) > 1 - 1e-8)] <- 0
   }
   return(probs)
 }
@@ -1349,19 +1360,24 @@ aicc.cpmSize <- function(x, ... ){
 
 #' @title Descriptive statistics for a fitted CP model
 #'
-#' @description Given a cpm object, calculate convenient descriptive statistics,
-#'  including the median and specified rI statistics along with estimated CIs.
+#' @description Given a \code{cpm} object, calculate convenient descriptive statistics,
+#'  including the median CP, specified \code{rI} statistics, and \code{pda}
+#'  and \code{pdb} statistics for the fitted model (EoA parameterization), and
+#'  location and scale parameters for the fitted model (\code{survival} package
+#'  parameterization) along with estimated CIs.
 #'
 #' @details The CIs for the r statistics (and the medianCP for the Weibull) ara
 #'  based on simulation of the \code{pda} and \code{pdb} parameters, calculation
 #'  of the statistics, and taking the empirical distribution of the simulated
-#'  values.
+#'  values. Other CIs are based on the assumed bivariate normal distributions of
+#'  the appropriately transformed \code{l} and \code{s} parameters in the fitted
+#'  model using \code{beta_hat} and \code{varbeta}.
 #'
-#'  NOTE: rI is the probability that a carcass that arrives at a uniform random
-#'  time in an interval of I days will persist until the first search after
+#'  NOTE: \code{rI} is the probability that a carcass that arrives at a uniform random
+#'  time in an interval of \code{I} days will persist until the first search after
 #'  arrival.
 #'
-#' @param model_CP A fitted CP model (cpm object)
+#' @param model_CP A fitted CP model (\code{cpm} object)
 #'
 #' @param Ir The intervals for which to calculate the r statistics
 #'
@@ -1372,9 +1388,11 @@ aicc.cpmSize <- function(x, ... ){
 #' @return Matrix of point and interval estimates for the median CP and the r
 #'  statistics for the specified intervals. The matrix is assigned to class
 #'  \code{descCP} that is simply a matrix with dimensions
-#'  \code{ncell x 1 + 3*(1 + length(Ir))}, column names that give the number of
+#'  \code{ncell x (1 + 3*(5 + length(Ir)))}, column names that give the number of
 #'  observations in each cell, statistic name and upper and lower bounds
-#'`(in triplets), and row names giving the names of the cells.
+#' (in triplets), and row names giving the names of the cells. \code{CL}, \code{nsim},
+#'  and the name of the fitted model (\code{model_CP}) are included as object
+#'  attributes.
 #'
 #' @seealso \code{\link{cpm}}, \code{\link{rcp}}, \code{\link{ppersist}}
 #'
@@ -1387,13 +1405,17 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
   t1 <- Ir
   tf <- t1
   Irv <- paste0("r", Ir)
-  cell_desc <- matrix(nrow = model_CP$ncell, ncol = 1 + 3 * (1 + length(Ir)))
+  cell_desc <- matrix(nrow = model_CP$ncell, ncol = 1 + 3 * (5 + length(Ir)))
   Irvec <- gtools::mixedsort(c(Irv, paste0(Irv, "_lwr"), paste0(Irv, "_upr")))
-  colnames(cell_desc) <- c("n", "medianCP", "CP_lwr", "CP_upr", Irvec)
+  colnames(cell_desc) <- c("n", "medianCP", "CP_lwr", "CP_upr", Irvec,
+    paste0("pda_", c("median", "lwr", "upr")), paste0("pdb_", c("median", "lwr", "upr")),
+    paste0("l_", c("median", "lwr", "upr")), paste0("s_", c("median", "lwr", "upr")))
+
   rownames(cell_desc) <- model_CP$cells$CellNames
   cell_desc[ , "n"] <- model_CP$cell_ab$n
   # fill in the MLE's as the point estimates
-  pda <- model_CP$cell_ab[ , "pda_median"]
+  if (model_CP$distribution != "exponential")
+    pda <- model_CP$cell_ab[ , "pda_median"]
   pdb <- model_CP$cell_ab[ , "pdb_median"]
   if (model_CP$distribution == "weibull"){
     cell_desc[ , "medianCP"] <- pdb * log(2)^(1/pda)
@@ -1427,16 +1449,33 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
         dim = c(2, model_CP$ncell)
     ))
   } else if (model_CP$distribution == "lognormal"){
-    mstat <- unlist(exp(model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")]))
+    mstat <- unlist(exp(model_CP$cell_ab[ , c("pdb_lwr", "pdb_upr")]))
   } else if (model_CP$distribution == "loglogistic"){
-    mstat <- unlist(model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")])
+    mstat <- unlist(model_CP$cell_ab[ , c("pdb_lwr", "pdb_upr")])
   } else if (model_CP$distribution == "exponential"){
-    mstat <- unlist(log(2) * model_CP$cell_ab[ , c("pdb_lower", "pdb_upper")])
+    mstat <- unlist(log(2) * model_CP$cell_ab[ , c("pdb_lwr", "pdb_upr")])
   } else {
     stop("invalid CP distribution")
   }
   # write results into a table
   cell_desc[ , c("CP_lwr", "CP_upr")] <- mstat
+  if (model_CP$distribution != "exponential")
+    cell_desc[ , paste0("pda_", c("median", "lwr", "upr"))] <-
+      as.matrix(model_CP$cell_ab[ , paste0("pda_", c("median", "lwr", "upr"))])
+
+  cell_desc[ , paste0("pdb_", c("median", "lwr", "upr"))] <-
+    as.matrix(model_CP$cell_ab[ , paste0("pdb_", c("median", "lwr", "upr"))])
+
+  cell_desc[ , paste0("l_", c("median", "lwr", "upr"))] <-
+    as.matrix(model_CP$cell_ls[ , paste0("l_", c("median", "lwr", "upr"))])
+
+  cell_desc[ , paste0("s_", c("median", "lwr", "upr"))] <-
+    as.matrix(model_CP$cell_ls[ , paste0("s_", c("median", "lwr", "upr"))])
+
   class(cell_desc) <- c("descCP", class(cell_desc))
+  attr(cell_desc, "CL") <- CL
+  attr(cell_desc, "model") <-
+    paste0("dist: ", model_CP$distribution, "; ",
+    deparse(model_CP$formula_l), "; ", deparse(model_CP$formula_s))
   return(cell_desc)
 }

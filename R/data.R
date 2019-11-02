@@ -2,7 +2,7 @@
 #' A mock example data set
 #'
 #' A template dataset used for testing purposes.  Dataset containing SE, CP, SS,
-#'  DWP, and CO data.
+#'  DWP, and CO data. Data are mostly random without patterns.
 #'
 #' @format A list with 5 items:
 #' \describe{

@@ -1,12 +1,29 @@
-#' @title Download the CP figure
+#' @title GenEst app download funtions
 #'
-#' @description Handle the CP figure downloading
+#' @description Handle downloading of app data and figures
 #'
 #' @param rv the reactive values list
 #'
-#' @return a download handler function
+#' @param input list of shiny input parameters
 #'
-#' @export
+#' @param sc size class
+#'
+#' @param split logical indicator to use the split or not
+#'
+#' @param filename the name for the file writing out
+#'
+#' @param tablename the name of the table in the rv list
+#'
+#' @param csvformat format for .csv file: "" or NULL for comma-separated, 2
+#'  for semi-colon separated
+#'
+#' @param set the name of the data set to download
+#' @return download handler functions
+#'
+#' @name app_download_functions
+NULL
+
+#' @rdname app_download_functions
 #'
 downloadCPFig <- function(rv){
   downloadHandler(filename = "CP_fig.png",
@@ -18,17 +35,7 @@ downloadCPFig <- function(rv){
   )
 }
 
-#' @title Download summary of CP model fitting
-#'
-#' @description Handle the CP model downloading
-#'
-#' @param rv the reactive values list,
-#'
-#' @param input list of shiny input parameters
-#'
-#' @return a download handler function
-#'
-#' @export
+#' @rdname app_download_functions
 #'
 downloadCPmod <- function(rv, input){
   downloadHandler(filename = paste0(rv$filename_CP, "_CPmod.txt"),
@@ -76,20 +83,13 @@ downloadCPmod <- function(rv, input){
   )
 }
 
-#' @title Download the SE figure
-#'
-#' @description Handle the SE figure downloading
-#'
-#' @param rv the reactive values list
-#'
-#' @return a download handler function
-#'
-#' @export
+#' @rdname app_download_functions
 #'
 downloadSEFig <- function(rv){
   downloadHandler(filename = paste0(rv$filename_SE, "_SEfig.png"),
       content = function(file){
-        png(file, height = rv$figH_SE, width = rv$figW_SE, units = "px")
+        png(file, height = rv$figH_SE, width = rv$figW_SE,
+          pointsize = .pointsize, res = .res)
         tryCatch(
           plot(rv$modSet_SE, specificModel = rv$outSEpk),
           error = function(x){plotNA()}
@@ -99,17 +99,7 @@ downloadSEFig <- function(rv){
   )
 }
 
-#' @title Download summary of SE model fitting
-#'
-#' @description Handle the SE model downloading
-#'
-#' @param rv the reactive values list
-#'
-#' @param input the shiny input data
-#'
-#' @return a download handler function
-#'
-#' @export
+#' @rdname app_download_functions
 #'
 downloadSEmod <- function(rv, input){
   downloadHandler(filename = paste0(rv$filename_SE, "_SEmod.txt"),
@@ -156,17 +146,7 @@ downloadSEmod <- function(rv, input){
   )
 }
 
-#' @title Download the g figure
-#'
-#' @description Handle the g figure downloading
-#'
-#' @param rv the reactive values list
-#'
-#' @param sc size class
-#'
-#' @return a download handler function
-#'
-#' @export
+#' @rdname app_download_functions
 #'
 downloadgFig <- function(rv, sc){
   downloadHandler(filename = "g_fig.png",
@@ -178,17 +158,7 @@ downloadgFig <- function(rv, sc){
   )
 }
 
-#' @title Download M results (including SE and CP modeling)
-#'
-#' @description Handle the downloading of results
-#'
-#' @param rv the reactive values list
-#'
-#' @param input shiny input data
-#'
-#' @return a download handler function
-#'
-#' @export
+#' @rdname app_download_functions
 #'
 downloadMres <- function(rv, input){
   downloadHandler(filename = paste0(rv$filename_CO, "_Mres.txt"),
@@ -247,7 +217,7 @@ downloadMres <- function(rv, input){
       }
 
       cat(c("\nCarcass persistence\nLast present: ", rv$ltp, "\nFirst absent: ", rv$fta, "\n"),
-        file = file, sep = " ")
+        file = file, sep = " ", append = TRUE)
       selected_mods <- list()
       modChoices <- list()
       for (sci in 1:length(rv$sizeclasses)){
@@ -287,17 +257,7 @@ downloadMres <- function(rv, input){
   )
 }
 
-#' @title Download the M figure
-#'
-#' @description Handle the M figure downloading
-#'
-#' @param rv the reactive values list
-#'
-#' @param split logical indicator to use the split or not
-#'
-#' @return a download handler function
-#'
-#' @export
+#' @rdname app_download_functions
 #'
 downloadMFig <- function(rv, split = TRUE){
   if (split){
@@ -325,20 +285,7 @@ downloadMFig <- function(rv, split = TRUE){
   }
 }
 
-#' @title Download a table
-#'
-#' @description Handle the downloading of a table
-#'
-#' @param filename the name for the file writing out
-#'
-#' @param tablename the name of the table in the rv list
-#'
-#' @param csvformat format for .csv file: "" or NULL for comma-separated, 2 
-#'  for semi-colon separated
-#'
-#' @return a download handler function
-#'
-#' @export
+#' @rdname app_download_functions
 #'
 downloadTable <- function(filename, tablename, csvformat){
 if (Sys.info()['sysname'] == "Windows"){
@@ -350,18 +297,7 @@ if (Sys.info()['sysname'] == "Windows"){
   })
 }
 
-#' @title Download a zipped data set
-#'
-#' @description Handle the downloading of a data set
-#'
-#' @param set the name of the data set to download
-#' @param csvformat Format of .csv files to download. For comma field
-#'  separator and period decimal separator, use \code{csvformat = NULL} or "".
-#'  For semicolon field separator and comma decimal separator, use
-#'  \code{csvformat = 2}.
-#' @return a download handler function
-#'
-#' @export
+#' @rdname app_download_functions
 #'
 downloadData <- function(set, csvformat = NULL){
   fpre <- switch(set, "mock" = "",

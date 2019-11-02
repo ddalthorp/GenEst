@@ -29,8 +29,19 @@
 #'
 #' @param session Environment for the GenEst GUI.
 #'
-#' @export
+#' @param rv reactive variable
 #'
+#' @param eventName Character name of the event. One of "clear_all",
+#'   "file_SE", "file_SE_clear", "file_CP", "file_CP_clear", "file_SS",
+#'   "file_SS_clear", "file_DWP", "file_DWP_clear", "file_CO",
+#'   "file_CO_clear", "class", "obsSE", "predsSE", "run_SE", "run_SE_clear",
+#'   "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
+#'   "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
+#'   "run_M", "run_M_clear", "split_M", "split_M_clear", "transpose_split",
+#'   "run_g", "run_g_clear", or "outgclass".
+#'
+#' @name app_server
+#' @export
 GenEstServer <- function(input, output, session){
   rv <- initialReactiveValues()
   output <- initialOutput(rv, output)
@@ -89,36 +100,16 @@ GenEstServer <- function(input, output, session){
   observeEvent(input$load_powerTower, eval(reaction("load_powerTower")))
   observeEvent(input$load_mock, eval(reaction("load_mock")))
 }
-
-#' @rdname GenEstServer
-#'
-#' @description \code{reaction}: creates a handler expression to be 
-#'   used by \code{\link[shiny]{observeEvent}} within \code{GenEstServer}, 
-#'   which includes the call to \code{eventReaction} (the function that 
-#'   manages the reaction once the code is evaluated), any message generation 
-#'   or handling, and the enclosing curly braces. Calls 
-#'   \code{reactionMessageRun} and \code{reactionMessageDone} to create the 
-#'   event-specific reaction expression message components. 
-#'
-#' @param eventName Character name of the event. One of "clear_all",
-#'   "file_SE", "file_SE_clear", "file_CP", "file_CP_clear", "file_SS",
-#'   "file_SS_clear", "file_DWP", "file_DWP_clear", "file_CO", 
-#'   "file_CO_clear", "class", "obsSE", "predsSE", "run_SE", "run_SE_clear",
-#'   "outSEclass", "outSEp", "outSEk", "ltp", "fta", "predsCP", "run_CP",
-#'   "run_CP_clear", "outCPclass", "outCPdist", "outCPl", "outCPs",
-#'   "run_M", "run_M_clear", "split_M", "split_M_clear", "transpose_split",
-#'   "run_g", "run_g_clear", or "outgclass".
-#'
-#' @return \code{reaction}: An object of type 
-#'  "\code{\link[base]{expression}}" returned from
-#'   \code{\link[base]{parse}} using the \code{text} argument. This is a 
-#'   parsed but unevaluated expression, ready to be evaluated by
-#'   \code{\link[base]{eval}}.
-#'
-#' @export
+#' @rdname app_server
 #'
 reaction <- function(eventName){
-
+#   creates a handler expression to be
+#   used by \code{\link[shiny]{observeEvent}} within \code{GenEstServer},
+#   which includes the call to \code{eventReaction} (the function that
+#   manages the reaction once the code is maevaluated), any message generation
+#   or handling, and the enclosing curly braces. Calls
+#   \code{reactionMessageRun} and \code{reactionMessageDone} to create the
+#   event-specific reaction expression message components.
   eventOptions <- c("clear_all", "file_SE", "file_SE_clear", "file_CP",
                     "file_CP_clear", "file_SS", "file_SS_clear", "file_DWP",
                     "file_DWP_clear", "file_CO", "file_CO_clear", "class",
@@ -146,15 +137,7 @@ reaction <- function(eventName){
   return(parse(text = reactextFull))
 }
 
-#' @rdname GenEstServer
-#'
-#' @description \code{reactionMessageRun}: Creates the message for model
-#'   running, or clears the existing notifications if desired.
-#'
-#' @return \code{reactionMessageRun}: Reaction running message expression, as
-#'   a character string.
-#'
-#' @export
+#' @rdname app_server
 #'
 reactionMessageRun <- function(eventName){
   clearEvents <- c("clear_all", "file_SE_clear", "file_CP_clear", 
@@ -180,15 +163,7 @@ reactionMessageRun <- function(eventName){
   reactMsg
 }
 
-#' @rdname GenEstServer
-#'
-#' @description \code{reactionMessageDone}: Creates the message for model
-#'   done running.
-#'
-#' @return \code{reactionMessageDone}: Reaction done message expression, as
-#'   a character string.
-#'
-#' @export
+#' @rdname app_server
 #'
 reactionMessageDone <- function(eventName){
   reactMsg <- NULL
@@ -211,14 +186,7 @@ reactionMessageDone <- function(eventName){
   reactMsg
 }
 
-#' @rdname GenEstServer
-#'
-#' @description \code{eventReaction}: Manages the running of the update
-#'   functions for rv, output, and input, based on the \code{eventName}.
-#'
-#' @param rv Reactive values list for the GenEst GUI.
-#'
-#' @export
+#' @rdname app_server
 #'
 eventReaction <- function(eventName, rv, input, output, session){
   if (eventName == "class"){

@@ -4,8 +4,8 @@
 \alias{plot.pkmSet}
 \title{Plot results of a set of SE models}
 \usage{
-\method{plot}{pkmSet}(x, specificModel = NULL, app = FALSE,
-  cols = SEcols(), ...)
+\method{plot}{pkmSet}(x, specificModel = NULL, cols = NULL,
+  CL = NULL, ...)
 }
 \arguments{
 \item{x}{pk model set of class pkmSet}
@@ -13,10 +13,10 @@
 \item{specificModel}{the name(s) or index number(s) of specific model(s)
 to restrict the plot}
 
-\item{app}{logical indicating if the plot is for the app}
-
 \item{cols}{named vector of colors to use for the specific and reference
 models}
+
+\item{CL}{confidence level}
 
 \item{...}{to be sent to subfunctions}
 }

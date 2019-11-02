@@ -118,7 +118,7 @@ simpleMplot <- function(M, ..., Xmin = 0, CL = 0.90){
   Mmedy <- Mmedy * max(rectY)
 
   par(mar = c(4, 5, 2, 2), fig = c(0, 1, 0, 1))
-  plot(rectL, rectY, type = "n", bty = "L", xlab = "", ylab = "", las = 1,
+  plot(rectL, rectY, type = "n", bty = "o", xlab = "", ylab = "", las = 1,
     xlim = c(rectL[1], rectR[nrect]))
   points(xnew, ynew, type = "l", lwd = 2)
   polygon(xx, yy, border = NA, col = rgb(0.9, 0.9, 0.9))

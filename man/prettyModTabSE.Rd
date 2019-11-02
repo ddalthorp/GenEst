@@ -2,7 +2,7 @@
 % Please edit documentation in R/app_table_functions.R
 \name{prettyModTabSE}
 \alias{prettyModTabSE}
-\title{Create the pretty version of the Searcher Efficiency model table}
+\title{Create the pretty versions of model and summary tables}
 \usage{
 prettyModTabSE(modTab, CL = 0.9)
 }
@@ -15,6 +15,7 @@ prettyModTabSE(modTab, CL = 0.9)
 pretty version of the SE model table
 }
 \description{
-Format a reader-friendly version of the parameter table from
-  a Searcher Efficiency model, based on confidence level of interest
+Format reader-friendly versions of results summary tables for
+ searcher efficiency (GUI display and download), carcass persistence, and
+ splits.
 }
