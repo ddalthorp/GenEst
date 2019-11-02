@@ -379,7 +379,6 @@ update_output <- function(eventName, rv, output, input){
       } else{
         output$sizeclass_CPyn <- renderText("YES")
       }
-#      tmp <- cbind(rv$modTab_CP,
       output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTab_CP,
                                             rv$csvformat)
       output$dlCPAICc <- downloadTable("CP_AICc.csv", rv$AICcTab_CP,
