@@ -1,5 +1,5 @@
 Revision log
-2019.10.30
+2019.11.02
 
 v1.3.3
 
@@ -43,15 +43,15 @@ after software updates unnecessarily complicates GenEst code maintenance.
 * the old plot.gGeneric function determined covariate cells by parsing the 
 short form cell names by splitting the names by ".". This precludes having "."
 in the name of any covariate level. No other functions have this restriction.
-The new plot.gGeneric extracts the cells from x$predictors
+The new plot.gGeneric extracts the cells from x$predictors rather than parsing
+concatenated cell names.
 
 * SE figures have been amended to correct several problems:
 -- labels for cellwise plots showing summaries of data and fitted models have
    been corrected (under certain combinations of selected p and k formulas 
    with 2 predictors, some of the labels were incorrect)
 -- illegibly small font sizes have been increased
--- figures produced from command-line using plot.pkm have been substantially
-   prettified
+-- figures produced from command-line using plot.pkm have been prettified
 -- labels for cellwise p and k summaries and summaries of data with fitted 
    values were changed from cell names in the panel corners to margin labels
    that show both the predictor name and the levels
@@ -78,8 +78,7 @@ and variances that were previously used to simulate data for calculating the
 quantiles empirically from the simulated data.
 
 * functions that are only used internally are no longer exported, following 
-best practices as outlined in Wickham (2015) 
-[http://r-pkgs.had.co.nz/namespace.html]
+suggestion in Wickham (2015) [http://r-pkgs.had.co.nz/namespace.html]
 
 * An error in array indexing for the "2n fix" (added in v1.3.1) to allow 
 estimation of searcher efficiency when all SE trial carcasses in a cell are 
