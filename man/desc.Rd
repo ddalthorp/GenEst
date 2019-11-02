@@ -7,6 +7,7 @@
 desc(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000)
 }
 \arguments{
+
 \item{model_CP}{A fitted CP model (\code{cpm} object)}
 
 \item{Ir}{The intervals for which to calculate the r statistics}

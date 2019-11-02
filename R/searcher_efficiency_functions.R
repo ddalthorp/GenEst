@@ -531,7 +531,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   output <- list()
   output$call <- match.call()
   output$data <- data
-  output$data0 <- data0
+  output$data0 <- data00
   output$formula_p <- formula_p
   if (!pOnly) output$formula_k <- formula_k
   output$predictors <- preds

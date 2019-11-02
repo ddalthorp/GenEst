@@ -282,7 +282,7 @@
 #' \code{updateSizeclasses}\cr
 #' \code{updatesizeCol}\cr
 #' \code{widgetMaker}\cr
-
+#'
 #' @docType package
 #'
 #' @keywords package

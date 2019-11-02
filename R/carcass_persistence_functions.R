@@ -602,7 +602,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     if (dist == "loglogistic"){
       cellTable_a <- round(1/cellTable_s, 3)
       colnames(cellTable_a) <- c("pda_median", "pda_lwr", "pda_upr")
-      cellTable_b <- round(exp(cellTable_l), 3)
+    cellTable_b <- round(exp(cellTable_l), 3)
       colnames(cellTable_b) <- c("pdb_median", "pdb_lwr", "pdb_upr")
     }
     cellTable_ab <- data.frame(cell = cellNames, n = cell_n, cellTable_a, cellTable_b)
@@ -1416,7 +1416,7 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
   # fill in the MLE's as the point estimates
   if (model_CP$distribution != "exponential")
     pda <- model_CP$cell_ab[ , "pda_median"]
-  pdb <- model_CP$cell_ab[ , "pdb_median"]
+    pdb <- model_CP$cell_ab[ , "pdb_median"]
   if (model_CP$distribution == "weibull"){
     cell_desc[ , "medianCP"] <- pdb * log(2)^(1/pda)
   } else if (model_CP$distribution == "lognormal"){
