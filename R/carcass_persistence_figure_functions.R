@@ -61,12 +61,10 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
     warning = function(w) NULL
   )
 
-  plot(smod, ylim = c(0, 1), xlim = c(0, max_x),
+  plot(smod, ylim = c(0, 1), xlim = c(0, max_x), # this gives the persistence probabilities
     xlab = "", ylab = "", xaxt = "n", yaxt = "n", bty = "o", lwd = c(2, 1, 1)
   )
-  axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10),
-    labels = axis_x
-  )
+  axis(1, las = 1, cex.axis = 0.9, at = seq(0, max_x, by = 10), labels = axis_x)
   axis(2, las = 1, cex.axis = 0.9, at = seq(0, 1, 0.2), labels = axis_y)
   points(pts, pred_y, type = "l", col = col, lwd = 3)
   points(pts, pred_yl, type = "l", col = col, lwd = 2, lty = 3)
@@ -89,14 +87,14 @@ cpmCPCellPlot <- function(model, specificCell, col, axis_y = TRUE,
 #' @examples
 #'   data(wind_RP)
 #'   mod <- cpm(formula_l = l ~ Season, formula_s = s ~ Season,  
-#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent"
-#'           )
+#'            data = wind_RP$CP, left = "LastPresent", right = "FirstAbsent")
 #'  plot(mod)
 #'
 #' @export
 #'
 plot.cpm <- function(x, col = "black", ...){
-
+# loop through cells
+# create header
   model <- x
   name_l <- format(model$formula_l)
   name_s <- format(model$formula_s)
@@ -169,8 +167,6 @@ plot.cpm <- function(x, col = "black", ...){
 #' @param specificModel the name(s) or index number(s) of specific model(s) to 
 #'   restrict the plot
 #'
-#' @param app logical indicating if the plot is for the app
-#'
 #' @param cols named vector of the colors to use for the distributions
 #'
 #' @param ... to be passed down
@@ -183,24 +179,207 @@ plot.cpm <- function(x, col = "black", ...){
 #'
 #' @export
 #'
-plot.cpmSet <- function(x, specificModel = NULL, app = FALSE,
-                        cols = CPcols(), ...){
+plot.cpmSet <- function(x, specificModel = NULL, cols = NULL, ...){
+  modelSet <- tidyModelSetCP(x)
+  cells_set <- modelSetCells(modelSet)
+  ncell <- nrow(cells_set)
+  preds_set <- modelSetPredictors(modelSet)
+  if (!is.null(specificModel) &&
+     (!"character" %in% class(specificModel) || anyNA(specificModel))){
+    stop("specific model must be specified by name (character string) or number")
+  }
+  if (is.null(specificModel)){
+    specMods <- names(modelSet)
+  } else {
+    for (spi in specificModel){
+      if (is.null(modelSet[[spi]])){ # spi not in modelSet (maybe exponential?)
+        if (!grepl("exponential", spi))
+          stop("specific CP model not in model set")
+        tmp_spc <- strsplit(spi, ";")[[1]]
+        tmp_spc[3] <- " NULL"
+        if (is.null(modelSet[paste(tmp_spc, collapse = ";")]))
+          stop("specific CP model not in model set")
+      }
+    }
+    specMods <- specificModel
+  }
 
-  modelSet <- x
-  modelSet <- expandModelSetCP(modelSet)
-  specMods <- checkSpecificModelCP(modelSet, specificModel)
-  modelSet <- tidyModelSetCP(modelSet)
-  nmod <- length(specMods)
-  for (modi in 1:nmod){
-    if (modi == 2){
+  dist_set <- NULL # which distributions are included?
+  # the possibilities are limited to names in the .cols_CP vector (internal data)
+  for (di in names(.cols_CP))
+    if(any(grepl(di, names(modelSet)))) dist_set <- c(dist_set, di)
+  if (is.null(cols)){
+    cols_CP <- .cols_CP[dist_set]
+  } else if (length(dist_set) == 1 & length(cols) == 1){
+    cols_CP <- cols
+    names(cols_CP) <- dist_set
+  } else {
+    if (!all(dist_set %in% names(cols))){
+      stop("'cols' must be NULL or a named vector of colors to be used in ",
+        "plotting the distributions. Names are the names of the distributions ",
+        "to associate with each respective color in the vector.")
+    }
+    cols_CP <- .cols_CP[dist_set]
+  }
+  preds_set <- modelSetPredictors(modelSet)
+  n_col  <- ifelse(length(preds_set) == 0, 1,
+    length(unique(cells_set[ , preds_set[1]])))
+
+  n_row <- nrow(cells_set)/n_col
+  for (spi in specMods){
+    if (spi != specMods[1]){ # more than one specific & more than one fig to draw
       devAskNewPage(TRUE)
     }
-    plotCPFigure(modelSet, specMods[modi], app, cols)
+    par(oma = c(5, 7.5, ifelse(nrow(cells_set) > 1, 9, 6), ifelse(n_row > 1, 4, 0.5)),
+      mar = c(0, 0, 0, 0))
+    par(mfrow = c(n_row, n_col))
+    CPFig(modelSet, spi, cells_set, preds_set, cols_CP)
   }
   devAskNewPage(FALSE)
 }
+# draw a CP figure graph
+# NOTE: This is an internal utility function called by plot.cpmSet
+#' @keywords internal
+CPFig <- function(modelSet, specificModel, cells_set, preds_set, cols_CP){
+  n_col  <- ifelse(length(preds_set) == 0, 1,
+    length(unique(cells_set[ , preds_set[1]])))
+  n_row <- nrow(cells_set)/n_col
+  distr_featured <- sub(";", "", strsplit(specificModel, " ")[[1]][2])
+  if (distr_featured == "exponential" && grepl("NULL", specificModel)){
+    modelSet <- modelSet[grepl("exponential", names(modelSet))]
+    cols_CP <- cols_CP["exponential"]
+  }
+  if (distr_featured == "exponential" && length(cols_CP) == 1){
+     dists <- "exponential"
+     forms <- strsplit(specificModel, "; ")[[1]]
+     exind <- grep(paste0(forms[2], ";"), names(modelSet), fixed = TRUE)
+     model_spc <- modelSet[[exind]]
+     names(modelSet)[[exind]] <- specificModel
+   } else {
+    # reorder distributions to plot featured distr last
+    dists <- c(names(cols_CP), distr_featured)
+    dists <- dists[-min(which(dists == distr_featured))]
+    if (("exponential" %in% dists) & length(dists) > 1){
+      # change "NULL" to "s ~ <whatever's needed>"
+      forms <- strsplit(specificModel, "; ")[[1]]
+      exind <- intersect(
+        grep("exponential", names(modelSet)),
+        grep(paste0(forms[2], ";"), names(modelSet), fixed = TRUE))
+      names(modelSet)[exind] <-
+        sub("NULL", strsplit(specificModel, "; ")[[1]][3], names(modelSet)[exind])
+    }
+    if (distr_featured == "exponential" & length(dists > 1)){
+      specificModel <- sub("exponential", dists[1], specificModel)
+    }
+    model_spc <- modelSet[[specificModel]]
+   }
+  # draw the cells
+  for (celli in 1:nrow(cells_set)){
+    specificCell <- cells_set[celli, "CellNames"]
+    if (nrow(cells_set) == 1){
+      observations <- model_spc$observations
+    } else {
+      carcCells <- apply(data.frame(model_spc$data[ , preds_set]),
+        MARGIN = 1, FUN = paste, collapse = ".")
+      observations <- model_spc$observations[carcCells == specificCell, ]
+    }
+    ncarc <- nrow(observations)
+    cind <- which(cells_set$CellNames == specificCell)
+    cell_spc <- matchCells(model_spc, modelSet)[cind]
+    if ("exponential" %in% dists)
+      cell_exp <- matchCells(modelSet[[exind]], modelSet)[cind]
+    xVals <- observations[observations != Inf]
+    max_x <- max(xVals, na.rm = TRUE)
+    max_x <- ceiling(max_x / 10) * 10
+    t1 <- observations[ , 1]
+    t2 <- observations[ , 2]
+    event <- rep(3, length(t1))
+    event[which(!is.finite(t2))] <- 0
+    event[which(t1 == t2)] <- 1
+    t1[which(t1 == 0)] <- 0.0001
 
-#' @title Plot results of a single CP model in a set 
+    smod <- tryCatch(
+      survival::survfit(survival::Surv(t1, t2, event, type = "interval") ~ 1),
+      error = function(e) NULL,
+      warning = function(w) NULL
+    )
+    plot(smod, ylim = c(0, 1), xlim = c(0, max_x), xlab = "", ylab = "",
+      axes = FALSE, lwd = c(2, 1, 1))
+    box()
+    if (celli <= n_col & length(preds_set) > 0)
+      mtext(side = 3, line = 0.3, text = cells_set[celli, preds_set[1]])
+    if (celli %% n_col == 0 && length(preds_set) == 2)
+      mtext(side = 4, line = 0.3, text = cells_set[celli, preds_set[2]])
+    if (celli %% n_col == 1 | n_col == 1){
+      axis(2, las = 1, at = seq(0, 1, by = 0.2))
+      axis(2, las = 1, at = seq(0, 1, by = 0.1), labels = FALSE, tcl = -0.3)
+    }
+    if (celli > n_col * (n_row - 1))
+      axis(1)
+    xvals <- seq(0.001, max_x, length = 500)
+    text(x = max_x, y = 0.95, paste0("N = ", ncarc), adj = 1)
+    for (distr in dists){
+      lwd  <- 2 + 2 * (distr == distr_featured)
+      model_line <- gsub(model_spc$dist, distr, specificModel)
+      mod <- modelSet[[model_line]]
+      if (!is.null(mod)){
+        if (distr == "exponential"){
+          crow <- which(mod$cell_ab$cell == cell_exp)
+          lines(xvals, 1 - pexp(xvals, rate = 1/mod$cell_ab[crow, "pdb_median"]),
+            col = cols_CP[distr], lwd = lwd)
+        } else {
+          cind <- which(mod$cell_ab$cell == cell_spc)
+          pda <- mod$cell_ab[cind, "pda_median"]
+          pdb <- mod$cell_ab[cind, "pdb_median"]
+          if (distr == "weibull"){
+            lines(xvals, 1 - pweibull(xvals, shape = pda, scale = pdb),
+              lwd = lwd, col = cols_CP[distr])
+          } else if (distr == "loglogistic"){
+            lines(xvals, 1 - pllogis(xvals, pda = pda, pdb = pdb),
+              lwd = lwd, col = cols_CP[distr])
+          } else if (distr == "lognormal"){
+            lines(xvals, 1 - plnorm(xvals, meanlog = pdb, sdlog = sqrt(pda)),
+              lwd = lwd, col = cols_CP[distr])
+          }
+        }
+      }
+    }
+  }
+  mtext(side = 1, line = 3.3, text = "Time", outer = TRUE, cex = 1.4)
+  mtext(side = 2, line = 5.2, text = "Carcass Persistence", outer = TRUE, cex = 1.4)
+  mtext(side = 2, line = 3.3, text = "Pr(persist > t)", cex = 1.2, outer = TRUE,)
+  if (length(preds_set) > 0)
+    mtext(side = 3, line = 2.5, text = preds_set[1], cex = 1.2, outer = TRUE)
+  if (length(preds_set) == 2)
+    mtext(side = 4, line = 2.5, text = preds_set[2], cex = 1.2, outer = TRUE)
+
+  par(new = TRUE, mar = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mfrow = c(1, 1) )
+  plot(0, type = "n", axes = FALSE)
+  if (length(dists) > 1)
+    dists <- dists[c(length(dists), 1:(length(dists) - 1))]
+  lwd <- rep(2, length(dists))
+  lwd[1] <- 4
+  if (grepl("exponential", specificModel) & length(dists) == 1){
+    # exponential model only is plotted
+    legend("topleft",
+      xpd = TRUE,
+      legend = "exponential", lty = 1, lwd = lwd, ncol = 2, bty = "n",
+      cex = 0.85, col = cols_CP["exponential"],
+      title = paste("model:",
+        gsub("~ 1", "constant", paste(strsplit(specificModel, ";")[[1]][2],
+        collapse = ";"))),
+      title.adj = 0)
+  } else {
+    legend("topleft", xpd = TRUE, legend = dists, lty = 1, col = cols_CP[dists],
+      lwd = lwd, ncol = 2, bty = "n", cex = 0.85,
+      title = paste("model:",
+        gsub("~ 1", "~ constant",
+          paste(strsplit(specificModel, ";")[[1]][-1], collapse = ";"))),
+      title.adj = 0)
+  }
+}
+
+#' @title Plot results of a single CP model in a set
 #'
 #' @description Produce a figures for a specific CP model, as fit by
 #'   \code{\link{cpmSet}}
@@ -209,17 +388,14 @@ plot.cpmSet <- function(x, specificModel = NULL, app = FALSE,
 #'
 #' @param specificModel the name of the specific model for the plot
 #'
-#' @param app logical indicating if the plot is for the app
-#'
 #' @param cols named vector of the colors to use for the distributions
 #'
 #' @return a plot
 #'
 #' @export
 #'
-plotCPFigure <- function(modelSet, specificModel, app = FALSE, 
-                         cols = CPcols()){
-  plotCPHeader(modelSet, specificModel, app, cols)
+plotCPFigure <- function(modelSet, specificModel, cols = CPcols()){
+  plotCPHeader(modelSet, specificModel, cols)
   plotCPCells(modelSet, specificModel, cols)
 }
 
@@ -239,13 +415,32 @@ plotCPFigure <- function(modelSet, specificModel, app = FALSE,
 #' @export
 #'
 plotCPCells <- function(modelSet, specificModel, cols){
-  par(fig = c(0, 1, 0, 0.925), new = TRUE, mar = c(1, 1, 1, 1))
-  plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "", 
-      ylab = ""
-  )
+## need cells_set, preds_set
+  preds_set <- modelSetPredictors(modelSet)
+  cells_set <- modelSetCells(modelSet)
+  par(fig = c(0, 1, 0, 0.925), new = TRUE, mar = c(0, 0, 0, 0),
+    oma = c(4, 4, 4, 0.5))
+  plot(1, 1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "",
+      ylab = "")
 
   mtext(side = 1, "Time", line = -0.25, cex = 1.5)
   mtext(side = 2, "Carcass Persistence", line = -0.25, cex = 1.5)
+
+  n_col <- length(unique(cells_set[ , preds_set[1]]))
+  n_row <- nrow(cells_set)/n_col
+  H <- .res * (.header + n_row * .panel_H)
+  W <- min(1200, .res * .panel_W * max(2, n_col))
+  cell_W <- round(W/n_col)
+  box_W <- round(W/2)
+
+  # cells
+  if (nrow(cells_set) > 1) omd = c(.res/W, 1 - .res/W,
+      .res * .footer/H, 1 - .res * (.header + .box_H + 0.75 * .buffer)/H)
+  if (nrow(cells_set) == 1) omd = c(.res/W, 0.96,
+      .res * .footer/H, 1 - .res * (.header + .box_H + 0.2 * .buffer)/H)
+
+  par(omd = omd, mar = c(0, 0, 0, 0), xaxt = "n", yaxt = "n")
+  par(mfrow = c(n_row, n_col))
 
   cells_set <- modelSetCells(modelSet)
   ncell <- nrow(cells_set)
@@ -309,8 +504,7 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
   cellNames_set <- modelSetCells(modelSet)[ , "CellNames"]
   preds_set <- modelSetPredictors(modelSet)
   carcCells <- apply(data.frame(model_spec$data[ , preds_set]),
-                 1, paste, collapse = "."
-               )
+    MARGIN = 1, FUN = paste, collapse = ".")
   whichCarcs <- which(carcCells == specificCell)
   if (specificCell == "all"){
     whichCarcs <- 1:length(carcCells)
@@ -349,9 +543,8 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
   nmodelsInSet <- length(modelSet)
   modelSetNames <- names(modelSet)
   modelSetNames_components <- unlist(strsplit(modelSetNames, "; "))
-  modelSetNames_matrix <- matrix(modelSetNames_components, ncol = 3, 
-                            byrow = TRUE
-                          )
+  modelSetNames_matrix <- matrix(modelSetNames_components, ncol = 3, byrow = TRUE)
+
   colnames(modelSetNames_matrix) <- c("dist", "form_l", "form_s")
 
   modelMatches <- vector("list", length = nmodelsInSet)
@@ -405,25 +598,21 @@ cpmSetSpecCPCellPlot <- function(modelSet, specificModel, specificCell,
 #'
 #' @param specificModel the name of the specific model for the plot
 #'
-#' @param app logical indicating if the plot is for the app
-#'
 #' @param cols named vector of the colors to use for the distributions
 #'
 #' @return a plot
 #'
 #' @export
 #'
-plotCPHeader <- function(modelSet, specificModel, app = FALSE, 
-                         cols = CPcols()){
+plotCPHeader <- function(modelSet, specificModel, cols = CPcols()){
 
   modelSetNames <- names(modelSet)
   nmodelsInSet <- length(modelSetNames)
   whichSpecificModel <- which(names(modelSet) == specificModel)
 
   modelSetNames_components <- unlist(strsplit(modelSetNames, "; "))
-  modelSetNames_matrix <- matrix(modelSetNames_components, ncol = 3, 
-                            byrow = TRUE
-                          )
+  modelSetNames_matrix <- matrix(modelSetNames_components, ncol = 3,
+    byrow = TRUE)
   colnames(modelSetNames_matrix) <- c("dist", "form_l", "form_s")
   distsIncluded <- gsub("dist: ", "", unique(modelSetNames_matrix[ , "dist"]))
 
@@ -444,10 +633,8 @@ plotCPHeader <- function(modelSet, specificModel, app = FALSE,
       col = cols[distsIncluded[disti]]
     )
     distName <- distsIncluded[disti]
-    distName <- paste(
-                  toupper(substring(distName, 1, 1)),
-                  substring(distName, 2), sep = "", collapse = " "
-                )
+    distName <- paste(toupper(substring(distName, 1, 1)),
+                      substring(distName, 2), sep = "", collapse = " ")
     distText <- paste0("= ", gsub("Log", "Log-", distName))
     text(x = xt[disti], y = yt[disti], adj = 0, cex = 0.8, distText)
   }
@@ -456,9 +643,7 @@ plotCPHeader <- function(modelSet, specificModel, app = FALSE,
   text_label <- paste("Labels: ", labelsText, sep = "")
   forms <- modelSetNames_matrix[whichSpecificModel, c("form_l", "form_s")]
   modelsText <- paste(forms, collapse = "; ")
-  if (app){
-    modelsText <- gsub("~ 1", "~ constant", modelsText)
-  }
+  modelsText <- gsub("~ 1", "~ constant", modelsText)
   text_model <- paste("Model: ", modelsText, sep = "")
   text(x = 0.59, y = 0.1, text_label, adj = 0, cex = 0.75)
   text(x = 0.59, y = 0.5, text_model, adj = 0, cex = 0.75)

@@ -1262,10 +1262,11 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
                t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
     # correction for overflow errors
-    probs[which(pllogis(
+    probs[pllogis(
       q = rep(t1, length(pda)),
       pda = rep(pda, each = length(t1)),
-      pdb = rep(pdb, each = length(t1))) > 1 - 1e-8)] <- 0
+      pdb = rep(pdb, each = length(t1))) > 1 - 1e-7] <- 0
+    probs[is.na(probs)] <- 0
   }
   return(probs)
 }

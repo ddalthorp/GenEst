@@ -111,9 +111,6 @@ setFigH <- function(modelSet, modType = "SE"){
   if (!any(attr(modelSet, "class") %in% c("cpmSet", "pkmSet"))){
     stop("modelSet must be a cpmSet or pkmSet object")
   }
-  if (!modType %in% c("SE", "CP")){
-    stop(paste0("input modType (", modType, ") not supported"))
-  }
 
   ncell <- nrow(modelSetCells(modelSet))
   nRow <- ceiling(ncell / 3)
@@ -121,11 +118,8 @@ setFigH <- function(modelSet, modType = "SE"){
   if (ncell > 6){
     mult <- 300
   }
-  proposed <- nRow * mult + 400
-  out <- max(c(proposed, 800))
-  if (modType == "CP"){
-    out <- out - 100
-  }
+  out <- max(c(nRow * mult + 400, 800))
+  if ("cpmSet" %in% class(modelSet)) out <- out - 100
   out
 }
 

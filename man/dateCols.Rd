@@ -7,7 +7,7 @@
 dateCols(data)
 }
 \arguments{
-\item{data}{data table potentially containing columns that could be 
+\item{data}{data table potentially containing columns that could be
 coerced (via \code{checkDate()}) into a properly formatted date}
 }
 \value{

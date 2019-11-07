@@ -70,14 +70,6 @@ setting (as defined by \code{\link{initialReactiveValues}}).}
 
 \item{colNames_size}{updated vector of size column names in all needed
 tables}
-
-\item{preds}{predictors, as input to the app}
-
-\item{colNames}{column names from which some could be removed}
-
-\item{selCols}{selected columns to be removed}
-
-\item{path}{file path}
 }
 \description{
 utility functions for simple app rv management

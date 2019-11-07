@@ -463,7 +463,7 @@ plot(pkModels[["sml"]], specificModel = "p ~ Visibility; k ~ 1")
 
 The top row shows box plots of estimated `p` and `k` parameters for all cells
 (i.e., combinations of covariate levels, like `D.fall` for difficult visibility
-in the fall) for both the selected model (black) and the full model (gray). With
+in the fall) for both the selected model (blue) and the full model (gray). With
 the full model, the fits for each cell are based solely on data from that
 specific cell. The advantage is that each cell's estimates are untainted by data
 from other cells. The disadvantage is that the sample size for each estimate
@@ -540,8 +540,8 @@ not met, the exponential provides an inferior fit.
 
 To compare among a set of cp models with plausible AICs, use, for example,
 `plot(cpModels[["sml"]])` to browse through all the models or
-`plot(cpModels[["sml"]][["p ~ Visibility; k ~ 1"]])` to view a single model
-specified by name. It can be seen from the AICc table
+`plot(cpModels[["sml"]][["dist: lognormal; p ~ Visibility; k ~ 1"]])` to view
+a single model specified by name. It can be seen from the AICc table
 (`aicc(cpModels[["sml"]])`) that the top 10 models according to AICc are:
 
 ```{r}

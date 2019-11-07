@@ -1,7 +1,13 @@
 Revision log
-<<<<<<< HEAD
-2019.11.02
+2019.11.06
+v1.4.0
 
+* updated the CP figures with improved font and readability; format now more 
+closely matches that of the SE figures. Changes are limited to plot.cpmSet,
+while the plot.cpm function for plotting individual models in isolation
+remains unchanged (for now).
+
+2019.11.02
 v1.3.3
 
 * corrected a data frame subsetting function that returned a data frame rather
@@ -92,9 +98,6 @@ the data and the GenEst version is v1.3.1 or v1.3.2. Earlier versions would
 throw an error and abort the calculation rather than apply the "2n fix". The
 error has been corrected in development version v1.3.3.1 and all subsequent
 production versions (>=1.3.3). 
-
-=======
->>>>>>> 1860b2b5c63ecd7ab8235560113eaa8f69bc27e4
 
 2019.09.13
 v1.3.2

@@ -23,8 +23,6 @@ modelSetCells(modelSet)
 \item{specific}{specific model compared against the full set}
 
 \item{modelSet}{full model set to compare to the specific}
-
-\item{formula}{A formula object}
 }
 \description{
 model utility functions that are not exported

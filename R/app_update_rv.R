@@ -680,9 +680,19 @@ update_rv <- function(eventName, rv, input){
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
       rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
       rv$modTab_CP <- desc(rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]], rv$CL)
-      rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
-      rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
-      rv$figW_CP <- setFigW(rv$modSet_CP)
+      #rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
+      # size of graph page
+      modelSet <- tidyModelSetCP(rv$modSet_CP)
+      cells_set <- modelSetCells(modelSet)
+      preds_set <- modelSetPredictors(modelSet)
+      n_col <- ifelse(length(preds_set) == 0, 1,
+        length(unique(cells_set[ , preds_set[1]])))
+      n_row <- nrow(cells_set)/n_col
+      rv$figH_CP <- .res * (.header + n_row * .panel_H + .footer)
+      rv$figW_CP <- min(1200, .res * .panel_W * 2 * n_col)
+
+#      rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
+#      rv$figW_CP <- setFigW(rv$modSet_CP)
     }
   }
 
@@ -719,9 +729,17 @@ update_rv <- function(eventName, rv, input){
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
       rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
       rv$modTab_CP <- desc(rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]], CL = rv$CL)
-      rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
-      rv$figW_CP <- setFigW(rv$modSet_CP)
-      rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
+      modelSet <- tidyModelSetCP(rv$modSet_CP)
+      cells_set <- modelSetCells(modelSet)
+      preds_set <- modelSetPredictors(modelSet)
+      n_col <- ifelse(length(preds_set) == 0, 1,
+        length(unique(cells_set[ , preds_set[1]])))
+      n_row <- nrow(cells_set)/n_col
+      rv$figH_CP <- .res * (.header + n_row * .panel_H + .footer)
+      rv$figW_CP <- min(1200, .res * .panel_W * 2* n_col)
+#      rv$figH_CP <- setFigH(rv$modSet_CP, "CP")
+#      rv$figW_CP <- setFigW(rv$modSet_CP)
+      #rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
     }
   }
 

@@ -145,7 +145,6 @@ downloadSEmod <- function(rv, input){
     }
   )
 }
-
 #' @rdname app_download_functions
 #'
 downloadgFig <- function(rv, sc){

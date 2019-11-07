@@ -1,8 +1,8 @@
 #' @useDynLib GenEst, .registration = TRUE
 #' @importFrom corpus print.corpus_frame
 #' @importFrom DT dataTableOutput renderDataTable datatable
-#' @importFrom graphics axis box hist lines mtext par plot plot.new points
-#'   polygon rect text abline
+#' @importFrom graphics abline axis box hist legend lines mtext par plot
+#'   plot.new points polygon rect text
 #' @importFrom grDevices dev.off devAskNewPage png rgb colors
 #' @importFrom htmltools a br code div em h3 h4 HTML img p tags
 #' @importFrom lubridate is.Date
@@ -17,8 +17,9 @@
 #'   updateSelectizeInput updateTabsetPanel  updateNavbarPage
 #' @importFrom shinyjs inlineCSS reset useShinyjs 
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
-#'   formula median model.matrix na.omit optim pgamma pnorm qnorm quantile 
-#'   reformulate rnorm runif terms update.formula weighted.mean rbinom
+#'   formula median model.matrix na.omit optim pexp pgamma plnorm pnorm pweibull
+#'   qnorm quantile reformulate rnorm runif terms update.formula weighted.mean
+#'   rbinom
 #' @importFrom survival strata
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
 #'  write.table zip

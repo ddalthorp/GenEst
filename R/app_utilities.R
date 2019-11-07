@@ -9,9 +9,9 @@
 #' @param toReVal Names of elements in \code{rv} to reset to their factory
 #'   setting (as defined by \code{\link{initialReactiveValues}}).
 #'
-#' @param colNames column names from which some could be removed
-#'
 #' @param cols column names to select
+#'
+#' @param data data table
 #'
 #' @param modNames names of the model to be split off
 #'
@@ -222,7 +222,7 @@ setkNeed <- function(rv){
 #' @description Simple function to facilitate selection of date columns from
 #'   a data table
 #'
-#' @param data data table potentially containing columns that could be 
+#' @param data data table potentially containing columns that could be
 #'   coerced (via \code{checkDate()}) into a properly formatted date
 #'
 #' @return column names of columns that can be coerced to dates
@@ -330,7 +330,7 @@ predsCols <- function(data){
       okName <- FALSE
     } else{
       okName <- TRUE
-    }    
+    }
     if (!any(is.na(tmp)) & !cont & reps & okName){
       predTF[coli] <- TRUE
     } else{
@@ -563,7 +563,7 @@ modNamePaste <- function(parts, type = "SE", tab = FALSE){
   out <- gsub("~ constant", "~ 1", out)
   return(out)
 }
-  
+
 #' @title Produce the options for the distributions in the CP model
 #'
 #' @description Simply make the named list for the disributions in the CP
@@ -584,88 +584,16 @@ CPdistOptions <- function(){
 plotNA <- function(type = "model"){
   if (type == "model"){
     badText <- "Selected model was not fit successfully."
-  } 
+  }
   if (type == "split"){
     badText <- "Second split too fine for plotting. Consider transposing."
   }
-  plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "", 
+  plot(1, 1, type = "n", xaxt = "n", yaxt = "n", bty = "n", xlab = "",
     ylab = "", ylim = c(0, 1), xlim = c(0,1))
   text(0.01, 0.9, badText, adj = 0)
 }
 
 #' @rdname app_utilities
-initialReactiveValues <- function(){
-  reactiveValues(
-    data_SE = NULL, data_CP = NULL, data_SS = NULL, data_DWP = NULL, 
-    data_CO = NULL,
-    filename_SE = NULL, filename_CP = NULL, filename_SS = NULL,
-    filename_DWP = NULL, filename_CO = NULL,
-    colNames_SE = NULL, colNames_SE_preds = NULL, colNames_SE_preds0 = NULL,
-    toRemove_SE_obs = NULL, toRemove_SE_preds = NULL,
-    colNames_SE_obs = NULL, colNames_SE_obs0 = NULL, 
-    colNames_CP = NULL, colNames_CP_preds = NULL, colNames_CP_preds0 = NULL, 
-    toRemove_CP_preds = NULL,
-    colNames_ltp = NULL, colNames_ltp0 = NULL, toRemove_ltp = NULL,   
-    colNames_fta = NULL, colNames_fta0 = NULL, toRemove_fta = NULL,
-
-    colNames_SS = NULL, splittable_SS = NULL,
-    colNames_DWP = NULL,
-    colNames_CO = NULL, colNames_COdates = NULL,
-    colNames_size = NULL, colNames_size0 = NULL,
-
-    nsim = 1000, CL = 0.90,
-
-    sizeCol = NULL, toRemove_sizeCol = NULL,
-    sizeclasses = NULL, sizeclass = NULL, sizeclass_SE = NULL,
-    sizeclass_CP = NULL, sizeclass_g = NULL, sizeclass_M = NULL,
-    nsizeclasses = 0,
-
-    obsCols_SE = NULL, preds_SE = NULL, predictors_SE = NULL, 
-    formula_p = NULL, formula_k = NULL, kFixed = NULL,
-    mods_SE = NULL, mods_SE_og = NULL, sizeclasses_SE = NULL, 
-    outSEpk = NULL, AICcTab_SE = NULL, modOrder_SE = NULL, modNames_SE = NULL,
-    modNames_SEp = NULL, modNames_SEk = NULL, modSet_SE = NULL,
-    best_SE = NULL, modTab_SE = NULL, modTabPretty_SE = NULL,
-    modTabDL_SE = NULL, figH_SE = 800, figW_SE = 800,
-    sizeclasses_k = NULL, nsizeclasses_k = NULL, 
-
-    ltp = NULL, fta = NULL, preds_CP = NULL, dist = NULL,
-    predictors_CP = NULL, formula_l = NULL, formula_s = NULL, 
-    mods_CP = NULL, mods_CP_og = NULL, CPdls = NULL, outCPdlsfig = NULL, 
-    outCPdlstab = NULL, sizeclasses_CP = NULL, AICcTab_CP = NULL, 
-    modOrder_CP = NULL, modNames_CP = NULL, modNames_CPdist = NULL, 
-    modNames_CPl = NULL, modNames_CPs = NULL, modSet_CP = NULL, 
-    best_CP = NULL, modTab_CP = NULL, figH_CP = 700, figW_CP = 800,
-
-    M = NULL, Msplit = NULL, unitCol = NULL, colNames_xID = NULL, xIDcol = NULL,
-    frac = 1, sizeCol_M = NULL, DWPCol = NULL, COdate = NULL,
-    SEmodToUse = NULL, CPmodToUse = NULL,
-    split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0, 
-    figH_M = 600, figW_M = 800,
-
-    SS = NULL, avgSI = NULL, SStemp = NULL, gSearchInterval = NULL,
-    gSearchMax = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
-    gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
-    figH_g = 400, figW_g = 800,
-
-    kCheck = NA, kCheck_g = NA, csvformat = ""
-  )
-}
-
-#' @title Update the carcass classes
-#'
-#' @description Determine the options for carcass classes, based on a data table
-#'   and column name, returning \code{NULL} if no carcass class column is
-#'   provided
-#'
-#' @param data data table to draw sizes from
-#'
-#' @param sizeCol carcass class column name
-#'
-#' @return unique carcass classes
-#'
-#' @export
->>>>>>> 1860b2b5c63ecd7ab8235560113eaa8f69bc27e4
 #'
 updateSizeclasses <- function(data, sizeCol){
   if (is.null(sizeCol)){
@@ -699,4 +627,3 @@ updatesizeCol <- function(sizeCol, colNames_size){
     NULL
   }
 }
-

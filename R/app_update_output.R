@@ -362,9 +362,9 @@ update_output <- function(eventName, rv, output, input){
       output$CPModDone <- renderText("OK")
       output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})
       output$modTab_CP <- renderDataTable({prettyModTabCP(rv$modTab_CP)})
-      output$fig_CP <- renderPlot({
-        plot(rv$modSet_CP, specificModel = rv$best_CP, app = TRUE)},
-        height = rv$figH_CP, width = rv$figW_CP)
+      output$fig_CP <- renderPlot(plot(rv$modSet_CP, specificModel = rv$best_CP),
+        height = rv$figH_CP, width = rv$figW_CP,
+        pointsize = .pointsize, res = .res)
 
       output$sizeclasses_CP <- renderText(paste(rv$sizeclasses_CP, collapse = " "))
       output$modelMenu_CP <- modelSelectionWidget(rv$mods_CP, "CP")
@@ -408,10 +408,9 @@ update_output <- function(eventName, rv, output, input){
   if (eventName == "outCPclass"){
     if (length(rv$mods_CP) > 0){
       output$modTab_CP <- DT::renderDataTable(datatable(prettyModTabCP(rv$modTab_CP)))
-      output$fig_CP <- renderPlot({
-                         plot(rv$modSet_CP, specificModel = rv$best_CP,
-                           app = TRUE)
-                       }, height = rv$figH_CP, width = rv$figW_CP)
+      output$fig_CP <- renderPlot(plot(rv$modSet_CP, specificModel = rv$best_CP),
+        height = rv$figH_CP, width = rv$figW_CP,
+        pointsize = .pointsize, res = .res)
 
       preText <- paste0("Carcass class: ", rv$sizeclass_CP)
       output$sizeclass_CP1 <- classText(rv, "CP")
@@ -430,13 +429,11 @@ update_output <- function(eventName, rv, output, input){
   if (eventName %in% c("outCPdist", "outCPl", "outCPs")){
     if (length(rv$mods_CP) > 0){
       output$modTab_CP <- DT::renderDataTable(datatable(prettyModTabCP(rv$modTab_CP)))
-      output$fig_CP <- renderPlot({
-                       tryCatch(
-                         plot(rv$modSet_CP, specificModel = rv$outCPdlsfig,
-                           app = TRUE),
-                         error = function(x){plotNA()}
-                       )
-                       }, height = rv$figH_CP, width = rv$figW_CP)
+      output$fig_CP <- renderPlot(tryCatch(
+        plot(rv$modSet_CP, specificModel = rv$outCPdlsfig),
+          error = function(x) plotNA()),
+        height = rv$figH_CP, width = rv$figW_CP,
+        pointsize = .pointsize, res = .res)
       output$dlCPest <- downloadTable("CP_estimates.csv", rv$modTab_CP,
                                              rv$csvformat)
       output$dlCPfig <- downloadCPFig(rv)

@@ -23,7 +23,7 @@ The CDF of the loglogistic distribution
 There are several common parameterizations of the loglogistic
  distribution. The one used here gives the following:
  \describe{
-   \item{CDF}{\code{Pr(X <= x) = 1/(1 + (x/\eqn{\beta})^-\eqn{\alpha})}}
-   \item{PDF}{\code{Pr(X = x) = (\eqn{\alpha}/\eqn{\beta}) * (x/\eqn{\beta})^(\eqn{\alpha} - 1)/(1 + (x/\eqn{\beta})^(\eqn{\alpha}))^2}}
+   \item{CDF}{\code{Pr(X <= x) = 1/(1 + (x/}\eqn{\beta})^-\eqn{\alpha}\code{)}}
+   \item{PDF}{\code{Pr(X = x) = (}\eqn{\alpha}/\eqn{\beta}\code{) * (x/}\eqn{\beta})^(\eqn{\alpha}\code{ - 1)/(1 + (x/}\eqn{\beta})^\eqn{\alpha}\code{)^2}}
   }
 }
