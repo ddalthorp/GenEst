@@ -1,4 +1,10 @@
 Revision log
+2019.11.20
+v1.4.0.1
+
+* fixed a simple link in GenEst GUI authors that was causing the GUI to
+crash upon opening for Mac users.
+
 2019.11.06
 v1.4.0
 

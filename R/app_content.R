@@ -125,11 +125,9 @@ GenEstGUIauthors <- function(){
     paste0(br(), br(),
       b("Web Design and Graphics User Interface Programming:"), 
       " Juniper Simonis ",
-      a("(DAPPER Stats)", href = "http://www.dapperstats.com", 
-        target = "_blank",
-      "Daniel Dalthorp ",
+      a("(DAPPER Stats)", href = "http://www.dapperstats.com", target = "_blank"),
+      ", Daniel Dalthorp ",
       a("(USGS)", href = "https://www.USGS.gov", target = "_blank"),
-      ), 
       "."
     )
   )
