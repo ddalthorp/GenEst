@@ -1,9 +1,15 @@
 Revision log
+2020.020.5
+v1.4.0.2
+
+Added "..." to the arg list for pkm to meet new CRAN requirements. This change
+will have no impact on any usage of GenEst.
+
 2019.11.20
 v1.4.0.1
 
 * fixed a simple link in GenEst GUI authors that was causing the GUI to
-crash upon opening for Mac users.
+crash upon opening under certain browser settings.
 
 2019.11.06
 v1.4.0

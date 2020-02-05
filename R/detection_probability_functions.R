@@ -111,7 +111,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   }
   if (any(as.numeric(data_SS[cbind(rind, cind)]) == 0)){
     stop("some carcasses (CO) were found at units that were not searched (SS) ",
-         "on the the date recorded for the carcass discovery")
+         "on the date recorded for the carcass discovery")
   }
   COdat <- data_CO # format data_CO
   COdat[ , COdate] <- dateToDay(dates_CO, t0date)

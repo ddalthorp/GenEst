@@ -238,8 +238,8 @@
 #' @export
 #'
 pkm <- function(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
-    allCombos = FALSE, sizeCol = NULL,
-    CL = 0.90, kInit = 0.7, quiet = FALSE){
+    allCombos = FALSE, sizeCol = NULL, CL = 0.90, kInit = 0.7, quiet = FALSE,
+    ...){
   if (!is.null(kFixed) && !is.numeric(kFixed))
     stop("kFixed must be NULL or numeric")
   if (any(na.omit(kFixed) < 0 | na.omit(kFixed) > 1)){
