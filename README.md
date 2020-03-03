@@ -24,10 +24,12 @@ Several third-party pacakges are required; all are free and open source and avai
 
 ```
 
-package_new <- c("cbinom", "corpus", "DT", "gsl", "gtools", "htmltools", "lubridate", 
+package_req <- c("cbinom", "corpus", "DT", "gsl", "gtools", "htmltools", "lubridate", "MASS", 
    "matrixStats", "mvtnorm", "Rcpp", "shiny", "shinyjs", "sticky", "survival", "zip")
-package_new <- package_new[!(package_new %in% installed.packages()[,"Package"])] 
+package_new <- package_req[!(package_req %in% installed.packages()[,"Package"])] 
 if(length(package_new) > 0) install.packages(package_new)
+if (packageVersion("htmltools") < "1.5") install.packages("htmltools")
+if (packageVersion("shiny") < "1.4.0") install.packages("shiny")
 ```
 -- If asked about a "CRAN mirror", choose the nearest location.
 
