@@ -7,18 +7,27 @@
 combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
 }
 \arguments{
-\item{preds_CP}{Carcass persistence predictor variables.}
+\item{preds_CP}{Character vector with names of carcass persistence predictors.}
 
-\item{preds_SE}{Searcher efficiency predictor variables.}
+\item{preds_SE}{Character vector with names of searcher efficiency predictors.}
 
-\item{data_CP}{Carcass persistence data.}
+\item{data_CP}{data frame with columns for each predictor and rows
+corresponding to carcasses in the field trials.}
 
-\item{data_SE}{Searcher efficiency data.}
+\item{data_SE}{data frame with columns for each predictor and rows
+corresponding to carcasses in the field trials.}
 }
 \value{
-Factor combination table.
+Data frame with columns for each predictor in \code{preds} and rows
+ for each factor level combination among the predictors. In addition there
+ are column with \code{CellNames}, \code{CellNames_CP}, and
+ \code{CellNames_SE}, which are the combinations of predictor levels for all
+ predictors, CP predictors, and SE predictors (respectively), separated by
+ periods ( . ).
 }
 \description{
-Create the factor combination table for a set of searcher
- efficiency and carcass persistence analyses.
+Create a table of factor combinations of predictors in given
+ searcher efficiency and carcass persistence models. This is a utility
+ function called by estgGeneric and governs the cells for which detection
+ probabilities are calculated.
 }

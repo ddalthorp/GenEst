@@ -54,7 +54,7 @@
 #'                right = "FirstAbsentDecimalDays"
 #'              )
 #'  ghat <- estg(data_CO = mock$CO, COdate = "DateFound",  data_SS = mock$SS,
-#'            model_SE = model_SE, model_CP = model_CP, unitCol = "Unit", nsim = 100)
+#'       model_SE = model_SE, model_CP = model_CP, unitCol = "Unit", nsim = 100)
 #'
 #' @export
 #'
@@ -62,11 +62,10 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
                  model_SE, model_CP, model_DWP = NULL,
                  sizeCol = NULL, unitCol = NULL, IDcol = NULL,
                  nsim = 1000, max_intervals = 8){
+
   i <- sapply(data_CO, is.factor)
   data_CO[i] <- lapply(data_CO[i], as.character)
-  i <- sapply(data_SS, is.factor)
-  data_SS[i] <- lapply(data_SS[i], as.character)
-
+  SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
 # error-checking
   if (is.null(unitCol))
     unitCol <- defineUnitCol(data_CO = data_CO, data_SS = data_SS)
@@ -87,8 +86,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
     if (length(data_CO[ , IDcol]) != unique(length(data_CO[ , IDcol])))
       stop(paste0("Carcass IDs are not unique (in CO, column ", IDcol, ")"))
   }
-  SSdat <- prepSS(data_SS) # SSdat name distinguishes this as pre-formatted
-  if (any(! data_CO[, unitCol] %in% SSdat$unit))
+  if (any(!data_CO[, unitCol] %in% SSdat$unit))
     stop("carcasses found (CO) at units not properly formatted (or missing) in SS")
   if (is.null(SSdate)) SSdate <- SSdat$SSdate
   SSdat$searches_unit[ , 1] <- 1 # set t0 as start of period of inference
@@ -99,7 +97,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
   if (t0date > min(dates_CO))
     stop("first carcass discovered before first search date")
   rind <- match(dates_CO, SSdat[[SSdate]])
-  cind <- match(data_CO[, unitCol], names(data_SS))
+  cind <- match(data_CO[, unitCol], SSdat[["unit"]])
   if (anyNA(rind)){
     stop("carcasses ", paste0(which(is.na(rind)), collapse = ', '),
          " in CO found on dates not listed in SS")
@@ -109,7 +107,8 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
       paste0(data_CO[rind, unitCol], collapse =", "),
       "in CO...not represented in SS. Cannot estimate g or M.")
   }
-  if (any(as.numeric(data_SS[cbind(rind, cind)]) == 0)){
+#  if (any(as.numeric(data_SS[cbind(rind, cind + 1)]) == 0)){
+  if (any(as.numeric(SSdat$searches_unit[cbind(cind, rind)]) == 0)){
     stop("some carcasses (CO) were found at units that were not searched (SS) ",
          "on the date recorded for the carcass discovery")
   }
@@ -155,11 +154,19 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
 
   preds_SE <- lapply(model_SE, function(x) x$predictors)
   preds_CP <- lapply(model_CP, function(x) x$predictors)
-  preds <- mapply(function(x, y) unique(c(x, y)), preds_SE, preds_CP)
+  preds <- unlist(mapply(function(x, y) unique(c(x, y)), preds_SE, preds_CP))
+  if (!all(preds %in% c(names(COdat), names(data_SS)))){
+    bad_pr <- unique(preds[!preds %in% c(names(data_CO), names(data_SS))])
+    bad_pr <- paste(bad_pr, collapse = " and ")
+     stop(paste(bad_pr,
+      "included in CP or SE model but not in CO or SS data. ",
+      "Cannot assign detection probabilities to carcasses."
+    ))
+  }
   dist <- unlist(lapply(model_CP, function(x) x$dist))
   COpreds <- lapply(preds, function(x) x[x %in% names(COdat)])
   SSpreds <- lapply(preds, function(x) x[!(x %in% names(COdat))])
-  if (max(unlist(lapply(SSpreds, length))) > 1){
+  if (length(SSpreds) && max(unlist(lapply(SSpreds, length))) > 1){
     stop("At most 1 SS predictor is allowed per carcass class.")
   }
   if (length(unlist(SSpreds)) > 0 && !all(unlist(SSpreds) %in% names(SSdat))){
@@ -584,8 +591,10 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000){
     stop("Cannot estimate variance for model_SE. Aborting estimation.")
   preds_SE <- model_SE$predictors
   preds_CP <- model_CP$predictors
-  data_SE <- model_SE$data
-  data_CP <- model_CP$data
+  data_SE <- data.frame(model_SE$data[ , preds_SE], stringsAsFactors = FALSE)
+  data_CP <- data.frame(model_CP$data[ , preds_CP], stringsAsFactors = FALSE)
+  names(data_SE) <- preds_SE
+  names(data_CP) <- preds_CP
   preds <- combinePredsAcrossModels(preds_CP, preds_SE, data_CP, data_SE)
   sim_SE <- rpk(n = nsim, model = model_SE)
   sim_CP <- rcp(n = nsim, model = model_CP, type = "ppersist")
@@ -607,7 +616,8 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000){
   return(out)
 }
 
-#' @title Calculate cell-level generic detection probability
+#' @title Calculate detection probability for given SE and CP parameters and
+#'  search schedule.
 #'
 #' @description Calculate detection probability (g) given SE and CP parameters
 #'  and a search schedule.
@@ -615,7 +625,7 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000){
 #' The g given by \code{calcg} is a generic aggregate detection
 #'  probability and represents the probability of detecting a carcass that
 #'  arrives at a (uniform) random time during the time spanned by the search
-#'  schedule for the the given SE and CP parameters. This differs the GenEst
+#'  schedule for the the given SE and CP parameters. This differs from the GenEst
 #'  estimation of g when the purpose is to estimate total mortality (M), in
 #'  which case the detection probability varies with carcass arrival interval
 #'  and is difficult to summarize statistically. \code{calcg} provides a 
@@ -624,11 +634,15 @@ estgGeneric <- function(days, model_SE, model_CP, nsim = 1000){
 #'
 #' @param days Search schedule (vector of days searched)
 #'
-#' @param param_SE numeric array of searcher efficiency parameters (p and k)
+#' @param param_SE numeric array of searcher efficiency parameters (p and k);
+#'  must have the name number of rows as the \code{param_CP}.
 #'
 #' @param param_CP numeric array of carcass persistence parameters (a and b)
+#'  must have the name number of rows as the \code{param_SE}.
 #'
 #' @param dist distribution for the CP model
+#'
+#' @return a vector of detection probabilities for each
 #'
 #' @export
 #'
@@ -636,89 +650,154 @@ calcg <- function(days, param_SE, param_CP, dist){
   dist <- tolower(dist)
   samtype <- ifelse(length(unique(diff(days))) == 1, "Formula", "Custom")
   nsearch <- length(days) - 1
-  n <- nrow(param_SE)
-  if (dist == "exponential"){
-    pdb <- param_CP[ , "pdb"]
-    pda <- 1/pdb
-    pdb0 <- exp(mean(log(pdb)))
+  # check format of param_SE and create formatted matrix pk
+  # should be rectangle shape with columns p and k (named or not)
+  if (any(c("array", "matrix", "data.frame") %in% class(param_SE))){
+    if (ncol(param_SE) != 2) stop ("param_SE must have columns for p and k")
+    if (is.null(colnames(param_SE))){
+      colnames(param_SE) <- c("p", "k")
+    } else {
+      if (!identical(sort(colnames(param_SE)), c("k", "p")))
+        stop("param_SE columns must be labeled p and k")
+    }
+    pk <- as.matrix(param_SE)
+  } else { # should be a 2-vector with p and k (named or not)
+    if (!is.numeric(param_SE) || !is.vector(param_SE))
+      stop("param_SE must be numeric vector or array")
+    if (length(param_SE) == 2){
+      if (!is.null(names(param_SE)) & !identical(sort(names(param_SE)), c("k", "p")))
+        stop("pamam_SE must have p and k values")
+      if (!is.null(names(param_SE))){
+        pknm <- names(param_SE)
+      } else {
+        pknm <- c("p", "k")
+      }
+      pk <- matrix(param_SE, nrow = 1)
+      colnames(pk) <- pknm
+    } else if (length(param_SE) == 1) {
+      stop("param_SE must include values for both p and k")
+    } else {
+      stop("param_SE must be either 2-d array with two colunms ",
+           "or a vector of length 2")
+    }
+  }
+  n <- nrow(pk)
+  # check format of param_CP and create formatted matrix cp
+  if (is.vector(param_CP)){
+    if (!is.numeric(param_CP)) stop("param_CP must be numeric")
+    # must be of length 2 and n = 1
+    # or exponential and length = n     (pdb)
+    if (length(param_CP) == 2 & n == 1){
+      if (!is.null(names(param_CP))){
+        if (!identical(sort(names(param_CP)), c("pda", "pdb"))){
+          stop("param_CP must contain values for pda and pdb ",
+               "(either a vector of length 2 or a matrix with ",
+               "columns for pda and pdb)"
+          )
+        } else {
+          cpnm <- names(param_CP)
+        }
+      } else {
+        cpnm <- c("pda", "pdb")
+      }
+      cp <- matrix(param_CP, nrow = 1)
+      colnames(cp) <- cpnm
+    } else if (dist == "exponential" & length(param_CP) == n & n > 1){
+      # assumed that param_CP is pdb
+      cp <- as.matrix(cbind(1/param_CP, param_CP))
+      colnames(cp) <- c("pda", "pdb")
+    } else if (dist == "exponential" & length(param_CP) == n & n == 1){
+      # check whether param_CP is pda or pdb
+      if (is.null(names(param_CP))){
+        cp <- matrix(c(1/param_CP, param_CP), nrow = 1)
+        colnames(cp) <- c("pda", "pdb")
+      } else if (!names(param_CP) %in% c("pda", "pdb")){
+          stop("param_CP with exponential distribution must be pda or pdb")
+      } else {
+        if (names(param_CP) == "pda"){
+          cp <- matrix(c(param_CP, 1/param_CP), nrow = 1)
+        } else {
+          cp <- matrix(c(1/param_CP, param_CP, nrow = 1))
+        }
+        colnames(cp) <- c("pda", "pdb")
+       }
+      } else {
+        stop("param_SE and param_CP have incompatible dimensions")
+      }
+  } else {
+    if (!class(param_CP) %in% c("array", "matrix", "data.frame"))
+      stop ("param_CP must be a 2-d array with columns for pda and pdb")
+    cp <- as.matrix(param_CP)
+    if (ncol(cp) == 1){
+      if (dist != "exponential")
+        stop ("param_CP must have columns for pda and pdb if dist != 'exponential'")
+      if (is.null(colnames(cp))){
+        cp <- cbind(1/cp, cp)
+        colnames(cp) <- c("pda", "pdb")
+      } else if (colnames(cp) == "pda"){
+        cp <- cbind(cp, 1/cp)
+        colnames(cp) <- c("pda", "pdb")
+      } else if (colnames(cp) == "pdb"){
+        cp <- cbind(1/cp, cp)
+        colnames(cp) <- c("pda", "pdb")
+      } else {
+        stop("exponential param_CP must be pda or pdb (or unnamed)")
+      }
+    } else if (ncol(cp) == 2) {
+      if (is.null(colnames(cp))){
+        colnames(cp) <- c("pda", "pdb")
+      } else if (!identical(sort(colnames(cp)), c("pda", "pdb"))){
+        stop ("param_CP must have columns pda and pdb")
+      }
+    }
+  }
+  # check for compatibility between cp and pk parameters
+  if (!identical(dim(pk), dim(cp)))
+    stop("param_SE and param_CP must be the same dimension")
+ if (dist == "exponential"){
+    pdb0 <- exp(mean(log(cp[ , "pdb"])))
     pda0 <- 1/pdb0
   } else {
-    pda <- param_CP[ , "pda"]
-    pdb <- param_CP[ , "pdb"]
-    if (dist %in% c("lognormal", "Lognormal")){
-      pdb0 <- mean(pdb)
+    if (dist == "lognormal"){
+      pdb0 <- mean(cp[ , "pdb"])
     } else {
-      pdb0 <- exp(mean(log(pdb)))
+      pdb0 <- exp(mean(log(cp[ , "pdb"])))
     }
-    pda0 <- 1/mean(1/pda)
+    pda0 <- 1/mean(1/cp[ , "pda"])
   }
-  pk <- param_SE
-  f0 <- mean(pk[, 1])
-  k0 <- mean(pk[, 2])
-
   if (length(days) == 2){ # then only one search, so it's easy!
-    r_sim <- as.vector(ppersist(dist = dist,
+    r_sim <- as.vector(GenEst::ppersist(dist = dist,
       t_arrive0 = days[1], t_arrive1 = days[2], t_search = days[2],
-      pda = param_CP[,1], pdb = param_CP[,2]))
-    return(r_sim * pk[ , 1])
+      pda = cp[ , "pda"], pdb = cp[ , "pdb"]))
+    return(r_sim * pk[ , "p"])
   }
 
- ###1. setting estimation control parameters
+
   ind1 <- rep(1:nsearch, times = nsearch:1)
   ind2 <- ind1 + 1
   ind3 <- unlist(lapply(1:nsearch, function(x) x:nsearch)) + 1
   schedule.index <- cbind(ind1, ind2, ind3)
   schedule <- cbind(days[ind1], days[ind2], days[ind3])
-
   nmiss <- schedule.index[,3] - schedule.index[,2]
   maxmiss <- max(nmiss)
 
-  powk <- cumprod(c(1, rep(k0, maxmiss))) 
-  notfind <- cumprod(1 - f0*powk[-length(powk)])
-  nvec <- c(1, notfind) * f0
-
-  # conditional probability of finding a carcass on the ith search (row) after
-  # arrival for given (simulated) searcher efficiency (column)
-  pfind.si <- nvec * powk
-
-  diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
-  intxsearch <- unique(diffs, MARGIN = 1)
-  ppersu <- ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[,1],
-    t_search = intxsearch[,1] + intxsearch[,2], pda = pda0, pdb = pdb0)
-  arrvec <- (schedule[,2] - schedule[,1]) / max(days)
-  prob_obs <- numeric(dim(schedule)[1])
-  for (i in 1:length(prob_obs)){
-    ind <- which(
-               abs(intxsearch[,1] - (schedule[i,2] - schedule[i,1])) < 0.001 &
-               abs(intxsearch[,2] - (schedule[i,3] - schedule[i,2])) < 0.001
-             )
-    prob_obs[i] <- pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
-  }
-
- ###2. estimation of g
- # assumes uniform arrivals
-  schedule <- schedule[ind2 >= ind3 - maxmiss + 1, ]
-  schedule.index <- cbind(ind1, ind2, ind3)[ind2 >= ind3 - maxmiss + 1,]
-  nmiss <- schedule.index[ , 3] - schedule.index[ , 2]
-  maxmiss <- max(nmiss)
-
   if (maxmiss == 0) {
-    pfind.si <- pk[ , 1]
+    pfind.si <- pk[ , "p"]
   } else if (maxmiss == 1){
-    pfind.si <- cbind(pk[ , 1], (1 - pk[ , 1]) * pk[ , 2] * pk[ , 1])
+    pfind.si <- cbind(pk[ , "p"], (1 - pk[ , "p"]) * pk[ , "k"] * pk[ , "p"])
   } else {
-    powk <- array(rep(pk[, 2], maxmiss + 1), dim = c(n, maxmiss + 1))
+    powk <- array(rep(pk[ , "k"], maxmiss + 1), dim = c(n, maxmiss + 1))
     powk[ , 1] <- 1
     powk <- matrixStats::rowCumprods(powk)
-    val <- 1 - (pk[ , 1] * powk[ , 1:maxmiss])
+    val <- 1 - (pk[ , "p"] * powk[ , 1:maxmiss])
     if (is.null(dim(val))) val <- matrix(val, nrow = 1)
-    pfind.si <- pk[ , 1] * powk * cbind(rep(1, n), matrixStats::rowCumprods(val))
+    pfind.si <- pk[ , "p"] * powk * cbind(rep(1, n), matrixStats::rowCumprods(val))
   }
   diffs <- cbind(schedule[,2] - schedule[,1], schedule[,3] - schedule[,2])
   intxsearch <- unique(diffs, MARGIN = 1)
-  ppersu <- ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[ , 1],
+  ppersu <- GenEst::ppersist(dist = dist, t_arrive0 = 0, t_arrive1 = intxsearch[ , 1],
               t_search = intxsearch[ , 1] + intxsearch[ , 2],
-              pda = param_CP[ , 1], pdb = param_CP[ , 2]
+              pda = cp[ , "pda"], pdb = cp[ , "pdb"]
             )
   arrvec <- (schedule[ , 2] - schedule[ , 1]) / max(days)
   prob_obs <- numeric(n)
@@ -738,9 +817,9 @@ calcg <- function(days, param_SE, param_CP, dist){
      prob_obs <- prob_obs + pfind.si[nmiss[i] + 1] * ppersu[ind, ] * arrvec[i]
     }
   }
+  names(prob_obs) <- NULL
   return(prob_obs)
 }
-
 #' @title Estimate generic detection probability for multiple carcass classes
 #'
 #' @description Generic g estimation for a combination of SE model and CP
@@ -1049,6 +1128,9 @@ prepSS <- function(data_SS, SSdate = NULL, preds = NULL){
   } else if (is.null(colnames(data_SS))){
     stop("data_SS columns must be named")
   }
+  i <- sapply(data_SS, is.factor)
+  data_SS[i] <- lapply(data_SS[i], as.character)
+
   # if SSdate not provided, extract search dates (if possible)
   if (is.null(SSdate)){
     for (coli in colnames(data_SS)){

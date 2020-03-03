@@ -25,10 +25,10 @@ today <- Sys.Date()
 ```
 ## Introduction: Tutorial with Examples
 This tutorial provides an introduction to the array of command line tools
-**GenEst** (`r vers`) provides for estimating carcass arrivals and detection
-probabilities. The approach is to walk through analyses of realistic but 
-fictitious data sets representing studies of bird and bat mortality at a
-wind power facility.
+**GenEst** (`r vers`) provides for estimating bird and/or bat mortality and
+detection probabilities and wind power facilities. The approach is to walk
+through analyses of realistic but fictitious data sets representing studies
+of bird and bat mortality at a wind power facilities.
 
 The general steps in the analysis are:
 
@@ -40,10 +40,12 @@ The general steps in the analysis are:
 Data required for a full analysis include results of searcher efficiency trials,
 results of carcass persistence trials, search schedules for all units searched,
 the search coverage within each unit, and results of periodic carcass surveys.
-More information about the kinds of data required can be found in the User Guide.
-For convenience, data required in this tutorial are available in R as packaged
-lists, which can readily be loaded as described below. Alternatively, the data
-may be downloaded into zipped .csv files from the GUI.
+More information about the kinds of data required can be found in the User Guide,
+which can be found at `https://code.usgs.gov/ecosystems/GenEst/-/releases` in
+the "For more info" section. For convenience, data required in this tutorial are
+available in R as packaged lists, which can readily be loaded as described
+below. Alternatively, the data may be downloaded into zipped .csv files from the
+`code.usgs.gov` page referenced above.
 
 To perform the analyses illustrated in the tutorial, begin by starting R and
 loading GenEst from the command line: `library(GenEst)`
@@ -51,7 +53,7 @@ loading GenEst from the command line: `library(GenEst)`
 ## Example 1: Estimating Bat Mortality from Searches on Roads and Pads
 Searcher efficiency and carcass persistence would be expected to vary with
 carcass size (sparrow, eagle, bat), ground characteristics (road & pad,
-cleared field, vegetation type), season, etc. In this first example, we limit
+cleared field, groud texture), season, etc. In this first example, we limit
 the analysis to one carcass size (`bat`) and one ground visibility class
 (`RP` = road and pad). A more complicated scenario is analyzed in example 2.
 
@@ -114,26 +116,26 @@ head(data_CP)
 
 Exact persistence times are not known, but a carcass that was present at one
 check and absent at the next check is assumed to have been removed at some
-point in the interval. The left endpoint of the interval was entered as `LastPresent`
-and the right endpoint as `FirstAbsent`. For carcasses that had not been scavenged
-by the end of the study, `LastPresent` is the time of the last check and `FirstAbsent`
-is `Inf`. For carcasses whose removal time is known exactly (e.g., scavenging
-was recorded by camera), `LastPresent = FirstAbsent`. The `Season` column gives the season at
-the time the carcass was placed in the field.
+point in the interval. The left endpoint of the interval was entered as
+`LastPresent` and the right endpoint as `FirstAbsent`. For carcasses that had
+not been scavenged by the end of the study, `LastPresent` is the time of the
+last check and `FirstAbsent` is `Inf`. For carcasses whose removal time is known
+exactly (e.g., scavenging was recorded by camera), `LastPresent = FirstAbsent`.
+The `Season` column gives the season at the time the carcass was placed in the
+field.
 
 ### Search Schedules (`SS`)
 Carcass searches were conducted on roads and pads within a 120 m radius from 
-all `r dim(data_DWP)[1]` turbines at a fictitious wind power
-facility. Monitoring began on `r daterange[1]` and continued through
-`r daterange[2]`. Searches spanned `r length(unique(data_SS$Season))` seasons:
-`r seasons`. Search intervals varied by turbine and by time of year, ranging 
-from daily searches at some turbines in the fall and searches once every 12 
-days in the spring at some other turbines. Search schedules for all turbines 
-are stored in `data_SS`, which is a data frame with a column for search dates
-(including all dates that any turbine was searched); a column of 0s and 1s for 
-each turbine, indication whether it was searched on the given date; and zero 
-or more optional columns giving additional information about the date (e.g.,
-season).
+all `r dim(data_DWP)[1]` turbines at our fictitious site. Monitoring began on
+`r daterange[1]` and continued through `r daterange[2]`. Searches spanned
+`r length(unique(data_SS$Season))` seasons: `r seasons`. Search intervals varied
+by turbine and by time of year, ranging from daily searches at some turbines in
+the fall and searches once every 12 days in the spring at some other turbines.
+Search schedules for all turbines are stored in `data_SS`, which is a data frame
+with a column for search dates (including all dates that any turbine was
+searched); a column of 0s and 1s for each turbine, indication whether it was
+searched on the given date; and zero or more optional columns giving additional
+information about the date (e.g., season).
 
 ```{r}
 head(data_SS[, 1:10])
@@ -150,7 +152,7 @@ from a turbine, but typically rises over a short distance then decreases
 eventually to 0. Searches were conducted on roads and pads within a 120 m
 radius from all 100 turbines to provide sufficient data with which to model the
 change in density with distance and from this, accurately calculate the fraction
-of all carcasses that are expected to land on road and pad surrounding each
+of all carcasses that are expected to land on road or pad surrounding each
 turbine (density-weighted proportion or DWP). The configuration of the
 roads and pads differs among turbines, hence the DWP must be calculated for each
 turbine. DWPs for bats at each turbine are stored in `data_DWP`, which is a data

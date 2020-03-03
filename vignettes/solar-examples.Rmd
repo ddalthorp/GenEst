@@ -1,5 +1,5 @@
 ---
-title: "GenEst - Tutorial with Solar Example (including Carcass Size)"
+title: "GenEst - Tutorial with Solar Example"
 author: "J Mintz, D Dalthorp, J Simonis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -39,23 +39,28 @@ The general steps in the analysis are:
 3. Estimate mortality
 4. Specify the type of summary desired (for example, by season and species)
 
-There are five files in total which make up the example dataset, located in `\GenEst\inst\extdata\solar_PV`. For convenience, these files have been made
-available in R as a list, 
+There are five files in total which make up the example dataset. For
+convenience, these files can be accessed in R as a list:
 
 ```{r}
+library(GenEst)
 data(solar_PV)
 names(solar_PV)
 ```
+Alternatively, the files may be downloaded as .csv files from
+`https://code.usgs.gov/ecosystems/GenEst/-/releases` in the "For more info"
+section.
 
 ### Part 1: Searcher Efficiency Modeling
 
 Searcher efficiency (SE) is modeled as a function of the number of times a 
 carcass has been missed in previous searches and any number of covariates. 
-The probability of finding a carcass that is present at the time of search is p 
+The probability of finding a carcass that is present at the time of search is `p`
 on the first search after carcass arrival and is assumed to decrease by a factor
-of k each time the carcass is missed in searches.  (For further background on 
+of `k` each time the carcass is missed in searches.  (For further background on
 field trials, and information about how to format the results for use with 
-GenEst, see the User Guide).
+GenEst, see the User Guide, which is available at the `code.usgs.gov` page cited
+above).
 
 Results of the SE field trials used in this example are stored in the `data_SE`
 data frame:

@@ -34,6 +34,7 @@
 #'
 plot.splitSummary <- function(x, rate = FALSE, commonScale = FALSE, ...){
   splits <- x
+#  nvar <- ifelse(is.na(attr(splits, "vars")), 0, attr(splits, "vars"))
   nvar <- length(attr(splits, "vars"))
   vartype <- attr(splits, "type")
   if (nvar == 0 || vartype[1] == "CO") rate <- FALSE

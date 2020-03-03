@@ -76,10 +76,10 @@ initialReactiveValues <- function(){
     mods_CP = NULL, mods_CP_og = NULL, CPdls = NULL, outCPdlsfig = NULL,
     outCPdlstab = NULL, sizeclasses_CP = NULL, AICcTab_CP = NULL,
     modOrder_CP = NULL, modNames_CP = NULL, modNames_CPdist = NULL,
-    modNames_CPl = NULL, modNames_CPs = NULL, modSet_CP = NULL,
+    modNames_CP = NULL, modNames_CPs = NULL, modSet_CP = NULL,
     best_CP = NULL, modTab_CP = NULL, figH_CP = 700, figW_CP = 800,
 
-    M = NULL, Msplit = NULL, unitCol = NULL, colNames_xID = NULL, xIDcol = NULL,
+    M = NULL, Msplit = NULL, unitCol = NULL, colNames_xID = NULL, xID = NULL,
     frac = 1, sizeCol_M = NULL, DWPCol = NULL, COdate = NULL,
     SEmodToUse = NULL, CPmodToUse = NULL,
     split_CO = NULL, split_SS = NULL, nsplit_CO = 0, nsplit_SS = 0,
@@ -88,7 +88,7 @@ initialReactiveValues <- function(){
     SS = NULL, avgSI = NULL, SStemp = NULL, gSearchInterval = NULL,
     gSearchMax = NULL, sizeclasses_g = NULL, nsizeclasses_g = NULL,
     gGeneric = NULL, SEmodToUse_g = NULL, CPmodToUse_g = NULL,
-    figH_g = 400, figW_g = 800,
+    figH_g = 700, figW_g = 800,
 
     kCheck = NA, kCheck_g = NA, csvformat = ""
   )
@@ -135,7 +135,7 @@ reVal <- function(rv, toReVal){
     rv$figW_M <- 800
   }
   if("figH_M" %in% toReVal){
-    rv$figH_g <- 400
+    rv$figH_g <- 700
   }
   if("figW_M" %in% toReVal){
     rv$figW_g <- 800

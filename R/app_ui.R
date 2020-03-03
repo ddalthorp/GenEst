@@ -275,21 +275,14 @@ downloadsPanel<- function(){
         dataDownloadWidget("PV"),
         dataDownloadWidget("trough"),
         dataDownloadWidget("mock"),
-             br(), br(),
-          h5("NOTE: If you are having trouble downloading the example data sets..."),
-          br(),
-          h5("Downloading the zip files in Windows relies on a zip program being
-        in the Windows path statement. If no such program is present, the download
-        will not be successful. However, the examples data sets can be directly
-        loaded into the app by clicking \"Load Data\" and then viewed under the
-        \"Data Input\" tab and analyzed under the \"Analyses\" tab. Templates for
-        formatting the data are also included in the appendices in the User Guide.
-        If you need the .csv's for some other purpose, you can download them via
-        the command line in R. For example, enter
-        write.csv(\"mock$SE\", file = \"NameOfFileToCreate.csv\", row.names = F, as.is = T)
-        to download the SE file for the 'mock' data set. For more information
-        about downloadable example data files, enter ?GenEst from the R command
-        line.")
+        br(), br(),
+        h5("NOTE: .csv versions of the data can be downloaded from the GenEst
+          page at ",
+          a("code.usgs.gov",
+            href = "https://code.usgs.gov/ecosystems/GenEst/-/releases",
+            target = "_blank"
+          )
+        )
       )
     )
   )

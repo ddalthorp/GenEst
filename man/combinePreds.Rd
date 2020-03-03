@@ -7,14 +7,21 @@
 combinePreds(preds, data)
 }
 \arguments{
-\item{preds}{Names of predictor variables to include.}
+\item{preds}{Vector of character strings with the names of predictor
+variables included in the model.}
 
-\item{data}{Searcher efficiency or carcass persistence data.}
+\item{data}{Searcher efficiency or carcass persistence data frame with
+columns for each predictor and rows corresponding to carcasses in the field
+trials.}
 }
 \value{
-Predictor combination table.
+Data frame with columns for each predictor in \code{preds} and rows
+ for each factor level combination among the predictors. In addition there is
+ a column with \code{CellNames}, which are the combinations of predictor
+ levels separated by periods ( . ).
 }
 \description{
-Create the predictor combination table for a searcher
- efficiency or carcass persistence analysis.
+Create a table of combinations of factor levels for the
+ the predictors in a searcher efficiency or carcass persistence analysis.
+ This is a utility function called by \code{pkm0} and \code{cpm0}.
 }

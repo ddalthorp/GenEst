@@ -48,6 +48,8 @@ GenEstServer <- function(input, output, session){
   msgs <- msgList()
   options(htmlwidgets.TOJSON_ARGS = list(na = 'string'))
   options(DT.options = list(pageLength = 25))
+  options(DT.fillContainer = FALSE)
+  options(DT.autoHideNavigation = FALSE)
   options(stringsAsFactors = FALSE)
   observeEvent(input$clear_all,  eval(reaction("clear_all")))
   observeEvent(input$file_SE, eval(reaction("file_SE")))

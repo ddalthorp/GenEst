@@ -1,5 +1,76 @@
 Revision log
-2020.020.5
+2020.03.03
+v1.4.1
+
+* For certain combinations of predictors, estgGeneric was returning two copies 
+of estimates for some cells and none for others. The error has been corrected.
+
+* A bug in `shiny` was preventing tables and figures from rendering in the GUI
+in MS Edge and MS Internet Explorer whenever GenEst was started for the first
+time in a new Windows session. GUI users would not be able to see uploaded data
+tables until they closed and reopened GenEst. An update to `shiny` dependency
+`httpuv` on 29 Aug 2019 fixes the bug. GenEst now requires `shiny` version 1.4.0
+or greater.
+
+* Some Windows users were having difficulty downloading the .csv versions of the 
+example data files. The solution appears to be beyond the scope of the software,
+requiring users to adjust their Windows settings by hand, and possibly requiring
+installation of new software. The csv versions of the example data sets have now
+been removed from the app and stored on the GenEst websites instead:
+https://www.usgs.gov/software/genest-a-generalized-estimator-mortality
+https://code.usgs.gov/ecosystems/GenEst/-/releases
+
+* If covariates that were not included in CO were used in model_CP or model_SE, 
+GenEst would fail to show a meaningful error message on "Estimate M" and would 
+give a gray screen of death on "Estimate" under the "Detection Probability" tab.
+The error messaging has been improved, and estimating generic detection 
+probability under that scenario has been corrected. 
+
+* An error-check in the routine to estimate generic detection probability was 
+disallowing a case where a covariate used in the CP (or SE) model was not
+included in the SE (or CP) data. That case (rightly) is no longer tagged as an
+error.
+
+* Code in calcg has been streamlined and simplified. A minor error in the 
+previous code (version <= 1.4.0.2) that resulted in g values that were slightly 
+too small under certain conditions has been corrected. The change will have no 
+impact whatsoever on SE and CP modeling or on estimation of M (i.e., any 
+funtions outside the "Detection Probability" tab in the GUI). The affected 
+functions are calcg and functions that call calcg (estgGeneric, 
+estgGenericSize). There  will no effect when nsearch = 1 (not including t = 0), 
+negligible effect when nsearch > 3, slight effect when nsearch = 3 
+(g_new/g_old - 1 < less than 10% and typically well below 10%), and a possibly
+substantial effect when nsearch = 2 (not including t = 0, so 3 searches in all).
+In all cases, g_new >= g_old. 
+
+* Figures for generic g estimates have been upgraded.
+
+* Font size in several figures in the GUI has been increased to improve
+legibility.
+
+* Certain legitimate mortality splits were generating an error: "Second split 
+too fine for plotting. Consider transposing." The error has been corrected.
+
+* estg (and by implication, estM) and defineUnitCol can now accept prepSS 
+objects for data_SS. This allows for slightly streamlined estimation and faster 
+run times in certain custom command-line analyses that involve simulation. The 
+traditional format for data_SS files may still be used. The changes have no 
+impact on GUI usage or performance.
+
+* Function calcg no longer requires arrays of CP and SE parameters to have 
+column names. This slightly simplifies the command-line implementation of 
+certain custom analyses and has no impact on the GUI. 
+
+* Function calcg now accepts single parameter sets rather than requiring arrays
+of multiple parameter sets. 
+
+* The estg function with arg model_DWP = NULL was failing to run. This could 
+potentially cause inconvenience to a command-line user who would have to create
+a data structure by hand in order to calculate estimates that assumed DWP = 1.
+That inconvenience has been fixed, and model_DWP = NULL will run with the 
+assumption that DWP = 1 for all units.
+
+2020.02.05
 v1.4.0.2
 
 Added "..." to the arg list for pkm to meet new CRAN requirements. This change

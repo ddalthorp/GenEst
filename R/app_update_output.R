@@ -160,24 +160,24 @@ update_output <- function(eventName, rv, output, input){
     output <- reNULL(output, toNULL)
     output$kNeed <- setkNeed(rv)
 
-    output$data_SE <- DT::renderDataTable(datatable(rv$data_SE,
-      caption = paste0("File: ", rv$filename_SE)), server = FALSE)
+    output$data_SE <- DT::renderDataTable({datatable(rv$data_SE,
+      caption = paste0("File: ", rv$filename_SE))}, server = FALSE)
     output$filename_SE <- renderText(paste0("File: ", rv$filename_SE))
 
-    output$data_CP <- DT::renderDataTable(datatable(rv$data_CP,
-      caption = paste0("File: ", rv$filename_CP)), server = FALSE)
+    output$data_CP <- DT::renderDataTable({datatable(rv$data_CP,
+      caption = paste0("File: ", rv$filename_CP))}, server = FALSE)
     output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
 
-    output$data_SS <- DT::renderDataTable(datatable(rv$data_SS,
-      caption = paste0("File: ", rv$filename_SS)), server = FALSE)
+    output$data_SS <- DT::renderDataTable({datatable(rv$data_SS,
+      caption = paste0("File: ", rv$filename_SS))}, server = FALSE)
     output$filename_SS <- renderText(paste0("File: ", rv$filename_SS))
 
-    output$data_DWP <- DT::renderDataTable(datatable(rv$data_DWP,
-      caption = paste0("File: ", rv$filename_DWP)), server = FALSE)
+    output$data_DWP <- DT::renderDataTable({datatable(rv$data_DWP,
+      caption = paste0("File: ", rv$filename_DWP))}, server = FALSE)
     output$filename_DWP <- renderText(paste0("File: ", rv$filename_DWP))
 
-    output$data_CO <- DT::renderDataTable(datatable(rv$data_CO,
-      caption = paste0("File: ", rv$filename_CO)), server = FALSE)
+    output$data_CO <- DT::renderDataTable({datatable(rv$data_CO,
+      caption = paste0("File: ", rv$filename_CO))}, server = FALSE)
     output$filename_CO <- renderText(paste0("File: ", rv$filename_CO))
 
     dontSuspend <- c("SEModDone", "sizeclasses_SE", "text_SE_est",
@@ -461,7 +461,8 @@ update_output <- function(eventName, rv, output, input){
                           error = function(x){plot(1,1)},
                           warning = function(x){plot(1,1)}
                         )
-                      }, height = rv$figH_g, width = rv$figW_g)
+                      }, height = rv$figH_g, width = rv$figW_g,
+                      pointsize = .pointsize, res = .res)
       output$gModDone <- renderText("OK")
       if (length(rv$sizeclasses_SE) == 1){
         output$sizeclass_gyn <- renderText("NO")
@@ -498,7 +499,8 @@ update_output <- function(eventName, rv, output, input){
                           error = function(x){plot(1,1)},
                           warning = function(x){plot(1,1)}
                         )
-                      }, height = rv$figH_g, width = rv$figW_g)
+                      }, height = rv$figH_g, width = rv$figW_g,
+                      pointsize = .pointsize, res = .res)
       output$gModDone <- renderText("OK")
       outputOptions(output, "gModDone", suspendWhenHidden = FALSE)
 
@@ -523,7 +525,8 @@ update_output <- function(eventName, rv, output, input){
     if (!is.null(rv$Msplit)){
       output$MModDone <- renderText("OK")
       output$fig_M <- renderPlot({
-        plot(rv$Msplit, CL = rv$CL,)}, height = rv$figH_M, width = rv$figW_M)
+        plot(rv$Msplit, CL = rv$CL,)}, height = rv$figH_M, width = rv$figW_M,
+        pointsize = .pointsize, res = .res)
       summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
       output$table_M <- renderDataTable(datatable(summaryTab))
       #output$dlMtab <- downloadTable("M_table.csv", summaryTab, rv$csvformat)
@@ -545,15 +548,17 @@ update_output <- function(eventName, rv, output, input){
                         tryCatch(plot(rv$M, CL = rv$CL),
                           error = function(x){plotNA()}
                         )
-                      }, height = rv$figH_M, width = rv$figW_M)
+                      }, height = rv$figH_M, width = rv$figW_M,
+                      pointsize = .pointsize, res = .res)
       output$dlMfig <- downloadMFig(rv, split = FALSE)
 
     } else {
       output$fig_M <- renderPlot({
-        tryCatch(plot(summary(rv$Msplit), CL = rv$CL, commonScale = input$cscale == "Yes"),
+        tryCatch(plot(rv$Msplit, CL = rv$CL, commonScale = input$cscale == "Yes"),
           error = function(x){plotNA("split")}
         )
-      }, height = rv$figH_M, width = rv$figW_M)
+      }, height = rv$figH_M, width = rv$figW_M,
+      pointsize = .pointsize, res = .res)
       tmp <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
       summaryTab <- data.frame(tmp, stringsAsFactors = FALSE)
       names(summaryTab) <- colnames(tmp)
@@ -576,7 +581,8 @@ update_output <- function(eventName, rv, output, input){
     commonScale <- input$cscale == "Yes"
     output$fig_M <- renderPlot({
       plot(summary(rv$Msplit), CL = rv$CL, commonScale = commonScale)},
-        height = rv$figH_M, width = rv$figW_M)
+        height = rv$figH_M, width = rv$figW_M,
+        pointsize = .pointsize, res = .res)
   }
   if (eventName == "split_M_clear"){
     if (!is.null(rv$Msplit)){
@@ -584,7 +590,8 @@ update_output <- function(eventName, rv, output, input){
       outputOptions(output, "MModDone", suspendWhenHidden = FALSE)
 
       output$fig_M <- renderPlot({plot(rv$Msplit, CL = rv$CL)},
-                        height = rv$figH_M, width = rv$figW_M
+                        height = rv$figH_M, width = rv$figW_M,
+                        pointsize = .pointsize, res = .res
                       )
       summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
       output$table_M <- renderDataTable(datatable(summaryTab))
@@ -606,7 +613,8 @@ update_output <- function(eventName, rv, output, input){
           plot(summary(rv$Msplit), CL = rv$CL, commonScale = input$cscale == "Yes"),
           error = function(x){plotNA("split")}
         )
-      }, height = rv$figH_M, width = rv$figW_M)
+      },
+      height = rv$figH_M, width = rv$figW_M, pointsize = .pointsize, res = .res)
       output$dlMfig <- downloadMFig(rv, TRUE)
     }
   }

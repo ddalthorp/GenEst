@@ -1,7 +1,7 @@
 Package: GenEst
 Title: Generalized Mortality Estimator
-Version: 1.4.0.2
-Date: 2020-02-05
+Version: 1.4.1
+Date: 2020-03-03
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
@@ -24,11 +24,13 @@ Imports:
     gtools,
     hellno,
     htmltools,
-    lubridate,	
+    htmlwidgets (>= 1.5),
+    lubridate,
+    MASS,	
     matrixStats,
     mvtnorm,
     Rcpp,
-    shiny,
+    shiny (>= 1.4.0),
     shinyjs,
     sticky,
     survival

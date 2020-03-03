@@ -1,13 +1,20 @@
 #' @title Combine predictors
 #'
-#' @description Create the predictor combination table for a searcher
-#'  efficiency or carcass persistence analysis.
+#' @description Create a table of combinations of factor levels for the
+#'  the predictors in a searcher efficiency or carcass persistence analysis.
+#'  This is a utility function called by \code{pkm0} and \code{cpm0}.
 #'
-#' @param preds Names of predictor variables to include.
+#' @param preds Vector of character strings with the names of predictor
+#'  variables included in the model.
 #'
-#' @param data Searcher efficiency or carcass persistence data.
+#' @param data Searcher efficiency or carcass persistence data frame with
+#'  columns for each predictor and rows corresponding to carcasses in the field
+#'  trials.
 #'
-#' @return Predictor combination table.
+#' @return Data frame with columns for each predictor in \code{preds} and rows
+#'  for each factor level combination among the predictors. In addition there is
+#'  a column with \code{CellNames}, which are the combinations of predictor
+#'  levels separated by periods ( . ).
 #'
 #' @export
 #'
@@ -18,70 +25,59 @@ combinePreds <- function(preds, data){
   npred <- length(preds)
   if (npred == 0){
     return(data.frame(group = "all", CellNames = "all"))
-  }else{
+  } else {
     if(any(is.na(match(preds, names(data))))) {
         stop("At least one predictor missing from data.")
     }
-    predNames <- preds
     predLevels <- list()
-    npredLevels <- list()
-    for(predi in 1:npred){
-      predLevels[[predi]] <- levels(as.factor(data[[predNames[predi]]]))
-      npredLevels[[predi]] <- length(predLevels[[predi]])
-    }
-    reps <- cumprod(npredLevels)[npred:1]
-    npredLevels_1 <- npredLevels[[1]]
-    predLevels_1 <- predLevels[[1]]
-    pred_1 <- gl(npredLevels_1, 1, length = reps[1], labels = predLevels_1)
-    output <- data.frame(pred_1)
-    if (npred > 1){
-      for (predi in 2:npred){
-        npredLevels_i <- npredLevels[[predi]]
-        predLevels_i <- predLevels[[predi]]
-        pred_i <- gl(npredLevels_i, reps[predi], length = reps[1],
-                    labels = predLevels_i
-                  )
-        output[[predi]] <- pred_i
-      }
-    }
+    for (predi in preds) predLevels[[predi]] <- levels(as.factor(data[[predi]]))
+    output <- expand.grid(predLevels, stringsAsFactors = FALSE)
   }
-  names(output) <- predNames
+  names(output) <- preds
   output$CellNames <- apply(output, 1, paste0, collapse = ".")
-  # convert factors to characters
-  i <- sapply(output, is.factor)
-  output[i] <- lapply(output[i], as.character)
   return(output)
 }
 
 #' @title Combine predictors across models
 #'
-#' @description Create the factor combination table for a set of searcher
-#'  efficiency and carcass persistence analyses.
+#' @description Create a table of factor combinations of predictors in given
+#'  searcher efficiency and carcass persistence models. This is a utility
+#'  function called by estgGeneric and governs the cells for which detection
+#'  probabilities are calculated.
 #'
-#' @param data_CP Carcass persistence data.
+#' @param preds_CP Character vector with names of carcass persistence predictors.
 #'
-#' @param data_SE Searcher efficiency data.
+#' @param preds_SE Character vector with names of searcher efficiency predictors.
 #'
-#' @param preds_CP Carcass persistence predictor variables.
+#' @param data_CP data frame with columns for each predictor and rows
+#'  corresponding to carcasses in the field trials.
 #'
-#' @param preds_SE Searcher efficiency predictor variables.
+#' @param data_SE data frame with columns for each predictor and rows
+#'  corresponding to carcasses in the field trials.
 #'
-#' @return Factor combination table.
+#' @return Data frame with columns for each predictor in \code{preds} and rows
+#'  for each factor level combination among the predictors. In addition there
+#'  are column with \code{CellNames}, \code{CellNames_CP}, and
+#'  \code{CellNames_SE}, which are the combinations of predictor levels for all
+#'  predictors, CP predictors, and SE predictors (respectively), separated by
+#'  periods ( . ).
 #'
 #' @export
 #'
 combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
-  ind <- sapply(data_CP, is.factor)
-  data_CP[ind] <- lapply(data_CP[ind], as.character)
-  ind <- sapply(data_SE, is.factor)
-  data_SE[ind] <- lapply(data_SE[ind], as.character)
-
+  if (length(data_CP) > 0){
+    ind <- sapply(data_CP, is.factor)
+    data_CP[ind] <- lapply(data_CP[ind], as.character)
+  }
+  if (length(data_SE) > 0){
+    ind <- sapply(data_SE, is.factor)
+    data_SE[ind] <- lapply(data_SE[ind], as.character)
+  }
   preds <- unique(c(preds_SE, preds_CP))
   npred <- length(preds)
   if (npred == 0){
     preds <- data.frame(group = "all", CellNames = "all",
-               CellNames_SE = "all", CellNames_CP = "all"
-             )
+      CellNames_SE = "all", CellNames_CP = "all")
     return(preds)
   }
   if(any(is.na(match(preds_SE, names(data_SE))))) {
@@ -91,58 +87,31 @@ combinePredsAcrossModels <- function(preds_CP, preds_SE, data_CP, data_SE){
     stop("At least one Carcass Persistence predictor missing from data.")
   }
 
-  predNames <- preds
   predLevels <- list()
-  npredLevels <- list()
-  for(predi in 1:npred){
-    predLevels_SE <- levels(as.factor(data_SE[[predNames[predi]]]))
-    predLevels_CP <- levels(as.factor(data_CP[[predNames[predi]]]))
-    npredLevels_SE <- length(predLevels_SE)
-    npredLevels_CP <- length(predLevels_CP)
-    if (npredLevels_SE > 0 & npredLevels_CP > 0){
+  for(predi in preds){
+    predLevels_SE <- levels(as.factor(data_SE[[predi]]))
+    predLevels_CP <- levels(as.factor(data_CP[[predi]]))
+     if (length(predLevels_SE) > 0 & length(predLevels_CP) > 0){
       if (!(all(predLevels_SE %in% predLevels_CP) &
             all(predLevels_CP %in% predLevels_SE))){
         stop("Identical factor has different levels in SE and CP data.")
       }
     }
-
     predLevels[[predi]] <- unique(c(predLevels_SE, predLevels_CP))
-    npredLevels[[predi]] <- length(predLevels[[predi]])
   }
-  reps <- cumprod(npredLevels)[npred:1]
-  npredLevels_1 <- npredLevels[[1]]
-  predLevels_1 <- predLevels[[1]]
-  pred_1 <- gl(npredLevels_1, 1, length = reps[1], labels = predLevels_1)
-  output <- data.frame(pred_1)
-  if (npred > 1){
-    for (predi in 2:npred){
-      npredLevels_i <- npredLevels[[predi]]
-      predLevels_i <- predLevels[[predi]]
-      pred_i <- gl(npredLevels_i, reps[predi], length = reps[1],
-                  labels = predLevels_i
-                )
-      output[ , predi] <- pred_i
-    }
-  }
-  names(output) <- predNames
-  CellNames <- apply(output, 1, paste0, collapse = ".")
+  output <- expand.grid(predLevels, stringsAsFactors = FALSE)
+  names(output) <- preds
+  output$CellNames <- apply(output, 1, paste0, collapse = ".")
   output_SE <- data.frame(output[ , preds_SE])
   CellNames_SE <- apply(output_SE, 1, paste0, collapse = ".")
   output_CP <- data.frame(output[ , preds_CP])
   CellNames_CP <- apply(output_CP, 1, paste0, collapse = ".")
-  output$CellNames <- CellNames
-  if (all(CellNames_SE == "")){
-    CellNames_SE <- "all"
-  }
-  if (all(CellNames_CP == "")){
-    CellNames_CP <- "all"
-  }
+  if (all(CellNames_SE == "")) CellNames_SE <- "all"
+  if (all(CellNames_CP == "")) CellNames_CP <- "all"
   output$CellNames_SE <- CellNames_SE
   output$CellNames_CP <- CellNames_CP
   return(output)
 }
-
-
 
 #' @title Return the model with the greatest log-likelihood
 #'

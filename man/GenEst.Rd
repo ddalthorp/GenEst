@@ -57,7 +57,7 @@ This package is designed to analyze searcher efficiency,
    \code{\link[=cpm]{cpmSize}}, and \code{\link[=cpm]{cpmSetSize}} objects}
   \item{\code{\link{desc}}}{Calculate descriptive statistics for a fitted
     CP model}
-  \item{\code{\link{estgGeneric}}, \code{\link{estgGenericSize}}}{estimate
+  \item{\code{\link{estgGeneric}}}{estimate
    detection probability (g) for given searcher efficiency and carcass
    persistence model}
   \item{\code{runGenEst()}}{start the GUI}
@@ -80,6 +80,7 @@ This package is designed to analyze searcher efficiency,
 
 \section{Potentially useful editing functions}{
 
+\code{\link{estgGenericSize}}\cr
 \code{\link{prepSS}}\cr
 \code{\link{averageSS}}\cr
 \code{\link{tidyModelSetCP}}\cr

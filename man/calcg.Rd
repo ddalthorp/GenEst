@@ -2,18 +2,24 @@
 % Please edit documentation in R/detection_probability_functions.R
 \name{calcg}
 \alias{calcg}
-\title{Calculate cell-level generic detection probability}
+\title{Calculate detection probability for given SE and CP parameters and
+ search schedule.}
 \usage{
 calcg(days, param_SE, param_CP, dist)
 }
 \arguments{
 \item{days}{Search schedule (vector of days searched)}
 
-\item{param_SE}{numeric array of searcher efficiency parameters (p and k)}
+\item{param_SE}{numeric array of searcher efficiency parameters (p and k);
+must have the name number of rows as the \code{param_CP}.}
 
-\item{param_CP}{numeric array of carcass persistence parameters (a and b)}
+\item{param_CP}{numeric array of carcass persistence parameters (a and b)
+must have the name number of rows as the \code{param_SE}.}
 
 \item{dist}{distribution for the CP model}
+}
+\value{
+a vector of detection probabilities for each
 }
 \description{
 Calculate detection probability (g) given SE and CP parameters
@@ -22,7 +28,7 @@ Calculate detection probability (g) given SE and CP parameters
 The g given by \code{calcg} is a generic aggregate detection
  probability and represents the probability of detecting a carcass that
  arrives at a (uniform) random time during the time spanned by the search
- schedule for the the given SE and CP parameters. This differs the GenEst
+ schedule for the the given SE and CP parameters. This differs from the GenEst
  estimation of g when the purpose is to estimate total mortality (M), in
  which case the detection probability varies with carcass arrival interval
  and is difficult to summarize statistically. \code{calcg} provides a 

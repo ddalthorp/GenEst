@@ -2,10 +2,11 @@
 #' @importFrom corpus print.corpus_frame
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics abline axis box hist legend lines mtext par plot
-#'   plot.new points polygon rect text
+#'   plot.new points polygon rect text title
 #' @importFrom grDevices dev.off devAskNewPage png rgb colors
 #' @importFrom htmltools a br code div em h3 h4 HTML img p tags
 #' @importFrom lubridate is.Date
+#' @importFrom MASS fitdistr
 #' @importFrom Rcpp sourceCpp
 #' @importFrom shiny actionButton checkboxInput checkboxGroupInput column 
 #'   conditionalPanel downloadButton downloadHandler fileInput fluidRow 
@@ -19,7 +20,7 @@
 #' @importFrom stats .getXlevels approxfun as.formula delete.response density
 #'   formula median model.matrix na.omit optim pexp pgamma plnorm pnorm pweibull
 #'   qnorm quantile reformulate rnorm runif terms update.formula weighted.mean
-#'   rbinom
+#'   rbinom dnorm
 #' @importFrom survival strata
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
 #'  write.table zip
@@ -76,7 +77,7 @@
 #'    \code{\link[=cpm]{cpmSize}}, and \code{\link[=cpm]{cpmSetSize}} objects}
 #'   \item{\code{\link{desc}}}{Calculate descriptive statistics for a fitted
 #'     CP model}
-#'   \item{\code{\link{estgGeneric}}, \code{\link{estgGenericSize}}}{estimate
+#'   \item{\code{\link{estgGeneric}}}{estimate
 #'    detection probability (g) for given searcher efficiency and carcass
 #'    persistence model}
 #'   \item{\code{runGenEst()}}{start the GUI}
@@ -94,6 +95,7 @@
 #' \code{\link{simpleMplot}}\cr
 #'
 #' @section Potentially useful editing functions:
+#' \code{\link{estgGenericSize}}\cr
 #' \code{\link{prepSS}}\cr
 #' \code{\link{averageSS}}\cr
 #' \code{\link{tidyModelSetCP}}\cr

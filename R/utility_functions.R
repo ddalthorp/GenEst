@@ -184,8 +184,10 @@ print.corpus_frame <- function(x, ...){
 #' @export
 
 defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
-  ind <- sapply(data_SS, is.factor)
-  data_SS[ind] <- lapply(data_SS[ind], as.character)
+  if (!"prepSS" %in% class(data_SS)){
+    ind <- sapply(data_SS, is.factor)
+    data_SS[ind] <- lapply(data_SS[ind], as.character)
+  }
   ind <- sapply(data_CO, is.factor)
   data_CO[ind] <- lapply(data_CO[ind], as.character)
   ind <- sapply(data_DWP, is.factor)
@@ -253,6 +255,11 @@ defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
         "represented in data_CO but not in data_DWP. Cannot estimate M.")
     }
   }
+  if ("prepSS" %in% class(data_SS)){
+    SSuname <- data_SS$unit
+  } else {
+    SSuname <- names(data_SS)
+  }
   if (length(unitCol) == 1){
     ind <- !(data_CO[ , unitCol] %in% names(data_SS))
     if (any(ind))
@@ -263,7 +270,7 @@ defineUnitCol <- function(data_CO, data_SS = NULL, data_DWP = NULL){
   if (length(unitCol) > 1){
     bad <- NULL
     for (ni in 1:length(unitCol)){
-      if (any(!(data_CO[ , unitCol[ni]] %in% names(data_SS)))){
+      if (any(!(data_CO[ , unitCol[ni]] %in% SSuname))){
         bad <- c(bad, ni)
         next
       }

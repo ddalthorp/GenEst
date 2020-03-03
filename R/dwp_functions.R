@@ -54,7 +54,7 @@
 #'
 dwpm <- function(data_DWP, type = "data", unitCol = NULL, dwpCols = NULL){
   if (is.null(data_DWP)){
-    message("data_DWP missing. Returning DWP = 1.")
+    message("data_DWP missing. Assuming DWP = 1.")
     out <- 1
     attr(out, "type") <- "data"
     class(out) <- "dwpm"

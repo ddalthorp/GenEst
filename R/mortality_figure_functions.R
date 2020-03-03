@@ -55,7 +55,7 @@ simpleMplot <- function(M, ..., Xmin = 0, CL = 0.90){
   } else if (is.matrix(M)){
     Mtot <- colSums(M)
   } else {
-    stop("M is not a proper formatted mortality estimate.")
+    stop("M is not a properly formatted mortality estimate.")
   }
   Mtot[Mtot < Xmin] <- Xmin
   minMtot <- min(Mtot)
@@ -119,7 +119,7 @@ simpleMplot <- function(M, ..., Xmin = 0, CL = 0.90){
 
   par(mar = c(4, 5, 2, 2), fig = c(0, 1, 0, 1))
   plot(rectL, rectY, type = "n", bty = "o", xlab = "", ylab = "", las = 1,
-    xlim = c(rectL[1], rectR[nrect]))
+    xlim = c(rectL[1], rectR[nrect]), cex.axis = 1.1)
   points(xnew, ynew, type = "l", lwd = 2)
   polygon(xx, yy, border = NA, col = rgb(0.9, 0.9, 0.9))
   points(xnew, ynew, type = "l", lwd = 2)
@@ -131,6 +131,10 @@ simpleMplot <- function(M, ..., Xmin = 0, CL = 0.90){
   mtext(side = 1, "Mortality", line = 2.75, cex = 1.5)
   mtext(side = 2, "Probability", line = 3.5, cex = 1.5)
 
-  text(minMtot, max(rectY) * 1.075, Mtext, adj = 0, xpd = T, cex = 0.85)
-
+#  text(minMtot, max(rectY) * 1.075, Mtext, adj = 0, xpd = T, cex = 1.2)
+  mtext(side = 3, line = -1, adj = 0.97, cex = 0.9,
+    paste0("Median: ", sprintf("%.2f", Mmed)))
+  mtext(side = 3, line = -2, adj = 0.97, cex = 0.9,
+    paste0(CL * 100, "% CI: [", sprintf("%.1f", MCLlow), ", ",
+    sprintf("%.1f", MCLhi), "]"))
 }

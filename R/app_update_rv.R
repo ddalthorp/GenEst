@@ -764,7 +764,6 @@ update_rv <- function(eventName, rv, input){
     rv <- reNULL(rv, toNULL)
     toReVal <- c("figH_g", "figW_g")
     rv <- reVal(rv, toReVal)
-
     if (length(rv$obsCols_SE) == 1 & any(is.na(rv$kFixed))){
       rv$kCheck_g <- rep(NA, rv$nsizeclasses_k)
       names(rv$kCheck_g) <- rv$sizeclasses_k
@@ -776,8 +775,7 @@ update_rv <- function(eventName, rv, input){
         return(rv)  
       }
     }
-
-    rv$sizeclasses_g <- rv$sizeclasses
+     rv$sizeclasses_g <- rv$sizeclasses
     rv$nsizeclasses_g <- length(rv$sizeclasses_g)
     if (length(rv$nsizeclasses_g) == 1){
       if (is.null(rv$sizeclasses_g)){
@@ -793,6 +791,7 @@ update_rv <- function(eventName, rv, input){
           rv$sizeclasses[sci], "...error."), type = "error")
         return(rv)
       }
+
       if (is.null(input[[paste0("modelChoices_CP", sci)]])){
         showNotification(paste0("No CP model selected for ",
           rv$sizeclasses[sci], "...error."), type = "error")
@@ -803,7 +802,6 @@ update_rv <- function(eventName, rv, input){
 
       rv$SEmodToUse_g <- gsub("~ constant", "~ 1", rv$SEmodToUse_g)
       rv$CPmodToUse_g <- gsub("~ constant", "~ 1", rv$CPmodToUse_g)
-
       if (!grepl("s ~", rv$CPmodToUse_g)){
         rv$CPmodToUse_g <- paste(rv$CPmodToUse_g, "; NULL", sep = "")
       }
@@ -815,7 +813,6 @@ update_rv <- function(eventName, rv, input){
           type = "error")
           return(rv)
       }
-
       if (rv$SS[["span"]] < 2 * rv$SS[["I"]]){
         days <- c(0, rv$SS[["I"]])
       } else {
@@ -832,7 +829,7 @@ update_rv <- function(eventName, rv, input){
     }
     names(rv$gGeneric) <- rv$sizeclasses_g
     rv$sizeclass_g <- rv$sizeclasses_g[1]
-  }
+   }
 
   if (eventName == "run_g_clear"){
     toNULL <- c("sizeclasses_g", "gGeneric", "SEmodToUse_g")

@@ -538,6 +538,9 @@ summary.splitFull <- function(object, CL = 0.90, ...){
     sumry <- c(quantile(splits$M, probs = probs))
     sumry <- pmax(sumry, splits$X)
     sumry <- c(X = splits$X, sumry)
+    attr(sumry, "vars") <- NA
+    attr(sumry, "type") <- NA
+    attr(sumry, "times") <- 1
   } else if (length(attr(splits, "vars")) == 1){
     if (is.vector(splits$M)){
       splits$M <- matrix(splits$M, nrow = 1)
@@ -582,12 +585,13 @@ summary.splitFull <- function(object, CL = 0.90, ...){
         sumry <- sumry[gtools::mixedsort(names(sumry))]
        }
      }
+     attr(sumry, "CL") <- CL
+     attr(sumry, "vars") <- attr(splits, "vars")
+     attr(sumry, "type") <- attr(splits, "type")
+     attr(sumry, "times") <- attr(splits, "times")
    }
   sumry <- sticky::sticky(sumry)
-  attr(sumry, "CL") <- CL
-  attr(sumry, "vars") <- attr(splits, "vars")
-  attr(sumry, "type") <- attr(splits, "type")
-  attr(sumry, "times") <- attr(splits, "times")
+
   class(sumry) <- "splitSummary"
   return(sumry)
 }

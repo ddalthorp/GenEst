@@ -103,7 +103,6 @@ dataDownloadWidget <- function(set){
   fluidRow(
     column(6, h4(setName)),
     column(2, actionButton(paste0("load_", set), "Load Data")),
-    column(2, downloadButton(paste0("download_", set), "Download .csv"))
   )
 }
 
