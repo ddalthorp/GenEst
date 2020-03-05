@@ -27,7 +27,7 @@ today <- Sys.Date()
 This tutorial provides an introduction to the array of command line tools
 **GenEst** (`r vers`) provides for estimating bird and/or bat mortality and
 detection probabilities and wind power facilities. The approach is to walk
-through analyses of realistic but fictitious data sets representing studies
+through analyses of realistic but simulated data sets representing studies
 of bird and bat mortality at a wind power facilities.
 
 The general steps in the analysis are:

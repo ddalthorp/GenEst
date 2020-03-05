@@ -262,7 +262,7 @@ update_output <- function(eventName, rv, output, input){
       output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
       output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
       output$fig_SE <- renderPlot(
-        plot(rv$modSet_SE, specificModel = rv$best_SE), 
+        plot(rv$modSet_SE, specificModel = rv$best_SE, CL = rv$CL),
           height = rv$figH_SE, width = rv$figW_SE,
           pointsize = .pointsize, res = .res)
 
@@ -313,7 +313,7 @@ update_output <- function(eventName, rv, output, input){
       output$AICcTab_SE <- renderDataTable({rv$AICcTab_SE})
       output$modTab_SE <- renderDataTable({rv$modTabPretty_SE})
       output$fig_SE <- renderPlot(
-        plot(rv$modSet_SE, specificModel = rv$best_SE),
+        plot(rv$modSet_SE, specificModel = rv$best_SE, CL = rv$CL),
         height = rv$figH_SE, width = rv$figW_SE,
         pointsize = .pointsize, res = .res)
 
@@ -332,13 +332,17 @@ update_output <- function(eventName, rv, output, input){
 
   if (eventName == "outSEp" | eventName == "outSEk"){
     if (length(rv$mods_SE) > 0){
-      output$fig_SE <- renderPlot({
-                         tryCatch(
-                           plot(rv$modSet_SE, specificModel = rv$outSEpk),
-                           error = function(x){plotNA()}
-                         )
-                       },
-        height = rv$figH_SE, width = rv$figW_SE, res = .res, pointsize = .pointsize)
+        output$fig_SE <- renderPlot({
+          tryCatch(
+            plot(rv$modSet_SE, specificModel = rv$outSEpk, CL = rv$CL),
+            error = function(x){plotNA()}
+          )
+        },
+        height = rv$figH_SE,
+        width = rv$figW_SE,
+        res = .res,
+        pointsize = .pointsize
+      )
       output$dlSEfig <- downloadSEFig(rv)
       output$dlSEmod <- downloadSEmod(rv, input)
       if (!is.null(rv$modTab_SE)){
@@ -362,9 +366,11 @@ update_output <- function(eventName, rv, output, input){
       output$CPModDone <- renderText("OK")
       output$AICcTab_CP <- renderDataTable({rv$AICcTab_CP})
       output$modTab_CP <- renderDataTable({prettyModTabCP(rv$modTab_CP)})
-      output$fig_CP <- renderPlot(plot(rv$modSet_CP, specificModel = rv$best_CP),
+      output$fig_CP <- renderPlot(
+        plot(rv$modSet_CP, specificModel = rv$best_CP, CL = rv$CL),
         height = rv$figH_CP, width = rv$figW_CP,
-        pointsize = .pointsize, res = .res)
+        pointsize = .pointsize, res = .res
+      )
 
       output$sizeclasses_CP <- renderText(paste(rv$sizeclasses_CP, collapse = " "))
       output$modelMenu_CP <- modelSelectionWidget(rv$mods_CP, "CP")
@@ -408,9 +414,11 @@ update_output <- function(eventName, rv, output, input){
   if (eventName == "outCPclass"){
     if (length(rv$mods_CP) > 0){
       output$modTab_CP <- DT::renderDataTable(datatable(prettyModTabCP(rv$modTab_CP)))
-      output$fig_CP <- renderPlot(plot(rv$modSet_CP, specificModel = rv$best_CP),
+      output$fig_CP <- renderPlot(
+        plot(rv$modSet_CP, specificModel = rv$best_CP, CL = rv$CL),
         height = rv$figH_CP, width = rv$figW_CP,
-        pointsize = .pointsize, res = .res)
+        pointsize = .pointsize, res = .res
+      )
 
       preText <- paste0("Carcass class: ", rv$sizeclass_CP)
       output$sizeclass_CP1 <- classText(rv, "CP")
@@ -430,7 +438,7 @@ update_output <- function(eventName, rv, output, input){
     if (length(rv$mods_CP) > 0){
       output$modTab_CP <- DT::renderDataTable(datatable(prettyModTabCP(rv$modTab_CP)))
       output$fig_CP <- renderPlot(tryCatch(
-        plot(rv$modSet_CP, specificModel = rv$outCPdlsfig),
+        plot(rv$modSet_CP, specificModel = rv$outCPdlsfig, CL = rv$CL),
           error = function(x) plotNA()),
         height = rv$figH_CP, width = rv$figW_CP,
         pointsize = .pointsize, res = .res)
@@ -525,7 +533,7 @@ update_output <- function(eventName, rv, output, input){
     if (!is.null(rv$Msplit)){
       output$MModDone <- renderText("OK")
       output$fig_M <- renderPlot({
-        plot(rv$Msplit, CL = rv$CL,)}, height = rv$figH_M, width = rv$figW_M,
+        plot(rv$Msplit, CL = rv$CL)}, height = rv$figH_M, width = rv$figW_M,
         pointsize = .pointsize, res = .res)
       summaryTab <-  prettySplitTab(summary(rv$Msplit, CL = rv$CL))
       output$table_M <- renderDataTable(datatable(summaryTab))
@@ -580,7 +588,7 @@ update_output <- function(eventName, rv, output, input){
   if (eventName == "cscale"){
     commonScale <- input$cscale == "Yes"
     output$fig_M <- renderPlot({
-      plot(summary(rv$Msplit), CL = rv$CL, commonScale = commonScale)},
+      plot(rv$Msplit, CL = rv$CL, commonScale = commonScale)},
         height = rv$figH_M, width = rv$figW_M,
         pointsize = .pointsize, res = .res)
   }
@@ -610,7 +618,7 @@ update_output <- function(eventName, rv, output, input){
     if (!is.null(rv$Msplit)){
       output$fig_M <- renderPlot({
         tryCatch(
-          plot(summary(rv$Msplit), CL = rv$CL, commonScale = input$cscale == "Yes"),
+          plot(rv$Msplit, CL = rv$CL, commonScale = input$cscale == "Yes"),
           error = function(x){plotNA("split")}
         )
       },
