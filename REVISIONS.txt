@@ -1,8 +1,9 @@
 Revision log
 2020.03.14
 v1.4.2
-
-* The `sticky` package may soon be "archived" at CRAN because the maintainers have not updated it to meet new CRAN requirements. To maintain ready availability of GenEst, the dependency on `sticky` had to be removed. The change
+* The `sticky` package may soon be "archived" at CRAN because the maintainers 
+have not updated it to meet new CRAN requirements. To maintain ready 
+availability of GenEst, the dependency on `sticky` had to be removed. The change
 will have no impact on the GUI usage or results and is highly unlikely to affect
 any command-line analyses.
 
