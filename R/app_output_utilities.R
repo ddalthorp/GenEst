@@ -79,16 +79,8 @@ reNULL <- function(x, toNULL){
 #' @rdname app_output_utilities
 #'
 initialOutput <- function(rv, output){
-  output$download_RP <- downloadData("RP")
-  output$download_RPbat <- downloadData("RPbat")
-  output$download_cleared <- downloadData("cleared")
-  output$download_powerTower <- downloadData("powerTower")
-  output$download_PV <- downloadData("PV")
-  output$download_trough <- downloadData("trough")
-  output$download_mock <- downloadData("mock")
   output$kNeed <- renderText("no")
   outputOptions(output, "kNeed", suspendWhenHidden = FALSE)
-
   return(output)
 }
 #' @rdname app_output_utilities

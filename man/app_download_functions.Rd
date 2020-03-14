@@ -10,7 +10,6 @@
 \alias{downloadMres}
 \alias{downloadMFig}
 \alias{downloadTable}
-\alias{downloadData}
 \title{GenEst app download funtions}
 \usage{
 downloadCPFig(rv)
@@ -28,8 +27,6 @@ downloadMres(rv, input)
 downloadMFig(rv, split = TRUE)
 
 downloadTable(filename, tablename, csvformat)
-
-downloadData(set, csvformat = NULL)
 }
 \arguments{
 \item{rv}{the reactive values list}
@@ -46,8 +43,6 @@ downloadData(set, csvformat = NULL)
 
 \item{csvformat}{format for .csv file: "" or NULL for comma-separated, 2
 for semi-colon separated}
-
-\item{set}{the name of the data set to download}
 }
 \value{
 download handler functions

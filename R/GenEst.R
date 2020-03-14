@@ -23,7 +23,7 @@
 #'   rbinom dnorm
 #' @importFrom survival strata
 #' @importFrom utils combn packageDescription read.csv read.csv2 write.csv
-#'  write.table zip
+#'  write.table
 #' @importFrom hellno data.frame as.data.frame
 #'
 

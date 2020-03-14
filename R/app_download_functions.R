@@ -17,7 +17,6 @@
 #' @param csvformat format for .csv file: "" or NULL for comma-separated, 2
 #'  for semi-colon separated
 #'
-#' @param set the name of the data set to download
 #' @return download handler functions
 #'
 #' @name app_download_functions
@@ -294,32 +293,4 @@ if (Sys.info()['sysname'] == "Windows"){
     fcn <- get(paste0("write.csv", csvformat))
     fcn(x = tablename, file = file, row.names = TRUE)
   })
-}
-
-#' @rdname app_download_functions
-#'
-downloadData <- function(set, csvformat = NULL){
-  fpre <- switch(set, "mock" = "",
-                      "powerTower" = "solar_",
-                      "PV" = "solar_",
-                      "trough" = "solar_",
-                      "cleared" = "wind_",
-                      "RP" = "wind_",
-                      "RPbat" = "wind_")
-  filename <- paste0(fpre, set, ".zip")
-  exob <- get(paste0(fpre, set))
-  pth <- tempdir()
-  writef <- get(paste0("write.csv", csvformat))
-  for (seti in names(exob)){
-    writef(exob[[seti]], file = paste0(pth, "/", seti, "_", set, ".csv"),
-      row.names = FALSE)
-  }
-  downloadHandler(
-    filename = filename,
-    content = function(file)  {
-      tozip <- paste0(pth, "/", names(exob), "_", set, ".csv")
-      utils::zip(zipfile = file, files = tozip, flags = c("-q", "-j"))
-    },
-    contentType = "application/zip"
-  )
 }
