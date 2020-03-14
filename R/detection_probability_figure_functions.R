@@ -153,6 +153,7 @@ plot.gGeneric <- function(x, CL = 0.90, ...){
       lines(rep(xi, 3), y[5:7])
     }
   }
+  par(.par_default)
 }
 
 

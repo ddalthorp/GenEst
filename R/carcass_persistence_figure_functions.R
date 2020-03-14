@@ -155,6 +155,7 @@ plot.cpm <- function(x, col = "black", ...){
     }
     cpmCPCellPlot(model, specificCell, col, axis_y, axis_x)
   }
+  par(.par_default)
 }
 
 #' @title Plot results of a set of CP models
@@ -236,6 +237,7 @@ plot.cpmSet <- function(x, specificModel = NULL, cols = NULL, ...){
     CPFig(modelSet, spi, cells_set, preds_set, cols_CP)
   }
   devAskNewPage(FALSE)
+  par(.par_default)
 }
 # draw a CP figure graph
 # NOTE: This is an internal utility function called by plot.cpmSet

@@ -27,7 +27,9 @@
 #' @export
 #'
 plot.estM <- function(x, ..., CL = 0.90){
+  par.old <- par()
   simpleMplot(x$Mhat, ..., Xmin = x$Xtot, CL = CL)
+  suppressWarnings(par(par.old))
 }
 
 #' @title Plot a total mortality estimation for a simple situation
@@ -116,11 +118,10 @@ simpleMplot <- function(M, ..., Xmin = 0, CL = 0.90){
   Mmedy <- df(Mmed)
   Mmedy <- Mmedy / maxyynew
   Mmedy <- Mmedy * max(rectY)
-
-  par(mar = c(4, 5, 2, 2), fig = c(0, 1, 0, 1))
+  par.old <- par()
+  par(.par_M)
   plot(rectL, rectY, type = "n", bty = "o", xlab = "", ylab = "", las = 1,
     xlim = c(rectL[1], rectR[nrect]), cex.axis = 1.1)
-  points(xnew, ynew, type = "l", lwd = 2)
   polygon(xx, yy, border = NA, col = rgb(0.9, 0.9, 0.9))
   points(xnew, ynew, type = "l", lwd = 2)
   for (recti in 1:nrect){

@@ -25,7 +25,7 @@ Several third-party pacakges are required; all are free and open source and avai
 ```
 
 package_req <- c("cbinom", "corpus", "DT", "gsl", "gtools", "htmltools", "lubridate", "MASS", 
-   "matrixStats", "mvtnorm", "Rcpp", "shiny", "shinyjs", "sticky", "survival", "zip")
+   "matrixStats", "mvtnorm", "Rcpp", "shiny", "shinyjs",  "survival", "zip")
 package_new <- package_req[!(package_req %in% installed.packages()[,"Package"])] 
 if(length(package_new) > 0) install.packages(package_new)
 if (packageVersion("htmltools") < "1.5") install.packages("htmltools")

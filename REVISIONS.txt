@@ -1,4 +1,28 @@
 Revision log
+2020.03.14
+v1.4.2
+
+* The `sticky` package may soon be "archived" at CRAN because the maintainers have not updated it to meet new CRAN requirements. To maintain ready availability of GenEst, the dependency on `sticky` had to be removed. The change
+will have no impact on the GUI usage or results and is highly unlikely to affect
+any command-line analyses.
+
+* The "common scale" option for mortality figures with two splitting covariates
+was not working in v1.4.1. Functionality has been restored.
+
+* Running plot.estM from the command-line immediately after calling certain 
+specialty plotting functions (e.g., plot.pkm) would look not good and in some
+cases would result in "Error in plot.new() : figure margins too large". The 
+problem was that the specialized plotting functions use par() settings for the 
+margins and overall plot that are specially designed for the given function
+and are not compatible with most other plot functions. By R convention, the 
+par() settings are not reset until the plot device has been closed. plot.pkm,
+plot.cpm, plot.splitSummary, plot.pkmSet, plot.cpmSet, and plot.gGeneric have 
+been updated so that after their plotting is done, par() margins and layouts are 
+reset to the R defaults: list(mfrow = c(1, 1), mar = c(5.1, 4.1, 4.1, 2.1), 
+oma = c(0, 0, 0, 0), cex = 1, fig = c(0, 1, 0, 1)). This allows new figures to 
+be drawn immediately to the same graphics device that had earlier housed one 
+of the specialty graphs. The change affects the command-line functions only.
+
 2020.03.03
 v1.4.1
 

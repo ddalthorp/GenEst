@@ -54,7 +54,7 @@ plot.splitSummary <- function(x, rate = FALSE, commonScale = FALSE, ...){
     vnames <- names(splits)
   }
   hnames <- rownames(splits[[1]])
-  par(mar = c(0, 0, 0.5, 0.5), oma = c(6, 5.5, 4, 4))
+  par(.par_splits)
   nlevel_h <- nrow(splits[[1]])
   nlevel_v <- length(splits)
   par(mfrow = c(nlevel_v, 1))
@@ -76,7 +76,7 @@ plot.splitSummary <- function(x, rate = FALSE, commonScale = FALSE, ...){
       if (!commonScale) ylim <- range(splits[[vi]][ , -1])
     }
     if (vi == 1 && !is.null(try(plot.new(), silent = TRUE))){
-      par(mfrow = c(1,1))
+      par(mfrow = c(1, 1))
       return(1) # flags the plot as as an error
     } else {
       par(new = (vi == 1))
@@ -144,6 +144,7 @@ plot.splitSummary <- function(x, rate = FALSE, commonScale = FALSE, ...){
              "% confidence intervals")
            )
   mtext(side = 4, text = vars[2], outer = T, line = 2.5, cex = 1.2)
+  par(.par_default)
   return(NULL)
 }
 
@@ -168,17 +169,20 @@ plot.splitSummary <- function(x, rate = FALSE, commonScale = FALSE, ...){
 #'
 #' @param CL desired confidence level to show in box plots
 #'
+#' @param commonScale Boolean: Should panels share a common y-axis scale?
+#'  Relevant only when there are two splitting variables.
+#'
 #' @param ... to be passed down
 #'
 #' @export
 #'
-plot.splitFull <- function(x, rate = FALSE, CL = 0.90, ...){
+plot.splitFull <- function(x, rate = FALSE, CL = 0.90, commonScale = FALSE,...){
   nvar <- length(attr(x, "vars"))
   if (nvar == 0){
     simpleMplot(x, ..., CL = CL)
-  } else{
+  } else {
     splitSum <- summary(x, CL)
-    if(!is.null(plot(splitSum, rate, CL = CL))){
+    if(!is.null(plot(splitSum, rate, CL = CL, commonScale = commonScale))){
       stop("Second split too fine for plotting. Consider transposing.")
     }
   }

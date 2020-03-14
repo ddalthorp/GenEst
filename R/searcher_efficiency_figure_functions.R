@@ -89,6 +89,7 @@ plot.pkm <- function(x, col = NULL, CL = NULL, ...){
         found = found, available = available,
         cells_set = cells, cols_SE = cols_SE, CL = CL)
   }
+  par(.par_default)
 }
 
 #' @title Plot results of a set of SE models
@@ -238,6 +239,7 @@ plot.pkmSet <- function(x, specificModel = NULL, cols = NULL, CL = NULL, ...){
     }
   }
   devAskNewPage(FALSE)
+  par(.par_default)
 }
 
 
@@ -618,7 +620,6 @@ pkmParamPlot <- function(model, pk = "p", col){
   axis(2, at = seq(0, 1, 0.5), las = 1, cex.axis = 0.75)
   axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.05)
   mtext(side = 2, pk, line = 2.75, cex = 1.1)
-
 }
 
 #' Plot cell-specific decay curve for searcher efficiency
@@ -639,7 +640,6 @@ pkmParamPlot <- function(model, pk = "p", col){
 #'
 pkmSECellPlot <- function(model, specificCell, col, axis_y = TRUE,
                           axis_x = TRUE){
-
   CL <- model$CL
   cellwise <- model$cell_pk
   cellNames <- model$cells[ , "CellNames"]
@@ -692,7 +692,6 @@ pkmSECellPlot <- function(model, specificCell, col, axis_y = TRUE,
   axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axis_y)
 
   text(0.5, 0.95, specificCell, adj = 0, cex = 0.75, font = 2)
-
 }
 
 #' Plot cell-specific decay curve for searcher efficiency for a specific model
@@ -716,7 +715,6 @@ pkmSECellPlot <- function(model, specificCell, col, axis_y = TRUE,
 #'
 pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
                                  cols, axes){
-
   model_spec <- modelSet[[specificModel]]
   model_ref <- refMod(modelSet)
 
@@ -803,7 +801,6 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
   axis(1, at = x_pts, las = 1, cex.axis = 0.75, labels = axes["x"])
   axis(2, at = seq(0, 1, 0.2), las = 1, cex.axis = 0.75, labels = axes["y"])
   text(0.5, 1.1, specificCell, adj = 0, cex = 0.75, font = 2, xpd = TRUE)
-
 }
  #' @title p or k box plots for an SE model set
 #'
@@ -824,7 +821,6 @@ pkmSetSpecSECellPlot <- function(modelSet, specificModel, specificCell,
 #' @export
 #'
 pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
-
   model_spec <- modelSet[[specificModel]]
   model_ref <- refMod(modelSet)
 
@@ -871,7 +867,7 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
   }
   maxy[is.na(maxy)] <- 1
 
-  par(mar = c(4,3,2,1))
+  par(mar = c(4, 3, 2, 1))
   plot(1, type = "n", xlab = "", ylab = "", bty = "L", xaxt = 'n', yaxt = 'n',
     ylim = c(0, maxy), xlim = c(0.5, ncell_set + 0.5)
   )
@@ -922,7 +918,6 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
   axis(2, at = seq(0, 1, 0.5), las = 1, cex.axis = 0.7)
   axis(2, at = seq(0, 1, 0.1), labels = FALSE, tck = -0.015)
   mtext(side = 2, pk, line = 2.2, cex = 1.125)
-
 }
 
 #' @title p and k box plots for an SE model set
@@ -942,7 +937,7 @@ pkmSetSpecParamPlot <- function(modelSet, specificModel, pk = "p", cols){
 #' @export
 #'
 plotSEBoxPlots <- function(modelSet, specificModel, cols){
-  par(mar = c(0,0,0,0))
+  par(mar = c(0, 0, 0, 0))
   par(fig = c(0, 0.45, 0.7, 0.965), new = TRUE)
   pkmSetSpecParamPlot(modelSet, specificModel, "p", cols)
   par(fig = c(0.45, 0.9, 0.7, 0.965), new = TRUE)
@@ -967,10 +962,9 @@ plotSEBoxPlots <- function(modelSet, specificModel, cols){
 #' @export
 #'
 plotSEBoxTemplate <- function(modelSet, specificModel, cols){
-
   model_spec <- modelSet[[specificModel]]
   col_spec <- cols["spec"]
-  par(mar = c(0,0,0,0))
+  par(mar = c(0, 0, 0, 0))
   par(fig = c(0.92, 1, 0.8, 0.95), new = TRUE)
   plot(1,1, type = "n", bty = "n", xaxt = "n", yaxt = "n", xlab = "",
     ylab = "", ylim = c(0, 1), xlim = c(0, 1)
@@ -992,7 +986,6 @@ plotSEBoxTemplate <- function(modelSet, specificModel, cols){
   text_CL <- paste(num_CL, "%", sep = "")
   text_ex <- c("min", text_CL[1], "25%", "50%", "75%", text_CL[2], "max")
   text(x_s + 0.2, y_s, text_ex, cex = 0.6, adj = 0)
-
 }
 
 #' @title Plot the cellwise results of a single model in a set of SE models
@@ -1012,7 +1005,6 @@ plotSEBoxTemplate <- function(modelSet, specificModel, cols){
 #' @export
 #'
 plotSECells <- function(modelSet, specificModel, cols){
-
   model_ref <- refMod(modelSet)
 
   par(fig = c(0, 1, 0, 0.65), new = TRUE, mar = c(1, 1, 1, 1))
@@ -1097,8 +1089,7 @@ plotSEFigure <- function(modelSet, specificModel, app, cols){
 #'
 #' @export
 #'
-plotSEHeader <- function(modelSet, specificModel, app = FALSE,
-                         cols = SEcols()){
+plotSEHeader <- function(modelSet, specificModel, app = FALSE, cols = SEcols()){
   par(mar = c(0, 0, 0, 0))
   par(fig = c(0, 1, 0.935, 1))
   plot(1, 1, type = 'n', bty = 'n', xaxt = 'n', yaxt = 'n', xlab = "",
@@ -1125,7 +1116,6 @@ plotSEHeader <- function(modelSet, specificModel, app = FALSE,
   labelsText[labelsText == ""] <- "all"
   text_label <- paste("Labels: ", labelsText, sep = "")
   text(x = 0.9, y = 0.8, text_label, adj = 1, cex = 0.75)
-
 }
 #' @title Produce a named vectory with standard SE plot colors
 #'

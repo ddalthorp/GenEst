@@ -478,7 +478,11 @@ calcSplits <- function(M, split_CO = NULL, data_CO = NULL,
     }
   }
   #protection against unintended loss of attr's
-  splits <- sticky::sticky(splits)
+#  splits <- sticky::sticky(splits)
+# sticky() helps preserve object attributes when subsetted, but the function is
+# being removed from CRAN. It is unlikely that the loss of it here will cause
+# problems.
+
   attr(splits, "vars") <- c(split_h$name, split_v$name)
   attr(splits, "type") <- c(split_h$type, split_v$type)
   if (!is.null(split_h) && (split_h$type %in% c("time", "SS"))){
@@ -590,7 +594,10 @@ summary.splitFull <- function(object, CL = 0.90, ...){
      attr(sumry, "type") <- attr(splits, "type")
      attr(sumry, "times") <- attr(splits, "times")
    }
-  sumry <- sticky::sticky(sumry)
+#  sumry <- sticky::sticky(sumry)
+# sticky() helps preserve object attributes when subsetted, but the function is
+# being removed from CRAN. It is unlikely that the loss of it here will cause
+# problems because subsetting splitSummary objects by hand would be so unusual.
 
   class(sumry) <- "splitSummary"
   return(sumry)

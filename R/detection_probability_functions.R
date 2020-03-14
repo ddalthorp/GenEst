@@ -725,7 +725,7 @@ calcg <- function(days, param_SE, param_CP, dist){
         stop("param_SE and param_CP have incompatible dimensions")
       }
   } else {
-    if (!class(param_CP) %in% c("array", "matrix", "data.frame"))
+    if (!any(class(param_CP) %in% c("array", "matrix", "data.frame")))
       stop ("param_CP must be a 2-d array with columns for pda and pdb")
     cp <- as.matrix(param_CP)
     if (ncol(cp) == 1){
