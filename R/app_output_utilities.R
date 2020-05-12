@@ -39,7 +39,8 @@ classText <- function(rv, type = "SE"){
   }
   if (type == "g"){
     if (length(rv$sizeclasses_g) > 1){
-      out <- paste0("Carcass class: ", rv$sizeclass_g, " ........ Search schedule: I = ",
+      out <- paste0("Carcass class: ", rv$sizeclass_g,
+        " ........ Search schedule: I = ",
         round(rv$SS[["I"]],1), ", span = ", rv$SS[["span"]])
     }
   }

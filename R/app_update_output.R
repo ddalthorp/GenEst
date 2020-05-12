@@ -481,9 +481,9 @@ update_output <- function(eventName, rv, output, input){
       output$sizeclass_g1 <- classText(rv, "g")
       output$sizeclass_g2 <- classText(rv, "g")
 
-      output$dlgtab <- downloadTable("g_estimates.csv", summaryTab,
-                                          rv$csvformat)
+#      output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, rv$csvformat)
       output$dlgfig <- downloadgFig(rv, 1)
+      output$dlgtab <- downloadgres(rv, input)
     }
     dontSuspend <- c("gModDone", "sizeclass_gyn")
     setNotSuspending(output, dontSuspend)
@@ -522,8 +522,9 @@ update_output <- function(eventName, rv, output, input){
       output$sizeclass_g1 <- scText
       output$sizeclass_g2 <- scText
 
-      output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, rv$csvformat)
+#      output$dlgtab <- downloadTable("g_estimates.csv", summaryTab, rv$csvformat)
       output$dlgfig <- downloadgFig(rv, rv$sizeclass_g)
+      output$dlgtab <- downloadgres(rv, input)
     }
   }
 

@@ -399,6 +399,7 @@ estg <- function(data_CO, COdate, data_SS, SSdate = NULL,
     }
   }
   rownames(Aj) <- COdat[ , unitCol]
+  ghat[ghat < 1e-6 & ghat > 1e-15] <- 1e-6 # prevents 1/0 in estM
   rownames(ghat) <- COdat[ , IDcol]
   out <- list("ghat" = ghat, "Aj" = Aj, "DWP" = DWP) # ordered by relevance to user
   return(out)
@@ -653,12 +654,17 @@ calcg <- function(days, param_SE, param_CP, dist){
   # check format of param_SE and create formatted matrix pk
   # should be rectangle shape with columns p and k (named or not)
   if (any(c("array", "matrix", "data.frame") %in% class(param_SE))){
-    if (ncol(param_SE) != 2) stop ("param_SE must have columns for p and k")
-    if (is.null(colnames(param_SE))){
+    if (ncol(param_SE) < 2){
+      stop("param_SE must have columns for p and k")
+    }
+    if (!("p" %in% colnames(param_SE) & "k" %in% colnames(param_SE))){
+      if (ncol(param_SE) > 2 | (ncol(param_SE) == 2 & is.null(colnames(param_SE))))
+        stop("param_SE must have columns for p and k")
+      # param_SE now either has two or more columns, which include p and k,
+      # or param_SE is two-column structure with no column names
+    }
+    if (is.null(colnames(param_SE))){ # two-column structure
       colnames(param_SE) <- c("p", "k")
-    } else {
-      if (!identical(sort(colnames(param_SE)), c("k", "p")))
-        stop("param_SE columns must be labeled p and k")
     }
     pk <- as.matrix(param_SE)
   } else { # should be a 2-vector with p and k (named or not)
@@ -681,6 +687,7 @@ calcg <- function(days, param_SE, param_CP, dist){
            "or a vector of length 2")
     }
   }
+#  pk <- pk[, 1:2]
   n <- nrow(pk)
   # check format of param_CP and create formatted matrix cp
   if (is.vector(param_CP)){
@@ -747,12 +754,20 @@ calcg <- function(days, param_SE, param_CP, dist){
       if (is.null(colnames(cp))){
         colnames(cp) <- c("pda", "pdb")
       } else if (!identical(sort(colnames(cp)), c("pda", "pdb"))){
-        stop ("param_CP must have columns pda and pdb")
+        stop("param_CP must have columns pda and pdb")
       }
+    } else if (ncol(cp) > 2){
+      if (is.null(colnames(cp)) ||
+          !"pda" %in% colnames(cp) | !"pdb" %in% colnames(cp)){
+        stop("param_CP must have columns pda and pdb")
+      }
+      cp <- as.matrix(param_CP[, c("pda", "pdb")])
     }
+
   }
   # check for compatibility between cp and pk parameters
-  if (!identical(dim(pk), dim(cp)))
+#  if (!identical(dim(pk), dim(cp)))
+  if (nrow(pk) != nrow(cp))
     stop("param_SE and param_CP must be the same dimension")
  if (dist == "exponential"){
     pdb0 <- exp(mean(log(cp[ , "pdb"])))

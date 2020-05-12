@@ -42,7 +42,8 @@ downloadCPmod <- function(rv, input){
       cat(paste0("Data: ", rv$filename_CP),
         c("\nLast present: ", rv$ltp, "\nFirst absent: ", rv$fta, "\n"),
         file = file, sep = " ")
-      cat("Confidence level: ", 100 * rv$CL, "%\n\n", sep = "", file = file, append = TRUE)
+      cat("Confidence level: ", 100 * rv$CL, "%\n\n", sep = "",
+        file = file, append = TRUE)
       selected_mods <- list()
       modChoices <- list()
       for (sci in 1:length(rv$sizeclasses)){
@@ -53,15 +54,18 @@ downloadCPmod <- function(rv, input){
         modChoices[[rv$sizeclasses[sci]]] <- input[[paste0("modelChoices_CP", sci)]]
       }
       for (sci in rv$sizeclasses){
-        nm <- ifelse(is.null(modChoices[[sci]]), "none selected", modChoices[[sci]])
+        nm <- ifelse(is.null(modChoices[[sci]]),
+          "none selected", modChoices[[sci]])
         if (length(rv$sizeclasses) == 1){
           cat("Selected model: ", nm, "\n", file = file, append = TRUE)
         } else {
-          cat("Selected model for", sci, ":", nm, "\n", file = file, append = TRUE)
+          cat("Selected model for", sci, ":", nm, "\n",
+            file = file, append = TRUE)
         }
         if (!is.null(modChoices[[sci]])){
-          suppressWarnings(write.table(rv$mods_CP[[sci]][[selected_mods[[sci]]]]$cell_ls,
-            row.names = TRUE, file = file, quote = FALSE, append = TRUE))
+          suppressWarnings(
+            write.table(rv$mods_CP[[sci]][[selected_mods[[sci]]]]$cell_ls,
+              row.names = TRUE, file = file, quote = FALSE, append = TRUE))
         }
         cat("\n", file = file, append = TRUE)
       }
@@ -72,9 +76,11 @@ downloadCPmod <- function(rv, input){
           cat("\n", sci, ": no model selected\n", file = file, append = TRUE)
         } else {
             cat("\n", sci, "\n", file = file, append = TRUE)
-            cat("l_formula s_formula AICc deltaAICc\n", file = file, append = TRUE)
+            cat("l_formula s_formula AICc deltaAICc\n",
+              file = file, append = TRUE)
             suppressWarnings(write.table(aicTable[[sci]],
-              col.names = FALSE, row.names = TRUE, quote = FALSE, file = file, append = TRUE))
+              col.names = FALSE, row.names = TRUE, quote = FALSE,
+              file = file, append = TRUE))
             cat("\n", file = file, append = TRUE)
         }
       }
@@ -106,7 +112,8 @@ downloadSEmod <- function(rv, input){
       cat("Data: ", rv$filename_SE, "\n",
         "Observation columns: ", rv$obsCols_SE, "\n",
         file = file, sep = " ")
-      cat("Confidence level: ", 100 * rv$CL, "%\n\n", sep = "", file = file, append = TRUE)
+      cat("Confidence level: ", 100 * rv$CL, "%\n\n", sep = "",
+        file = file, append = TRUE)
       selected_mods <- list()
       modChoices <- list()
       for (sci in 1:length(rv$sizeclasses)){
@@ -123,8 +130,9 @@ downloadSEmod <- function(rv, input){
             file = file, append = TRUE)
         }
         if (!is.null(modChoices[[sci]])){
-          suppressWarnings(write.table(rv$mods_SE[[sci]][[selected_mods[[sci]]]]$cell_pk,
-            row.names = FALSE, file = file, quote = FALSE, append = TRUE))
+          suppressWarnings(
+            write.table(rv$mods_SE[[sci]][[selected_mods[[sci]]]]$cell_pk,
+              row.names = FALSE, file = file, quote = FALSE, append = TRUE))
         }
         cat("\n", file = file, append = TRUE)
       }
@@ -135,9 +143,11 @@ downloadSEmod <- function(rv, input){
           cat("\n", sci, ": no model selected\n", file = file, append = TRUE)
         } else {
             cat("\n", sci, "\n", file = file, append = TRUE)
-            cat("p_formula k_formula AICc deltaAICc\n", file = file, append = TRUE)
+            cat("p_formula k_formula AICc deltaAICc\n",
+              file = file, append = TRUE)
             suppressWarnings(write.table(aicTable[[sci]],
-              col.names = FALSE, row.names = TRUE, quote = FALSE, file = file, append = TRUE))
+              col.names = FALSE, row.names = TRUE, quote = FALSE,
+              file = file, append = TRUE))
             cat("\n", file = file, append = TRUE)
         }
       }
@@ -169,11 +179,12 @@ downloadMres <- function(rv, input){
         "CO Data: ", rv$filename_CO, "\n",
         file = file, sep = ""
       )
-      cat("Confidence level: ", 100 * rv$CL, "%\n\n", sep = "", file = file, append = TRUE)
+      cat("Confidence level: ", 100 * rv$CL, "%\n\n", sep = "",
+        file = file, append = TRUE)
       sumry <- summary(rv$Msplit, CL = rv$CL)
       if (length(attr(rv$Msplit, "vars")) > 0)
-        cat("Estimated mortality by", paste(attr(rv$Msplit, "vars"), collapse = " and "),
-          "\n", file = file, append = TRUE)
+        cat("Estimated mortality by", paste(attr(rv$Msplit, "vars"),
+          collapse = " and "), "\n", file = file, append = TRUE)
       else
          cat("Estimated mortality \n", file = file, append = TRUE)
       suppressWarnings(write.table(prettySplitTab(sumry), row.names = FALSE,
@@ -187,7 +198,8 @@ downloadMres <- function(rv, input){
           modChoices[[rv$sizeclasses[sci]]] <- input[[paste0("modelChoices_SE", sci)]]
       }
       for (sci in rv$sizeclasses){
-        nm <- ifelse(is.null(modChoices[[sci]]), "none selected", modChoices[[sci]])
+        nm <- ifelse(is.null(modChoices[[sci]]),
+          "none selected", modChoices[[sci]])
         if (length(rv$sizeclasses) == 1){
           cat("Selected model: ", nm, "\n", file = file, append = TRUE)
         } else {
@@ -195,8 +207,9 @@ downloadMres <- function(rv, input){
             file = file, append = TRUE)
         }
         if (!is.null(modChoices[[sci]])){
-          suppressWarnings(write.table(rv$mods_SE[[sci]][[selected_mods[[sci]]]]$cell_pk,
-            row.names = FALSE, file = file, quote = FALSE, append = TRUE))
+          suppressWarnings(
+            write.table(rv$mods_SE[[sci]][[selected_mods[[sci]]]]$cell_pk,
+              row.names = FALSE, file = file, quote = FALSE, append = TRUE))
         }
         cat("\n", file = file, append = TRUE)
       }
@@ -207,15 +220,17 @@ downloadMres <- function(rv, input){
           cat("\n", sci, ": no model selected\n", file = file, append = TRUE)
         } else {
             cat("\n", sci, "\n", file = file, append = TRUE)
-            cat("p_formula k_formula AICc deltaAICc\n", file = file, append = TRUE)
+            cat("p_formula k_formula AICc deltaAICc\n",
+              file = file, append = TRUE)
             suppressWarnings(write.table(aicTable[[sci]],
-              col.names = FALSE, row.names = TRUE, quote = FALSE, file = file, append = TRUE))
+              col.names = FALSE, row.names = TRUE, quote = FALSE,
+                file = file, append = TRUE))
             cat("\n", file = file, append = TRUE)
         }
       }
 
-      cat(c("\nCarcass persistence\nLast present: ", rv$ltp, "\nFirst absent: ", rv$fta, "\n"),
-        file = file, sep = " ", append = TRUE)
+      cat(c("\nCarcass persistence\nLast present: ", rv$ltp, "\nFirst absent: ",
+        rv$fta, "\n"), file = file, sep = " ", append = TRUE)
       selected_mods <- list()
       modChoices <- list()
       for (sci in 1:length(rv$sizeclasses)){
@@ -230,11 +245,13 @@ downloadMres <- function(rv, input){
         if (length(rv$sizeclasses) == 1){
           cat("Selected model: ", nm, "\n", file = file, append = TRUE)
         } else {
-          cat("Selected model for", sci, ":", nm, "\n", file = file, append = TRUE)
+          cat("Selected model for", sci, ":", nm, "\n",
+            file = file, append = TRUE)
         }
         if (!is.null(modChoices[[sci]])){
-          suppressWarnings(write.table(rv$mods_CP[[sci]][[selected_mods[[sci]]]]$cell_ls,
-            row.names = FALSE, file = file, quote = FALSE, append = TRUE))
+          suppressWarnings(
+            write.table(rv$mods_CP[[sci]][[selected_mods[[sci]]]]$cell_ls,
+              row.names = FALSE, file = file, quote = FALSE, append = TRUE))
         }
         cat("\n", file = file, append = TRUE)
       }
@@ -245,9 +262,10 @@ downloadMres <- function(rv, input){
           cat("\n", sci, ": no model selected\n", file = file, append = TRUE)
         } else {
             cat("\n", sci, "\n", file = file, append = TRUE)
-            cat("l_formula s_formula AICc deltaAICc\n", file = file, append = TRUE)
-            suppressWarnings(write.table(aicTable[[sci]],
-              col.names = FALSE, row.names = TRUE, quote = FALSE, file = file, append = TRUE))
+            cat("l_formula s_formula AICc deltaAICc\n",
+              file = file, append = TRUE)
+            suppressWarnings(write.table(aicTable[[sci]], quote = FALSE,
+              col.names = FALSE, row.names = TRUE, file = file, append = TRUE))
             cat("\n", file = file, append = TRUE)
         }
       }
@@ -293,4 +311,107 @@ if (Sys.info()['sysname'] == "Windows"){
     fcn <- get(paste0("write.csv", csvformat))
     fcn(x = tablename, file = file, row.names = TRUE)
   })
+}
+ #' @rdname app_download_functions
+#'
+downloadgres <- function(rv, input){
+  downloadHandler(filename = "_gres.txt",
+    content = function(file){
+      cat(
+        "SE Data: ", rv$filename_SE, "\n",
+        "CP Data: ", rv$filename_CP, "\n",
+        file = file, sep = ""
+      )
+      cat("I = ", rv$SS[["I"]], ", span = ", rv$SS[["span"]], "\n",
+        file = file, append = TRUE)
+      cat("Confidence level: ", 100 * rv$CL, "%\n\n", sep = "",
+        file = file, append = TRUE)
+      sumry <- summary(rv$gGeneric[[rv$sizeclass_g]], CL = rv$CL)
+      cat("Estimated generic detection probability for ", rv$sizeclass_g, "\n",
+        file = file, append = TRUE)
+#     suppressWarnings(write.table(prettySplitTab(sumry), row.names = FALSE,
+     suppressWarnings(write.table(sumry, row.names = FALSE,
+        file = file, append = TRUE, quote = FALSE))
+      cat("\n\nSearcher Efficiency\n", file = file, append = TRUE)
+      selected_mods <- list()
+      modChoices <- list()
+      for (sci in 1:length(rv$sizeclasses)){
+        selected_mods[[rv$sizeclasses[sci]]] <-
+          gsub("constant", "1", input[[paste0("modelChoices_SE", sci)]])
+          modChoices[[rv$sizeclasses[sci]]] <- input[[paste0("modelChoices_SE", sci)]]
+      }
+      for (sci in rv$sizeclasses){
+        nm <- ifelse(is.null(modChoices[[sci]]),
+          "none selected", modChoices[[sci]])
+        if (length(rv$sizeclasses) == 1){
+          cat("Selected model: ", nm, "\n", file = file, append = TRUE)
+        } else {
+          cat("Selected model for", sci, ":", nm, "\n",
+            file = file, append = TRUE)
+        }
+        if (!is.null(modChoices[[sci]])){
+          suppressWarnings(
+            write.table(rv$mods_SE[[sci]][[selected_mods[[sci]]]]$cell_pk,
+              row.names = FALSE, file = file, quote = FALSE, append = TRUE))
+        }
+        cat("\n", file = file, append = TRUE)
+      }
+      cat("\nAIC Tables", file = file, append = TRUE)
+      aicTable <- aicc(rv$mods_SE)
+      for (sci in rv$sizeclasses){
+        if (!(sci %in% names(aicTable))){
+          cat("\n", sci, ": no model selected\n", file = file, append = TRUE)
+        } else {
+            cat("\n", sci, "\n", file = file, append = TRUE)
+            cat("p_formula k_formula AICc deltaAICc\n",
+              file = file, append = TRUE)
+            suppressWarnings(write.table(aicTable[[sci]],
+              col.names = FALSE, row.names = TRUE, quote = FALSE,
+                file = file, append = TRUE))
+            cat("\n", file = file, append = TRUE)
+        }
+      }
+
+      cat(c("\nCarcass persistence\nLast present: ", rv$ltp, "\nFirst absent: ",
+        rv$fta, "\n"), file = file, sep = " ", append = TRUE)
+      selected_mods <- list()
+      modChoices <- list()
+      for (sci in 1:length(rv$sizeclasses)){
+        selected_mods[[rv$sizeclasses[sci]]] <- paste0("dist: ",
+          gsub("constant", "1", input[[paste0("modelChoices_CP", sci)]]))
+      if (grepl("exponential", selected_mods[[rv$sizeclasses[sci]]]))
+          selected_mods[[sci]] <- paste0(selected_mods[[sci]], "; NULL")
+        modChoices[[rv$sizeclasses[sci]]] <- input[[paste0("modelChoices_CP", sci)]]
+      }
+      for (sci in rv$sizeclasses){
+        nm <- ifelse(is.null(modChoices[[sci]]), "none selected", modChoices[[sci]])
+        if (length(rv$sizeclasses) == 1){
+          cat("Selected model: ", nm, "\n", file = file, append = TRUE)
+        } else {
+          cat("Selected model for", sci, ":", nm, "\n",
+            file = file, append = TRUE)
+        }
+        if (!is.null(modChoices[[sci]])){
+          suppressWarnings(
+            write.table(rv$mods_CP[[sci]][[selected_mods[[sci]]]]$cell_ls,
+              row.names = FALSE, file = file, quote = FALSE, append = TRUE))
+        }
+        cat("\n", file = file, append = TRUE)
+      }
+      cat("\nAIC Tables", file = file, append = TRUE)
+      aicTable <- aicc(rv$mods_CP)
+      for (sci in rv$sizeclasses){
+        if (!(sci %in% names(aicTable))){
+          cat("\n", sci, ": no model selected\n", file = file, append = TRUE)
+        } else {
+            cat("\n", sci, "\n", file = file, append = TRUE)
+            cat("l_formula s_formula AICc deltaAICc\n",
+              file = file, append = TRUE)
+            suppressWarnings(write.table(aicTable[[sci]], quote = FALSE,
+              col.names = FALSE, row.names = TRUE, file = file, append = TRUE))
+            cat("\n", file = file, append = TRUE)
+        }
+      }
+    }
+  )
 }

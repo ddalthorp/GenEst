@@ -188,12 +188,12 @@ msgSampleSize <- function(mods){
   cellCounts <- countCarcs(mods)
   minCellCount <- min(na.omit(cellCounts))
   if (minCellCount < 10){
-    return(
-      paste0("Small (< 10) sample sizes in some cells. ",
-             "Consider simplifying the model; ",
-             "parameter estimates may be unstable."
-      )
-    )
+    if (length(cellCounts) == 1){
+      return(paste0("Caution: n = ", cellCounts, " trial carcasses may be too ",
+        "few for reliably estimating searcher efficiency parameters."))
+    }
+    return(paste0("Small (< 10) sample sizes in some cells. ",
+      "Consider simplifying the model; parameter estimates may be unstable."))
   }
   NULL
 }

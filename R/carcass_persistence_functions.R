@@ -1250,20 +1250,21 @@ ppersist <- function(pda, pdb, dist, t_arrive0, t_arrive1, t_search){
     p2 <- exp(pnorm(outer(-pdb, log(tt), "+") / root_pda - root_pda, log.p = TRUE)) * exp_value
     part1 <- t(p1) * tt + t(p2)
     probs <- -(part1 - part0) / (t_arrive1 - t_arrive0)
+    probs[is.na(probs) & pdb > 0] <- 1
+    probs[is.na(probs) & pdb <= 0] <- 0
   } else if (dist == "loglogistic" | dist == "log-logistic"){
     yox <- function(x, y) y/x
     t1 <- t_search-t_arrive1
     t0 <- t_search-t_arrive0
     tob <- outer(pdb, t1, "yox")
     part1 <- t1/t(1 + tob^pda) * 
-               t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+      t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     tob <- outer(pdb, t0, "yox")
     part0 <- t0 / t(1 + tob^pda) *
-               t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
+      t(gsl::hyperg_2F1(1, 1, 1 + 1/pda, 1/(1 + tob^(-pda))))
     probs <- (part0 - part1)/(t_arrive1 - t_arrive0)
     # correction for overflow errors
-    probs[pllogis(
-      q = rep(t1, length(pda)),
+    probs[pllogis(q = rep(t1, length(pda)),
       pda = rep(pda, each = length(t1)),
       pdb = rep(pdb, each = length(t1))) > 1 - 1e-7] <- 0
     probs[is.na(probs)] <- 0

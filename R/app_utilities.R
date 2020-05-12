@@ -247,7 +247,7 @@ dateCols <- function(data){
 #' @title Select the potential carcass class columns from a data table
 #'
 #' @description Simple function to facilitate selection of columns that could
-#'   be carcass class values from a data table
+#'   be carcass class values from a data table.
 #'
 #' @param data data table
 #'
@@ -264,7 +264,7 @@ sizeCols <- function(data){
   scTF <- rep(NA, ncols)
   for (coli in 1:ncols){
     tmp <- data[ , coli]
-    if (length(unique(tmp)) < nrow(data)){
+    if (length(unique(tmp)) < nrow(data) & length(unique(tmp)) > 1){
       scTF[coli] <- TRUE
     } else{
       scTF[coli] <- FALSE
@@ -452,7 +452,7 @@ updateColNames_size <- function(rv){
   SECPCO <- NULL
   SE <- sizeCols(rv$data_SE)
   CP <- sizeCols(rv$data_CP)
-  CO <- sizeCols(rv$data_CO)
+  CO <- names(rv$data_CO)
 
   SECP <- which(SE %in% CP)
   SECO <- which(SE %in% CO)

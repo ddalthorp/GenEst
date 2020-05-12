@@ -330,6 +330,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     }
   }
   nsearch <- length(obsCol)
+  if (ncol(data) == nsearch) data$id <- 1:nrow(data)
   obsData <- as.matrix(data[ , obsCol], ncol = nsearch)
 
   # replace all non-zero/non-one data with NA:
@@ -459,18 +460,33 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   if (length(kFixed) == 1){
     betaInit <- betaInit[-length(betaInit)]
   }
-
-  MLE <- tryCatch(
-           optim(par = betaInit, fn = pkLogLik,
-             hessian = TRUE, cellByCarc = cellByCarc, misses = misses,
-             maxmisses = max(misses), foundOn = foundOn, cellMM = cellMM,
-             nbeta_p = nbeta_p, kFixed = kFixed, method = "BFGS"),
-           error = function(x) {NA}
-         )
-  if (length(MLE) == 1 && is.na(MLE)) stop("Failed optimization.")
+  for (ki in 1:3){ # three tries at different initial values for k to correct if var < 0
+    MLE <- tryCatch(
+             optim(par = betaInit, fn = pkLogLik,
+               hessian = TRUE, cellByCarc = cellByCarc, misses = misses,
+               maxmisses = max(misses), foundOn = foundOn, cellMM = cellMM,
+               nbeta_p = nbeta_p, kFixed = kFixed, method = "BFGS"),
+             error = function(x) {NA}
+           )
+    if (length(MLE) == 1 && is.na(MLE)) stop("Failed optimization.")
+    varbeta <- tryCatch(solve(MLE$hessian), error = function(x) {NA})
+    if (is.na(varbeta)[1]) stop("Unable to estimate variance.")
+    if (sum(diag(varbeta) < 0) > 0) {
+      if (ki == 1) {
+        betaInit_k <- logit(rep(0.05, nbeta_k))
+        betaInit <- c(betaInit_p, betaInit_k)
+      } else if (ki == 2) {
+        betaInit_k <- logit(rep(0.95, nbeta_k))
+        betaInit <- c(betaInit_p, betaInit_k)
+      } else {
+        stop("Unable to estimate k")
+      }
+    } else {
+      break
+    }
+  }
   convergence <- MLE$convergence
   betahat <- MLE$par
-  betaHessian <- MLE$hessian
   llik <- -MLE$value
 
   nparam <- length(betahat)
@@ -486,10 +502,6 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     betahat_k <- betahat[(nbeta_p + 1):(nbeta)]
     names(betahat_k) <- colnames(dataMM_k)
   }
-
-  varbeta <- tryCatch(solve(betaHessian), error = function(x) {NA})
-
-  if (is.na(varbeta)[1]) stop("Unable to estimate variance.")
 
   varbeta_p <- varbeta[1:nbeta_p, 1:nbeta_p]
   cellMean_p <- cellMM_p %*% betahat_p

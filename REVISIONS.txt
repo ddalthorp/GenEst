@@ -1,4 +1,42 @@
 Revision log
+2020.05.12
+v1.4.2.1
+
+* A more comprehensive summary table for download of estgGeneric. The summary
+for "Download" from the GUI and for summary.estgGeneric now includes model
+choices and alpha and beta parameters for fitted ghat's (following EoA 
+convention).
+
+* Entering a carcass class column when there was only one class would cause 
+the SE and CP models to fail. Data columns with no variation are no longer
+offered as choices in the "Carcass Class Column (optional)" drop down menu.
+This change improves the stability of the GUI only but has no impact on any
+results.
+
+* ppersist with lognormal distribution would generate NaN when persistence 
+times were extremely long. The error has been corrected.
+
+* calcg function args have been made more flexible. Previously, param_SE
+and param_CP needed to be two column arrays or data frames or to be vectors
+with two elements. Now, they can also be multiple column arrays or data frames
+with named columns. This will simplify the formatting for certain custom
+analyses on the command line and will have no effect on GUI analyses.
+
+* pkm and pk0 can now be called with a single column for search data rather 
+than requiring a second column (for carcass ID or covariate or second search).
+This will streamline certain custom command line analyses (esp. simulation)
+but will have no effect on GUI analyses.
+
+* pkm0 would fail on certain (rare) occasions where it was possible but not easy
+to fit k because the default starting point for optimization (kInit = 0.7) is 
+does not work for every conceivable situation. Now, if the initial kInit = 0.7
+fails, GenEst will also try 0.05 and 0.95 before, which improves the stability
+of the model fitting.
+
+* estg now replaces values of ghat < 1e-7 with 1e-7. Very small values of ghat
+could result in estM returning NA; the change solves that problem and makes the
+estimator more stable in cases with low g and high variance in ghat.
+
 2020.03.14
 v1.4.2
 * The `sticky` package may soon be "archived" at CRAN because the maintainers 
