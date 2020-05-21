@@ -14,5 +14,5 @@ column names of columns that can be carcass class values
 }
 \description{
 Simple function to facilitate selection of columns that could
-  be carcass class values from a data table
+  be carcass class values from a data table.
 }

@@ -250,7 +250,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       message("Exponential distribution does not have a scale parameter. ",
               "formula_s ignored.")
     }
-    formula_s <- formula(s ~ 1) # ??
+    formula_s <- formula(s ~ 1) # not used but s must have no predictors
   }
   formulaRHS_l <- formula(delete.response(terms(formula_l)))
   preds_l <- all.vars(formulaRHS_l)
@@ -276,15 +276,6 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   if (any(data[ , left] > data[ , right], na.rm = TRUE)){
     stop("Some carcasses are observed after they have been removed?")
   }
-
-  # build the response variable (Surv object)
-  t1 <- data[ , left]
-  t2 <- data[ , right]
-  event <- rep(3, length(t1)) # interval censored
-  event[is.na(t2) | is.infinite(t2)] <- 0 # study ends before removal
-  event[round(t1, 3) == round(t2, 3)] <- 1 # carcass removal observed
-  t1 <- pmax(t1, 0.0001)
-  tevent <- survival::Surv(time = t1, time2 = t2, event = event, type = "interval")
 
   # in all cases, formula_l is used (with formula_s appended in some cases)
 #  if (length(all.vars(formula_l)) == 1) mod_l <- l ~ 1
@@ -316,6 +307,69 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
   nbeta_s <- ncol(cellMM_s)
   nbeta <- nbeta_l + nbeta_s
 
+### 2n fix -->
+  data0 <- data
+  data0[is.na(data0[ , right]), right] <- Inf
+  fixBadCells <- NULL
+  # if it is a full cell model (i.e., every combination of levels is [essentially]
+  # fit indepedendently or model is 1, A, or A * B and not A + B), then apply the
+  # 2n fix for any cell that has right == Inf.
+  # NOTE: the "l" and the "s" are automatically crossed with each other, so we
+  # just need to be sure that each is full cell within itself
+  if ( # no predictors or all factor combinations are included in model
+    (length(preds_l) == 0 || NCOL(cellMM_l) == prod(unlist(lapply(levels_l, length)))) &
+    (length(preds_s) == 0 || NCOL(cellMM_s) == prod(unlist(lapply(levels_s, length))))){
+    # then full cell model for both "l" and "s", so can check for right == Inf
+    if (length(preds_l) == 0 & length(preds_s) == 0){# no predictors, no subsetting
+      if (all(data[, right] == Inf)){ # 2n fix necessary
+        if (dist != "exponential")
+          stop("Must use exponential model when all data are right-censored")
+        data0 <- rbind(data0, data0)
+        dmed <- abs(data0[, left] - median(data0[, left]))
+        i <- max(which(dmed == min(dmed)))
+        data0[i, right] <- data0[i, left]
+        fixBadCells <- "all"
+      }
+    } else { # have to check all cells
+      for (ci in 1:nrow(cells)){
+        ind <- which(matrixStats::colProds( # factor levels match cell
+          t(data0[ , colnames(cells)[-ncol(cells)]]) ==
+          as.character(cells[ci, -ncol(cells)])) == 1)
+        if (all(data0[ind, right] == Inf)){ # then need to apply 2n fix for cell ci
+          if (dist != "exponential")
+            stop("Must use exponential model when ",
+                 "all data in a cell are right-censored")
+          tmp <- data0[ind, ]
+          dmed <- abs(tmp[, left] - median(tmp[, left]))
+          i <- max(which(dmed == min(dmed)))
+          tmp[i, right] <- tmp[i, left]
+          data0 <- rbind(data0, tmp)
+          fixBadCells <- c(fixBadCells, cells$CellNames[ci])
+        }
+      }
+    }
+  } else {# additive model:
+    # check factor levels and abort if right == Inf for any level
+    for (pri in preds){
+      for (li in unique(as.character(data[ ,pri]))){
+        ind <- which(data0[, pri] == li)
+        if (all(data0[ind, right] == Inf)){
+          stop("Cannot fit additive model when ", right, " = Inf for all ",
+               "carcasses in one level (", li, ") of a predictor (", pri, ")")
+        }
+      }
+    }
+  }
+### <-- 2n fix
+  # build the response variable (Surv object)
+  t1 <- data0[ , left]
+  t2 <- data0[ , right]
+  event <- rep(3, length(t1)) # interval censored as default, but...
+  event[is.na(t2) | is.infinite(t2)] <- 0 # study ends before removal
+  event[round(t1, 3) == round(t2, 3)] <- 1 # carcass removal observed
+  t1 <- pmax(t1, 0.0001)
+  tevent <- survival::Surv(time = t1, time2 = t2, event = event, type = "interval")
+
   # traffic directing:
   #  use survreg if:
   #   1. dist == "exponential", or
@@ -345,7 +399,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
   if (use_survreg){
     cpmod <- tryCatch(
-      survival::survreg(formula = formula_cp, data = data, dist = dist),
+      survival::survreg(formula = formula_cp, data = data0, dist = dist),
       error = function(x) NA, warning = function (x) NA
     )
     if (length(cpmod) == 1){
@@ -356,7 +410,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     if (npreds_s == 0){
       betahat_s <- log(cpmod$scale)
       varbeta <- cpmod$var
-      carcCells <- rep('all', nrow(data))
+      carcCells <- rep('all', nrow(data0))
     } else if (npreds_s == 1){
       tmat <- diag(nbeta)
       tmat[-(1:(nbeta_l+1)), nbeta_l + 1] <- -1
@@ -407,10 +461,10 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 
     probs <- data.frame(c(0.5, (1 - CL) / 2, 1 - (1 - CL) / 2))
     if (length(preds) > 0){
-      carcCells <- data[, preds[1]]
+      carcCells <- data0[, preds[1]]
       if (length(preds) > 1){
         for (pri in 2:length(preds)){
-          carcCells <- paste(carcCells, data[, preds[pri]], sep = '.')
+          carcCells <- paste(carcCells, data0[, preds[pri]], sep = '.')
         }
       }
     }
@@ -494,8 +548,8 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$carcCells <- carcCells
     output$loglik <- cpmod$loglik[2]
   } else if (!use_survreg){
-    dataMM_l <- model.matrix(formulaRHS_l, data)
-    dataMM_s <- model.matrix(formulaRHS_s, data)
+    dataMM_l <- model.matrix(formulaRHS_l, data0)
+    dataMM_s <- model.matrix(formulaRHS_s, data0)
     dataMM <- t(cbind(dataMM_l, dataMM_s))
     ncarc <- nrow(data)
     cellByCarc <- numeric(ncarc)
@@ -510,7 +564,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     cell_n <- as.numeric(table(carcCells)[cellNames])
     init_formRHS <- as.character(formulaRHS_l)[-1]
     init_form <- reformulate(init_formRHS, response = "tevent")
-    init_mod <- survival::survreg(formula = init_form, data = data, dist = dist)
+    init_mod <- survival::survreg(formula = init_form, data = data0, dist = dist)
     init_l <- init_mod$coef
     names(init_l) <- paste("l_", names(init_l), sep = "")
     init_s <- rep(init_mod$scale, nbeta_s)
@@ -614,6 +668,10 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output <- list()
     output$call <- match.call()
     output$data <- data
+    if (!is.null(fixBadCells)){
+      output$data_adj <- data0
+      output$fixBadCells <- fixBadCells
+    }
     output$formula_l <- formula_l
     output$formula_s <- formula_s
     output$distribution <- dist
@@ -637,7 +695,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$cell_ls <- cellTable_ls
     output$cell_ab <- cellTable_ab
     output$CL <- CL
-    output$observations <- data[ , c(left, right)]
+    output$observations <- data0[ , c(left, right)]
     output$carcCells <- carcCells
     output$loglik <- llik
 

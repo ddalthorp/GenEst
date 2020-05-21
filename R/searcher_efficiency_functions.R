@@ -398,12 +398,11 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
       }
     } else {
       fixBadCells <- names(pInitCellMean)[pInitCellMean %in% 0:1]
-      bcList <- strsplit(fixBadCells, "[.]")
-      for (bci in 1:length(bcList)){
-        cellind <- rep(TRUE, dim(data0)[1])
-        for (i in 1:length(preds_p)){
-           cellind <- cellind & (data0[ , preds_p[i]] == bcList[[bci]][i])
-        }
+      badCells <- cells[cells$CellNames %in% fixBadCells, -NCOL(cells)]
+      for (ci in 1:nrow(badCells)){
+        cellind <- which(matrixStats::colProds( # factor levels match cell
+          t(data0[ , colnames(badCells)]) ==
+          as.character(badCells[ci, ])) == 1)
         data0 <- rbind(data0[cellind, ], data0) # the 2n fix
         data0[1, obsCol[1]] <- 1 - data0[1, obsCol[1]]
         if (data0[1, obsCol[1]] == 1 & length(obsCol) > 1){

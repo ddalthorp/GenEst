@@ -1,4 +1,20 @@
 Revision log
+2020.05.13
+v1.4.3
+
+* CP models for trial data in which all carcasses persisted beyond the study
+period (i.e., FirstAbsent = Inf for all carcasses) or were removed before the 
+first search were unstable, sometimes failing and sometimes returning 
+implausible r statistics without warning. This is an inherent problem with 
+asymptotically normal MLE estimators with data near the boundaries of the 
+parameter space. 
+
+* SE models for trial data in which the names of a factor level for one of the
+predictors contained a period character ( . ) and either all carcasses or no 
+carcasses were recovered on the first search after carcass placement for one of
+the model cells, the model fitting was unstable and would mistakenly throw an 
+error in certain cases. The error has been corrected.
+
 2020.05.12
 v1.4.2.1
 

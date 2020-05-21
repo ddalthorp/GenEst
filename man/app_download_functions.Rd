@@ -10,6 +10,7 @@
 \alias{downloadMres}
 \alias{downloadMFig}
 \alias{downloadTable}
+\alias{downloadgres}
 \title{GenEst app download funtions}
 \usage{
 downloadCPFig(rv)
@@ -27,6 +28,8 @@ downloadMres(rv, input)
 downloadMFig(rv, split = TRUE)
 
 downloadTable(filename, tablename, csvformat)
+
+downloadgres(rv, input)
 }
 \arguments{
 \item{rv}{the reactive values list}
