@@ -30,7 +30,7 @@ was constructed using **GenEst** version `r vers` on `r today`.
 
 To obtain the most recent version of **GenEst**, download the most recent
 version build from
-[USGS](https://code.usgs.gov/ecosystems/GenEst/releases) or CRAN.
+[USGS](https://code.usgs.gov/ecosystems/GenEst/-/releases) or CRAN.
 
 ## Data
 
