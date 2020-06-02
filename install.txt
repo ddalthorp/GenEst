@@ -41,15 +41,15 @@ if (packageVersion("shiny") < "1.4.0") install.packages("shiny")
 
 Navigate to https://code.usgs.gov/ecosystems/GenEst/releases.
 
-\-- For Windows, download the compressed folder GenEst_1.4.3.zip (do not unzip) and note where it is stored. You will install from the local .zip folder.
+\-- For Windows, download the compressed folder GenEst_1.4.4.zip (do not unzip) and note where it is stored. You will install from the local .zip folder.
 
-\-- For Mac OS or Unix-like OS, download the compressed file GenEst_1.4.3.tar.gz and note where it is stored. You will install from the local .tar.gz file.
+\-- For Mac OS or Unix-like OS, download the compressed file GenEst_1.4.4.tar.gz (do not unzip) and note where it is stored. You will install from the local .tar.gz file.
 
 \-- Next, if you are working directly in R (not R Studio), run the following command:
 
 ```
 install.packages(file.choose()) # and navigate to the package archive file you just downloaded: 
-GenEst_1.4.3.zip
+GenEst_1.4.4.zip or GenEst_1.4.4.tar.gz
 ```
 
 \-- Or, if you are working in R Studio:
