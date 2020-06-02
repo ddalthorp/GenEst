@@ -1,4 +1,20 @@
 Revision log
+2020.06.02
+v1.4.4
+
+* An SE model with one p covariate and fixed k was not fittable when there was
+a cell with all 0s or 1s. This inconvience has been fixed. Also, the AICc score
+and likelihood for determining the reference model for models in which there 
+were cells with all 0s or 1s in the data were previously calculated using the 
+adjusted data set (see revisions for v1.3.1) rather than the original data set.
+This resulting in artificially poor AIC scores for the adjusted models and 
+incorrect specification of the "reference" model in some cases. The error has 
+been corrected.
+
+* ambiguous date column formatting (i.e., where all dates in a column could be 
+read either as m/d/y or d/m/y) now triggers an informative warning message in 
+addition to simply returning NULL from the checkDate function.
+
 2020.05.13
 v1.4.3
 

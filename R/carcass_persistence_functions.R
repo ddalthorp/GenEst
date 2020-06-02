@@ -310,6 +310,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
 ### 2n fix -->
   data0 <- data
   data0[is.na(data0[ , right]), right] <- Inf
+  data00 <- data0
   fixBadCells <- NULL
   # if it is a full cell model (i.e., every combination of levels is [essentially]
   # fit indepedendently or model is 1, A, or A * B and not A + B), then apply the
@@ -349,7 +350,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       }
     }
   } else {# additive model:
-    # check factor levels and abort if right == Inf for any level
+    # check factor levels and abort if right === Inf for any level
     for (pri in preds){
       for (li in unique(as.character(data[ ,pri]))){
         ind <- which(data0[, pri] == li)
@@ -516,7 +517,7 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
     output$call <- match.call()
     output$data <- data
     output$formula_l <- formula_l
-    if (dist != "exponential"){
+    if(dist != "exponential"){
       output$formula_s <- formula_s
     } else {
       output$formula_s <- NULL
@@ -673,7 +674,11 @@ cpm0 <- function(formula_l, formula_s = NULL, data = NULL, left = NULL,
       output$fixBadCells <- fixBadCells
     }
     output$formula_l <- formula_l
-    output$formula_s <- formula_s
+    if(dist != "exponential"){
+      output$formula_s <- formula_s
+    } else {
+      output$formula_s <- NULL
+    }
     output$distribution <- dist
     output$predictors <- preds
     output$predictors_l <- preds_l

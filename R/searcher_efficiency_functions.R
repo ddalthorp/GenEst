@@ -383,6 +383,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
     carcCells0 <- do.call(paste, c(data0[ , preds], sep = '.'))
   }
   pInitCellMean <- tapply(data0[ , obsCol[1]], INDEX = carcCells0, FUN = mean, na.rm = TRUE)
+### prepSE.r stops at this point
   fixBadCells <- NULL
   if (NCOL(cellMM_p) == prod(unlist(lapply(levels_p, length))) & # full cell model
       any(pInitCellMean %in% 0:1)){# ...with bad cells
@@ -398,8 +399,9 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
       }
     } else {
       fixBadCells <- names(pInitCellMean)[pInitCellMean %in% 0:1]
-      badCells <- cells[cells$CellNames %in% fixBadCells, -NCOL(cells)]
-      for (ci in 1:nrow(badCells)){
+      badCells <- cells[cells$CellNames %in% fixBadCells, ]
+      badCells$CellNames <- NULL
+      for (ci in 1:NROW(badCells)){
         cellind <- which(matrixStats::colProds( # factor levels match cell
           t(data0[ , colnames(badCells)]) ==
           as.character(badCells[ci, ])) == 1)
@@ -410,7 +412,7 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
         }
       }
     }
-  } else if (length(preds_p) == 2 &  # two predictors
+  } else if (length(preds_p) == 2 &  # two predictors but not full cell
         NCOL(cellMM_p) < prod(unlist(lapply(levels_p, length)))){# "+" model
     for (predi in names(levels_p)){
       for (li in levels_p[[predi]]){
@@ -486,11 +488,31 @@ pkm0 <- function(formula_p, formula_k = NULL, data, obsCol = NULL,
   }
   convergence <- MLE$convergence
   betahat <- MLE$par
-  llik <- -MLE$value
+  if (is.null(fixBadCells)){
+    llik <- -MLE$value
+  } else {
+    obsData <- as.matrix(data00[ , obsCol])
+    colnames(obsData) <- obsCol
+    misses <- matrixStats::rowCounts(obsData, value = 0, na.rm =T)
+    foundOn <- matrixStats::rowMaxs(
+        obsData * matrixStats::rowCumsums(1 * !is.na(obsData)), na.rm = T)
 
+    if (length(preds) == 0){
+      carcCells <- rep("all", dim(data00)[1])
+    } else if (length(preds) == 1){
+      carcCells <- data00[ , preds]
+    } else if (length(preds) > 1){
+      carcCells <- do.call(paste, c(data00[ , preds], sep = '.'))
+    }
+    cellByCarc <- match(carcCells, cellNames)
+    llik <- -pkLogLik(misses = misses, foundOn = foundOn, beta = betahat,
+      nbeta_p = nbeta_p, cellByCarc = cellByCarc, maxmisses = max(misses),
+      cellMM = cellMM, kFixed = kFixed)
+    ncarc <- nrow(obsData)
+  }
   nparam <- length(betahat)
   AIC <- 2*nparam - 2*llik
-  AICcOffset <- (2 * nparam * (nparam + 1)) / (ncarc - nparam - 1)
+  AICcOffset <- (2 * nparam * (nparam + 1)) / (nrow(obsData) - nparam - 1)
   AICc <- round(AIC + AICcOffset, 2)
   AIC <- round(AIC, 2)
 
@@ -853,8 +875,7 @@ pkmSize <- function(formula_p, formula_k = NULL, data, kFixed = NULL,
       kFixed <- rep(kFixed, length(sizeclasses))
       names(kFixed) <- sizeclasses
       if (quiet == FALSE){
-        message(
-          "One unnamed kFixed value provided by user. ",
+        message("One unnamed kFixed value provided by user. ",
           "All classes are assumed to have kFixed = ", kFixed[1], ". ",
           "To specify specific classes to apply kFixed values to, ",
           "class names must be provided in kFixed vector."

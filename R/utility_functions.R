@@ -122,7 +122,10 @@ checkDate <- function(testdate){
   }
   if (all(is.na(canForm))) return(NULL)
   canForm <- canForm[!is.na(canForm)]
-  if (length(canForm) > 1) return(NULL)
+  if (length(canForm) > 1){
+    warning("Cannot resolve ambiguous date format. Use yyyy-mm-dd for dates")
+    return(NULL)
+  }
   return(canDate[[canForm]])
 }
 

@@ -304,7 +304,8 @@ downloadMFig <- function(rv, split = TRUE){
 #' @rdname app_download_functions
 #'
 downloadTable <- function(filename, tablename, csvformat){
-if (Sys.info()['sysname'] == "Windows"){
+  if(is.null(tablename)) return()
+  if (Sys.info()['sysname'] == "Windows"){
     colnames(tablename) <- gsub("\u0394", "delta", colnames(tablename))
   }
   downloadHandler(filename = filename, content = function(file){

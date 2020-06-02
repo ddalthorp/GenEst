@@ -667,11 +667,10 @@ update_rv <- function(eventName, rv, input){
       rv$sizeclasses_CP <- sort(rv$sizeclasses)
       rv$sizeclass <- pickSizeclass(rv$sizeclasses, input$outCPclass)
       rv$sizeclass_CP <- rv$sizeclass
-      rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]], quiet = TRUE, 
-                                            app = TRUE)
-      rv$AICcTab_CP[ , "Scale Formula"] <- gsub("NULL", "",
-                                             rv$AICcTab_CP[ , "Scale Formula"]
-                                           )
+      rv$AICcTab_CP <- aicc(rv$mods_CP[[rv$sizeclass_CP]],
+        quiet = TRUE, app = TRUE)
+      rv$AICcTab_CP[ , "Scale Formula"] <-
+        gsub("NULL", "", rv$AICcTab_CP[ , "Scale Formula"])
       rv$modOrder_CP <- as.numeric(row.names(rv$AICcTab_CP))
       rv$modNames_CP <- names(rv$mods_CP[[rv$sizeclass_CP]])[rv$modOrder_CP]
       rv$modNames_CPdist <- modNameSplit(rv$modNames_CP, 1)
@@ -679,7 +678,8 @@ update_rv <- function(eventName, rv, input){
       rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
       rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
-      rv$modTab_CP <- desc(rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]], rv$CL)
+      rv$modTab_CP <- desc(model_CP = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]],
+        CL = rv$CL)
       #rv$best_CP <- gsub("NULL", "s ~ 1", rv$best_CP)
       # size of graph page
       modelSet <- tidyModelSetCP(rv$modSet_CP)
@@ -728,7 +728,8 @@ update_rv <- function(eventName, rv, input){
       rv$modNames_CPs <- modNameSplit(rv$modNames_CP, 3)
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass_CP]]
       rv$best_CP <- (names(rv$modSet_CP)[rv$modOrder_CP])[1]
-      rv$modTab_CP <- desc(rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]], CL = rv$CL)
+      rv$modTab_CP <- desc(model_CP = rv$mods_CP[[rv$sizeclass_CP]][[rv$best_CP]],
+        CL = rv$CL)
       modelSet <- tidyModelSetCP(rv$modSet_CP)
       cells_set <- modelSetCells(modelSet)
       preds_set <- modelSetPredictors(modelSet)
@@ -749,9 +750,8 @@ update_rv <- function(eventName, rv, input){
       rv$outCPdlsfig <- modNamePaste(rv$CPdls, "CP")
       rv$outCPdlstab <- modNamePaste(rv$CPdls, "CP", tab = TRUE)
       rv$modSet_CP <- rv$mods_CP[[rv$sizeclass]]
-
       if (rv$outCPdlstab %in% names(rv$modSet_CP)){
-        rv$modTab_CP <- desc(rv$modSet_CP[[rv$outCPdlstab]], CL = rv$CL)
+        rv$modTab_CP <- desc(model_CP = rv$modSet_CP[[rv$outCPdlstab]], CL = rv$CL)
       } else {
         rv$modTab_CP <- NULL
       }
