@@ -94,16 +94,29 @@ update_rv <- function(eventName, rv, input){
                  "figW_g", "figH_SE", "figW_SE", "SS")
     rv <- reVal(rv, toReVal)
 
-    rv$data_SE <- readCSV(input$file_SE$datapath)
+    rv$data_SE <- try(readCSV(input$file_SE$datapath))
     rv$filename_SE <- input$file_SE$name
-    rv$colNames_SE <- colnames(rv$data_SE)
-    rv$colNames_SE_preds0 <- predsCols(rv$data_SE)
-    rv$colNames_SE_obs0 <- obsCols_SE(rv$data_SE)
-    rv$colNames_size0 <- updateColNames_size(rv)
-    rv$colNames_SE_preds <- rv$colNames_SE_preds0
-    rv$colNames_SE_obs <- rv$colNames_SE_obs0
-    rv$colNames_size <- removeCols(rv$colNames_size0,
-      c(rv$ltp, rv$fta, rv$preds_CP))
+    if ("try-error" %in% class(rv$data_SE)){
+      rv$data_SE <- data.frame(matrix(rv$data_SE, nrow = 1))
+      names(rv$data_SE) <- rv$filename_SE
+#      rv$data_SE <- NULL
+      rv$filename_SE <- NULL
+      rv$colNames_SE <- NULL
+      rv$colNames_SE_preds0 <- NULL
+      rv$colNames_SE_obs0 <- NULL
+      rv$colNames_size0 <- NULL
+      rv$colNames_SE_preds <- NULL
+      rv$colNames_SE_obs <- NULL
+    } else {
+      rv$colNames_SE <- colnames(rv$data_SE)
+      rv$colNames_SE_preds0 <- predsCols(rv$data_SE)
+      rv$colNames_SE_obs0 <- obsCols_SE(rv$data_SE)
+      rv$colNames_size0 <- updateColNames_size(rv)
+      rv$colNames_SE_preds <- rv$colNames_SE_preds0
+      rv$colNames_SE_obs <- rv$colNames_SE_obs0
+      rv$colNames_size <- removeCols(rv$colNames_size0,
+        c(rv$ltp, rv$fta, rv$preds_CP))
+    }
     if (!is.null(rv$sizeCol) && !(rv$sizeCol %in% rv$colNames_size))
       rv$sizeCol <- NULL
   }
@@ -149,19 +162,33 @@ update_rv <- function(eventName, rv, input){
                  "figW_g", "figH_CP", "figW_CP")
     rv <- reVal(rv, toReVal)
 
-    rv$data_CP <- readCSV(input$file_CP$datapath)
+    rv$data_CP <- try(readCSV(input$file_CP$datapath))
     rv$filename_CP <- input$file_CP$name
-    rv$colNames_CP <- colnames(rv$data_CP)
-    rv$colNames_CP_preds0 <- predsCols(rv$data_CP)
-    rv$colNames_fta0 <- obsCols_fta(rv$data_CP)
-    rv$colNames_ltp0 <- obsCols_ltp(rv$data_CP)
-    rv$colNames_size0 <- updateColNames_size(rv)
-    rv$colNames_fta <- rv$colNames_fta0
-    rv$colNames_ltp <- rv$colNames_ltp0
-    rv$colNames_size <- removeCols(rv$colNames_size0,
-      c(rv$obsCols_SE, rv$preds_SE))
-    if (!is.null(rv$sizeCol) && !(rv$sizeCol %in% rv$colNames_size))
-      rv$sizeCol <- NULL
+    if ("try-error" %in% class(rv$data_CP)){
+      rv$data_CP <- data.frame(matrix(rv$data_CP, nrow = 1))
+      names(rv$data_CP) <- rv$filename_CP
+      rv$filename_CP <- NULL
+      rv$colNames_CP <- NULL
+      rv$colNames_CP_preds0 <- NULL
+      rv$colNames_fta0 <- NULL
+      rv$colNames_ltp0 <- NULL
+      rv$colNames_size0 <- NULL
+      rv$colNames_fta <- NULL
+      rv$colNames_ltp <- NULL
+      rv$colNames_size <- NULL
+    } else {
+      rv$colNames_CP <- colnames(rv$data_CP)
+      rv$colNames_CP_preds0 <- predsCols(rv$data_CP)
+      rv$colNames_fta0 <- obsCols_fta(rv$data_CP)
+      rv$colNames_ltp0 <- obsCols_ltp(rv$data_CP)
+      rv$colNames_size0 <- updateColNames_size(rv)
+      rv$colNames_fta <- rv$colNames_fta0
+      rv$colNames_ltp <- rv$colNames_ltp0
+      rv$colNames_size <- removeCols(rv$colNames_size0,
+        c(rv$obsCols_SE, rv$preds_SE))
+      if (!is.null(rv$sizeCol) && !(rv$sizeCol %in% rv$colNames_size))
+        rv$sizeCol <- NULL
+    }
   }
 
   if (eventName == "file_CP_clear"){
@@ -196,28 +223,38 @@ update_rv <- function(eventName, rv, input){
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M", "figH_g",
                  "figW_g", "SS", "gSearchInterval", "gSearchMax")
     rv <- reVal(rv, toReVal)
-    rv$data_SS <- readCSV(input$file_SS$datapath)
+    rv$data_SS <- try(readCSV(input$file_SS$datapath))
     rv$filename_SS <- input$file_SS$name
-    rv$colNames_SS <- colnames(rv$data_SS)
-    rv$splittable_SS <- rv$colNames_SS   # candidates for splittable columns
-    badind <- NULL
-    for (ci in 1:length(rv$splittable_SS)){
-      if (is.numeric(rv$data_SS[ , rv$splittable_SS[ci]])){
-        badind <- c(badind, ci) # SS splits are categorical (or dates)
-      } else {
-        SSlev <- rv$data_SS[ , rv$splittable_SS[ci]]
-        if (length(unique(SSlev)) == 1 || # no levels to split on
-          min(diff(match(SSlev, unique(SSlev)))) < 0) # contiguous blocks
-          badind <- c(badind, ci)
-      }
-    }
-    if (length(badind) > 0) rv$splittable_SS <- rv$splittable_SS[-badind]
-    rv$SStemp <- tryCatch(averageSS(rv$data_SS), error = function(x){NA})
-    if (!is.na(rv$SStemp[1])){ # aveSS for default SS in estg (if possible)
-      rv$SS <- list("span" = max(rv$SStemp), "I" = rv$SStemp[2])
-      rv$avgSI <-  mean(diff(rv$SStemp[-length(rv$SStemp)]))
+    if ("try-error" %in% class(rv$data_SS)){
+      rv$data_SS <- data.frame(matrix(rv$data_SS, nrow = 1))
+      names(rv$data_SS) <- rv$filename_SS
+      rv$filename_SS <- NULL
+      rv$colNames_SS <- NULL
+      rv$splittable_SS <- NULL
+      rv$SS <- NULL
+      rv$avgSI <- NULL
     } else {
-      rv$SS <- NULL # no default
+      rv$colNames_SS <- colnames(rv$data_SS)
+      rv$splittable_SS <- rv$colNames_SS   # candidates for splittable columns
+      badind <- NULL
+      for (ci in 1:length(rv$splittable_SS)){
+        if (is.numeric(rv$data_SS[ , rv$splittable_SS[ci]])){
+          badind <- c(badind, ci) # SS splits are categorical (or dates)
+        } else {
+          SSlev <- rv$data_SS[ , rv$splittable_SS[ci]]
+          if (length(unique(SSlev)) == 1 || # no levels to split on
+            min(diff(match(SSlev, unique(SSlev)))) < 0) # contiguous blocks
+            badind <- c(badind, ci)
+        }
+      }
+      if (length(badind) > 0) rv$splittable_SS <- rv$splittable_SS[-badind]
+      rv$SStemp <- tryCatch(averageSS(rv$data_SS), error = function(x){NA})
+      if (!is.na(rv$SStemp[1])){ # aveSS for default SS in estg (if possible)
+        rv$SS <- list("span" = max(rv$SStemp), "I" = rv$SStemp[2])
+        rv$avgSI <-  mean(diff(rv$SStemp[-length(rv$SStemp)]))
+      } else {
+        rv$SS <- NULL # no default
+      }
     }
   }
 
@@ -239,9 +276,16 @@ update_rv <- function(eventName, rv, input){
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
     rv <- reVal(rv, toReVal)
-    rv$data_DWP <- readCSV(input$file_DWP$datapath)
+    rv$data_DWP <- try(readCSV(input$file_DWP$datapath))
     rv$filename_DWP <- input$file_DWP$name
-    rv$colNames_DWP <- DWPCols(rv$data_DWP)
+    if ("try-error" %in% class(rv$data_DWP)){
+      rv$data_DWP <- data.frame(matrix(rv$data_DWP, nrow = 1))
+      names(rv$data_DWP) <- rv$filename_DWP
+      rv$filenames_DWP <- NULL
+      rv$colNames_DWP <- NULL
+    } else {
+      rv$colNames_DWP <- DWPCols(rv$data_DWP)
+    }
   }
 
 
@@ -260,16 +304,28 @@ update_rv <- function(eventName, rv, input){
     rv <- reNULL(rv, toNULL)
     toReVal <- c("nsplit_CO", "nsplit_SS", "figH_M", "figW_M")
     rv <- reVal(rv, toReVal)
-    rv$data_CO <- readCSV(input$file_CO$datapath)
+    rv$data_CO <- try(readCSV(input$file_CO$datapath))
     rv$filename_CO <- input$file_CO$name
-    rv$colNames_xID <- names(which(
-      apply(rv$data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
-      apply(rv$data_CO, FUN = length, MARGIN = 2)))
-    rv$colNames_CO <- colnames(rv$data_CO)
-    rv$colNames_COdates <- dateCols(rv$data_CO)
-    rv$colNames_size0 <- updateColNames_size(rv)
-    rv$colNames_size <- removeCols(rv$colNames_size0,
-      c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta, rv$preds_CP))
+    if ("try-error" %in% class(rv$data_CO)){
+      rv$data_CO <- data.frame(matrix(rv$data_CO, nrow = 1))
+      names(rv$data_CO) <- rv$filename_CO
+      rv$filename_CO <- NULL
+      rv$colNames_xID <- NULL
+      rv$colNames_CO <- NULL
+      rv$colNames_COdates <- NULL
+      rv$colNames_size0 <- NULL
+    } else {
+      rv$data_CO <- readCSV(input$file_CO$datapath)
+      rv$filename_CO <- input$file_CO$name
+      rv$colNames_xID <- names(which(
+        apply(rv$data_CO, FUN = function(x) length(unique(x)), MARGIN = 2) ==
+        apply(rv$data_CO, FUN = length, MARGIN = 2)))
+      rv$colNames_CO <- colnames(rv$data_CO)
+      rv$colNames_COdates <- dateCols(rv$data_CO)
+      rv$colNames_size0 <- updateColNames_size(rv)
+      rv$colNames_size <- removeCols(rv$colNames_size0,
+        c(rv$obsCols_SE, rv$preds_SE, rv$ltp, rv$fta, rv$preds_CP))
+    }
     if (!is.null(rv$sizeCol) && !(rv$sizeCol %in% rv$colNames_size))
       rv$sizeCol <- NULL
   }

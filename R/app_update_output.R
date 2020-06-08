@@ -94,7 +94,7 @@ update_output <- function(eventName, rv, output, input){
     output <- reNULL(output, toNULL)
     if (eventName == "file_CP"){
       output$data_CP <- DT::renderDataTable(datatable(rv$data_CP,
-        caption = paste0("File: ", rv$filename_CP)), server = FALSE)
+          caption = paste0("File: ", rv$filename_CP)), server = FALSE)
       output$filename_CP <- renderText(paste0("File: ", rv$filename_CP))
     }
     dontSuspend <- c("CPModDone", "sizeclasses_CP", "filename_CP",

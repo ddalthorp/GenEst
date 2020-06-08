@@ -84,7 +84,8 @@ update_input <- function(eventName, rv, input, session){
     }
   }
 
-  if (eventName == "file_SE_clear"){
+  if (eventName == "file_SE_clear" ||
+      (eventName == "file_SE" & is.null(rv$filename_SE))){
     toReset <- c("file_SE", "predsSE", "obsSE", "outSEp", "outSEk",
                  "outSEclass", "DWPCol", "split_SS", "split_CO",
                  "modelChoices_SE1", "outgclass")

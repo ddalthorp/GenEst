@@ -1,6 +1,10 @@
 Revision log
-2020.06.02
+2020.06.06
 v1.4.4
+
+* In previous versions, the GUI would crash with the gray screen of death if a 
+user tried to input data files that were not formatted properly as .csv files. 
+Error-handling to prevent this instability has been added. 
 
 * An SE model with one p covariate and fixed k was not fittable when there was
 a cell with all 0s or 1s. This inconvience has been fixed. Also, the AICc score
