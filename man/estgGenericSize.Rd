@@ -4,8 +4,14 @@
 \alias{estgGenericSize}
 \title{Estimate generic detection probability for multiple carcass classes}
 \usage{
-estgGenericSize(days, modelSetSize_SE, modelSetSize_CP,
-  modelSizeSelections_SE, modelSizeSelections_CP, nsim = 1000)
+estgGenericSize(
+  days,
+  modelSetSize_SE,
+  modelSetSize_CP,
+  modelSizeSelections_SE,
+  modelSizeSelections_CP,
+  nsim = 1000
+)
 }
 \arguments{
 \item{days}{Search schedule data as a vector of days searched}

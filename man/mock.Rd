@@ -4,14 +4,16 @@
 \name{mock}
 \alias{mock}
 \title{A mock example data set}
-\format{A list with 5 items:
+\format{
+A list with 5 items:
 \describe{
   \item{SE}{Searcher efficiency trial data}
   \item{CP}{Carcass persistence trial data}
   \item{SS}{Search schedule data}
   \item{DWP}{Density weighted proportion of area searched data}
   \item{CO}{Carcass observations}   
-}}
+}
+}
 \source{
 \code{mock}
 }

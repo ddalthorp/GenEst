@@ -4,8 +4,18 @@
 \alias{SEfig}
 \title{Plot results of a single SE model in a set}
 \usage{
-SEfig(referenceModel, specificModel, gdat_spc, gdat_ref, found, available,
-  cells_set, cols_SE, p, CL)
+SEfig(
+  referenceModel,
+  specificModel,
+  gdat_spc,
+  gdat_ref,
+  found,
+  available,
+  cells_set,
+  cols_SE,
+  p,
+  CL
+)
 }
 \description{
 Produce a figures for a specific SE model, as fit by

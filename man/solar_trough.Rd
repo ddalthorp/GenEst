@@ -4,14 +4,16 @@
 \name{solar_trough}
 \alias{solar_trough}
 \title{Trough-based solar thermal power simulated example}
-\format{\code{solar_trough} is a list with 5 elements:
+\format{
+\code{solar_trough} is a list with 5 elements:
 \describe{
   \item{\code{SE}}{Searcher efficiency trial data}
   \item{\code{CP}}{Carcass persistence trial data}
   \item{\code{SS}}{Search schedule parameters}
   \item{\code{DWP}}{Density weighted proportion of area searched}
   \item{\code{CO}}{Carcass observations}
-}}
+}
+}
 \source{
 \code{solar_trough}
 }

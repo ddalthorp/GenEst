@@ -23,7 +23,7 @@ Calculate quantiles of marginal distributions of \eqn{\hat{p}}
  and \eqn{\hat{k}} for a \code{\link{pkm}} model object
 }
 \examples{
- # 90\% confidence intervals for \\code{p} and \\code{k}
+ # 90\% confidence intervals for \code{p} and \code{k}
   mod <- pkm(formula_p = p ~ Visibility * Season, formula_k = k ~ Season,
    data = wind_cleared$SE)
   qpk(p = c(0.05, 0.95), model = mod)

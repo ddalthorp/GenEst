@@ -4,14 +4,16 @@
 \name{solar_powerTower}
 \alias{solar_powerTower}
 \title{Power Tower Example Dataset}
-\format{\code{solar_powerTower} is a list with 5 elements:
+\format{
+\code{solar_powerTower} is a list with 5 elements:
 \describe{
   \item{\code{SE}}{Searcher efficiency trial data}
   \item{\code{CP}}{Carcass persistence trial data}
   \item{\code{SS}}{Search schedule parameters}
   \item{\code{DWP}}{Density weighted proportion of area searched}
   \item{\code{CO}}{Carcass observations}
-}}
+}
+}
 \source{
 \code{solar_powerTower}
 }

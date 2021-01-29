@@ -4,8 +4,15 @@
 \alias{calcSplits}
 \title{Estimate the number of fatalities by up to two splitting covariates}
 \usage{
-calcSplits(M, split_CO = NULL, data_CO = NULL, split_SS = NULL,
-  data_SS = NULL, split_time = NULL, ...)
+calcSplits(
+  M,
+  split_CO = NULL,
+  data_CO = NULL,
+  split_SS = NULL,
+  data_SS = NULL,
+  split_time = NULL,
+  ...
+)
 }
 \arguments{
 \item{M}{\code{\link{estM}} object, containing numeric array (ncarc x nsim)

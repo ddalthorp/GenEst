@@ -4,8 +4,16 @@
 \alias{pkLogLik}
 \title{Calculate the negative log-likelihood of a searcher efficiency model}
 \usage{
-pkLogLik(misses, foundOn, beta, nbeta_p, cellByCarc, maxmisses, cellMM,
-  kFixed = NULL)
+pkLogLik(
+  misses,
+  foundOn,
+  beta,
+  nbeta_p,
+  cellByCarc,
+  maxmisses,
+  cellMM,
+  kFixed = NULL
+)
 }
 \arguments{
 \item{misses}{Number of searches when carcass was present but

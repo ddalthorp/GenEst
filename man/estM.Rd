@@ -4,10 +4,23 @@
 \alias{estM}
 \title{Estimate mortality}
 \usage{
-estM(data_CO, data_SS, data_DWP = NULL, frac = 1,
-  COdate = "DateFound", model_SE, model_CP, model_DWP = NULL,
-  unitCol = NULL, SSdate = NULL, sizeCol = NULL, IDcol = NULL,
-  DWPCol = NULL, nsim = 1000, max_intervals = 8)
+estM(
+  data_CO,
+  data_SS,
+  data_DWP = NULL,
+  frac = 1,
+  COdate = "DateFound",
+  model_SE,
+  model_CP,
+  model_DWP = NULL,
+  unitCol = NULL,
+  SSdate = NULL,
+  sizeCol = NULL,
+  IDcol = NULL,
+  DWPCol = NULL,
+  nsim = 1000,
+  max_intervals = 8
+)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}

@@ -1,4 +1,18 @@
 Revision log
+2021.01.29
+v1.4.5.0
+
+* fixed a downstream bug on labels for CI columns for Ir.
+
+2020.11.16
+v1.4.5
+
+* fixed a bug that put the wrong labels on CI columns for Ir in the "desc" 
+function for cp models when search intervals were entered in the arg list in
+non-increasing order. This error would never occur in the GUI and would be 
+rare on the command line side, limited to a single summay table, not affecting 
+any other calculations.
+
 2020.06.06
 v1.4.4
 

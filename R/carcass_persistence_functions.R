@@ -1466,6 +1466,7 @@ aicc.cpmSize <- function(x, ... ){
 desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
   if (!"cpm" %in% class(model_CP)) stop("model_CP must be a cpm object.")
   # set up summary table
+  Ir <- sort(Ir)
   t0 <- numeric(length(Ir))
   t1 <- Ir
   tf <- t1
@@ -1479,9 +1480,8 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
   rownames(cell_desc) <- model_CP$cells$CellNames
   cell_desc[ , "n"] <- model_CP$cell_ab$n
   # fill in the MLE's as the point estimates
-  if (model_CP$distribution != "exponential")
-    pda <- model_CP$cell_ab[ , "pda_median"]
-    pdb <- model_CP$cell_ab[ , "pdb_median"]
+  if (model_CP$distribution != "exponential") pda <- model_CP$cell_ab[ , "pda_median"]
+  pdb <- model_CP$cell_ab[ , "pdb_median"]
   if (model_CP$distribution == "weibull"){
     cell_desc[ , "medianCP"] <- pdb * log(2)^(1/pda)
   } else if (model_CP$distribution == "lognormal"){
@@ -1501,11 +1501,12 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
       t_arrive0 = t0, t_arrive1 = t1, t_search = tf)
   })
   ci_lu <- c((1 - CL)/2, 1 - (1 - CL)/2)
-  rsum <- lapply(rstat, function(xx)
-    matrixStats::rowQuantiles(xx, probs = ci_lu))
+  rsum <- lapply(rstat, function(xx) matrixStats::rowQuantiles(xx, probs = ci_lu))
   for (ci in rownames(cell_desc)){
-    cell_desc[ci, gtools::mixedsort(c(paste0(Irv, "_lwr"), paste0(Irv, "_upr")))]  <-
-      t(rsum[[ci]])
+		for (ir in Irv){
+			cell_desc[ci, c(paste0(ir, "_lwr"), paste0(ir, "_upr"))]  <-
+      rsum[[ci]][which(Irv == ir), ]
+		}
   }
   # calculate cp statistics
   if (model_CP$distribution == "weibull"){

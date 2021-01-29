@@ -4,14 +4,16 @@
 \name{wind_RPbat}
 \alias{wind_RPbat}
 \title{Wind Bat-Only Road and Pad (120m) Example}
-\format{\code{wind_RPbat} is a list with 5 elements:
+\format{
+\code{wind_RPbat} is a list with 5 elements:
 \describe{
   \item{\code{SE}}{Searcher efficiency trial data}
   \item{\code{CP}}{Carcass persistence trial data}
   \item{\code{SS}}{Search schedule parameters}
   \item{\code{DWP}}{Density weighted proportion of area searched}
   \item{\code{CO}}{Carcass observations}
-}}
+}
+}
 \source{
 \code{wind_RPbat}
 }

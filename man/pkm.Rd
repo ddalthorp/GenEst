@@ -7,19 +7,54 @@
 \alias{pkmSize}
 \title{Fit pk searcher efficiency models.}
 \usage{
-pkm(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
-  allCombos = FALSE, sizeCol = NULL, CL = 0.9, kInit = 0.7,
-  quiet = FALSE, ...)
+pkm(
+  formula_p,
+  formula_k = NULL,
+  data,
+  obsCol = NULL,
+  kFixed = NULL,
+  allCombos = FALSE,
+  sizeCol = NULL,
+  CL = 0.9,
+  kInit = 0.7,
+  quiet = FALSE,
+  ...
+)
 
-pkm0(formula_p, formula_k = NULL, data, obsCol = NULL, kFixed = NULL,
-  kInit = 0.7, CL = 0.9, quiet = FALSE)
+pkm0(
+  formula_p,
+  formula_k = NULL,
+  data,
+  obsCol = NULL,
+  kFixed = NULL,
+  kInit = 0.7,
+  CL = 0.9,
+  quiet = FALSE
+)
 
-pkmSet(formula_p, formula_k = NULL, data, obsCol = NULL,
-  kFixed = NULL, kInit = 0.7, CL = 0.9, quiet = FALSE)
+pkmSet(
+  formula_p,
+  formula_k = NULL,
+  data,
+  obsCol = NULL,
+  kFixed = NULL,
+  kInit = 0.7,
+  CL = 0.9,
+  quiet = FALSE
+)
 
-pkmSize(formula_p, formula_k = NULL, data, kFixed = NULL,
-  obsCol = NULL, sizeCol = NULL, allCombos = FALSE, kInit = 0.7,
-  CL = 0.9, quiet = FALSE)
+pkmSize(
+  formula_p,
+  formula_k = NULL,
+  data,
+  kFixed = NULL,
+  obsCol = NULL,
+  sizeCol = NULL,
+  allCombos = FALSE,
+  kInit = 0.7,
+  CL = 0.9,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{formula_p}{Formula for p; an object of class \code{\link{formula}}

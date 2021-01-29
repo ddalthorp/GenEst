@@ -3,7 +3,6 @@
 \docType{package}
 \name{GenEst}
 \alias{GenEst}
-\alias{GenEst-package}
 \title{Generalized estimation of mortality}
 \description{
 This package is designed to analyze searcher efficiency,

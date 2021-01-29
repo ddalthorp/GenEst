@@ -4,9 +4,20 @@
 \alias{estg}
 \title{Estimate all carcass-level detection rates and arrival intervals}
 \usage{
-estg(data_CO, COdate, data_SS, SSdate = NULL, model_SE, model_CP,
-  model_DWP = NULL, sizeCol = NULL, unitCol = NULL, IDcol = NULL,
-  nsim = 1000, max_intervals = 8)
+estg(
+  data_CO,
+  COdate,
+  data_SS,
+  SSdate = NULL,
+  model_SE,
+  model_CP,
+  model_DWP = NULL,
+  sizeCol = NULL,
+  unitCol = NULL,
+  IDcol = NULL,
+  nsim = 1000,
+  max_intervals = 8
+)
 }
 \arguments{
 \item{data_CO}{Carcass Observation data}

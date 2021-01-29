@@ -4,8 +4,7 @@
 \alias{plot.pkmSet}
 \title{Plot results of a set of SE models}
 \usage{
-\method{plot}{pkmSet}(x, specificModel = NULL, cols = NULL,
-  CL = NULL, ...)
+\method{plot}{pkmSet}(x, specificModel = NULL, cols = NULL, CL = NULL, ...)
 }
 \arguments{
 \item{x}{pk model set of class pkmSet}
