@@ -3,7 +3,7 @@ Title: Generalized Mortality Estimator
 Version: 1.4.5.0
 Date: 2021-01-29
 Authors@R: c(
-    person("Daniel", "Dalthorp", , "ddalthorp@usgs.gov", c("aut", "cre")),
+    person("Daniel", "Dalthorp", , "ddalthorp@protonmail.com", c("aut", "cre")),
     person("Juniper", "Simonis", , "simonis@dapperstats.com", "aut"),
     person("Lisa", "Madsen", , "madsenl@oregonstate.edu", "aut"),
     person("Manuela", "Huso", , "mhuso@usgs.gov", "aut"),

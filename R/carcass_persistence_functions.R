@@ -1472,7 +1472,7 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
   tf <- t1
   Irv <- paste0("r", Ir)
   cell_desc <- matrix(nrow = model_CP$ncell, ncol = 1 + 3 * (5 + length(Ir)))
-  Irvec <- gtools::mixedsort(c(Irv, paste0(Irv, "_lwr"), paste0(Irv, "_upr")))
+  Irvec <- c(Irv, paste0(Irv, "_lwr"), paste0(Irv, "_upr"))
   colnames(cell_desc) <- c("n", "medianCP", "CP_lwr", "CP_upr", Irvec,
     paste0("pda_", c("median", "lwr", "upr")), paste0("pdb_", c("median", "lwr", "upr")),
     paste0("l_", c("median", "lwr", "upr")), paste0("s_", c("median", "lwr", "upr")))
@@ -1503,7 +1503,7 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
   ci_lu <- c((1 - CL)/2, 1 - (1 - CL)/2)
   rsum <- lapply(rstat, function(xx) matrixStats::rowQuantiles(xx, probs = ci_lu))
   for (ci in rownames(cell_desc)){
-		for (ir in Irv){
+	for (ir in Irv){
 			cell_desc[ci, c(paste0(ir, "_lwr"), paste0(ir, "_upr"))]  <-
       rsum[[ci]][which(Irv == ir), ]
 		}

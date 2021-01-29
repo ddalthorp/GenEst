@@ -13,6 +13,8 @@ non-increasing order. This error would never occur in the GUI and would be
 rare on the command line side, limited to a single summay table, not affecting 
 any other calculations.
 
+* updated the email address of the maintainer
+
 2020.06.06
 v1.4.4
 
