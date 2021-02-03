@@ -1,15 +1,17 @@
 ---
-title: "GenEst - Tutorial with Solar Example"
+title: "GenEst - 2. Tutorial with Solar Example"
 author: "J Mintz, D Dalthorp, J Simonis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{GenEst - 2. A Solar Example with Carcass Size}
+  %\VignetteIndexEntry{GenEst - 2. Tutorial with Solar Example}
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
 
 ```{r setup, include = FALSE}
+require(rmarkdown)
+require(knitr)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
