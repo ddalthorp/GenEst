@@ -1502,10 +1502,11 @@ desc <- function(model_CP, Ir = c(1, 3, 7, 14, 28), CL = 0.9, nsim = 10000){
   })
   ci_lu <- c((1 - CL)/2, 1 - (1 - CL)/2)
   rsum <- lapply(rstat, function(xx) matrixStats::rowQuantiles(xx, probs = ci_lu))
+
   for (ci in rownames(cell_desc)){
 	for (ir in Irv){
 			cell_desc[ci, c(paste0(ir, "_lwr"), paste0(ir, "_upr"))]  <-
-      rsum[[ci]][which(Irv == ir), ]
+      rsum[[ci]][Irv %in% ir ]
 		}
   }
   # calculate cp statistics
