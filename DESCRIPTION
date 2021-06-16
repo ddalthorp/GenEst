@@ -1,6 +1,6 @@
 Package: GenEst
 Title: Generalized Mortality Estimator
-Version: 1.4.5.0
+Version: 1.4.5.1
 Date: 2021-01-29
 Authors@R: c(
     person("Daniel", "Dalthorp", , "ddalthorp@protonmail.com", c("aut", "cre")),
