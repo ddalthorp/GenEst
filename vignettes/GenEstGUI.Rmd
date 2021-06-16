@@ -1,5 +1,5 @@
 ---
-title: "GenEst - Graphic User Interface"
+title: "GenEst - 4. Graphic User Interface"
 author: "Juniper L. Simonis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -8,6 +8,10 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
+```{r include = F}
+require(rmarkdown)
+require(knitr)
+```
 
 # Overview
 

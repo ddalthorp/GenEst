@@ -1,5 +1,5 @@
 ---
-title: "GenEst - A Tutorial with Wind Examples"
+title: "GenEst - 1. A Tutorial with Wind Examples"
 author: "Daniel Dalthorp"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -8,14 +8,12 @@ vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\usepackage[utf8]{inputenc}
 ---
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
-
 ```{r set-options, echo=FALSE, cache=FALSE}
 options(width = 120)
 ```
@@ -25,7 +23,6 @@ library(GenEst)
 vers <- packageVersion("GenEst")
 today <- Sys.Date()
 ```
-
 ## Introduction: Tutorial with Examples
 This tutorial provides an introduction to the array of command line tools
 **GenEst** (`r vers`) provides for estimating bird and/or bat mortality and

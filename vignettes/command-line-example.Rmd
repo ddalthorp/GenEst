@@ -1,5 +1,5 @@
 ---
-title: "GenEst - Command Line Walkthrough"
+title: "GenEst - 3. Command Line Walkthrough"
 author: "Juniper L. Simonis"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -9,6 +9,8 @@ vignette: >
   %\usepackage[utf8]{inputenc}
 ---
 ```{r setup, include=FALSE}
+require(rmarkdown)
+require(knitr)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
