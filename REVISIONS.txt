@@ -1,4 +1,14 @@
 Revision log
+2021.06.16
+v1.4.6
+
+* corrected a GUI display error for MLEs and CIs for r statistics in the 
+table in the Analysis|Carcass Persistence|Estimates tab
+
+* corrected an error that prevent the command line function desc from 
+calculating summary CP statistics for a single Ir value (prior versions
+required a vector of Ir values)
+
 2021.01.29
 v1.4.5.0
 

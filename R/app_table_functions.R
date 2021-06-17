@@ -95,18 +95,23 @@ prettyModTabCP <- function(modTab){
   if (!"descCP" %in% class(table_CP)) stop("table_CP must be a descCP object")
   # descCP objects are matrices with have 3n named columns and ncell named rows
 
-  modTab <- round(table_CP, 3)
+  table_CP <- round(table_CP, 3)
   rcols <- grep("^r\\d", colnames(table_CP)) # indices for columns for r statistics
   rcols_abb <- rcols[!rcols %in% grep("_", colnames(table_CP))] # r1, r3, etc.
   cpcols <- grep("CP", colnames(table_CP))
   out <- data.frame(array(dim = c(nrow(table_CP), 2 + length(rcols_abb))))
   names(out) <- c("n", "medianCP", colnames(table_CP)[rcols_abb])
-  rownames(out) <- row.names(modTab)
+  rownames(out) <- row.names(table_CP)
   out$n <- table_CP[ , "n"]
-  for (i in 2:ncol(out)){
-    out[ , i] <- paste0(modTab[, 2 + 3*(i - 2)],
-      "  [", modTab[ , 3 + 3*(i - 2)], ", ", modTab[ , 4 + 3*(i - 2)], "]")
+  out[, "medianCP"] <- paste0(table_CP[, "medianCP"], 
+    " [", table_CP[, "CP_lwr"], ", ", table_CP[, "CP_upr"], "]")
+  Ir <- colnames(table_CP)[rcols_abb]
+
+  for (i in Ir){
+    out[ , i] <- paste0(table_CP[, i], 
+      "  [", table_CP[, paste0(i, "_lwr")], ", ", table_CP[, paste0(i, "_upr")], "]")
   }
+
   return(out)
 }
 
