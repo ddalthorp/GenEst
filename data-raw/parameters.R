@@ -1,4 +1,4 @@
-#### SE and CP plot parameters
+#### SE and CP plot parameters ####
 ## general
 .cols_SE = c(spc = colors()[123], ref = colors()[238])
 .cols_div = colors()[395]
