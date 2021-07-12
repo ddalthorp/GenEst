@@ -1,4 +1,10 @@
 Revision log
+2021.06.22
+v1.4.7
+
+* added a vector of model names in order of polynomial degree (degOrder) to
+sysdata.rda
+
 2021.06.16
 v1.4.6
 
