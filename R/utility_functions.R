@@ -102,10 +102,11 @@ dateToDay <- function(date, ref = NULL){
 #'
 checkDate <- function(testdate){
   beginningOfTime <- as.Date("1900-01-01")
+  if (is.numeric(testdate)) 
+    return(NULL)
   canDate <- try(as.Date(testdate), silent = TRUE)
-  if (!("try-error" %in% class(canDate)) &&
-      !anyNA(canDate) &&
-      all(canDate > beginningOfTime)) return (canDate)
+  if (!("try-error" %in% class(canDate)) && !anyNA(canDate) && all(canDate > beginningOfTime)) 
+    return (canDate)
 
   formats <- list("%m/%d/%Y", "%d/%m/%Y", "%Y/%m/%d")
   canDate <- lapply(formats, 

@@ -1,9 +1,9 @@
 Revision log
-2021.06.22
+2022.11.02
 v1.4.7
 
-* added a vector of model names in order of polynomial degree (degOrder) to
-sysdata.rda
+* changed is.finite(tmp) in obsCols_ltp to all(is.finite(tmp)) for stability
+* amended the checkDate function for compatibility with new as.Date in R 4.3.0
 
 2021.06.16
 v1.4.6

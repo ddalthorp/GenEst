@@ -384,7 +384,7 @@ obsCols_ltp <- function(data){
   obsTF <- rep(NA, ncols)
   for (coli in 1:ncols){
     tmp <- data[ , coli]
-    if (is.numeric(tmp) && is.finite(tmp) && all(na.omit(tmp) >= 0)){
+    if (is.numeric(tmp) && all(is.finite(tmp)) && all(na.omit(tmp) >= 0)){
       obsTF[coli] <- TRUE
     } else{
       obsTF[coli] <- FALSE

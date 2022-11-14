@@ -29,9 +29,9 @@ plot.pkm <- function(x, col = NULL, CL = NULL, ...){
   if (!is.null(model$pOnly) && model$pOnly){
     stop("k missing from pk model. Cannot plot.")
   }
-  if (class(name_k) == "numeric"){
+  if ("numeric" %in% class(name_k)){
     name_k <- paste("k fixed at ", name_k, sep = "")
-  } else if (class(name_k) == "character"){
+  } else if ("character" %in% class(name_k)){
     name_k <- "k not estimated"
    }else {
     name_k <- format(model$formula_k)
