@@ -550,7 +550,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
       splits$M <- matrix(splits$M, nrow = 1)
       splits$X <- matrix(splits$X, nrow = 1)
     }
-    sumry <- matrixStats::rowQuantiles(splits$M, probs = probs)
+    sumry <- matrixStats::rowQuantiles(splits$M, probs = probs, useNames = TRUE)
     ind <- (sumry < splits$X)
     sumry <- (sumry * !ind) + (splits$X * ind)
     sumry <- cbind(X = splits$X, sumry)
@@ -560,7 +560,7 @@ summary.splitFull <- function(object, CL = 0.90, ...){
       splits$X <- lapply(splits$X, function(x) matrix(x, nrow = 1))
     }
     sumry <- lapply(splits$M, function(x){
-      cbind(matrixStats::rowQuantiles(x, probs = probs))
+      cbind(matrixStats::rowQuantiles(x, probs = probs, useNames = TRUE))
     })
     for (levi in 1:length(sumry)){
       ind <- (sumry[[levi]] < splits$X[[levi]])
