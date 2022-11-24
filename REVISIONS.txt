@@ -1,4 +1,10 @@
 Revision log
+2022.11.23
+v1.4.8
+
+* added ", useNames = TRUE" in two calls to matrixStats::rowQuantiles to 
+accommodate impending changes in the matrixStats package
+
 2022.11.02
 v1.4.7
 
