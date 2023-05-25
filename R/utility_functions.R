@@ -156,9 +156,9 @@ aicc <- function(x, ... ){
 #' @return prints data frame
 #'
 #' @export
-print.corpus_frame <- function(x, ...){
-  corpus::print.corpus_frame(x, rows = 80)
-}
+#print.corpus_frame <- function(x, ...){
+#  corpus::print.corpus_frame(x, rows = 80)
+#}
 
 #' @title Auto-parsing to find the name of the unit column (\code{unitCol})
 #'

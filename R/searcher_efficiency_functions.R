@@ -996,7 +996,7 @@ aicc.pkmSet <- function(x, ... , quiet = FALSE, app = FALSE){
     message("Models that failed during fit were removed from output.")
     output <- output[-whichAICcMax, ]
   }
-  class(output) <- c("corpus_frame", "data.frame")
+  class(output) <- "data.frame"#c("corpus_frame", "data.frame")
   return(output)  # AIC
 }
 
