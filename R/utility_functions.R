@@ -148,19 +148,18 @@ aicc <- function(x, ... ){
 
 #' @title Auto-parsing to find the name of the unit column (\code{unitCol})
 #'
-#' If a unit column is not explicitly defined by user in the arg list to
-#'  \code{estM} or \code{estg}, then \code{defineUnitCol} parses the CO, DWP,
-#'  and SS files to extract the unit column if possible.
+#' @description If a unit column is not explicitly defined by user in the arg
+#'   list to \code{estM} or \code{estg}, then \code{defineUnitCol} parses the
+#'   CO, DWP, and SS files to extract the unit column if possible.
 #'
-#' Criteria that a column must meet to be a unit column are that it is found
-#'  in both \code{data_CO} and \code{data_DWP}, all units in \code{data_CO} must
-#'  also be included among units in \code{data_DWP}, all units in both
-#'  \code{data_CO} and \code{data_DWP} must be included among the column names
-#'  in \code{data_SS}. If \code{data_DWP = NULL}, then the unit column must be
-#'  included in \code{data_CO} and all its units must be included among the
-#'  column names of \code{data_SS}.
-#'
-#'
+#'   Criteria that a column must meet to be a unit column are that it is found
+#'   in both \code{data_CO} and \code{data_DWP}, all units in \code{data_CO}
+#'   must also be included among units in \code{data_DWP}, all units in both
+#'   \code{data_CO} and \code{data_DWP} must be included among the column names
+#'   in \code{data_SS}. If \code{data_DWP = NULL}, then the unit column must be
+#'   included in \code{data_CO} and all its units must be included among the
+#'   column names of \code{data_SS}.
+#' 
 #' @param data_CO carcass observation data (data frame)
 #'
 #' @param data_SS search schedule data (data frame)
