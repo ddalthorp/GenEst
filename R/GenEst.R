@@ -1,5 +1,4 @@
 #' @useDynLib GenEst, .registration = TRUE
-#' @importFrom corpus print.corpus_frame
 #' @importFrom DT dataTableOutput renderDataTable datatable
 #' @importFrom graphics abline axis box hist legend lines mtext par plot
 #'   plot.new points polygon rect text title

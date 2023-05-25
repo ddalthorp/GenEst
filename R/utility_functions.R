@@ -146,20 +146,6 @@ aicc <- function(x, ... ){
   UseMethod("aicc", x)
 }
 
-
-#' @title Generic S3 function for printing corpus_frame
-#'
-#' @param x data frame to print
-#'
-#' @param ... other arguments
-#'
-#' @return prints data frame
-#'
-#' @export
-print.corpus_frame <- function(x, ...){
-  corpus::print.corpus_frame(x, rows = 80)
-}
-
 #' @title Auto-parsing to find the name of the unit column (\code{unitCol})
 #'
 #' If a unit column is not explicitly defined by user in the arg list to
